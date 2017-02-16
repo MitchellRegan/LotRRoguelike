@@ -438,7 +438,7 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Connecting the lines between points
-        for(int p = 1; p < tilesInRegion.Count; ++p)
+        /*for(int p = 1; p < tilesInRegion.Count; ++p)
         {
             //Getting the coordinates of the tile at the start of the line
             int startX = tilesInRegion[p][0];
@@ -464,7 +464,18 @@ public class CreateTileGrid : MonoBehaviour
 
             this.tileGrid[startX][startY].GetComponent<SpriteRenderer>().color = Color.green;
             this.tileGrid[endX][endY].GetComponent<SpriteRenderer>().color = Color.green;
-        }
+        }*/
+
+
+        //Connecting the center tile to the first spoke
+        int startX = tilesInRegion[0][0];
+        int endX = tilesInRegion[1][0];
+        int startY = tilesInRegion[0][1];
+        int endY = tilesInRegion[1][1];
+        this.FillInLineOfTiles(startY, startX, endY, endX, Color.blue);
+        Debug.Log("Start XY: " + startX + ", " + startY);
+        Debug.Log("End XY: " + endX + ", " + endY);
+        this.tileGrid[endX][endY].GetComponent<SpriteRenderer>().color = Color.black;
 
         //Coloring the starting tile
         int x = tilesInRegion[0][0];
@@ -477,16 +488,28 @@ public class CreateTileGrid : MonoBehaviour
     private void FillInLineOfTiles(int startTileRow_, int startTileCol_, int endTileRow_, int endTileCol_, Color tileColor_)
     {
         //Finding out if the starting tile is in a column that's offset
-        bool isOffset = false;
+        bool isOffsetUp = false;
         if(startTileCol_ % 2 == 0)
         {
-            isOffset = true;
+            isOffsetUp = true;
         }
 
         //Finding the slope of the line between the tiles
         int xDiff = endTileCol_ - startTileCol_;
         int yDiff = endTileRow_ - startTileRow_;
-        float slope = 1;
+        float slope = 0;
+
+        //Determining if the direction the rows and columns are generated
+        int xDirection = 1;
+        int yDirection = 1;
+        if (xDiff < 0)
+        {
+            xDirection = -1;
+        }
+        if (yDiff < 0)
+        {
+            yDirection = -1;
+        }
 
         //Making sure the x difference is greater than 0 so we don't have a "divided by 0" error
         if (xDiff != 0)
@@ -494,24 +517,18 @@ public class CreateTileGrid : MonoBehaviour
             slope = (yDiff * 1f) / (xDiff * 1f);
         }
 
-
+        
         //If the slope is 0 (horizontal)
         if (yDiff == 0)
         {
-            //Determining if the row is generated right (positive) or left (negative)
-            int direction = 1;
-            if (xDiff < 0)
-            {
-                direction = -1;
-            }
-
+            Debug.Log("Horizontal Line");
             //Creating a loop to set a row of tiles
             for (int x = 0; x < Mathf.Abs(xDiff); ++x)
             {
                 //Making sure the tile we're editing is within the tile grid
-                if(startTileRow_ + (xDiff * direction) > -1 && startTileRow_ + (xDiff * direction) <= this.tileGrid[0].Count)
+                if(startTileRow_ + (xDiff * xDirection) > -1 && startTileRow_ + (xDiff * xDirection) <= this.tileGrid[0].Count)
                 {
-                    this.tileGrid[startTileCol_][startTileRow_ + (x * direction)].GetComponent<SpriteRenderer>().color = tileColor_;
+                    this.tileGrid[startTileCol_][startTileRow_ + (x * xDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
                 }
                 //If the tile is outside the grid, the loop is broken
                 else
@@ -523,20 +540,14 @@ public class CreateTileGrid : MonoBehaviour
         //If the slope is undefined (vertical, x is 0)
         else if (xDiff == 0)
         {
-            //Determining if the column is generated up (positive) or down (negative)
-            int direction = -1;
-            if (yDiff < 0)
-            {
-                direction = 1;
-            }
-
+            Debug.Log("Vertical Line");
             //Creating a loop to set a column of tiles
             for (int y = 0; y < Mathf.Abs(yDiff); ++y)
             {
                 //Making sure the tile we're editing is within the tile grid
-                if(startTileCol_ + (yDiff * direction) > -1 && startTileCol_ + (yDiff * direction) <= this.tileGrid.Count)
+                if(startTileCol_ + (yDiff * yDirection) > -1 && startTileCol_ + (yDiff * yDirection) <= this.tileGrid.Count)
                 {
-                    this.tileGrid[startTileCol_ + (y * direction)][startTileRow_].GetComponent<SpriteRenderer>().color = tileColor_;
+                    this.tileGrid[startTileCol_ + (y * yDirection)][startTileRow_].GetComponent<SpriteRenderer>().color = tileColor_;
                 }
                 //If the tile is outside the grid, the loop is broken
                 else
@@ -545,55 +556,87 @@ public class CreateTileGrid : MonoBehaviour
                 }
             }
         }
-        //If the slope is at a 45 degree angle
-        else if(slope == 0.5f)
+        //If the difference in X is greater than the difference in Y
+        else if(xDiff > yDiff)
         {
-            //Int to track the increase in 
+            Debug.Log("X is greater than Y");
+            //Int to track the increase in y value of the current tile
             int y = 0;
-            if(isOffset)
+            //If the starting tile is offset up, y is set to 1
+            if(isOffsetUp)
             {
-
+                y = 1;
             }
 
-            for(int x = 1; x < xDiff; ++x)
+            //Looping through X since it increases every step
+            for(int x = 1; x < Mathf.Abs(xDiff); ++x)
             {
 
-                //Only increases the y
-                if(isOffset)
+                //Only increases the y value when the current y/x is less than or equal to the slope
+                if( (y * 1f)/(x * 1f) <= slope)
                 {
                     ++y;
                 }
 
+                //Setting the color of the tile that's offset from the starting tile
+                this.tileGrid[(x * xDirection) + startTileCol_][(y * yDirection) + startTileRow_].GetComponent<SpriteRenderer>().color = tileColor_;
+
                 //Switches the offset for the next column
-                isOffset = !isOffset;
+                isOffsetUp = !isOffsetUp;
             }
         }
-        //If the slope is at an angle
+        //If the difference in Y is greater than the difference in X
         else
         {
-            //Determining if the direction the rows and columns are generated
-            int xDirection = 1;
-            int yDirection = -1;
-            if(xDiff < 0)
-            {
-                xDirection = -1;
-            }
-            if(yDiff < 0)
-            {
-                yDirection = 1;
-            }
-
-
+            Debug.Log("Y is greater than X");
+            //Int to track the increase in x value of the current tile
+            /*int x = 0;
             //Looping through each tile in the height of the line
-            for (int x = 0, y = 0; y < Mathf.Abs(yDiff); ++y)
+            for(int y = 0; y < Mathf.Abs(yDiff); ++y)
             {
-                //When the height is greater than the slope, the width increases
-                if (y >= slope)
+                //Coloring the selected tile
+                this.tileGrid[startTileCol_ + (y * yDirection)][startTileRow_ + (x * xDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
+
+                //If the current x is 0
+                if(x == 0 && y > slope)
                 {
                     ++x;
                 }
+                //When the height is greater than the slope, the width increases
+                else if ((y * 1f) / (x * 1f) >= slope)
+                {
+                    float currentSlope = (y * 1f) / (x * 1f);
+                    Debug.Log(currentSlope);
+                    ++x;
+                }
+            }*/
 
-                this.tileGrid[startTileCol_ + (y * yDirection)][startTileRow_ + (x * xDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
+            //Looping through until the X coordinates match
+            for(int x = 0, y = 1; x <= Mathf.Abs(xDiff); ++x)
+            {
+
+                //Looping through so that we fill in all vertical tiles in the current column
+                if (x != 0)
+                {
+                    while ( (( (y * 1f) - (x * slope)) / (x * 1f)) <= slope)
+                    {
+                        //Debug.Log("Current Y: " + y + ", Slope: " + slope);
+                        //Coloring the selected tile
+                        this.tileGrid[startTileCol_ + (x * xDirection)][startTileRow_ + (y * yDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
+
+                        ++y;
+                    }
+                }
+                else
+                {
+                    while(y < slope)
+                    {
+                        //Coloring the selected tile
+                        this.tileGrid[startTileCol_ + (x * xDirection)][startTileRow_ + (y * yDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
+
+                        ++y;
+                    }
+                }
             }
         }
     }
