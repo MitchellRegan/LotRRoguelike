@@ -41,6 +41,7 @@ public class CreateTileGrid : MonoBehaviour
     public Vector2 waterFillTopBottom = new Vector2(0, 2);
     public Vector2 waterFillLeftRight = new Vector2(0, 2);
 
+    public GameObject pathTracer;
     
 
 
@@ -57,10 +58,10 @@ public class CreateTileGrid : MonoBehaviour
         //Fills in the edges
         //this.FillEdgesWithOcean();
 
-        this.GenerateSpokeRegion(this.tileGrid.Count / 2, this.tileGrid[0].Count / 2, new Vector2(3, 16), new Vector2(2, 14), new Vector2(15, 45));
-
         //Connects the path points between tiles
         this.ConnectTiles();
+
+        this.GenerateSpokeRegion(this.tileGrid.Count / 2, this.tileGrid[0].Count / 2, new Vector2(3, 16), new Vector2(2, 14));
     }
 
 
@@ -338,7 +339,7 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Creates a region of a specific zone type using "spokes" that extend outward from the given tile
-    private void GenerateSpokeRegion(int startTileRow_, int startTileCol_, Vector2 spokeMinMax_, Vector2 spokeLengthMinMax_, Vector2 spokeAngleMinMax_)
+    private void GenerateSpokeRegion(int startTileRow_, int startTileCol_, Vector2 spokeMinMax_, Vector2 spokeLengthMinMax_)
     {
         //Created a list of int arrays to hold all row/column locations for the tiles in this region
         List<List<int>> tilesInRegion = new List<List<int>>();
@@ -349,13 +350,16 @@ public class CreateTileGrid : MonoBehaviour
 
 
         //The total angle covered by all spokes. Used to offset each spoke from the previous one
-        float totalAngle = 0;
+        float totalAngle = Random.Range(0, 360);
+        float newMinAngle = (360f / numberOfSpokes) * 0.5f;
+        float newMaxAngle = newMinAngle * 3;
 
         //Looping through to create each spoke
         for(int s = 0; s < numberOfSpokes; ++s)
         {
             //Finding the angle of the current spoke offset from the previous spoke
-            float spokeAngle = Random.Range(spokeAngleMinMax_.x, spokeAngleMinMax_.y);
+            float spokeAngle = Random.Range(newMinAngle, newMaxAngle);
+
             totalAngle += spokeAngle;
 
             //Making sure the total angle is between 0 and 360 degrees
@@ -378,26 +382,26 @@ public class CreateTileGrid : MonoBehaviour
             if (totalAngle <= 90)
             {
                 //Tile is up and right
-                xDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle) * spokeLength);
-                yDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle) * spokeLength);
+                xDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle * Mathf.Deg2Rad) * spokeLength);
+                yDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle * Mathf.Deg2Rad) * spokeLength);
             }
             else if(totalAngle <= 180)
             {
                 //Tile is up and left
-                xDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle) * -spokeLength);
-                yDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle) * spokeLength);
+                xDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle * Mathf.Deg2Rad) * -spokeLength);
+                yDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle * Mathf.Deg2Rad) * spokeLength);
             }
             else if(totalAngle <= 270)
             {
                 //Tile is down and left
-                xDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle) * -spokeLength);
-                yDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle) * -spokeLength);
+                xDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle * Mathf.Deg2Rad) * -spokeLength);
+                yDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle * Mathf.Deg2Rad) * -spokeLength);
             }
             else
             {
                 //Tile is down and right
-                xDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle) * spokeLength);
-                yDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle) * -spokeLength);
+                xDiff = Mathf.RoundToInt(Mathf.Sin(trigAngle * Mathf.Deg2Rad) * spokeLength);
+                yDiff = Mathf.RoundToInt(Mathf.Cos(trigAngle * Mathf.Deg2Rad) * -spokeLength);
             }
 
 
@@ -424,21 +428,11 @@ public class CreateTileGrid : MonoBehaviour
             tilesInRegion.Add(new List<int> { startTileCol_ + xDiff, startTileRow_ + yDiff });
         }
 
-
-        //Looping through and colorizing the region
-        foreach(List<int> tile in tilesInRegion)
-        {
-            int xCoord = tile[0];
-            int yCoord = tile[1];
-            this.tileGrid[xCoord][yCoord].GetComponent<SpriteRenderer>().color = Color.red;
-
-            //Now that we have all of the points, the lines between each point need to be colorized.
-            //Use get the slope of the line between each point and the next and fill in everything across that line?
-            
-        }
+        //The list of edge tiles around this region
+        List<PathPoint> edgePoints = new List<PathPoint>();
 
         //Connecting the lines between points
-        /*for(int p = 1; p < tilesInRegion.Count; ++p)
+        for(int p = 1; p < tilesInRegion.Count; ++p)
         {
             //Getting the coordinates of the tile at the start of the line
             int startX = tilesInRegion[p][0];
@@ -460,184 +454,546 @@ public class CreateTileGrid : MonoBehaviour
             }
 
             //Filling in a line between the two tiles
-            this.FillInLineOfTiles(startY, startX, endY, endX, Color.blue);
+            PathPoint startPoint = this.tileGrid[startX][startY].GetComponent<LandTile>().allTilePoints[0];
+            PathPoint endPoint = this.tileGrid[endX][endY].GetComponent<LandTile>().allTilePoints[0];
+
+            //Adding each edge point to the list of edge points
+            foreach(PathPoint point in this.FindLineOfTiles(startPoint, endPoint, Color.blue))
+            {
+                edgePoints.Add(point);
+            }
 
             this.tileGrid[startX][startY].GetComponent<SpriteRenderer>().color = Color.green;
             this.tileGrid[endX][endY].GetComponent<SpriteRenderer>().color = Color.green;
-        }*/
+        }
 
 
-        //Connecting the center tile to the first spoke
-        int startX = tilesInRegion[0][0];
-        int endX = tilesInRegion[1][0];
-        int startY = tilesInRegion[0][1];
-        int endY = tilesInRegion[1][1];
-        this.FillInLineOfTiles(startY, startX, endY, endX, Color.blue);
-        Debug.Log("Start XY: " + startX + ", " + startY);
-        Debug.Log("End XY: " + endX + ", " + endY);
-        this.tileGrid[endX][endY].GetComponent<SpriteRenderer>().color = Color.black;
-
-        //Coloring the starting tile
+        //Finding the starting tile
         int x = tilesInRegion[0][0];
         int y = tilesInRegion[0][1];
+        PathPoint startTile = this.tileGrid[x][y].GetComponent<LandTile>().allTilePoints[0];
+
+        //Getting the test tile info
+        TileInfo testInfo = new TileInfo("Testing", LandType.Ocean, new Vector2(0.5f, 0.8f), new Vector2(3, 4));
+
+        this.FillInRegionOfTiles(startTile, edgePoints, testInfo);
+
+        //Coloring the starting tile
         this.tileGrid[x][y].GetComponent<SpriteRenderer>().color = Color.yellow;
     }
 
 
     //Function called from GenerateSpokeRegion. Fills in all tiles along a line with the given tile type
-    private void FillInLineOfTiles(int startTileRow_, int startTileCol_, int endTileRow_, int endTileCol_, Color tileColor_)
+    private List<PathPoint> FindLineOfTiles(PathPoint startPoint_, PathPoint endPoint_, Color tileColor_)
     {
-        //Finding out if the starting tile is in a column that's offset
-        bool isOffsetUp = false;
-        if(startTileCol_ % 2 == 0)
-        {
-            isOffsetUp = true;
-        }
+        //List of game objects that form the line that will be filled in
+        List<PathPoint> pathLine = new List<PathPoint>();
 
-        //Finding the slope of the line between the tiles
-        int xDiff = endTileCol_ - startTileCol_;
-        int yDiff = endTileRow_ - startTileRow_;
-        float slope = 0;
+        PathPoint currentPoint = startPoint_;
 
-        //Determining if the direction the rows and columns are generated
-        int xDirection = 1;
-        int yDirection = 1;
-        if (xDiff < 0)
+        //Looping through path points until we find the correct one
+        while(currentPoint != endPoint_)
         {
-            xDirection = -1;
-        }
-        if (yDiff < 0)
-        {
-            yDirection = -1;
-        }
+            //Creating a var to hold the reference to the point connected to the current point that's closest to the end
+            PathPoint closestPoint = currentPoint.connectedPoints[0];
+            float closestPointDist = Vector3.Distance(closestPoint.transform.position, endPoint_.transform.position);
 
-        //Making sure the x difference is greater than 0 so we don't have a "divided by 0" error
-        if (xDiff != 0)
-        {
-            slope = (yDiff * 1f) / (xDiff * 1f);
-        }
-
-        
-        //If the slope is 0 (horizontal)
-        if (yDiff == 0)
-        {
-            Debug.Log("Horizontal Line");
-            //Creating a loop to set a row of tiles
-            for (int x = 0; x < Mathf.Abs(xDiff); ++x)
+            //Looping through each connection to find the one that's closest to the end
+            foreach (PathPoint connection in currentPoint.connectedPoints)
             {
-                //Making sure the tile we're editing is within the tile grid
-                if(startTileRow_ + (xDiff * xDirection) > -1 && startTileRow_ + (xDiff * xDirection) <= this.tileGrid[0].Count)
+                //Finding the distance between this connected point and the end point
+                float connectionDist = Vector3.Distance(connection.transform.position, endPoint_.transform.position);
+
+                //If this connected point is closer to the end than the current closest, this point becomes the new closest
+                if(connectionDist < closestPointDist)
                 {
-                    this.tileGrid[startTileCol_][startTileRow_ + (x * xDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
+                    closestPoint = connection;
+                    closestPointDist = connectionDist;
                 }
-                //If the tile is outside the grid, the loop is broken
-                else
+            }
+
+            //Adding the closest point to the path list
+            pathLine.Add(closestPoint);
+            //Changing the current point to the closest one
+            currentPoint = closestPoint;
+        }
+
+        //Returning the line
+        return pathLine;
+    }
+
+
+    //Function called from GenerateSpokeRegion. Uses the same kind of algorithm as Breadth First Search to fill all tiles within a given region
+    public void FillInRegionOfTiles(PathPoint startPoint_, List<PathPoint> edgeTiles_, TileInfo regionInfo_, bool onlyPaintEmpty = true)
+    {
+        //The list of path points that make up the frontier
+        List<PathPoint> frontier = new List<PathPoint>();
+        //Adding the starting point to the frontier and making sure its previous point is cleared
+        frontier.Add(startPoint_);
+        startPoint_.previousPoint = null;
+        startPoint_.hasBeenChecked = false;
+
+        //The list of path points that have already been visited
+        List<PathPoint> visitedPoints = new List<PathPoint>();
+        visitedPoints.Add(startPoint_);
+
+        //Adding all edge tiles to the list of visited points so it cuts off the search
+        foreach(PathPoint edge in edgeTiles_)
+        {
+            visitedPoints.Add(edge);
+            edge.hasBeenChecked = true;
+        }
+
+
+        //Loop through each path point in the frontier until it's empty
+        while(frontier.Count != 0)
+        {
+            //Getting the reference to the next point to check
+            PathPoint currentPoint = frontier[0];
+
+            //Looping through each path point that's connected to the current point
+            foreach(PathPoint connection in currentPoint.connectedPoints)
+            {
+                //Making sure the point hasn't been visited yet
+                if(!connection.hasBeenChecked)
+                {
+                    //Marking the connection as visited and adding it to the frontier
+                    frontier.Add(connection);
+                    visitedPoints.Add(connection);
+                    connection.hasBeenChecked = true;
+                }
+            }
+
+            //Removing the current tile from the frontier
+            frontier.Remove(currentPoint);
+        }
+
+
+        //Looping through all of the tiles in our selection so that we can give them the region info
+        foreach(PathPoint regionTile in visitedPoints)
+        {
+            //The tile is only given info if it's empty, or we don't care about only painting empty tiles
+            if ( (onlyPaintEmpty && regionTile.type == LandType.Empty) || !onlyPaintEmpty)
+            {
+                regionTile.name = regionInfo_.regionName;
+                regionTile.type = regionInfo_.type;
+                regionTile.transform.parent.GetComponent<SpriteRenderer>().color = regionInfo_.landColor;
+
+                //Generating the tile's height
+                float newHeight = Random.Range(regionInfo_.heightMinMax.x, regionInfo_.heightMinMax.y);
+                regionTile.transform.parent.transform.position += new Vector3(0, newHeight, 0);
+
+                //Generating the tile's movement cost
+                regionTile.movementCost = Mathf.RoundToInt(Random.Range(regionInfo_.movementCostMinMax.x, regionInfo_.movementCostMinMax.y));
+            }
+
+            //Clearing the pathfinding for each tile once we're finished with them
+            regionTile.ClearPathfinding();
+        }
+    }
+
+
+    //Pathfinding algorithm that uses Breadth First Search to check all directions equally. Returns the tile path taken to get to the target tile.
+    public List<GameObject> BreadthFirstSearch(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    {
+        //Creating the 2D list of game objects (tiles) that will be returned
+        List<GameObject> tilePath = new List<GameObject>();
+
+        //The list of path points that make up the frontier
+        List<PathPoint> frontier = new List<PathPoint>();
+        //Adding the starting tile to the fronteir and making sure its previous point is cleared
+        frontier.Add(startingPoint_);
+
+        //The list of path points that have already been visited
+        List<PathPoint> visitedPoints = new List<PathPoint>();
+        visitedPoints.Add(startingPoint_);
+
+        startingPoint_.previousPoint = null;
+        startingPoint_.hasBeenChecked = true;
+
+
+        //Loop through each path point until the frontier is empty
+        while (frontier.Count != 0)
+        {
+            //Getting the reference to the next path point to check
+            PathPoint currentPoint = frontier[0];
+
+
+            //If the current point is the path point we're looking for
+            if (currentPoint == targetPoint_)
+            {
+                //Adding the current point's game object to the list of returned objects
+                tilePath.Add(currentPoint.gameObject);
+
+                //Creating a variable to hold the reference to the previous point
+                PathPoint prev = currentPoint.previousPoint;
+
+                //Looping through the trail of points back to the starting point
+                while (true)
+                {
+                    //Adding the point's game object to the list of returned objects
+                    tilePath.Add(prev.gameObject);
+
+                    //If the point isn't the starting point
+                    if (prev != startingPoint_)
+                    {
+                        //Setting the previous point to the next point in the path
+                        prev = prev.previousPoint;
+                    }
+                    //If the point is the starting point
+                    else
+                    {
+                        //We break out of the loop
+                        break;
+                    }
+                }
+
+                //Reversing the list of path points since it's currently backward
+                tilePath.Reverse();
+
+                //If we exit early, the loop is broken
+                if (earlyExit_)
                 {
                     break;
                 }
             }
-        }
-        //If the slope is undefined (vertical, x is 0)
-        else if (xDiff == 0)
-        {
-            Debug.Log("Vertical Line");
-            //Creating a loop to set a column of tiles
-            for (int y = 0; y < Mathf.Abs(yDiff); ++y)
+            //If the current point isn't the point we're looking for
+            else
             {
-                //Making sure the tile we're editing is within the tile grid
-                if(startTileCol_ + (yDiff * yDirection) > -1 && startTileCol_ + (yDiff * yDirection) <= this.tileGrid.Count)
+                //Looping through each path point that's connected to the current point
+                foreach (PathPoint connection in currentPoint.connectedPoints)
                 {
-                    this.tileGrid[startTileCol_ + (y * yDirection)][startTileRow_].GetComponent<SpriteRenderer>().color = tileColor_;
+                    //If the connected point hasn't been visited yet
+                    if (!connection.hasBeenChecked)
+                    {
+                        //Telling the connected point came from the current point we're checking
+                        connection.previousPoint = currentPoint;
+
+                        //Adding the connected point to the frontier and list of visited tiles
+                        frontier.Add(connection);
+                        visitedPoints.Add(connection);
+                        //Marking the tile as already checked so that it isn't added again
+                        connection.hasBeenChecked = true;
+                    }
                 }
-                //If the tile is outside the grid, the loop is broken
-                else
+
+                //Adding the current point to the list of visited points and removing it from the frontier
+                frontier.Remove(currentPoint);
+            }
+        }
+
+
+        //Looping through all path points in the list of visited points to clear their data
+        foreach(PathPoint point in visitedPoints)
+        {
+            point.ClearPathfinding();
+        }
+
+
+        //Returning the completed list of tiles
+        return tilePath;
+    }
+
+
+    //Pathfinding algorithm that's identical to Breadth First Search, but takes into account movement costs. Returns the tile path taken to get to the target tile.
+    public List<GameObject> DijkstraSearch(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    {
+        //Creating the 2D list of game objects (tiles) that will be returned
+        List<GameObject> tilePath = new List<GameObject>();
+
+        //The list of path points that make up the frontier
+        List<PathPoint> frontier = new List<PathPoint>();
+        //Adding the starting tile to the fronteir and making sure its previous point is cleared
+        frontier.Add(startingPoint_);
+
+        //The list of path points that have already been visited
+        List<PathPoint> visitedPoints = new List<PathPoint>();
+        visitedPoints.Add(startingPoint_);
+
+        startingPoint_.previousPoint = null;
+        startingPoint_.hasBeenChecked = true;
+
+
+        //Loop through each path point until the frontier is empty
+        while (frontier.Count != 0)
+        {
+            //Getting the reference to the next path point to check
+            PathPoint currentPoint = frontier[0];
+
+
+            //If the current point is the path point we're looking for
+            if (currentPoint == targetPoint_)
+            {
+                //Adding the current point's game object to the list of returned objects
+                tilePath.Add(currentPoint.gameObject);
+
+                //Creating a variable to hold the reference to the previous point
+                PathPoint prev = currentPoint.previousPoint;
+
+                //Looping through the trail of points back to the starting point
+                while (true)
+                {
+                    //Adding the point's game object to the list of returned objects
+                    tilePath.Add(prev.gameObject);
+
+                    //If the point isn't the starting point
+                    if (prev != startingPoint_)
+                    {
+                        //Setting the previous point to the next point in the path
+                        prev = prev.previousPoint;
+                    }
+                    //If the point is the starting point
+                    else
+                    {
+                        //We break out of the loop
+                        break;
+                    }
+                }
+
+                //Reversing the list of path points since it's currently backward
+                tilePath.Reverse();
+
+                //If we exit early, the loop is broken
+                if (earlyExit_)
                 {
                     break;
                 }
             }
-        }
-        //If the difference in X is greater than the difference in Y
-        else if(xDiff > yDiff)
-        {
-            Debug.Log("X is greater than Y");
-            //Int to track the increase in y value of the current tile
-            int y = 0;
-            //If the starting tile is offset up, y is set to 1
-            if(isOffsetUp)
+            //If the current point isn't the point we're looking for
+            else
             {
-                y = 1;
-            }
+                //Adding 1 to the movement on this point
+                currentPoint.currentMovement += 1;
 
-            //Looping through X since it increases every step
-            for(int x = 1; x < Mathf.Abs(xDiff); ++x)
-            {
-
-                //Only increases the y value when the current y/x is less than or equal to the slope
-                if( (y * 1f)/(x * 1f) <= slope)
+                //If the maximum movement has been reached for this point
+                if (currentPoint.currentMovement >= currentPoint.movementCost)
                 {
-                    ++y;
-                }
-
-                //Setting the color of the tile that's offset from the starting tile
-                this.tileGrid[(x * xDirection) + startTileCol_][(y * yDirection) + startTileRow_].GetComponent<SpriteRenderer>().color = tileColor_;
-
-                //Switches the offset for the next column
-                isOffsetUp = !isOffsetUp;
-            }
-        }
-        //If the difference in Y is greater than the difference in X
-        else
-        {
-            Debug.Log("Y is greater than X");
-            //Int to track the increase in x value of the current tile
-            /*int x = 0;
-            //Looping through each tile in the height of the line
-            for(int y = 0; y < Mathf.Abs(yDiff); ++y)
-            {
-                //Coloring the selected tile
-                this.tileGrid[startTileCol_ + (y * yDirection)][startTileRow_ + (x * xDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
-
-                //If the current x is 0
-                if(x == 0 && y > slope)
-                {
-                    ++x;
-                }
-                //When the height is greater than the slope, the width increases
-                else if ((y * 1f) / (x * 1f) >= slope)
-                {
-                    float currentSlope = (y * 1f) / (x * 1f);
-                    Debug.Log(currentSlope);
-                    ++x;
-                }
-            }*/
-
-            //Looping through until the X coordinates match
-            for(int x = 0, y = 1; x <= Mathf.Abs(xDiff); ++x)
-            {
-
-                //Looping through so that we fill in all vertical tiles in the current column
-                if (x != 0)
-                {
-                    while ( (( (y * 1f) - (x * slope)) / (x * 1f)) <= slope)
+                    //Looping through each path point that's connected to the current point
+                    foreach (PathPoint connection in currentPoint.connectedPoints)
                     {
-                        //Debug.Log("Current Y: " + y + ", Slope: " + slope);
-                        //Coloring the selected tile
-                        this.tileGrid[startTileCol_ + (x * xDirection)][startTileRow_ + (y * yDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
+                        //If the connected point hasn't been visited yet
+                        if (!connection.hasBeenChecked)
+                        {
+                            //Telling the connected point came from the current point we're checking
+                            connection.previousPoint = currentPoint;
 
-                        ++y;
+                            //Adding the connected point to the frontier and list of visited tiles
+                            frontier.Add(connection);
+                            visitedPoints.Add(connection);
+                            //Marking the tile as already checked so that it isn't added again
+                            connection.hasBeenChecked = true;
+                        }
                     }
+
+                    //Adding the current point to the list of visited points and removing it from the frontier
+                    frontier.Remove(currentPoint);
                 }
+                //If the point still requires more movement
                 else
                 {
-                    while(y < slope)
-                    {
-                        //Coloring the selected tile
-                        this.tileGrid[startTileCol_ + (x * xDirection)][startTileRow_ + (y * yDirection)].GetComponent<SpriteRenderer>().color = tileColor_;
-
-                        ++y;
-                    }
+                    //This point is removed from the front of the frontier and placed at the end
+                    frontier.Remove(currentPoint);
+                    frontier.Add(currentPoint);
                 }
             }
+        }
+
+
+        //Looping through all path points in the list of visited points to clear their data
+        foreach (PathPoint point in visitedPoints)
+        {
+            point.ClearPathfinding();
+        }
+
+
+        //Returning the completed list of tiles
+        return tilePath;
+    }
+
+
+    //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
+    public List<GameObject> GreedyBestFirstSearch(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    {
+        //Creating the 2D list of game objects (tiles) that will be returned
+        List<GameObject> tilePath = new List<GameObject>();
+
+        //The list of path points that make up the frontier (definition) and their distance from the target (key)
+        SortedList<float, PathPoint> frontier = new SortedList<float, PathPoint>();
+        //Adding the starting tile to the fronteir and making sure its previous point is cleared
+        frontier.Add(Vector3.Distance(startingPoint_.transform.position, targetPoint_.transform.position), startingPoint_);
+
+        //The list of path points that have already been visited
+        List<PathPoint> visitedPoints = new List<PathPoint>();
+        visitedPoints.Add(startingPoint_);
+
+        startingPoint_.previousPoint = null;
+        startingPoint_.hasBeenChecked = true;
+
+
+        //Loop through each path point until the frontier is empty
+        while (frontier.Count != 0)
+        {
+            //Getting the reference to the next path point to check
+            PathPoint currentPoint = frontier[0];
+
+
+            //If the current point is the path point we're looking for
+            if (currentPoint == targetPoint_)
+            {
+                //Adding the current point's game object to the list of returned objects
+                tilePath.Add(currentPoint.gameObject);
+
+                //Creating a variable to hold the reference to the previous point
+                PathPoint prev = currentPoint.previousPoint;
+
+                //Looping through the trail of points back to the starting point
+                while (true)
+                {
+                    //Adding the point's game object to the list of returned objects
+                    tilePath.Add(prev.gameObject);
+
+                    //If the point isn't the starting point
+                    if (prev != startingPoint_)
+                    {
+                        //Setting the previous point to the next point in the path
+                        prev = prev.previousPoint;
+                    }
+                    //If the point is the starting point
+                    else
+                    {
+                        //We break out of the loop
+                        break;
+                    }
+                }
+
+                //Reversing the list of path points since it's currently backward
+                tilePath.Reverse();
+
+                //If we exit early, the loop is broken
+                if (earlyExit_)
+                {
+                    break;
+                }
+            }
+            //If the current point isn't the point we're looking for
+            else
+            {
+                //Looping through each path point that's connected to the current point
+                foreach (PathPoint connection in currentPoint.connectedPoints)
+                {
+                    //If the connected point hasn't been visited yet
+                    if (!connection.hasBeenChecked)
+                    {
+                        //Telling the connected point came from the current point we're checking
+                        connection.previousPoint = currentPoint;
+
+                        //Finding the distance from this connection to the target point
+                        float connectionDist = Vector3.Distance(connection.transform.position, targetPoint_.transform.position);
+
+                        //Adding the connected point to the frontier and list of visited tiles
+                        frontier.Add(connectionDist, connection);
+                        visitedPoints.Add(connection);
+                        //Marking the tile as already checked so that it isn't added again
+                        connection.hasBeenChecked = true;
+                    }
+                }
+
+                //Adding the current point to the list of visited points and removing it from the frontier
+                frontier.RemoveAt(frontier.IndexOfValue(currentPoint));
+            }
+        }
+
+
+        //Looping through all path points in the list of visited points to clear their data
+        foreach (PathPoint point in visitedPoints)
+        {
+            point.ClearPathfinding();
+        }
+
+
+        //Returning the completed list of tiles
+        return tilePath;
+    }
+
+
+    //Function that uses the A* pathfinding algorithm to find the most optimized route to the target. Returns the tile path taken to get to the target tile.
+    public List<GameObject> AStarSearch(GameObject startingTile_, GameObject targetTile_)
+    {
+        //Creating the 2D list of game objects (tiles) that will be returned
+        List<GameObject> tilePath = new List<GameObject>();
+
+
+
+
+        //Returning the completed list of tiles
+        return tilePath;
+    }
+}
+
+
+public class TileInfo
+{
+    //The name of the region that this tile is in
+    public string regionName = "";
+
+    //The environment type for the tile
+    public LandType type = LandType.Empty;
+    //The color of the tile based on the land type
+    public Color landColor = Color.blue;
+
+    //The elevation of this tile
+    public Vector2 heightMinMax = new Vector2(0.1f, 0.2f);
+
+    //The movement cost for traveling through this tile
+    public Vector2 movementCostMinMax = new Vector2(1, 4);
+
+
+    //Constructor for this class
+    public TileInfo(string regionName_, LandType type_, Vector2 heightMinMax_, Vector2 movementCostMinMax_)
+    {
+        this.regionName = regionName_;
+        this.type = type_;
+        this.heightMinMax = heightMinMax_;
+        this.movementCostMinMax = movementCostMinMax_;
+
+        //Switch statement that sets the land color based on the type
+        switch(this.type)
+        {
+            case LandType.Ocean:
+                this.landColor = Color.blue;
+                break;
+
+            case LandType.River:
+                this.landColor = new Color(0, 0.3f, 1, 1); //Light blue
+                break;
+
+            case LandType.Swamp:
+                this.landColor = Color.cyan;
+                break;
+
+            case LandType.Grasslands:
+                this.landColor = Color.green;
+                break;
+
+            case LandType.Forrest:
+                this.landColor = new Color(0, 0.5f, 0, 1); //Dark green
+                break;
+
+            case LandType.Desert:
+                this.landColor = Color.yellow;
+                break;
+
+            case LandType.Mountain:
+                this.landColor = Color.grey;
+                break;
+
+            case LandType.Volcano:
+                this.landColor = Color.red;
+                break;
+
+            default:
+                this.landColor = Color.white;
+                break;
         }
     }
 }

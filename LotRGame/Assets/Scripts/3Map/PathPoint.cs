@@ -9,6 +9,25 @@ public class PathPoint : MonoBehaviour
     //A line renderer that draws lines between all connected points
     LineRenderer ourLineRenderer;
 
+    //Reference in pathfinding algorithms to the path point that lead to this one. Used in CreateTileGrid algorithms
+    [HideInInspector]
+    public PathPoint previousPoint;
+
+    //Bool used in the pathfinding algorithms in CreateTileGrid.cs. If true, it will be ignored during the search.
+    [HideInInspector]
+    public bool hasBeenChecked = false;
+
+    //The type of land tile this is
+    [HideInInspector]
+    public LandType type = LandType.Empty;
+
+    //Bool used in the pathfinding algorithms in CreateTileGrid.cs. Represents the number of turns it takes to traverse this point
+    [HideInInspector]
+    public int movementCost = 1;
+    //The current number of cycles in the pathfinding algorithms that have been spent on this point.
+    [HideInInspector]
+    public int currentMovement = 0;
+
 
     //Function called on the first frame
     private void Start()
@@ -52,4 +71,29 @@ public class PathPoint : MonoBehaviour
             }
         }
     }
+
+
+    //Function called in the pathfinding algorithms in CreateTileGrid.cs. Clears this path point's previous point and the fact that it's been checked
+    public void ClearPathfinding()
+    {
+        this.previousPoint = null;
+        this.hasBeenChecked = false;
+        this.currentMovement = 0;
+    }
+
+}
+
+
+//Enum used in PathPoint.cs to denote the type of environment it's on
+public enum LandType
+{
+    Empty,
+    Ocean,
+    River,
+    Swamp,
+    Grasslands,
+    Forrest,
+    Desert,
+    Mountain,
+    Volcano
 }
