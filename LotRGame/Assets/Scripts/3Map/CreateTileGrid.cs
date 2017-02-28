@@ -61,7 +61,14 @@ public class CreateTileGrid : MonoBehaviour
         //Connects the path points between tiles
         this.ConnectTiles();
 
-        this.GenerateSpokeRegion(this.tileGrid.Count / 2, this.tileGrid[0].Count / 2, new Vector2(3, 16), new Vector2(2, 14));
+
+        //Getting the test tile info
+        TileInfo testInfo = new TileInfo("Testing", LandType.Grasslands, new Vector2(0.5f, 0.8f), new Vector2(3, 4));
+        this.GenerateSpokeRegion(this.tileGrid.Count / 2, this.tileGrid[0].Count / 2, new Vector2(16, 30), new Vector2(25, 40), testInfo);
+        this.GenerateSpokeRegion( (this.tileGrid.Count / 2) + 20, this.tileGrid[0].Count / 2, new Vector2(16, 30), new Vector2(25, 40), testInfo);
+        this.GenerateSpokeRegion((this.tileGrid.Count / 2), (this.tileGrid[0].Count / 2) + 50, new Vector2(16, 30), new Vector2(25, 40), testInfo);
+
+        this.FillEmptyWithOcean();
     }
 
 
@@ -280,58 +287,24 @@ public class CreateTileGrid : MonoBehaviour
     }
 
 
-    //Fills in the outer edges of the map with ocean tiles
-    private void FillEdgesWithOcean()
+    //Loops through all tiles in the map and fills in empty ones with ocean tiles
+    private void FillEmptyWithOcean()
     {
-        Color oceanColor = this.testColors.Evaluate(0);
+        TileInfo oceanInfo = new TileInfo("Ocean of Dispair", LandType.Ocean, new Vector2(0, 0.1f), new Vector2(3, 5));
 
-        //Filling in the top row
-        for(int t = 0; t < this.cols; ++t)
+        //Looping through each tile in the tile grid
+        for(int x = 0; x < this.tileGrid.Count; ++x)
         {
-            int tilesToFill = Mathf.RoundToInt( Random.Range(this.waterFillTopBottom.x, this.waterFillTopBottom.y) );
-            for (int i = 0; i < tilesToFill; ++i)
+            for(int y = 0; y < this.tileGrid[0].Count; ++y)
             {
-                this.tileGrid[t][0 + i].GetComponent<SpriteRenderer>().color = oceanColor;
-            }
-        }
-
-        //Filling in the left column
-        for(int l = 0; l < this.rows; ++l)
-        {
-            //Making sure the tile isn't null
-            if (this.tileGrid[0][l] != null)
-            {
-                int tilesToFill = Mathf.RoundToInt(Random.Range(this.waterFillLeftRight.x, this.waterFillLeftRight.y));
-                for (int i = 0; i < tilesToFill; ++i)
+                //If the current tile is empty (has no designated land type)
+                if(this.tileGrid[x][y].GetComponent<LandTile>().allTilePoints[0].type == LandType.Empty)
                 {
-                    this.tileGrid[0 + i][l].GetComponent<SpriteRenderer>().color = oceanColor;
-                }
-            }
-        }
-
-        //Filling in the right column
-        for(int r = 0; r < this.rows; ++r)
-        {
-            //Making sure the tile isn't null
-            if(this.tileGrid[this.cols - 1][r] != null)
-            {
-                int tilesToFill = Mathf.RoundToInt(Random.Range(this.waterFillLeftRight.x, this.waterFillLeftRight.y));
-                for (int i = 0; i < tilesToFill; ++i)
-                {
-                    this.tileGrid[this.cols - 1 - i][r].GetComponent<SpriteRenderer>().color = oceanColor;
-                }
-            }
-        }
-
-        //Filling in the bottom row
-        for(int b = 0; b < this.cols; ++b)
-        {
-            if(this.tileGrid[b][this.rows - 1] != null)
-            {
-                int tilesToFill = Mathf.RoundToInt(Random.Range(this.waterFillTopBottom.x, this.waterFillTopBottom.y));
-                for (int i = 0; i < tilesToFill; ++i)
-                {
-                    this.tileGrid[b][this.rows - 1 - i].GetComponent<SpriteRenderer>().color = oceanColor;
+                    //Setting the tile's type, movement cost, name, and color
+                    this.tileGrid[x][y].GetComponent<LandTile>().allTilePoints[0].type = oceanInfo.type;
+                    this.tileGrid[x][y].GetComponent<LandTile>().allTilePoints[0].movementCost = Mathf.RoundToInt(Random.Range(oceanInfo.movementCostMinMax.x, oceanInfo.movementCostMinMax.y));
+                    this.tileGrid[x][y].GetComponent<LandTile>().allTilePoints[0].name = oceanInfo.regionName;
+                    this.tileGrid[x][y].GetComponent<SpriteRenderer>().color = oceanInfo.landColor;
                 }
             }
         }
@@ -339,8 +312,14 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Creates a region of a specific zone type using "spokes" that extend outward from the given tile
-    private void GenerateSpokeRegion(int startTileRow_, int startTileCol_, Vector2 spokeMinMax_, Vector2 spokeLengthMinMax_)
+    private void GenerateSpokeRegion(int startTileRow_, int startTileCol_, Vector2 spokeMinMax_, Vector2 spokeLengthMinMax_, TileInfo regionInfo_)
     {
+        //Throwing an exception if the user inputs a starting tile that isn't on the grid
+        if(startTileCol_ < 0 || startTileCol_ >= this.tileGrid.Count || startTileRow_ < 0 || startTileRow_ >= this.tileGrid[0].Count)
+        {
+            throw new System.Exception("The starting tile row or column must be within the bounds of the tile grid");
+        }
+
         //Created a list of int arrays to hold all row/column locations for the tiles in this region
         List<List<int>> tilesInRegion = new List<List<int>>();
         tilesInRegion.Add(new List<int> { startTileCol_, startTileRow_}); 
@@ -408,7 +387,7 @@ public class CreateTileGrid : MonoBehaviour
             //Making sure the tile is within the bouderies of the map
             if(startTileCol_ + xDiff >= this.cols)
             {
-                xDiff = this.cols - startTileCol_;
+                xDiff = this.cols - startTileCol_ - 1;
             }
             else if(startTileCol_ + xDiff < 0)
             {
@@ -417,7 +396,7 @@ public class CreateTileGrid : MonoBehaviour
 
             if(startTileRow_ + yDiff >= this.rows)
             {
-                yDiff = this.rows - startTileRow_;
+                yDiff = this.rows - startTileRow_ - 1;
             }
             else if(startTileRow_ + yDiff < 0)
             {
@@ -430,9 +409,9 @@ public class CreateTileGrid : MonoBehaviour
 
         //The list of edge tiles around this region
         List<PathPoint> edgePoints = new List<PathPoint>();
-
+        
         //Connecting the lines between points
-        for(int p = 1; p < tilesInRegion.Count; ++p)
+        for (int p = 1; p < tilesInRegion.Count; ++p)
         {
             //Getting the coordinates of the tile at the start of the line
             int startX = tilesInRegion[p][0];
@@ -442,7 +421,7 @@ public class CreateTileGrid : MonoBehaviour
             int endY;
 
             //If this is the last tile in the list, it needs to connect to the first
-            if(p + 1 >= tilesInRegion.Count)
+            if (p + 1 >= tilesInRegion.Count)
             {
                 endX = tilesInRegion[1][0];
                 endY = tilesInRegion[1][1];
@@ -457,34 +436,27 @@ public class CreateTileGrid : MonoBehaviour
             PathPoint startPoint = this.tileGrid[startX][startY].GetComponent<LandTile>().allTilePoints[0];
             PathPoint endPoint = this.tileGrid[endX][endY].GetComponent<LandTile>().allTilePoints[0];
 
+            List<PathPoint> linePoints = this.FindLineOfTiles(startPoint, endPoint);
+
             //Adding each edge point to the list of edge points
-            foreach(PathPoint point in this.FindLineOfTiles(startPoint, endPoint, Color.blue))
+            foreach (PathPoint point in linePoints)
             {
                 edgePoints.Add(point);
             }
-
-            this.tileGrid[startX][startY].GetComponent<SpriteRenderer>().color = Color.green;
-            this.tileGrid[endX][endY].GetComponent<SpriteRenderer>().color = Color.green;
         }
-
 
         //Finding the starting tile
         int x = tilesInRegion[0][0];
         int y = tilesInRegion[0][1];
         PathPoint startTile = this.tileGrid[x][y].GetComponent<LandTile>().allTilePoints[0];
 
-        //Getting the test tile info
-        TileInfo testInfo = new TileInfo("Testing", LandType.Ocean, new Vector2(0.5f, 0.8f), new Vector2(3, 4));
-
-        this.FillInRegionOfTiles(startTile, edgePoints, testInfo);
-
-        //Coloring the starting tile
-        this.tileGrid[x][y].GetComponent<SpriteRenderer>().color = Color.yellow;
+        //Setting the tile info to all tiles in the region
+        this.FillInRegionOfTiles(startTile, edgePoints, regionInfo_);
     }
 
 
     //Function called from GenerateSpokeRegion. Fills in all tiles along a line with the given tile type
-    private List<PathPoint> FindLineOfTiles(PathPoint startPoint_, PathPoint endPoint_, Color tileColor_)
+    private List<PathPoint> FindLineOfTiles(PathPoint startPoint_, PathPoint endPoint_)
     {
         //List of game objects that form the line that will be filled in
         List<PathPoint> pathLine = new List<PathPoint>();
@@ -492,7 +464,7 @@ public class CreateTileGrid : MonoBehaviour
         PathPoint currentPoint = startPoint_;
 
         //Looping through path points until we find the correct one
-        while(currentPoint != endPoint_)
+        while (currentPoint != endPoint_)
         {
             //Creating a var to hold the reference to the point connected to the current point that's closest to the end
             PathPoint closestPoint = currentPoint.connectedPoints[0];
@@ -517,7 +489,7 @@ public class CreateTileGrid : MonoBehaviour
             //Changing the current point to the closest one
             currentPoint = closestPoint;
         }
-
+        
         //Returning the line
         return pathLine;
     }
@@ -689,7 +661,7 @@ public class CreateTileGrid : MonoBehaviour
             point.ClearPathfinding();
         }
 
-
+        
         //Returning the completed list of tiles
         return tilePath;
     }
