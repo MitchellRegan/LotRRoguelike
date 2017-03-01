@@ -3,52 +3,125 @@ using System.Collections;
 
 public class GameData : MonoBehaviour
 {
-    void Awake()
+    //A static reference to this object so that we can reference it from anywhere
+    public static GameData globalReference;
+
+    //Public enum that lets us know what difficulty the player has set the game to
+    public enum gameDifficulty { Easy, Normal, Hard };
+    public gameDifficulty currentDifficulty = gameDifficulty.Normal;
+
+    //Public enum that lets us know what race the player is starting as in a new game
+    public Races startingRace = Races.Human;
+
+    //The width and height of the game map in tiles for the different difficulty settings
+    public Vector2 easyMapSize = new Vector2();
+    public Vector2 normalMapSize = new Vector2();
+    public Vector2 hardMapSize = new Vector2();
+
+    //Reference to the object prefab that's instantiated to create a new map
+    public GameObject newMapGenerator;
+
+
+
+    //Function called when this object is initialized
+    private void Awake()
     {
+        //Makes sure this object persists through scene changes
         DontDestroyOnLoad(transform.gameObject);
+
+        //Making sure that we don't have more than one Game Data component active at a time
+        if(globalReference != null)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            globalReference = this;
+        }
     }
 
 
-    public void GenerateMap(GameObject landTileRef_, int[] mapData_, Vector3 startPos_, float offsetX_, float offsetY_)
+    //Function called externally to quit the game application
+    public void QuitGame()
     {
-        Debug.Log("GameData.Generate 1");
-        //Transitions to the empty gameplay level before generating anything
-        GetComponent<EventManager>().SendGoToLevel("GamePlay", false, 0);
+        Application.Quit();
+    }
 
-        //Sets the length of the arrays that hold all of the land tiles in the object manager
-        GetComponent<ObjManager>().InitializeLandTileList(mapData_[0], mapData_[1]);
 
-        //Temp vars that hold the xyz position that each tile will spawn in
-        float xPos = 0;
-        float yPos = 0;
-        float zPos = 0;
-
-        for (int col = 0; col < mapData_[0]; ++col)
+    //Function called from the New Game screen in the main menu. Sets the player's starting race
+    public void SetStartingRace(int startingRace_)
+    {
+        switch(startingRace_)
         {
-            for (int row = 0; row < mapData_[1]; ++row)
-            {
-                xPos = startPos_.x + (col * offsetX_);
-                yPos = startPos_.y - (row * offsetY_);
+            case 0:
+                this.startingRace = Races.Human;
+                break;
 
-                //Offsets the tile's y position on every other column because hexes
-                if (col % 2 != 0)
-                {
-                    yPos = yPos - (offsetY_ / 2);
-                }
+            case 1:
+                this.startingRace = Races.Elf;
+                break;
 
-                //Instantiates each tile at the xyz pos designated
-                Vector3 tileLoc = new Vector3(xPos, yPos, zPos);
-                GameObject newTile = Instantiate(landTileRef_, tileLoc, Quaternion.identity) as GameObject;
+            case 2:
+                this.startingRace = Races.Dwarf;
+                break;
 
-                //Adds each tile to the object manager so that we can reference it later
-                newTile.GetComponent<LandTileLogic>().SetLandTileLogic(gameObject, LandTileLogic.LandTypes.Plains);
-                GetComponent<ObjManager>().SetTileAtPosition(col, row, newTile);
-            }
+            case 3:
+                this.startingRace = Races.HalfMan;
+                break;
+
+            case 4:
+                this.startingRace = Races.Amazon;
+                break;
+
+            case 5:
+                this.startingRace = Races.Orc;
+                break;
+
+            case 6:
+                this.startingRace = Races.GillFolk;
+                break;
+
+            case 7:
+                this.startingRace = Races.ScaleSkin;
+                break;
+
+            case 8:
+                this.startingRace = Races.Minotaur;
+                break;
+
+            default:
+                this.startingRace = Races.Human;
+                break;
         }
-        
+    }
 
-        //Calls Events "GeneratePathPoints" and "ConnectPathPoints"
-        GetComponent<EventManager>().SendGeneratePathPoints();
-        GetComponent<EventManager>().SendConnectPathPoints();
+
+    //Function called from the New Game screen in the main menu. Sets the difficulty for the new game
+    public void SetGameDifficulty(int difficulty_)
+    {
+        switch(difficulty_)
+        {
+            case 0:
+                this.currentDifficulty = gameDifficulty.Easy;
+                break;
+
+            case 1:
+                this.currentDifficulty = gameDifficulty.Normal;
+                break;
+
+            case 2:
+                this.currentDifficulty = gameDifficulty.Hard;
+                break;
+
+            default:
+                this.currentDifficulty = gameDifficulty.Normal;
+                break;
+        }
+    }
+
+
+    //Function called from the New Game screen in the main menu. Starts the process of creating a new map
+    public void StartNewGame()
+    {
     }
 }

@@ -1,29 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GoToLevel : MonoBehaviour
 {
-    //Reference to the GameManager gameobject's EventManager script
-    private EventManager EventManager;
-
-    //Name of the level to go to
-    public string LevelName;
-
-    //If we need a fade transition going to the level
-    public bool FadeOut = false;
-
-    //Amount of time for the fade transition to take
-    public float FadeTime = 0;
-
-
-    void Start()
+    //Function called externally to load levels based on their name
+    public void LoadLevelByName(string levelName_)
     {
-        EventManager = GameObject.Find("GameManager").GetComponent<EventManager>();
+        SceneManager.LoadScene(levelName_);
     }
 
-    //Function called externally 
-    public void ChangeLevel()
+
+    //Function called externally to load levels based on their level index
+    public void LoadLevelByIndex(int levelIndex_)
     {
-        EventManager.SendGoToLevel(LevelName, FadeOut, FadeTime);
+        SceneManager.LoadScene(levelIndex_);
     }
 }

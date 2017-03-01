@@ -120,6 +120,6 @@ public class CreateMapGenerate : MonoBehaviour
                             MapInfo[8].ToString() + " Ocean";
         //Debug.Log(tileString);
 
-        this.GetComponent<TESTGenerateMap>().Generate(MapInfo);
+        //this.GetComponent<TESTGenerateMap>().Generate(MapInfo);
     }
 }
