@@ -51,6 +51,9 @@ public class CreateTileGrid : MonoBehaviour
                 break;
         }
 
+        //Finding the width of the tiles based on the height given and the ratio between a hex's height and width
+        this.tileWidth = this.tileHeight * 1.1547f;
+        this.tileWidth -= (this.tileWidth - this.tileHeight) * 2;
 
         //Generates the grid
         this.GenerateGrid(this.rows, this.cols, this.addExtraTileOnOffset);
@@ -62,7 +65,7 @@ public class CreateTileGrid : MonoBehaviour
         TileInfo testInfo = new TileInfo("Testing", LandType.Grasslands, new Vector2(0.5f, 0.8f), new Vector2(3, 4));
         this.GenerateSpokeRegion(this.tileGrid.Count / 2, this.tileGrid[0].Count / 2, new Vector2(16, 30), new Vector2(25, 40), testInfo);
         this.GenerateSpokeRegion( (this.tileGrid.Count / 2) + 20, this.tileGrid[0].Count / 2, new Vector2(16, 30), new Vector2(25, 40), testInfo);
-        this.GenerateSpokeRegion((this.tileGrid.Count / 2), (this.tileGrid[0].Count / 2) + 50, new Vector2(16, 30), new Vector2(25, 40), testInfo);
+        //this.GenerateSpokeRegion((this.tileGrid.Count / 2), (this.tileGrid[0].Count / 2) + 50, new Vector2(16, 30), new Vector2(25, 40), testInfo);
 
         //Filling in all of the empty tiles with ocean tiles
         this.FillEmptyWithOcean();
@@ -85,7 +88,7 @@ public class CreateTileGrid : MonoBehaviour
         //Finding the starting x coordinate using width and number of columns
         startPos.x = -(this.cols * this.tileWidth) / 2;
         //Finding the starting y coordinate using height and number of rows
-        startPos.y = (this.rows * this.tileHeight) / 2;
+        startPos.z = (this.rows * this.tileHeight) / 2;
 
         //Vector to hold the offset of the current tile when finding its correct location
         Vector3 offsetPos = new Vector3();
@@ -93,20 +96,17 @@ public class CreateTileGrid : MonoBehaviour
         //Bool that changes through every column loop. If true, offsets the current column up
         bool offsetCol = false;
 
-
         //Looping through each column
         for (int c = 0; c < this.cols; ++c)
         {
             //Creating a new list to hold all tiles in this column
             if (!this.addExtraTileOnOffset)
             {
-
                 this.tileGrid.Add(new List<GameObject>(this.rows));
             }
             //If we add an extra tile on offset, there's one more tile in this row
             else
             {
-
                 this.tileGrid.Add(new List<GameObject>(this.rows + 1));
             }
 
@@ -114,12 +114,12 @@ public class CreateTileGrid : MonoBehaviour
             for(int r = 0; r < this.rows; ++r)
             {
                 offsetPos.x = c * this.tileWidth; //Positive so that the grid is generated from left to right
-                offsetPos.y = r * this.tileHeight * -1; //Negative so that the grid is generated downward
+                offsetPos.z = r * this.tileHeight * -1; //Negative so that the grid is generated downward
                 
                 //If the current column is offset, we add half the height of a tile
                 if (offsetCol)
                 {
-                    offsetPos.y += this.tileHeight / 2;
+                    offsetPos.z += this.tileHeight / 2;
                 }
                 
                 //Creating a new tile and positioning it at the offset of the start position
@@ -137,7 +137,7 @@ public class CreateTileGrid : MonoBehaviour
                 //Offset tile rows have an added tile at the end if the addExtraTileOnOffset is true
                 if (this.addExtraTileOnOffset && offsetCol && (r + 1) == this.rows)
                 {
-                    offsetPos.y = ((r + 1) * this.tileHeight * -1) + (this.tileHeight / 2);
+                    offsetPos.z = ((r + 1) * this.tileHeight * -1) + (this.tileHeight / 2);
 
                     //Creating a new tile and positioning it at the offset of the start position
                     this.tileGrid[c][r + 1] = Instantiate(this.landTile) as GameObject;
