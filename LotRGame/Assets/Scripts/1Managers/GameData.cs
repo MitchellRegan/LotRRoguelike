@@ -21,6 +21,9 @@ public class GameData : MonoBehaviour
     //Reference to the object prefab that's instantiated to create a new map
     public GameObject newMapGenerator;
 
+    //The scene that we transition to when we start a new game
+    public string gameplayLevelName;
+
 
 
     //Function called when this object is initialized
@@ -123,5 +126,14 @@ public class GameData : MonoBehaviour
     //Function called from the New Game screen in the main menu. Starts the process of creating a new map
     public void StartNewGame()
     {
+        //Making sure we have the GoToLevel component
+        if(this.GetComponent<GoToLevel>() != null)
+        {
+            //Transitioning to the gameplay level
+            this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+
+            //Spawning the prefab of the map generator
+            Object.Instantiate(this.newMapGenerator, new Vector3(), new Quaternion());
+        }
     }
 }
