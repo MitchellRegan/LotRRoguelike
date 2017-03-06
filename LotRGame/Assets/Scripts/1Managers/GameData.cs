@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(RandomSeedGenerator))]
+[RequireComponent(typeof(GoToLevel))]
 public class GameData : MonoBehaviour
 {
     //A static reference to this object so that we can reference it from anywhere
@@ -18,11 +20,17 @@ public class GameData : MonoBehaviour
     public Vector2 normalMapSize = new Vector2();
     public Vector2 hardMapSize = new Vector2();
 
-    //Reference to the object prefab that's instantiated to create a new map
-    public GameObject newMapGenerator;
-
     //The scene that we transition to when we start a new game
     public string gameplayLevelName;
+
+    //Enum that CreateTileGrid.cs uses on awake to figure out if it should be loading a map or creating a new one
+    public enum levelLoadType { LoadLevel, GenerateNewLevel };
+    [HideInInspector]
+    public levelLoadType loadType = levelLoadType.GenerateNewLevel;
+
+    //Bool that determines if new unlockables can be spawned in a game based on if the player input a string
+    [HideInInspector]
+    public bool allowNewUnlockables = true;
 
 
 
@@ -126,14 +134,20 @@ public class GameData : MonoBehaviour
     //Function called from the New Game screen in the main menu. Starts the process of creating a new map
     public void StartNewGame()
     {
-        //Making sure we have the GoToLevel component
-        if(this.GetComponent<GoToLevel>() != null)
+        //Determining if new items will be available in this game based on the seed value
+        if(this.GetComponent<RandomSeedGenerator>().seed == "")
         {
-            //Transitioning to the gameplay level
-            this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
-
-            //Spawning the prefab of the map generator
-            Object.Instantiate(this.newMapGenerator, new Vector3(), new Quaternion());
+            this.allowNewUnlockables = true;
         }
+        else
+        {
+            this.allowNewUnlockables = false;
+        }
+
+        //Telling the map generator to create a new level instead of loading one from a save
+        this.loadType = levelLoadType.GenerateNewLevel;
+
+        //Transitioning to the gameplay level
+        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
     }
 }

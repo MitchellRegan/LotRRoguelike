@@ -2,36 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(MeshCollider))]
+[RequireComponent(typeof(PathPoint))]
 public class LandTile : MonoBehaviour
 {
     //Static reference to the tile that the player has selected
     public static LandTile selectedTile;
 
-    //References to all pathpoints on this tile that connect with surrounding tiles
-    public PathPoint northPoint;
-    public PathPoint northEastPoint;
-    public PathPoint southEastPoint;
-    public PathPoint southPoint;
-    public PathPoint southWestPoint;
-    public PathPoint northWestPoint;
+    //The list of items that can be found on this tile from foraging. MUST be listed in ascending order of skill checks needed
+    public List<Item> forageList;
+    //The list of skill rolls needed for each foraged item. MUST align with the same index of the item in the forage list
+    [Range(0, 100)]
+    public List<int> forageSkillList;
 
-    //List of all paht points that are inside this tile
-    public List<PathPoint> allTilePoints;
+    //The list of items that can be found on this tile from fishing. MUST be listed in ascending order of skill checks needed
+    public List<Item> fishingList;
+    //The list of skill rolls needed for each fished item. MUST align with the same index of the item in the fishing list
+    [Range(0, 100)]
+    public List<int> fishingSkillList;
+
+    //The list of animals that can be encountered on this tile from tracking. MUST be listed in ascending order of skill checks needed
+    public List<GameObject> trackingList;
+    //The list of skill rolls needed for each animal encounter. MUST align with the same index of the item in the tracking list
+    [Range(0, 100)]
+    public List<int> trackingSkillList;
+
 
 
 
     //Function called on initialization
     private void Start()
     {
-        this.HilightThisTile(false, false, 0.25f);
+        this.HilightThisTile(false);
     }
 
 
     //Function called on the frame when the player's mouse enters this object's collider
     private void OnMouseEnter()
     {
-        this.HilightThisTile(true, false, 1);
+        this.HilightThisTile(true);
     }
 
 
@@ -44,7 +53,7 @@ public class LandTile : MonoBehaviour
             //Un-hilighting the currently selected file
             if (LandTile.selectedTile != null)
             {
-                LandTile.selectedTile.HilightThisTile(false, false, 0.25f);
+                LandTile.selectedTile.HilightThisTile(false);
             }
 
             LandTile.selectedTile = this;
@@ -65,7 +74,7 @@ public class LandTile : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             //If this tile was the one selected, it becomes un-hilighted
-            this.HilightThisTile(false, false, 0.25f);
+            this.HilightThisTile(false);
 
             //Clearing the reference to the selected tile
             LandTile.selectedTile = null;
@@ -79,24 +88,25 @@ public class LandTile : MonoBehaviour
         //If this tile isn't currently selected, it becomes un-hilighted when the mouse leaves
         if (LandTile.selectedTile != this)
         {
-            this.HilightThisTile(false, false, 0.25f);
+            this.HilightThisTile(false);
         }
     }
 
 
     //Function called to hilight (or stop hilighting) this tile and show path points
-    private void HilightThisTile(bool hilightOn_, bool hilightConnections_, float opacity_)
+    private void HilightThisTile(bool hilightOn_)
     {
-        //Fades this tile's sprite to the correct opacity
-        this.GetComponent<SpriteRenderer>().color = new Color(this.GetComponent<SpriteRenderer>().color.r,
-                                                                this.GetComponent<SpriteRenderer>().color.g,
-                                                                this.GetComponent<SpriteRenderer>().color.b,
-                                                                opacity_);
-
-        //Turns on/off all path points connected to this tile
-        foreach (PathPoint point in this.allTilePoints)
+        //If the hilight is on, the material is bright
+        if (hilightOn_)
         {
-            point.HilightConnectedPoints(hilightOn_, hilightConnections_);
+            this.GetComponent<MeshRenderer>().materials[0].color = new Color(1, 1, 1, 1);
+            this.GetComponent<LineRenderer>().enabled = true;
+        }
+        //If it's off, the material is dark
+        else
+        {
+            this.GetComponent<MeshRenderer>().materials[0].color = new Color(0.5f, 0.5f, 0.5f, 1);
+            this.GetComponent<LineRenderer>().enabled = false;
         }
     }
 }

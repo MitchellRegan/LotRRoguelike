@@ -19,9 +19,12 @@ public class RandomSeedGenerator : MonoBehaviour
     //Function called from Awake and can be called externally. Sets the random seed based on the input string
     public void SetSeed(string seed_)
     {
-        //Doesn't set the seed if the string is empty
+        //Randomizes the seed based on the tick count if no seed was given
         if (seed_ == "")
+        {
+            Random.InitState((int)System.Environment.TickCount);
             return;
+        }
 
         //Converts the characters in the given string to an int
         int seedValue = 0;

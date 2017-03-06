@@ -16,20 +16,31 @@ public class PathfindingAlgorithms : MonoBehaviour
         while (currentPoint != endPoint_)
         {
             //Creating a var to hold the reference to the point connected to the current point that's closest to the end
-            PathPoint closestPoint = currentPoint.connectedPoints[0];
-            float closestPointDist = Vector3.Distance(closestPoint.transform.position, endPoint_.transform.position);
+            PathPoint closestPoint = null;
+            float closestPointDist = 0;
 
             //Looping through each connection to find the one that's closest to the end
             foreach (PathPoint connection in currentPoint.connectedPoints)
             {
-                //Finding the distance between this connected point and the end point
-                float connectionDist = Vector3.Distance(connection.transform.position, endPoint_.transform.position);
-
-                //If this connected point is closer to the end than the current closest, this point becomes the new closest
-                if (connectionDist < closestPointDist)
+                if (connection != null)
                 {
-                    closestPoint = connection;
-                    closestPointDist = connectionDist;
+                    if (closestPoint == null)
+                    {
+                        closestPoint = connection;
+                        closestPointDist = Vector3.Distance(closestPoint.transform.position, endPoint_.transform.position);
+                    }
+                    else
+                    {
+                        //Finding the distance between this connected point and the end point
+                        float connectionDist = Vector3.Distance(connection.transform.position, endPoint_.transform.position);
+
+                        //If this connected point is closer to the end than the current closest, this point becomes the new closest
+                        if (connectionDist < closestPointDist)
+                        {
+                            closestPoint = connection;
+                            closestPointDist = connectionDist;
+                        }
+                    }
                 }
             }
 
@@ -114,17 +125,20 @@ public class PathfindingAlgorithms : MonoBehaviour
                 //Looping through each path point that's connected to the current point
                 foreach (PathPoint connection in currentPoint.connectedPoints)
                 {
-                    //If the connected point hasn't been visited yet
-                    if (!connection.hasBeenChecked)
+                    if (connection != null)
                     {
-                        //Telling the connected point came from the current point we're checking
-                        connection.previousPoint = currentPoint;
+                        //If the connected point hasn't been visited yet
+                        if (!connection.hasBeenChecked)
+                        {
+                            //Telling the connected point came from the current point we're checking
+                            connection.previousPoint = currentPoint;
 
-                        //Adding the connected point to the frontier and list of visited tiles
-                        frontier.Add(connection);
-                        visitedPoints.Add(connection);
-                        //Marking the tile as already checked so that it isn't added again
-                        connection.hasBeenChecked = true;
+                            //Adding the connected point to the frontier and list of visited tiles
+                            frontier.Add(connection);
+                            visitedPoints.Add(connection);
+                            //Marking the tile as already checked so that it isn't added again
+                            connection.hasBeenChecked = true;
+                        }
                     }
                 }
 
@@ -222,17 +236,20 @@ public class PathfindingAlgorithms : MonoBehaviour
                     //Looping through each path point that's connected to the current point
                     foreach (PathPoint connection in currentPoint.connectedPoints)
                     {
-                        //If the connected point hasn't been visited yet
-                        if (!connection.hasBeenChecked)
+                        if (connection != null)
                         {
-                            //Telling the connected point came from the current point we're checking
-                            connection.previousPoint = currentPoint;
+                            //If the connected point hasn't been visited yet
+                            if (!connection.hasBeenChecked)
+                            {
+                                //Telling the connected point came from the current point we're checking
+                                connection.previousPoint = currentPoint;
 
-                            //Adding the connected point to the frontier and list of visited tiles
-                            frontier.Add(connection);
-                            visitedPoints.Add(connection);
-                            //Marking the tile as already checked so that it isn't added again
-                            connection.hasBeenChecked = true;
+                                //Adding the connected point to the frontier and list of visited tiles
+                                frontier.Add(connection);
+                                visitedPoints.Add(connection);
+                                //Marking the tile as already checked so that it isn't added again
+                                connection.hasBeenChecked = true;
+                            }
                         }
                     }
 
@@ -332,20 +349,23 @@ public class PathfindingAlgorithms : MonoBehaviour
                 //Looping through each path point that's connected to the current point
                 foreach (PathPoint connection in currentPoint.connectedPoints)
                 {
-                    //If the connected point hasn't been visited yet
-                    if (!connection.hasBeenChecked)
+                    if (connection != null)
                     {
-                        //Telling the connected point came from the current point we're checking
-                        connection.previousPoint = currentPoint;
+                        //If the connected point hasn't been visited yet
+                        if (!connection.hasBeenChecked)
+                        {
+                            //Telling the connected point came from the current point we're checking
+                            connection.previousPoint = currentPoint;
 
-                        //Finding the distance from this connection to the target point
-                        float connectionDist = Vector3.Distance(connection.transform.position, targetPoint_.transform.position);
+                            //Finding the distance from this connection to the target point
+                            float connectionDist = Vector3.Distance(connection.transform.position, targetPoint_.transform.position);
 
-                        //Adding the connected point to the frontier and list of visited tiles
-                        frontier.Add(connectionDist, connection);
-                        visitedPoints.Add(connection);
-                        //Marking the tile as already checked so that it isn't added again
-                        connection.hasBeenChecked = true;
+                            //Adding the connected point to the frontier and list of visited tiles
+                            frontier.Add(connectionDist, connection);
+                            visitedPoints.Add(connection);
+                            //Marking the tile as already checked so that it isn't added again
+                            connection.hasBeenChecked = true;
+                        }
                     }
                 }
 
