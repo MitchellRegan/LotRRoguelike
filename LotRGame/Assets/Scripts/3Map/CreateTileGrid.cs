@@ -26,6 +26,12 @@ public class CreateTileGrid : MonoBehaviour
 
     //2 dimensional array of tiles that's generated
     public List<List<GameObject>> tileGrid;
+
+    //The camera object that is set to the player position
+    public Transform cameraBase;
+
+    //Empty character prefab to use while testing
+    public GameObject testCharacter;
     
 
 
@@ -533,7 +539,11 @@ public class CreateTileGrid : MonoBehaviour
         //Setting the starting point at a random location in the first third of the map
         int startRow = Random.Range(2, (this.tileGrid.Count / 3) + 1);
         int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
-        this.tileGrid[startRow][startCol].transform.position += new Vector3(0, 20, 0);
+
+        //Instantiating the test character at the starting tile's location
+        GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
+        //Setting the camera base's position to the character position
+        this.cameraBase.position = this.tileGrid[startRow][startCol].transform.position;
     }
 
 
