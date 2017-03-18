@@ -9,6 +9,9 @@ public class CharacterSkillsUI : MonoBehaviour
     private Character selectedCharacter;
     private Skills selectedCharacterSkillList;
 
+    //Reference to the text field that displays the selected character's name
+    public Text nameText;
+
     //Reference to the sliders that display their given skill
     public Slider cookingSlider;
     public Slider healingSlider;
@@ -58,6 +61,9 @@ public class CharacterSkillsUI : MonoBehaviour
     //Function called internally to update all of the sliders to the character's current values
     private void UpdateSliders()
     {
+        //Setting the name field to display the selected character's name
+        this.nameText.text = this.selectedCharacter.firstName + "'s Skills";
+
         this.cookingSlider.value = this.selectedCharacterSkillList.cooking + this.selectedCharacterSkillList.cookingMod;
         this.healingSlider.value = this.selectedCharacterSkillList.healing + this.selectedCharacterSkillList.healingMod;
         this.craftingSlider.value = this.selectedCharacterSkillList.crafting + this.selectedCharacterSkillList.craftingMod;
