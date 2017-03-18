@@ -541,7 +541,11 @@ public class CreateTileGrid : MonoBehaviour
         int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
 
         //Instantiating the test character at the starting tile's location
-        GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
+        GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
+
+        //Adding the starting character to the character manager's list of party members
+        CharacterManager.globalReference.AddCharacterToParty(startChar.GetComponent<Character>());
+
         //Setting the camera base's position to the character position
         this.cameraBase.position = this.tileGrid[startRow][startCol].transform.position;
     }
