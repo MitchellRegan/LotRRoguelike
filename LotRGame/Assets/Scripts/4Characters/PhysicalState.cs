@@ -13,25 +13,25 @@ public class PhysicalState : MonoBehaviour
     //If false, this character doesn't require food to survive
     public bool requiresFood = true;
     //The number of days this character has gone without food
-    public int daysWithoutFood = 0;
+    public float daysWithoutFood = 0;
     //The number of days at which this character starts losing health from hunger
-    public int daysBeforeStarving = 5;
+    public float daysBeforeStarving = 5;
 
 
     //If false, this character doesn't require water to survive
     public bool requiresWater = true;
     //The number of days this character has gone without water
-    public int daysWithoutWater = 0;
+    public float daysWithoutWater = 0;
     //The number of days at which this character starts losing health from thirst
-    public int daysBeforeDehydrated = 3;
+    public float daysBeforeDehydrated = 3;
 
 
     //If false, this character doesn't require sleep
     public bool requiresSleep = true;
     //The number of days this character has gone without sleep
-    public int daysWithoutSleep = 0;
+    public float daysWithoutSleep = 0;
     //The number of days at which this character starts losing health from lack of sleep
-    public int daysBeforeFatalInsomnia = 5;
+    public float daysBeforeFatalInsomnia = 5;
 
 
     //The energy this character has based on their health, hunger, thirst, and sleep

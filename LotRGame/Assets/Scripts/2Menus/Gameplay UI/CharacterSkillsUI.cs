@@ -153,7 +153,7 @@ public class CharacterSkillsUI : MonoBehaviour
 
         //Saving the references to the given character
         this.selectedCharacter = CharacterManager.globalReference.GetCharacterAtIndex(characterIndex_);
-        this.selectedCharacterSkillList = this.selectedCharacterSkillList.GetComponent<Skills>();
+        this.selectedCharacterSkillList = this.selectedCharacter.GetComponent<Skills>();
 
         //Updating the sliders for the new character
         this.UpdateSliders();
