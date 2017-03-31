@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class KeyboardDispatchEvent : MonoBehaviour
+public class KeyboardDispatchEvents : MonoBehaviour
 {
     //The keyboard buttons that trigger events with the corresponding list index
     public List<KeyCode> keysThatTriggerEvents;
@@ -17,7 +17,7 @@ public class KeyboardDispatchEvent : MonoBehaviour
         //Loops through and finds if any of the keys we're looking for are pressed
         for (int i = 0; i < this.keysThatTriggerEvents.Count; ++i)
         {
-            if (Input.GetKey(this.keysThatTriggerEvents[i]))
+            if (Input.GetKeyDown(this.keysThatTriggerEvents[i]))
             {
                 this.DispatchEvent(i);
             }

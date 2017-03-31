@@ -122,9 +122,9 @@ public class CharacterGenerator : MonoBehaviour
         characterStateRef.requiresWater = this.requiresWater;
         characterStateRef.requiresSleep = this.requiresSleep;
 
-        characterStateRef.daysBeforeStarving = this.daysBeforeStarving;
-        characterStateRef.daysBeforeDehydrated = this.daysBeforeDehydrated;
-        characterStateRef.daysBeforeFatalInsomnia = this.daysBeforeFatalInsomnia;
+        characterStateRef.maxFood = this.daysBeforeStarving;
+        characterStateRef.maxWater = this.daysBeforeDehydrated;
+        characterStateRef.maxSleep = this.daysBeforeFatalInsomnia;
     }
 
 

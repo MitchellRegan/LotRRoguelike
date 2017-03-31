@@ -49,8 +49,8 @@ public class CharacterStateUI : MonoBehaviour
     }
 
 
-    //Function called internally to update all of the sliders and text fields to the character's current values
-    private void UpdateTextAndSliders()
+    //Function used to update all of the sliders and text fields to the character's current values
+    public void UpdateTextAndSliders()
     {
         //Setting the name field to display the selected character's name
         this.nameText.text = this.selectedCharacter.firstName + " " + this.selectedCharacter.lastName;
@@ -74,14 +74,14 @@ public class CharacterStateUI : MonoBehaviour
         this.healthSlider.maxValue = this.selectedCharacterState.maxHealth;
         this.healthSlider.value = this.selectedCharacterState.currentHealth;
 
-        this.hungerSlider.maxValue = this.selectedCharacterState.daysBeforeStarving;
-        this.hungerSlider.value = this.selectedCharacterState.daysWithoutFood;
+        this.hungerSlider.maxValue = this.selectedCharacterState.maxFood;
+        this.hungerSlider.value = this.selectedCharacterState.currentFood;
 
-        this.thirstSlider.maxValue = this.selectedCharacterState.daysBeforeDehydrated;
-        this.thirstSlider.value = this.selectedCharacterState.daysWithoutWater;
+        this.thirstSlider.maxValue = this.selectedCharacterState.maxWater;
+        this.thirstSlider.value = this.selectedCharacterState.currentWater;
 
-        this.sleepSlider.maxValue = this.selectedCharacterState.daysBeforeFatalInsomnia;
-        this.sleepSlider.value = this.selectedCharacterState.daysWithoutSleep;
+        this.sleepSlider.maxValue = this.selectedCharacterState.maxSleep;
+        this.sleepSlider.value = this.selectedCharacterState.currentSleep;
 
         this.energySlider.maxValue = this.selectedCharacterState.maxEnergy;
         this.energySlider.value = this.selectedCharacterState.currentEnergy;

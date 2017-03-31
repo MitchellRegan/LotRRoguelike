@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class TimePanelUI : MonoBehaviour
 {
+    //Static reference to this component for everything that uses time advancements
+    public static TimePanelUI globalReference;
+
     //The number of days this current adventure has taken
     public int daysTaken = 0;
     //The time of day it is
@@ -15,14 +19,32 @@ public class TimePanelUI : MonoBehaviour
     private float currentTimer = 0;
 
     //The amount of hours that are elapsed when the time is advanced
-    public int timeAdvanced = 6;
+    public int hoursAdvancedPerUpdate = 6;
 
     //The text field that displays the days elapsed
     public Text daysElapsedText;
     //The text field that displays the time of day
     public Text timeOfDayText;
 
-    
+    //The UnityEvent that's dispatched when time is advanced
+    public UnityEvent onTimeAdvancedEvent;
+
+
+
+    //Function called when this object is initialized
+    private void Awake()
+    {
+        //Making sure there's only one static reference to this component
+        if(globalReference != null)
+        {
+            this.enabled = false;
+        }
+        else
+        {
+            globalReference = this;
+        }
+    }
+
 
 	// Update is called once per frame
 	private void Update ()
@@ -52,7 +74,7 @@ public class TimePanelUI : MonoBehaviour
     //Function called externally to jump the timer forward the number of hours given
     public void AdvanceTime()
     {
-        this.timeOfDay += this.timeAdvanced;
+        this.timeOfDay += this.hoursAdvancedPerUpdate;
 
         //If the hours are over 24, the day is advanced
         if(this.timeOfDay >= 24)
@@ -63,5 +85,8 @@ public class TimePanelUI : MonoBehaviour
             //Resetting the current game timer so that players have the maximum amount of time before the next jump
             this.currentTimer = 0;
         }
+
+        //Calling the unity event
+        this.onTimeAdvancedEvent.Invoke();
     }
 }

@@ -40,23 +40,54 @@ public class LandTile : MonoBehaviour
     //Function called on the frame when the player's mouse enters this object's collider
     private void OnMouseEnter()
     {
-        this.HilightThisTile(true);
+        //If the selection mode is on anything but "None", this tile is hilighted
+        if (TileSelectionMode.GlobalReference.currentSelectionMode != TileSelectionMode.SelectionMode.None)
+        {
+            this.HilightThisTile(true);
+        }
     }
 
 
     //Function called every frame when the player's mouse is over this object's collider
     private void OnMouseOver()
     {
-        //If the player left clicks over this tile, it becomes the one that's selected
-        if(Input.GetMouseButtonDown(0))
+        //If the selection mode is switched to "None", this tile is no longer hilighted
+        if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.None)
         {
-            //Un-hilighting the currently selected file
-            if (LandTile.selectedTile != null)
-            {
-                LandTile.selectedTile.HilightThisTile(false);
-            }
+            this.HilightThisTile(false);
+            return;
+        }
 
-            LandTile.selectedTile = this;
+        //If the player left clicks over this tile and the selection mode is anything but "None", it becomes the one that's selected
+        if(Input.GetMouseButtonDown(0) && TileSelectionMode.GlobalReference.currentSelectionMode != TileSelectionMode.SelectionMode.None)
+        {
+            //If the left Alt button isn't held down (for rotating the camera)
+            if (!Input.GetKey(KeyCode.LeftAlt))
+            {
+                //Un-hilighting the currently selected file
+                if (LandTile.selectedTile != null)
+                {
+                    LandTile.selectedTile.HilightThisTile(false);
+                }
+
+                LandTile.selectedTile = this;
+
+                //If the selection mode is on "Movement" then the selected characters are told to move to this tile
+                if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.Movement)
+                {
+                    //Looping through each character that's selected
+                    foreach(Character person in CharacterManager.globalReference.selectedCharacters)
+                    {
+                        //Using the Dijkstra search to find the dravel path for each character
+                        PathPoint startingTile = person.GetComponent<Movement>().currentTile.GetComponent<PathPoint>();
+                        PathPoint endTile = LandTile.selectedTile.GetComponent<PathPoint>();
+                        List<LandTile> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
+
+                        //Setting the path to follow for the character's movement
+                        person.GetComponent<Movement>().TravelToPath(pathToFollow);
+                    }
+                }
+            }
         }
     }
 
@@ -69,9 +100,9 @@ public class LandTile : MonoBehaviour
         {
             return;
         }
-
-        //If the player right clicks, the selected tile is cleared
-        if (Input.GetMouseButtonDown(1))
+        
+        //If the player right clicks or if the selection mode goes back to "None", the selected tile is cleared
+        if (Input.GetMouseButtonDown(1) || TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.None)
         {
             //If this tile was the one selected, it becomes un-hilighted
             this.HilightThisTile(false);

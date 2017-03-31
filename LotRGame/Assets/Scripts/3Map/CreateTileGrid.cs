@@ -426,7 +426,7 @@ public class CreateTileGrid : MonoBehaviour
             PathPoint startPoint = this.tileGrid[startX][startY].GetComponent<PathPoint>();
             PathPoint endPoint = this.tileGrid[endX][endY].GetComponent<PathPoint>();
 
-            List<PathPoint> linePoints = this.GetComponent<PathfindingAlgorithms>().FindLineOfTiles(startPoint, endPoint);
+            List<PathPoint> linePoints = PathfindingAlgorithms.FindLineOfTiles(startPoint, endPoint);
 
             //Adding each edge point to the list of edge points
             foreach (PathPoint point in linePoints)
@@ -542,6 +542,7 @@ public class CreateTileGrid : MonoBehaviour
 
         //Instantiating the test character at the starting tile's location
         GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
+        startChar.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
 
         //Adding the starting character to the character manager's list of party members
         CharacterManager.globalReference.AddCharacterToParty(startChar.GetComponent<Character>());
