@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TileSelectionMode : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class TileSelectionMode : MonoBehaviour
     //Enum used to determine what happens when tiles are selected
     public enum SelectionMode { None, Info, Movement };
     public SelectionMode currentSelectionMode = SelectionMode.None;
+
+    //Public UnityEvent to deactivate the Move UI button
+    public UnityEvent deactivateMoveUI;
 
 
 	
@@ -32,6 +36,9 @@ public class TileSelectionMode : MonoBehaviour
     public void ClearSelectionMode()
     {
         this.currentSelectionMode = SelectionMode.None;
+
+        //Deactivates the Move UI button
+        this.deactivateMoveUI.Invoke();
     }
 
 

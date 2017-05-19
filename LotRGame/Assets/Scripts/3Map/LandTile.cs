@@ -85,6 +85,9 @@ public class LandTile : MonoBehaviour
 
                         //Setting the path to follow for the character's movement
                         person.GetComponent<Movement>().TravelToPath(pathToFollow);
+
+                        //Setting the selection mode to nothing so that it doesn't have to be turned off constantly
+                        TileSelectionMode.GlobalReference.ClearSelectionMode();
                     }
                 }
             }
