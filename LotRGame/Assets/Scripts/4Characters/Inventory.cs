@@ -109,6 +109,26 @@ public class Inventory : MonoBehaviour
     }
 
 
+    //Checks to see if there's an empty slot in this inventory and returns the number available
+    public int CheckForEmptySlot()
+    {
+        //The number of empty slots found
+        int freeSlots = 0;
+
+        //Looping through each slot to find empty ones
+        for(int s = 0; s < this.itemSlots.Count; ++s)
+        {
+            //If an empty slot is found, the counter goes up
+            if(this.itemSlots[s] == null)
+            {
+                freeSlots += 1;
+            }
+        }
+
+        return freeSlots;
+    }
+
+
     //Checks this inventory for a specific instance of an item and returns true of it's found
     public bool CheckForItem(Item itemToSearchFor_)
     {
@@ -138,19 +158,29 @@ public class Inventory : MonoBehaviour
             }
         }
 
+        //Checking equipped slots
+        if(this.helm.gameObject == itemToSearchFor_.gameObject || this.chestPiece.gameObject == itemToSearchFor_.gameObject ||
+            this.leggings.gameObject == itemToSearchFor_.gameObject || this.shoes.gameObject == itemToSearchFor_.gameObject ||
+            this.gloves.gameObject == itemToSearchFor_.gameObject || this.necklace.gameObject == itemToSearchFor_.gameObject ||
+            this.cloak.gameObject == itemToSearchFor_.gameObject || this.ring.gameObject == itemToSearchFor_.gameObject ||
+            this.rightHand.gameObject == itemToSearchFor_.gameObject || this.leftHand.gameObject == itemToSearchFor_.gameObject)
+        {
+            return true;
+        }
+
         //If the item wasn't found, returns false
         return false;
     }
 
 
-    //Adds an item to this object's inventory
-    public void AddItemToInventory(Item itemToAdd_)
+    //Adds an item to this object's inventory. Returns true if there was enough space, false if it's full
+    public bool AddItemToInventory(Item itemToAdd_)
     {
         //Checks to make sure the object isn't already in our inventory so we don't add it multiple times
         if(this.CheckForItem(itemToAdd_))
         {
             //If the item was found, we don't need to do anything else
-            return;
+            return true;
         }
 
         //Looping through each slot to find an empty one
@@ -167,7 +197,7 @@ public class Inventory : MonoBehaviour
                 //Update the weight
                 this.FindTotalWeight();
 
-                return;
+                return true;
             }
             //If item in the current slot is the same as the one being added
             else if(this.itemSlots[s].itemNameID == itemToAdd_.itemNameID)
@@ -204,7 +234,7 @@ public class Inventory : MonoBehaviour
                         //Update the total weight
                         this.FindTotalWeight();
 
-                        return;
+                        return true;
                     }
                     //If the sum of the current stack and added stack overflows, we add as many as we can
                     else if( (this.itemSlots[s].currentStackSize + itemToAdd_.currentStackSize) > this.itemSlots[s].maxStackSize)
@@ -227,7 +257,7 @@ public class Inventory : MonoBehaviour
                                 //Update the total weight
                                 this.FindTotalWeight();
 
-                                return;
+                                return true;
                             }
 
                             //Setting the stacked item to stack to the one in this object's inventory
@@ -242,21 +272,66 @@ public class Inventory : MonoBehaviour
             }
         }
 
-        //Calculating the new weight 
-        this.FindTotalWeight();
+        //Returning false since there wasn't room for the new item
+        return false;
     }
 
 
     //Adds all items in the target inventory to this object's inventory
     public void AddAllItemsToInventory(Inventory otherInventory_)
     {
+        //Adding all of the other inventory's armor and weapon slots to this inventory
+        if(this.AddItemToInventory(otherInventory_.helm.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.helm.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.chestPiece.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.chestPiece.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.leggings.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.leggings.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.shoes.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.shoes.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.gloves.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.gloves.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.cloak.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.cloak.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.necklace.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.necklace.GetComponent<Item>(), null);
+        }
+
+        if (this.AddItemToInventory(otherInventory_.ring.GetComponent<Item>()))
+        {
+            otherInventory_.ChangeItem(otherInventory_.ring.GetComponent<Item>(), null);
+        }
+
         //Loops through each slot in the other inventory
-        for(int s = 0; s < otherInventory_.itemSlots.Count; ++s)
+        for (int s = 0; s < otherInventory_.itemSlots.Count; ++s)
         {
             //As long as the current slot in the other inventory isn't empty, the item is added to this inventory
             if(otherInventory_.itemSlots[s] != null)
             {
-                this.AddItemToInventory(otherInventory_.itemSlots[s]);
+                //If the item could be added to our inventory, it's removed from the other one
+                if(this.AddItemToInventory(otherInventory_.itemSlots[s]))
+                {
+                    otherInventory_.ChangeItem(otherInventory_.itemSlots[s], null);
+                }
             }
         }
 
@@ -266,92 +341,153 @@ public class Inventory : MonoBehaviour
     }
 
 
-    //Swaps the slots of the two items
-    public void SwapItemSlots(int index1_, int index2_)
-    {
-        //If either index is out of range of the item slot list OR they have the same index, we can't swap
-        if(index1_ < 0 || index1_ >= this.itemSlots.Count || index2_ < 0 || index2_ > this.itemSlots.Count || index1_ == index2_)
-        {
-            return;
-        }
-
-        //Setting a placeholder to hold the reference to the item at index 1
-        Item placeholder = this.itemSlots[index1_];
-        //Setting the reference at index 1 to the item of index 2
-        this.itemSlots[index1_] = this.itemSlots[index2_];
-        //Setting the reference at index 2 to the placeholder item
-        this.itemSlots[index2_] = placeholder;
-    }
-
-
     //Equips a piece of armor to the correct slot
-    public void EquipArmor(Armor armorToEquip_)
+    public bool EquipArmor(Armor armorToEquip_)
     {
-        //If the armor isn't in our inventory, we can't equip it
-        if(!this.CheckForItem(armorToEquip_.GetComponent<Item>()))
-        {
-            return;
-        }
+        //If true, this armor can be equipped. If false, there wasn't a free inventory slot to put the one that this armor replaces
+        bool canEquip = true;
+
+        //Unequipping the armor slot that the equipped one will occupy
+        this.UnequipArmor(armorToEquip_.slot);
 
         //Finding the correct slot to equip the armor
         switch(armorToEquip_.slot)
         {
             case Armor.ArmorSlot.Head:
-                this.helm = armorToEquip_;
+                if (this.helm != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.helm = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Torso:
-                this.chestPiece = armorToEquip_;
+                if(this.chestPiece != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.chestPiece = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Legs:
-                this.leggings = armorToEquip_;
+                if (this.leggings != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.leggings = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Hands:
-                this.gloves = armorToEquip_;
+                if(this.gloves != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.gloves = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Feet:
-                this.shoes = armorToEquip_;
+                if (this.shoes != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.shoes = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Cloak:
-                this.cloak = armorToEquip_;
+                if (this.cloak != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.cloak = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Necklace:
-                this.necklace = armorToEquip_;
+                if (this.necklace != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.necklace = armorToEquip_;
+                }
                 break;
+
             case Armor.ArmorSlot.Ring:
-                this.ring = armorToEquip_;
+                if (this.ring != null)
+                {
+                    canEquip = false;
+                }
+                else
+                {
+                    this.ring = armorToEquip_;
+                }
                 break;
         }
+
+        return canEquip;
     }
 
 
     //Unequips the piece of armor in the given slot
     public void UnequipArmor(Armor.ArmorSlot slotToRemove_)
     {
-        //Finding the correct slot to equip the armor
+        //Making sure there's a free inventory slot first
+        if(this.CheckForEmptySlot() < 1)
+        {
+            return;
+        }
+
+        //Finding the correct slot to equip the armor, adding it to the inventory, and setting the slot to null
         switch (slotToRemove_)
         {
             case Armor.ArmorSlot.Head:
+                this.AddItemToInventory(this.helm.GetComponent<Item>());
                 this.helm = null;
                 break;
             case Armor.ArmorSlot.Torso:
+                this.AddItemToInventory(this.chestPiece.GetComponent<Item>());
                 this.chestPiece = null;
                 break;
             case Armor.ArmorSlot.Legs:
+                this.AddItemToInventory(this.leggings.GetComponent<Item>());
                 this.leggings = null;
                 break;
             case Armor.ArmorSlot.Hands:
+                this.AddItemToInventory(this.gloves.GetComponent<Item>());
                 this.gloves = null;
                 break;
             case Armor.ArmorSlot.Feet:
+                this.AddItemToInventory(this.shoes.GetComponent<Item>());
                 this.shoes = null;
                 break;
             case Armor.ArmorSlot.Cloak:
+                this.AddItemToInventory(this.cloak.GetComponent<Item>());
                 this.cloak = null;
                 break;
             case Armor.ArmorSlot.Necklace:
+                this.AddItemToInventory(this.necklace.GetComponent<Item>());
                 this.necklace = null;
                 break;
             case Armor.ArmorSlot.Ring:
+                this.AddItemToInventory(this.ring.GetComponent<Item>());
                 this.ring = null;
                 break;
         }
@@ -359,13 +495,10 @@ public class Inventory : MonoBehaviour
 
 
     //Equips a weapon to this object's hands
-    public void EquipWeapon(Weapon weaponToEquip_)
+    public bool EquipWeapon(Weapon weaponToEquip_)
     {
-        //If the weapon isn't in our inventory, we can't equip it
-        if (!this.CheckForItem(weaponToEquip_.GetComponent<Item>()))
-        {
-            return;
-        }
+        //If true, this weapon was equipped, if false, there wasn't enough inventory space for the unequipped weapons
+        bool canEquip = true;
 
         //Finding the correct slot to equip the weapon
         switch (weaponToEquip_.size)
@@ -384,15 +517,39 @@ public class Inventory : MonoBehaviour
                 //If both hands are full, this weapon replaces the weapon in the right hand
                 else
                 {
-                    this.rightHand = weaponToEquip_;
+                    //Unequipping the right hand weapon
+                    this.UnequipWeapon(WeaponHand.Right);
+
+                    //Making sure the right hand is empty, since the inventory could be full
+                    if (this.rightHand == null)
+                    {
+                        this.rightHand = weaponToEquip_;
+                    }
+                    else
+                    {
+                        canEquip = false;
+                    }
                 }
                 break;
             case Weapon.WeaponSize.TwoHands:
-                //Two-handed weapons replace any weapons that are being held
-                this.rightHand = weaponToEquip_;
-                this.leftHand = null;
+                //Unequipping both weapons
+                this.UnequipWeapon(WeaponHand.Both);
+
+                //Making sure both hands are empty, since the inventory could be full
+                if (this.rightHand == null && this.leftHand == null)
+                {
+                    //Two-handed weapons replace any weapons that are being held
+                    this.rightHand = weaponToEquip_;
+                    this.leftHand = null;
+                }
+                else
+                {
+                    canEquip = false;
+                }
                 break;
         }
+
+        return canEquip;
     }
 
 
@@ -403,20 +560,170 @@ public class Inventory : MonoBehaviour
         switch(handToRemove_)
         {
             case WeaponHand.Right:
-                this.rightHand = null;
-                break;
-            case WeaponHand.Left:
-                this.leftHand = null;
-                //If the left hand is holding a 2 handed weapon, it must be unequipped from both hands
-                if(this.rightHand.size == Weapon.WeaponSize.TwoHands)
+                //Making sure there's an equipped weapon and empty slot to put the weapon
+                if(this.rightHand != null && this.CheckForEmptySlot() > 0)
                 {
+                    //Moves the current right hand weapon to the inventory and nulls the hand slot
+                    this.AddItemToInventory(this.rightHand.GetComponent<Item>());
+
+                    //If this character is holding a 2-handed weapon, the left hand is freed as well
+                    if(this.rightHand.size == Weapon.WeaponSize.TwoHands)
+                    {
+                        this.leftHand = null;
+                    }
+
                     this.rightHand = null;
                 }
                 break;
+            case WeaponHand.Left:
+                //Making sure there's an equipped weapon and empty slot to put the weapon
+                if(this.leftHand != null && this.CheckForEmptySlot() > 0)
+                {
+                    //Moves the current left hand weapon to the inventory and nulls the hand slot
+                    this.AddItemToInventory(this.leftHand.GetComponent<Item>());
+                    this.leftHand = null;
+                }
+                break;
             case WeaponHand.Both:
-                this.leftHand = null;
-                this.rightHand = null;
+                //Calls this function twice, but with the other hands
+                this.UnequipWeapon(WeaponHand.Right);
+                this.UnequipWeapon(WeaponHand.Left);
                 break;
         }
+    }
+
+
+    //Checks to see if the piece of armor is currently equipped
+    public bool IsArmorEquipped(Armor armorToCheck_)
+    {
+        //Checking the correct armor slot to see if the equipped armor matches
+        switch(armorToCheck_.slot)
+        {
+            case Armor.ArmorSlot.Head:
+                if(this.helm == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Torso:
+                if(this.chestPiece == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Legs:
+                if(this.leggings == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Hands:
+                if(this.gloves == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Feet:
+                if(this.shoes == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Cloak:
+                if(this.cloak == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Necklace:
+                if(this.necklace == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            case Armor.ArmorSlot.Ring:
+                if(this.ring == armorToCheck_)
+                {
+                    return true;
+                }
+                break;
+            default:
+                return false;
+        }
+
+        //If there wasn't a match, the armor wasn't equipped
+        return false;
+    }
+
+
+    //Function used to change one item into another. Used for replacing items with old/broken/rotten versions or swapping item slots in inventories
+    public void ChangeItem(Item selectedItem_, Item replacementItem_, bool destroySelectedItem_ = false)
+    {
+        //Checking to see if the selected item is equipped as armor
+        if (this.helm.gameObject == selectedItem_.gameObject || this.chestPiece.gameObject == selectedItem_.gameObject ||
+            this.leggings.gameObject == selectedItem_.gameObject || this.shoes.gameObject == selectedItem_.gameObject ||
+            this.gloves.gameObject == selectedItem_.gameObject || this.necklace.gameObject == selectedItem_.gameObject ||
+            this.cloak.gameObject == selectedItem_.gameObject || this.ring.gameObject == selectedItem_.gameObject)
+        {
+            //Making sure the replacement item is armor AND is the same type of armor
+            if(replacementItem_.GetComponent<Armor>() && replacementItem_.GetComponent<Armor>().slot == selectedItem_.GetComponent<Armor>().slot)
+            {
+                this.EquipArmor(replacementItem_.GetComponent<Armor>());
+
+            }
+            //If not, the replacement armor is just added to the inventory and not equipped
+            else
+            {
+                //Making sure there's room in our inventory before doing anything
+                if(this.AddItemToInventory(replacementItem_))
+                {
+
+                }
+            }
+        }
+        //Checking to see if the selected item is equipped as a weapon
+        else if(this.rightHand.gameObject == selectedItem_.gameObject || this.leftHand.gameObject == selectedItem_.gameObject)
+        {
+            //Making sure the replacement item is a weapon
+            if(replacementItem_.GetComponent<Weapon>())
+            {
+
+            }
+        }
+        //Otherwise the item is in the general inventory
+        else
+        {
+            this.AddItemToInventory(replacementItem_);
+        }
+
+        //If the item needs to be destroyed after the change, it is
+        if(destroySelectedItem_)
+        {
+            Destroy(selectedItem_.gameObject);
+        }
+
+        //Updates the weight
+        this.FindTotalWeight();
+    }
+
+
+    //Function used to just change one item in the inventory at the given index to something else and update the weight. Returns the item that was at that index
+    public Item ChangeInventoryItemAtIndex(int index_, Item itemToChangeTo_)
+    {
+        //Making sure the index is within the correct limits of our inventory
+        if(index_ < 0 || index_ >= this.itemSlots.Count)
+        {
+            return null;
+        }
+
+        //Getting the reference to the item that will be replaced
+        Item returnedItem = this.itemSlots[index_];
+        //Setting the item slot to contain the new item
+        this.itemSlots[index_] = itemToChangeTo_;
+        //Updating this inventory's weight
+        this.FindTotalWeight();
+
+        //Returning the original item
+        return returnedItem;
     }
 }

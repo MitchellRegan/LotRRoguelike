@@ -9,6 +9,9 @@ public class CharacterInventoryUI : MonoBehaviour
     [HideInInspector]
     public Inventory selectedCharacterInventory;
 
+    //The sprite that's shown on an empty inventory slot
+    public Sprite emptySlotSprite;
+
     //Selected Character Name
     public Text selectedCharacterName;
     //Selected Character weight
@@ -68,7 +71,7 @@ public class CharacterInventoryUI : MonoBehaviour
 
 
     //Function called to update the inventory images and weight
-    private void UpdateImages()
+    public void UpdateImages()
     {
         //Sets the weight text
         this.selectedCharacterWeight.text = "Weight: " + this.selectedCharacterInventory.currentWeight;
@@ -190,14 +193,73 @@ public class CharacterInventoryUI : MonoBehaviour
             //If the current item slot is empty, the image is disabled
             if(this.selectedCharacterInventory.itemSlots[i] == null)
             {
-                this.slotImages[i].enabled = false;
+                this.slotImages[i].sprite = this.emptySlotSprite;
             }
             //If the slot isn't empty, the image is enabled and set to the item's icon
             else
             {
-                this.slotImages[i].enabled = true;
                 this.slotImages[i].sprite = this.selectedCharacterInventory.itemSlots[i].GetComponent<Item>().icon;
             }
         }
+    }
+
+
+    //Function called from InventoryButton.cs to return the item that the button displays
+    public Item GetItemFromInventoryButton(Image buttonImage_)
+    {
+        //Looping through each of the slot images to try and find a match
+        for(int i = 0; i < this.slotImages.Count; ++i)
+        {
+            //If a match is found, the item in the character's inventory at the current index is returned
+            if(this.slotImages[i] == buttonImage_)
+            {
+                return this.selectedCharacterInventory.itemSlots[i];
+            }
+        }
+
+        //Otherwise, we check each item that's currently equipped
+        if(this.head == buttonImage_)
+        {
+            return this.selectedCharacterInventory.helm.GetComponent<Item>();
+        }
+        else if(this.torso == buttonImage_)
+        {
+            return this.selectedCharacterInventory.chestPiece.GetComponent<Item>();
+        }
+        else if(this.legs == buttonImage_)
+        {
+            return this.selectedCharacterInventory.leggings.GetComponent<Item>();
+        }
+        else if(this.feet == buttonImage_)
+        {
+            return this.selectedCharacterInventory.shoes.GetComponent<Item>();
+        }
+        else if(this.hands == buttonImage_)
+        {
+            return this.selectedCharacterInventory.gloves.GetComponent<Item>();
+        }
+        else if(this.necklace == buttonImage_)
+        {
+            return this.selectedCharacterInventory.necklace.GetComponent<Item>();
+        }
+        else if(this.cloak == buttonImage_)
+        {
+            return this.selectedCharacterInventory.cloak.GetComponent<Item>();
+        }
+        else if(this.ring == buttonImage_)
+        {
+            return this.selectedCharacterInventory.ring.GetComponent<Item>();
+        }
+        else if(this.rightHand == buttonImage_)
+        {
+            return this.selectedCharacterInventory.rightHand.GetComponent<Item>();
+        }
+        else if(this.leftHand == buttonImage_)
+        {
+            return this.selectedCharacterInventory.leftHand.GetComponent<Item>();
+        }
+
+        //If nothing is found, there's nothing there
+        return null;
     }
 }
