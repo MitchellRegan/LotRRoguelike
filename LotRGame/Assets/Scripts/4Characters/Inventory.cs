@@ -173,7 +173,6 @@ public class Inventory : MonoBehaviour
             {
                 //Adding the weight of all items in this slot
                 weightSum += (this.itemSlots[s].kilogramPerUnit * this.itemSlots[s].currentStackSize);
-                Debug.Log("FindTotalWeight, Item name: " + this.itemSlots[s].name + ", weight: " + this.itemSlots[s].kilogramPerUnit);
             }
         }
 
@@ -828,24 +827,110 @@ public class Inventory : MonoBehaviour
     }
 
 
-    //Function used to just change one item in the inventory at the given index to something else and update the weight. Returns the item that was at that index
-    public Item ChangeInventoryItemAtIndex(int index_, Item itemToChangeTo_)
+    //Function used to just change one item in the inventory at the given index to something else and update the weight
+    public void ChangeInventoryItemAtIndex(int index_, Item itemToChangeTo_)
     {
         //Making sure the index is within the correct limits of our inventory
         if(index_ < 0 || index_ >= this.itemSlots.Count)
         {
-            return null;
+            return;
         }
 
         //Getting the reference to the item that will be replaced
         Item returnedItem = this.itemSlots[index_];
         //Setting the item slot to contain the new item
         this.itemSlots[index_] = itemToChangeTo_;
+
+        //If the slot isn't empty, this inventory becomes the item's parent
+        if(itemToChangeTo_ != null)
+        {
+            itemToChangeTo_.transform.SetParent(this.transform);
+        }
+
         //Updating this inventory's weight
         this.FindTotalWeight();
+    }
 
-        //Returning the original item
-        return returnedItem;
+
+    //Function used to change the armor at the given slot to the new one
+    public void ChangeArmorItemAtSlot(Armor.ArmorSlot slot_, Armor armorToChangeTo_)
+    {
+        //Making sure the armor to change to actually matches the slot it's being equipped to
+        if(armorToChangeTo_!= null && armorToChangeTo_.slot != slot_)
+        {
+            return;
+        }
+
+        //Finding the correct slot to replace
+        switch(slot_)
+        {
+            case Armor.ArmorSlot.Head:
+                this.helm = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Torso:
+                this.chestPiece = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Legs:
+                this.leggings = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Feet:
+                this.shoes = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Hands:
+                this.gloves = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Necklace:
+                this.necklace = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Cloak:
+                this.cloak = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+
+            case Armor.ArmorSlot.Ring:
+                this.ring = armorToChangeTo_;
+                if (armorToChangeTo_ != null)
+                {
+                    armorToChangeTo_.transform.SetParent(this.transform);
+                }
+                break;
+        }
+
+        //Updating this inventory's weight
+        this.FindTotalWeight();
     }
 
 

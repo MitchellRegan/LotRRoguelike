@@ -100,7 +100,6 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                         //If the hit button is empty
                         if (hitButtonItem == null)
                         {
-                            Debug.Log("Hit is empty");
                             //Replacing this button's inventory with the hit button's item
                             thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
                             //Replacing the hit button's inventory with this button's item
@@ -109,11 +108,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                         //If the items have the same nameID
                         else if(hitButtonItem.itemNameID == thisButtonItem.itemNameID)
                         {
-                            Debug.Log("Hit has same ID");
                             //If the hit button's item stack is full
                             if (hitButtonItem.currentStackSize == hitButtonItem.maxStackSize)
                             {
-                                Debug.Log("Hit stack is full");
                                 //Replacing this button's inventory with the hit button's item
                                 thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
                                 //Replacing the hit button's inventory with this button's item
@@ -122,7 +119,6 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                             //If the hit button's item stack isn't full
                             else
                             {
-                                Debug.Log("Hit stack not full");
                                 //Move as many stacks from this stack to the hit button's stack as possible
                                 while(thisButtonItem.transform.childCount > 0)
                                 {
@@ -146,14 +142,11 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                                     hitButtonItem.currentStackSize += 1;
                                     //Decreasing the number of items in this button's item stack
                                     thisButtonItem.currentStackSize -= 1;
-
-                                    Debug.Log("Stack added. Hit button current stack: " + hitButtonItem.currentStackSize);
                                 }
 
                                 //If this button's item is the last in the stack and there's still room left on the hit button's stack
                                 if (thisButtonItem.currentStackSize == 1 && hitButtonItem.currentStackSize < hitButtonItem.maxStackSize)
                                 {
-                                    Debug.Log("This is last item");
                                     //Setting this button's item to stack with the hit button's item
                                     thisButtonItem.transform.SetParent(hitButtonItem.transform);
                                     //Increasing the number of items in the hit button's item stack
@@ -166,7 +159,6 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                         //If the items have different nameIDs
                         else
                         {
-                            Debug.Log("Hit has different ID");
                             //Replacing this button's inventory with the hit button's item
                             thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
                             //Replacing the hit button's inventory with this button's item
@@ -175,12 +167,24 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
 
                     //If both items are in armor slots
+                    else if(this.buttonType == InventoryButtonType.Armor && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Armor)
+                    {
                         //If the hit button is empty
+                        if (hitButtonItem == null)
+                        {
                             //Swap the references in the inventories
+                            thisButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, null);
+                            hitButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, thisButtonItem.GetComponent<Armor>());
+                        }
                         //If they're the same type of armor
+                        else if (hitButtonItem.GetComponent<Armor>().slot == thisButtonItem.GetComponent<Armor>().slot)
+                        {
                             //Swap the references in the inventories
-                        //If they're different types of armor
-                            //Do nothing
+                            thisButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(hitButtonItem.GetComponent<Armor>().slot, hitButtonItem.GetComponent<Armor>());
+                            hitButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, thisButtonItem.GetComponent<Armor>());
+                        }
+                        //If they're different types of armor, nothing happens
+                    }
 
                     //If both items are in weapon slots
                         //If the hit button is empty
