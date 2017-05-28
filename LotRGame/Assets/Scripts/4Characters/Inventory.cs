@@ -7,6 +7,11 @@ public class Inventory : MonoBehaviour
     //The total weight of all objects in this inventory
     public float currentWeight = 0;
 
+    //The physical armor total
+    public int totalPhysicalArmor = 0;
+    //The magic armor total
+    public int totalMagicArmor = 0;
+
     //Slots of armor that are currently worn
     public Armor helm = null;
     public Armor chestPiece = null;
@@ -725,5 +730,45 @@ public class Inventory : MonoBehaviour
 
         //Returning the original item
         return returnedItem;
+    }
+
+
+    //Function that checks to see if a given item will be able to be added to this inventory
+    public bool CanItemBeAddedToInventory(Item itemToAdd_)
+    {
+        //Int to track the stack size of all similar items found
+        uint leftoverStack = itemToAdd_.currentStackSize;
+
+        //Loops through each inventory slot
+        for(int s = 0; s < this.itemSlots.Count; ++s)
+        {
+            //If we find an empty slot, the item can be added
+            if(this.itemSlots[s] == null)
+            {
+                return true;
+            }
+            //If we find an item of the same type that can be stacked
+            else if(this.itemSlots[s].itemNameID == itemToAdd_.itemNameID && itemToAdd_.maxStackSize > 1)
+            {
+                //If the items can be stacked without overflowing, the item can be added
+                if(this.itemSlots[s].currentStackSize + itemToAdd_.currentStackSize <= itemToAdd_.maxStackSize)
+                {
+                    return true;
+                }
+                //Checking to see if the leftover stack from overflowing would fit
+                else if(this.itemSlots[s].currentStackSize + leftoverStack <= itemToAdd_.maxStackSize)
+                {
+                    return true;
+                }
+                //Otherwise we subtract the amount that would be able to stack from the leftovers
+                else
+                {
+                    leftoverStack -= (itemToAdd_.maxStackSize - this.itemSlots[s].currentStackSize);
+                }
+            }
+        }
+
+        //If we haven't found anything yet, the item can't be added
+        return false;
     }
 }
