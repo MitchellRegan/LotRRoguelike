@@ -7,6 +7,8 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 {
     //Bool that tracks when the player is dragging this inventory item
     private bool isBeingDragged = false;
+    //Bool that determines if this slot is empty. If so, it can't be dragged
+    public bool slotIsEmpty = true;
     //The UI position of this button when not being dragged
     private Vector3 defaultPosition;
 
@@ -26,6 +28,12 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     //Function called when the player's mouse clicks down on this inventory item
     public void OnPointerDown(PointerEventData eventData_)
     {
+        //If this slot is empty, nothing happens
+        if(this.slotIsEmpty)
+        {
+            return;
+        }
+
         //If the player left clicks to drag
         if(eventData_.button == PointerEventData.InputButton.Left)
         {
@@ -44,6 +52,12 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     //Function called when the player's mouse releases
     public void OnPointerUp(PointerEventData eventData_)
     {
+        //If this slot is empty, nothing happens
+        if(this.slotIsEmpty)
+        {
+            return;
+        }
+
         //Ends dragging this item and resets back to the default position
         this.isBeingDragged = false;
         this.transform.position = this.defaultPosition;
@@ -72,16 +86,93 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<UnityEngine.UI.Image>());
                     Item hitButtonItem = hitButtonUI.GetItemFromInventoryButton(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
 
+
                     //If neither item is equipped and are just in the regular inventory
+                    if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
+                    {
+                        Debug.Log("Bag to Bag");
+                        //Finding the index of this button's item so it can be switched
+                        int thisButtonIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<UnityEngine.UI.Image>());
+
+                        //Finding the index of the hit button's item so it can be switched
+                        int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+
                         //If the hit button is empty
-                            //Do changeInventoryAtIndex
+                        if (hitButtonItem == null)
+                        {
+                            Debug.Log("Hit is empty");
+                            //Replacing this button's inventory with the hit button's item
+                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
+                            //Replacing the hit button's inventory with this button's item
+                            hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                        }
                         //If the items have the same nameID
+                        else if(hitButtonItem.itemNameID == thisButtonItem.itemNameID)
+                        {
+                            Debug.Log("Hit has same ID");
                             //If the hit button's item stack is full
-                                //Do changeInventoryAtIndex
+                            if (hitButtonItem.currentStackSize == hitButtonItem.maxStackSize)
+                            {
+                                Debug.Log("Hit stack is full");
+                                //Replacing this button's inventory with the hit button's item
+                                thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
+                                //Replacing the hit button's inventory with this button's item
+                                hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                            }
                             //If the hit button's item stack isn't full
+                            else
+                            {
+                                Debug.Log("Hit stack not full");
                                 //Move as many stacks from this stack to the hit button's stack as possible
+                                while(thisButtonItem.transform.childCount > 0)
+                                {
+                                    Transform itemChild = thisButtonItem.transform.FindChild(thisButtonItem.name);
+
+                                    //If for some reason there isn't an available child of the same type but there are still children, we break the loop
+                                    if(itemChild == null)
+                                    {
+                                        break;
+                                    }
+
+                                    //Making sure there's still room in the hit button's item stack
+                                    if(hitButtonItem.currentStackSize >= hitButtonItem.maxStackSize)
+                                    {
+                                        break;
+                                    }
+
+                                    //Setting the item to stack to the hit button's stack
+                                    itemChild.SetParent(hitButtonItem.transform);
+                                    //Increasing the number of items in the hit button's item stack
+                                    hitButtonItem.currentStackSize += 1;
+                                    //Decreasing the number of items in this button's item stack
+                                    thisButtonItem.currentStackSize -= 1;
+
+                                    Debug.Log("Stack added. Hit button current stack: " + hitButtonItem.currentStackSize);
+                                }
+
+                                //If this button's item is the last in the stack and there's still room left on the hit button's stack
+                                if (thisButtonItem.currentStackSize == 1 && hitButtonItem.currentStackSize < hitButtonItem.maxStackSize)
+                                {
+                                    Debug.Log("This is last item");
+                                    //Setting this button's item to stack with the hit button's item
+                                    thisButtonItem.transform.SetParent(hitButtonItem.transform);
+                                    //Increasing the number of items in the hit button's item stack
+                                    hitButtonItem.currentStackSize += 1;
+                                    //Setting this button's item to be empty
+                                    thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, null);
+                                }
+                            }
+                        }
                         //If the items have different nameIDs
-                            //Do changeInventoryAtIndex
+                        else
+                        {
+                            Debug.Log("Hit has different ID");
+                            //Replacing this button's inventory with the hit button's item
+                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
+                            //Replacing the hit button's inventory with this button's item
+                            hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                        }
+                    }
 
                     //If both items are in armor slots
                         //If the hit button is empty
@@ -232,6 +323,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     //Updating both of the UIs for the inventories
                     thisButtonUI.UpdateImages();
                     hitButtonUI.UpdateImages();
+                    //Updating both of the inventory weights
+                    thisButtonUI.selectedCharacterInventory.FindTotalWeight();
+                    hitButtonUI.selectedCharacterInventory.FindTotalWeight();
                 }
             }
         }

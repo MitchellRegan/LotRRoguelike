@@ -79,111 +79,121 @@ public class CharacterInventoryUI : MonoBehaviour
         //Sets the image of the head item
         if(this.selectedCharacterInventory.helm != null)
         {
-            this.head.enabled = true;
             this.head.sprite = this.selectedCharacterInventory.helm.GetComponent<Item>().icon;
+            this.head.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.head.enabled = false;
+            this.head.sprite = this.emptySlotSprite;
+            this.head.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the torso item
         if (this.selectedCharacterInventory.chestPiece != null)
         {
-            this.torso.enabled = true;
             this.torso.sprite = this.selectedCharacterInventory.chestPiece.GetComponent<Item>().icon;
+            this.torso.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.torso.enabled = false;
+            this.torso.sprite = this.emptySlotSprite;
+            this.torso.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the leg item
         if (this.selectedCharacterInventory.leggings != null)
         {
-            this.legs.enabled = true;
             this.legs.sprite = this.selectedCharacterInventory.leggings.GetComponent<Item>().icon;
+            this.legs.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.legs.enabled = false;
+            this.legs.sprite = this.emptySlotSprite;
+            this.legs.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the feet item
         if (this.selectedCharacterInventory.shoes != null)
         {
-            this.feet.enabled = true;
             this.feet.sprite = this.selectedCharacterInventory.shoes.GetComponent<Item>().icon;
+            this.feet.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.feet.enabled = false;
+            this.feet.sprite = this.emptySlotSprite;
+            this.feet.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the hand item
         if (this.selectedCharacterInventory.gloves != null)
         {
-            this.hands.enabled = true;
             this.hands.sprite = this.selectedCharacterInventory.gloves.GetComponent<Item>().icon;
+            this.hands.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.hands.enabled = false;
+            this.hands.sprite = this.emptySlotSprite;
+            this.hands.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the neck item
         if (this.selectedCharacterInventory.necklace != null)
         {
-            this.necklace.enabled = true;
             this.necklace.sprite = this.selectedCharacterInventory.necklace.GetComponent<Item>().icon;
+            this.necklace.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.necklace.enabled = false;
+            this.necklace.sprite = this.emptySlotSprite;
+            this.necklace.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the cloak item
         if (this.selectedCharacterInventory.cloak != null)
         {
-            this.cloak.enabled = true;
             this.cloak.sprite = this.selectedCharacterInventory.cloak.GetComponent<Item>().icon;
+            this.cloak.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.cloak.enabled = false;
+            this.cloak.sprite = this.emptySlotSprite;
+            this.cloak.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the ring item
         if (this.selectedCharacterInventory.ring != null)
         {
-            this.ring.enabled = true;
             this.ring.sprite = this.selectedCharacterInventory.ring.GetComponent<Item>().icon;
+            this.ring.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.ring.enabled = false;
+            this.ring.sprite = this.emptySlotSprite;
+            this.ring.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the right hand item
         if (this.selectedCharacterInventory.rightHand != null)
         {
-            this.rightHand.enabled = true;
             this.rightHand.sprite = this.selectedCharacterInventory.rightHand.GetComponent<Item>().icon;
+            this.rightHand.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.rightHand.enabled = false;
+            this.rightHand.sprite = this.emptySlotSprite;
+            this.rightHand.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
-        //Sets the image of the torso item
+        //Sets the image of the left hand item
         if (this.selectedCharacterInventory.leftHand != null)
         {
-            this.leftHand.enabled = true;
             this.leftHand.sprite = this.selectedCharacterInventory.leftHand.GetComponent<Item>().icon;
+            this.leftHand.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.leftHand.enabled = false;
+            this.leftHand.sprite = this.emptySlotSprite;
+            this.leftHand.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
 
@@ -194,11 +204,13 @@ public class CharacterInventoryUI : MonoBehaviour
             if(this.selectedCharacterInventory.itemSlots[i] == null)
             {
                 this.slotImages[i].sprite = this.emptySlotSprite;
+                this.slotImages[i].GetComponent<InventoryButton>().slotIsEmpty = true;
             }
             //If the slot isn't empty, the image is enabled and set to the item's icon
             else
             {
                 this.slotImages[i].sprite = this.selectedCharacterInventory.itemSlots[i].GetComponent<Item>().icon;
+                this.slotImages[i].GetComponent<InventoryButton>().slotIsEmpty = false;
             }
         }
     }
@@ -218,43 +230,43 @@ public class CharacterInventoryUI : MonoBehaviour
         }
 
         //Otherwise, we check each item that's currently equipped
-        if(this.head == buttonImage_)
+        if(this.head == buttonImage_ && this.selectedCharacterInventory.helm != null)
         {
             return this.selectedCharacterInventory.helm.GetComponent<Item>();
         }
-        else if(this.torso == buttonImage_)
+        else if(this.torso == buttonImage_ && this.selectedCharacterInventory.chestPiece != null)
         {
             return this.selectedCharacterInventory.chestPiece.GetComponent<Item>();
         }
-        else if(this.legs == buttonImage_)
+        else if(this.legs == buttonImage_ && this.selectedCharacterInventory.leggings != null)
         {
             return this.selectedCharacterInventory.leggings.GetComponent<Item>();
         }
-        else if(this.feet == buttonImage_)
+        else if(this.feet == buttonImage_ && this.selectedCharacterInventory.shoes != null)
         {
             return this.selectedCharacterInventory.shoes.GetComponent<Item>();
         }
-        else if(this.hands == buttonImage_)
+        else if(this.hands == buttonImage_ && this.selectedCharacterInventory.gloves != null)
         {
             return this.selectedCharacterInventory.gloves.GetComponent<Item>();
         }
-        else if(this.necklace == buttonImage_)
+        else if(this.necklace == buttonImage_ && this.selectedCharacterInventory.necklace != null)
         {
             return this.selectedCharacterInventory.necklace.GetComponent<Item>();
         }
-        else if(this.cloak == buttonImage_)
+        else if(this.cloak == buttonImage_ && this.selectedCharacterInventory.cloak != null)
         {
             return this.selectedCharacterInventory.cloak.GetComponent<Item>();
         }
-        else if(this.ring == buttonImage_)
+        else if(this.ring == buttonImage_ && this.selectedCharacterInventory.ring != null)
         {
             return this.selectedCharacterInventory.ring.GetComponent<Item>();
         }
-        else if(this.rightHand == buttonImage_)
+        else if(this.rightHand == buttonImage_ && this.selectedCharacterInventory.rightHand != null)
         {
             return this.selectedCharacterInventory.rightHand.GetComponent<Item>();
         }
-        else if(this.leftHand == buttonImage_)
+        else if(this.leftHand == buttonImage_ && this.selectedCharacterInventory.leftHand != null)
         {
             return this.selectedCharacterInventory.leftHand.GetComponent<Item>();
         }

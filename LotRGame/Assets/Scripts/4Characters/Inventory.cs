@@ -45,6 +45,121 @@ public class Inventory : MonoBehaviour
     }
 
 
+    //Function called when this object is created
+    private void Awake()
+    {
+        //If this inventory was created with prefabs, we need to create instances of the prefab items
+        for(int s = 0; s < this.itemSlots.Count; ++s)
+        {
+            if(this.itemSlots[s] != null)
+            {
+                //Creates a new instance of the item and sets this object as the parent
+                GameObject newItemInstance = Object.Instantiate(this.itemSlots[s].gameObject, this.transform);
+                //Replaces the item reference with the instanced object's reference
+                this.itemSlots[s] = newItemInstance.GetComponent<Item>();
+            }
+        }
+
+        //Checking equipped item slots for prefabs
+        if(this.helm != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.helm.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.helm = newItemInstance.GetComponent<Armor>();
+        }
+
+        if(this.chestPiece != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.chestPiece.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.chestPiece = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.leggings != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.leggings.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.leggings = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.shoes != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.shoes.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.shoes = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.gloves != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.gloves.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.gloves = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.necklace != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.necklace.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.necklace = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.cloak != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.cloak.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.cloak = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.ring != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.ring.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.ring = newItemInstance.GetComponent<Armor>();
+        }
+
+        if (this.rightHand != null)
+        {
+            //Creates a new instance of the item and sets this object as the parent
+            GameObject newItemInstance = Object.Instantiate(this.rightHand.gameObject, this.transform);
+            //Replaces the item reference with the instanced object's reference
+            this.rightHand = newItemInstance.GetComponent<Weapon>();
+        }
+
+        if (this.leftHand != null)
+        {
+            //If we're trying to equip a 2 handed weapon to the left hand, it has to be cleared
+            if(this.leftHand.size == Weapon.WeaponSize.TwoHands)
+            {
+                this.leftHand = null;
+            }
+            //Making sure that there isn't a 2 handed weapon already equipped
+            else if (this.rightHand == null || this.rightHand.size == Weapon.WeaponSize.OneHand)
+            {
+                //Creates a new instance of the item and sets this object as the parent
+                GameObject newItemInstance = Object.Instantiate(this.leftHand.gameObject, this.transform);
+                //Replaces the item reference with the instanced object's reference
+                this.leftHand = newItemInstance.GetComponent<Weapon>();
+            }
+            //If the right hand is holding a 2 handed weapon, this weapon has to be cleared
+            else
+            {
+                this.leftHand = null;
+            }
+        }
+
+        //Finding the weight
+        this.FindTotalWeight();
+    }
+
+
     //Finds the total weight in kilograms of all items in this inventory
     public void FindTotalWeight()
     {
@@ -58,6 +173,7 @@ public class Inventory : MonoBehaviour
             {
                 //Adding the weight of all items in this slot
                 weightSum += (this.itemSlots[s].kilogramPerUnit * this.itemSlots[s].currentStackSize);
+                Debug.Log("FindTotalWeight, Item name: " + this.itemSlots[s].name + ", weight: " + this.itemSlots[s].kilogramPerUnit);
             }
         }
 
@@ -181,7 +297,7 @@ public class Inventory : MonoBehaviour
     //Adds an item to this object's inventory. Returns true if there was enough space, false if it's full
     public bool AddItemToInventory(Item itemToAdd_)
     {
-        //Checks to make sure the object isn't already in our inventory so we don't add it multiple times
+        //Checks to make sure the specific object instance isn't already in our inventory so we don't add it multiple times
         if(this.CheckForItem(itemToAdd_))
         {
             //If the item was found, we don't need to do anything else
