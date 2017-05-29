@@ -628,11 +628,23 @@ public class Inventory : MonoBehaviour
                 if(this.rightHand == null)
                 {
                     this.rightHand = weaponToEquip_;
+
+                    //Parenting the item to this inventory
+                    if(weaponToEquip_.transform.parent != this.transform)
+                    {
+                        weaponToEquip_.transform.SetParent(this.transform);
+                    }
                 }
                 //If the right hand is full and the left isn't, the weapon is equipped in the left hand
                 else if(this.leftHand == null && this.rightHand.size != Weapon.WeaponSize.TwoHands)
                 {
                     this.leftHand = weaponToEquip_;
+
+                    //Parenting the item to this inventory
+                    if (weaponToEquip_.transform.parent != this.transform)
+                    {
+                        weaponToEquip_.transform.SetParent(this.transform);
+                    }
                 }
                 //If both hands are full, this weapon replaces the weapon in the right hand
                 else
@@ -644,6 +656,12 @@ public class Inventory : MonoBehaviour
                     if (this.rightHand == null)
                     {
                         this.rightHand = weaponToEquip_;
+
+                        //Parenting the item to this inventory
+                        if (weaponToEquip_.transform.parent != this.transform)
+                        {
+                            weaponToEquip_.transform.SetParent(this.transform);
+                        }
                     }
                     else
                     {
@@ -661,6 +679,12 @@ public class Inventory : MonoBehaviour
                     //Two-handed weapons replace any weapons that are being held
                     this.rightHand = weaponToEquip_;
                     this.leftHand = null;
+
+                    //Parenting the item to this inventory
+                    if (weaponToEquip_.transform.parent != this.transform)
+                    {
+                        weaponToEquip_.transform.SetParent(this.transform);
+                    }
                 }
                 else
                 {
@@ -835,9 +859,7 @@ public class Inventory : MonoBehaviour
         {
             return;
         }
-
-        //Getting the reference to the item that will be replaced
-        Item returnedItem = this.itemSlots[index_];
+        
         //Setting the item slot to contain the new item
         this.itemSlots[index_] = itemToChangeTo_;
 
@@ -927,6 +949,35 @@ public class Inventory : MonoBehaviour
                     armorToChangeTo_.transform.SetParent(this.transform);
                 }
                 break;
+        }
+
+        //Updating this inventory's weight
+        this.FindTotalWeight();
+    }
+
+
+    //Function used to change the weapon at the given slot to the new one
+    public void ChangeWeaponItem(WeaponHand handSlot_, Weapon weaponToChangeTo_)
+    {
+        if(handSlot_ == WeaponHand.Right)
+        {
+            this.rightHand = weaponToChangeTo_;
+
+            //If the slot isn't empty, this inventory becomes the item's parent
+            if(weaponToChangeTo_ != null)
+            {
+                weaponToChangeTo_.transform.SetParent(this.transform);
+            }
+        }
+        else if(handSlot_ == WeaponHand.Left)
+        {
+            this.leftHand = weaponToChangeTo_;
+
+            //If the slot isn't empty, this inventory becomes the item's parent
+            if (weaponToChangeTo_ != null)
+            {
+                weaponToChangeTo_.transform.SetParent(this.transform);
+            }
         }
 
         //Updating this inventory's weight
