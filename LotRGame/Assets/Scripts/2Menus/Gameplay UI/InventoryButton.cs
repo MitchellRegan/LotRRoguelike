@@ -423,18 +423,48 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
                     
                     //If the hit button is an armor slot and this button is an inventory slot
-                        //If this button's item isn't armor
-                            //Do nothing
+                    else if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Armor)
+                    {
                         //If this button's item is armor
+                        if(thisButtonItem.GetComponent<Armor>())
+                        {
                             //If the hit button has armor equipped
+                            if(hitButtonItem.GetComponent<Armor>())
+                            {
                                 //If both items are the same type of armor
-                                    //Swap the references in the inventories
-                                //If both items are different types of armor
-                                    //Do nothing
+                                if (hitButtonItem.GetComponent<Armor>().slot == thisButtonItem.GetComponent<Armor>().slot)
+                                {
+                                    //Find the index of this button's item in this inventory
+                                    int thisButtonsItemIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<UnityEngine.UI.Image>());
+
+                                    //Sets this button's item to the hit button's armor's slot
+                                    hitButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, thisButtonItem.GetComponent<Armor>());
+                                    //Sets the hit button's armor to this button's inventory slot
+                                    thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonsItemIndex, hitButtonItem);
+                                }
+                                //If both items are different types of armor, nothing happens
+                            }
                             //If the hit button doesn't have armor equipped
+                            else if(hitButtonItem == null)
+                            {
                                 //Find out what type of armor goes into the inventory slot
+                                Armor.ArmorSlot hitButtonSlot = hitButtonUI.GetArmorSlotFromImage(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+
                                 //If this button's armor is the same type
-                                    //Swap the references in the inventories
+                                if (thisButtonItem.GetComponent<Armor>().slot == hitButtonSlot)
+                                {
+                                    //Find the index of this button's item in this inventory
+                                    int thisButtonsItemIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<UnityEngine.UI.Image>());
+
+                                    //Sets this button's item to the hit button's armor's slot
+                                    hitButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, thisButtonItem.GetComponent<Armor>());
+                                    //Sets this button's inventory slot to be empty
+                                    thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonsItemIndex, null);
+                                }
+                            }
+                        }
+                        //If this button's item isn't armor, nothing happens
+                    }
 
                     //If the hit button is an inventory slot and this button is an armor slot
                         //If the hit button is empty

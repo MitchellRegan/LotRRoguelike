@@ -274,4 +274,46 @@ public class CharacterInventoryUI : MonoBehaviour
         //If nothing is found, there's nothing there
         return null;
     }
+
+
+    //Function called from InventoryButton.cs to find the correct armor slot of a button
+    public Armor.ArmorSlot GetArmorSlotFromImage(Image slotImage_)
+    {
+        //Checking each of the armor slot images in this UI
+        if(this.head == slotImage_)
+        {
+            return Armor.ArmorSlot.Head;
+        }
+        else if(this.torso == slotImage_)
+        {
+            return Armor.ArmorSlot.Torso;
+        }
+        else if(this.legs == slotImage_)
+        {
+            return Armor.ArmorSlot.Legs;
+        }
+        else if(this.feet == slotImage_)
+        {
+            return Armor.ArmorSlot.Feet;
+        }
+        else if(this.hands == slotImage_)
+        {
+            return Armor.ArmorSlot.Hands;
+        }
+        else if(this.cloak == slotImage_)
+        {
+            return Armor.ArmorSlot.Cloak;
+        }
+        else if(this.necklace == slotImage_)
+        {
+            return Armor.ArmorSlot.Necklace;
+        }
+        else if(this.ring == slotImage_)
+        {
+            return Armor.ArmorSlot.Ring;
+        }
+
+        //If the image wasn't found, there isn't a slot
+        return Armor.ArmorSlot.None;
+    }
 }
