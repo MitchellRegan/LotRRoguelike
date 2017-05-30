@@ -416,11 +416,11 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
 
                     //If one button is a weapon slot and the other is an armor slot
-                    else if((this.buttonType == InventoryButtonType.Armor && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Weapon) ||
+                    /*else if((this.buttonType == InventoryButtonType.Armor && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Weapon) ||
                             (this.buttonType == InventoryButtonType.Weapon && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Armor))
                     {
                         //Nothing happens
-                    }
+                    }*/
                     
                     //If the hit button is an armor slot and this button is an inventory slot
                     else if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Armor)
@@ -467,21 +467,50 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
 
                     //If the hit button is an inventory slot and this button is an armor slot
+                    else if(this.buttonType == InventoryButtonType.Armor && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
+                    {
                         //If the hit button is empty
+                        if (hitButtonItem == null)
+                        {
                             //Swap the references in the inventories
+                            thisButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, null);
+
+                            //Finding the index of the hit button's item so it can be switched
+                            int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+                            hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                        }
                         //If the hit button's item is armor
+                        else if(hitButtonItem.GetComponent<Armor>())
+                        {
                             //If the hit button's item has the same nameID as this button's armor
+                            if (hitButtonItem.GetComponent<Item>().itemNameID == thisButtonItem.GetComponent<Item>().itemNameID)
+                            {
                                 //If the hit button's item has room for one more stack
+                                if (hitButtonItem.GetComponent<Item>().currentStackSize < hitButtonItem.GetComponent<Item>().maxStackSize)
+                                {
                                     //Stack this button's armor onto the hit button's
+                                    hitButtonItem.GetComponent<Item>().currentStackSize += 1;
+                                    thisButtonItem.transform.SetParent(hitButtonItem.transform);
+
                                     //Null this button's slot
-                                //If the hit button can't stack
-                                    //Do nothing
+                                    thisButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, null);
+                                }
+                                //If the hit button can't stack, nothing happens
+                            }
                             //If the hit button's armor is the same type as this button's armor
+                            else if (hitButtonItem.GetComponent<Armor>().slot == thisButtonItem.GetComponent<Armor>().slot)
+                            {
                                 //Swap the references in the inventories
-                            //If the hit button's armor isn't the same type
-                                //Do nothing
-                        //If the hit button's item isn't armor
-                            //Do nothing
+                                thisButtonUI.selectedCharacterInventory.ChangeArmorItemAtSlot(thisButtonItem.GetComponent<Armor>().slot, hitButtonItem.GetComponent<Armor>());
+
+                                //Finding the index of the hit button's item so it can be switched
+                                int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+                                hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                            }
+                            //If the hit button's armor isn't the same type, nothing happens
+                        }
+                        //If the hit button's item isn't armor, nothing happens
+                    }
 
                     //If the hit button is a weapon slot and this button is an inventory slot
                         //If this button's item isn't a weapon
