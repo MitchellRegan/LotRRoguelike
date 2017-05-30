@@ -316,4 +316,20 @@ public class CharacterInventoryUI : MonoBehaviour
         //If the image wasn't found, there isn't a slot
         return Armor.ArmorSlot.None;
     }
+
+
+    //Function called from InventoryButton.cs to find the correct hand slot of a button
+    public Inventory.WeaponHand GetWeaponHandSlotFromImage(Image slotImage_)
+    {
+        //If the image is the same one used for the right hand
+        if(slotImage_ == this.rightHand)
+        {
+            return Inventory.WeaponHand.Right;
+        }
+        //If the image is the same one used for the left hand
+        else
+        {
+            return Inventory.WeaponHand.Left;
+        }
+    }
 }
