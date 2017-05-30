@@ -651,60 +651,123 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
 
                     //If the hit button is an inventory slot and this button is a weapon slot
-                        //If the hit button's item is empty
-                            //Swap the references in the inventories
-                        //If the hit button's item isn't a weapon
-                            //Do nothing
-                        //If the hit button's item is a weapon
-                            //If the hit button's weapon is 1 handed
-                                //Swap the references in the inventories
-                            //If the hit button's weapon is 2 handed
-                                //If this button's inventory has weapons in the left and right hands
-                                    //If this button's inventory has a free slot for the left hand weapon
-                                        //Swaps the references in the inventories
-                                        //Adds this button's inventory's left hand weapon to its own inventory
-                                //If this button's inventory has weapons in only one hand
-                                    //Sets this button's inventory's right hand weapon to the hit button's weapon
-                                    //Sets the hit button's slot to this button's inventory's equipped weapon
-                                    
-
-                    /*//If both items are pieces of armor
-                    if(thisButtonItem.GetComponent<Armor>() && hitButtonItem.GetComponent<Armor>())
+                    else if(this.buttonType == InventoryButtonType.Weapon && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
                     {
-                        //If both items are for the same armor slot
-                        if(thisButtonItem.GetComponent<Armor>().slot == hitButtonItem.GetComponent<Armor>().slot)
+                        //If the hit button's item is empty
+                        if (hitButtonItem == null)
                         {
-                            //If both items are equipped, they're swapped
-                            if(this.buttonType == InventoryButtonType.Armor && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Armor)
+                            //If this button's weapon is equipped in the right hand
+                            if(thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<UnityEngine.UI.Image>()) == Inventory.WeaponHand.Right)
                             {
-                                thisButtonUI.selectedCharacterInventory.ChangeItem(thisButtonItem, hitButtonItem);
-                                hitButtonUI.selectedCharacterInventory.ChangeItem(hitButtonItem, thisButtonItem);
+                                //Sets this button's right hand to empty
+                                thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Right, null);
                             }
+                            //If this button's weapon is equipped in the left hand
+                            else
+                            {
+                                //Sets this button's left hand to empty
+                                thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Left, null);
+                            }
+
+                            //Finding the index of the hit button's item so it can be switched
+                            int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+                            hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
                         }
-                        //If they aren't for the same slot, they're just added to the regular inventory
+                        //If the hit button's item is a weapon
                         else
                         {
-                            //Checking to make sure both 
+                            //If the hit button shares the same ID as this button's weapon
+                            if (hitButtonItem.itemNameID == thisButtonItem.itemNameID)
+                            {
+                                //If this button's weapon can be stacked on the hit button's weapon
+                                if (hitButtonItem.currentStackSize < hitButtonItem.maxStackSize)
+                                {
+                                    //Stack this button's weapon on the hit button's weapon
+                                    hitButtonItem.currentStackSize += 1;
+                                    thisButtonItem.transform.SetParent(hitButtonItem.transform);
+
+                                    //If this button's weapon is equipped in the right hand
+                                    if (thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<UnityEngine.UI.Image>()) == Inventory.WeaponHand.Right)
+                                    {
+                                        //Sets this button's right hand to empty
+                                        thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Right, null);
+                                    }
+                                    //If this button's weapon is equipped in the left hand
+                                    else
+                                    {
+                                        //Sets this button's left hand to empty
+                                        thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Left, null);
+                                    }
+                                }
+                            }
+                            //If the hit button's weapon is 1 handed
+                            else if (hitButtonItem.GetComponent<Weapon>().size == Weapon.WeaponSize.OneHand)
+                            {
+                                //If this button's weapon is equipped in the right hand
+                                if (thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<UnityEngine.UI.Image>()) == Inventory.WeaponHand.Right)
+                                {
+                                    //Sets this button's right hand to hold the hit button's weapon
+                                    thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Right, hitButtonItem.GetComponent<Weapon>());
+                                }
+                                //If this button's weapon is equipped in the left hand
+                                else
+                                {
+                                    //Sets this button's left hand to hold the hit button's weapon
+                                    thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Left, hitButtonItem.GetComponent<Weapon>());
+                                }
+
+                                //Finding the index of the hit button's item so it can be switched
+                                int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+                                hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                            }
+                            //If the hit button's weapon is 2 handed
+                            else if(hitButtonItem.GetComponent<Weapon>().size == Weapon.WeaponSize.TwoHands)
+                            {
+                                //If this button's inventory has weapons in the left and right hands
+                                if (thisButtonUI.selectedCharacterInventory.rightHand != null && thisButtonUI.selectedCharacterInventory.leftHand != null)
+                                {
+                                    //If this button's inventory has a free slot for the left hand weapon
+                                    if (thisButtonUI.selectedCharacterInventory.CheckForEmptySlot() > 0)
+                                    {
+                                        //Adds this button's inventory's left hand weapon to its own inventory
+                                        thisButtonUI.selectedCharacterInventory.UnequipWeapon(Inventory.WeaponHand.Left);
+
+                                        //Sets this button's right hand to hold the hit button's weapon
+                                        thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Right, hitButtonItem.GetComponent<Weapon>());
+
+                                        //Finding the index of the hit button's item so it can be switched
+                                        int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+                                        hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                                    }
+                                }
+                                //If this button's inventory has weapons in only one hand
+                                else
+                                {
+                                    //Sets this button's inventory's right hand weapon to the hit button's weapon
+                                    //Sets the hit button's slot to this button's inventory's equipped weapon
+                                    //If this button's weapon is equipped in the right hand
+                                    if (thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<UnityEngine.UI.Image>()) == Inventory.WeaponHand.Right)
+                                    {
+                                        //Sets this button's right hand to hold the hit button's weapon
+                                        thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Right, hitButtonItem.GetComponent<Weapon>());
+                                    }
+                                    //If this button's weapon is equipped in the left hand
+                                    else
+                                    {
+                                        //Sets this button's right hand to hold the hit button's weapon and empties the left
+                                        thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Right, hitButtonItem.GetComponent<Weapon>());
+                                        thisButtonUI.selectedCharacterInventory.ChangeWeaponItem(Inventory.WeaponHand.Left, null);
+                                    }
+
+                                    //Finding the index of the hit button's item so it can be switched
+                                    int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
+                                    hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
+                                }
+                            }
                         }
+                        //If the hit button's item isn't a weapon, nothing happens
                     }
-                    //If both items are weapons
-                    else if(thisButtonItem.GetComponent<Weapon>() && hitButtonItem.GetComponent<Weapon>())
-                    {
 
-                    }
-                    //Otherwise neither item can be equipped, so both are just added to each other's inventory
-                    else
-                    {
-                        //Finding the index of this button's item so it can be switched
-                        int thisButtonIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<UnityEngine.UI.Image>());
-                        //Replacing this button's inventory with the hit button's item
-                        thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisButtonIndex, hitButtonItem);
-
-                        //Finding the index of the hit button's item so it can be switched
-                        int hitButtonIndex = hitButtonUI.slotImages.IndexOf(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
-                        //Replacing the hit button's inventory with this button's item
-                        hitButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(hitButtonIndex, thisButtonItem);
-                    }*/
 
                     //Updating both of the UIs for the inventories
                     thisButtonUI.UpdateImages();
