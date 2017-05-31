@@ -279,11 +279,11 @@ public class Inventory : MonoBehaviour
         }
 
         //Checking equipped slots
-        if(this.helm.gameObject == itemToSearchFor_.gameObject || this.chestPiece.gameObject == itemToSearchFor_.gameObject ||
-            this.leggings.gameObject == itemToSearchFor_.gameObject || this.shoes.gameObject == itemToSearchFor_.gameObject ||
-            this.gloves.gameObject == itemToSearchFor_.gameObject || this.necklace.gameObject == itemToSearchFor_.gameObject ||
-            this.cloak.gameObject == itemToSearchFor_.gameObject || this.ring.gameObject == itemToSearchFor_.gameObject ||
-            this.rightHand.gameObject == itemToSearchFor_.gameObject || this.leftHand.gameObject == itemToSearchFor_.gameObject)
+        if(this.helm == itemToSearchFor_ || this.chestPiece == itemToSearchFor_ ||
+            this.leggings == itemToSearchFor_ || this.shoes == itemToSearchFor_ ||
+            this.gloves == itemToSearchFor_ || this.necklace == itemToSearchFor_ ||
+            this.cloak == itemToSearchFor_ || this.ring == itemToSearchFor_ ||
+            this.rightHand == itemToSearchFor_ || this.leftHand == itemToSearchFor_)
         {
             return true;
         }
@@ -296,6 +296,7 @@ public class Inventory : MonoBehaviour
     //Adds an item to this object's inventory. Returns true if there was enough space, false if it's full
     public bool AddItemToInventory(Item itemToAdd_)
     {
+        Debug.Log("Inventory.AddItemToInventory");
         //Checks to make sure the specific object instance isn't already in our inventory so we don't add it multiple times
         if(this.CheckForItem(itemToAdd_))
         {
