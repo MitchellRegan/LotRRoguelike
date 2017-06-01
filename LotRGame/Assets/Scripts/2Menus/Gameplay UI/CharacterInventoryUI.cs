@@ -13,6 +13,11 @@ public class CharacterInventoryUI : MonoBehaviour
     [HideInInspector]
     public Inventory selectedCharacterInventory;
 
+    //Static reference to the different Character Inventory UI based on their types
+    public static CharacterInventoryUI partyInventory;
+    public static CharacterInventoryUI bagInventory;
+    public static CharacterInventoryUI tradeInventory;
+
     //The sprite that's shown on an empty inventory slot
     public Sprite emptySlotSprite;
 
@@ -41,20 +46,72 @@ public class CharacterInventoryUI : MonoBehaviour
     public List<Image> slotImages;
 
     
+
+    //Function called when this game object is created
+    private void Awake()
+    {
+        //Sets the static UI references based on the type
+        if(this.inventoryUIType == InventoryType.Party)
+        {
+            //If there is no static party inventory, this one becomes the static reference
+            if(CharacterInventoryUI.partyInventory == null)
+            {
+                CharacterInventoryUI.partyInventory = this;
+            }
+            //If a static party inventory reference exists, this is destroyed
+            else
+            {
+                Destroy(this);
+            }
+        }
+        else if(this.inventoryUIType == InventoryType.Bag)
+        {
+            //If there is no static bag inventory, this one becomes the static reference
+            if (CharacterInventoryUI.bagInventory == null)
+            {
+                CharacterInventoryUI.bagInventory = this;
+            }
+            //If a static bag inventory reference exists, this is destroyed
+            else
+            {
+                Destroy(this);
+            }
+        }
+        else if(this.inventoryUIType == InventoryType.Trade)
+        {
+            //If there is no static trade inventory, this one becomes the static reference
+            if (CharacterInventoryUI.tradeInventory == null)
+            {
+                CharacterInventoryUI.tradeInventory = this;
+            }
+            //If a static trade inventory reference exists, this is destroyed
+            else
+            {
+                Destroy(this);
+            }
+        }
+    }
 	
     //Function called when this component is enabled
     private void OnEnable()
     {
-        //Gets the inventory reference to the selected character at the front of the list
-        if(CharacterManager.globalReference.selectedCharacters.Count > 0)
+        //If there is no selected inventory, this object is immediately disabled
+        if(this.selectedCharacterInventory == null)
         {
-            this.ChangeInventory(CharacterManager.globalReference.selectedCharacters[0].GetComponent<Inventory>());
+            this.gameObject.SetActive(false);
+            return;
         }
-        //Otherwise, gets the reference to the first character in the party
-        else
-        {
-            this.ChangeInventory(CharacterManager.globalReference.playerParty[0].GetComponent<Inventory>());
-        }
+
+        //Updates the images so the UI is accurate
+        this.UpdateImages();
+    }
+
+
+    //Function called when this component is disabled
+    private void OnDisable()
+    {
+        //Clears this inventory UI's selected inventory
+        this.selectedCharacterInventory = null;
     }
 
 

@@ -815,34 +815,43 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             //If the clicked button is food
             if(thisButtonItem.GetComponent<Food>())
             {
-                //If this character's food isn't full (no sense eating when you're full. Always good to remember)
-                if(thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().currentFood < thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().maxFood)
+                //If this button's inventory is on the Party character, they can eat it
+                if(thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
                 {
-                    //Tells this character to eat this food
-                    thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().EatFood(thisButtonItem.GetComponent<Food>());
+                    //If this character's food isn't full (no sense eating when you're full. Always good to remember)
+                    if (thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().currentFood < thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().maxFood)
+                    {
+                        //Tells this character to eat this food
+                        thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().EatFood(thisButtonItem.GetComponent<Food>());
 
-                    //If this food has a stack higher than 1, one of the children is eaten, much like Chronos did
-                    if(thisButtonItem.currentStackSize > 1)
-                    {
-                        thisButtonItem.currentStackSize -= 1;
-                        //Finding the child of this button's item and destroying the first instance
-                        Transform childItem = thisButtonItem.transform.FindChild(thisButtonItem.name);
-                        if(childItem != null)
+                        //If this food has a stack higher than 1, one of the children is eaten, much like Chronos did
+                        if (thisButtonItem.currentStackSize > 1)
                         {
-                            Destroy(childItem.gameObject);
+                            thisButtonItem.currentStackSize -= 1;
+                            //Finding the child of this button's item and destroying the first instance
+                            Transform childItem = thisButtonItem.transform.FindChild(thisButtonItem.name);
+                            if (childItem != null)
+                            {
+                                Destroy(childItem.gameObject);
+                            }
+                            //If for some reason there's no child, I think something's gone wrong....
                         }
-                        //If for some reason there's no child, I think something's gone wrong....
+                        //Otherwise, this item is completely eaten and set to null
+                        else
+                        {
+                            //Finding the index of this button's item in the inventory
+                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                            //Destroying this item's object
+                            Destroy(thisButtonItem.gameObject);
+                            //Setting this inventory's item slot to be empty
+                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                        }
                     }
-                    //Otherwise, this item is completely eaten and set to null
-                    else
-                    {
-                        //Finding the index of this button's item in the inventory
-                        int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
-                        //Destroying this item's object
-                        Destroy(thisButtonItem.gameObject);
-                        //Setting this inventory's item slot to be empty
-                        thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
-                    }
+                }
+                //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
+                else
+                {
+
                 }
             }
             //If the clicked button is armor
