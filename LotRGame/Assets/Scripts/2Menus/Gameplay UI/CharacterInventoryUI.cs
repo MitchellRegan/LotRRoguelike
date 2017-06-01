@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class CharacterInventoryUI : MonoBehaviour
 {
+    //Enum for the type of inventory. Party: Only shows characters in the party. Trade: Shows characters that can trade with the Party character. Bag: A non-character inventory like a bag or chest
+    public enum InventoryType { Party, Trade, Bag };
+    public InventoryType inventoryUIType = InventoryType.Party;
+
     //Reference to the selected character whose invintory will be shown
     [HideInInspector]
     public Inventory selectedCharacterInventory;
@@ -16,6 +20,10 @@ public class CharacterInventoryUI : MonoBehaviour
     public Text selectedCharacterName;
     //Selected Character weight
     public Text selectedCharacterWeight;
+    //Selected Character physical armor
+    public Text selectedCharacterArmorPhysical;
+    //Selected Character magic armor
+    public Text selectedCharacterArmorMagic;
 
     //Selected Character equipped items
     public Image head;
@@ -32,14 +40,7 @@ public class CharacterInventoryUI : MonoBehaviour
     //Selected Character inventory items
     public List<Image> slotImages;
 
-
-
-    // Use this for initialization
-    void Start ()
-    {
-		
-	}
-	
+    
 	
     //Function called when this component is enabled
     private void OnEnable()
@@ -47,23 +48,27 @@ public class CharacterInventoryUI : MonoBehaviour
         //Gets the inventory reference to the selected character at the front of the list
         if(CharacterManager.globalReference.selectedCharacters.Count > 0)
         {
-            this.ChangeCharacter(CharacterManager.globalReference.selectedCharacters[0]);
+            this.ChangeInventory(CharacterManager.globalReference.selectedCharacters[0].GetComponent<Inventory>());
         }
         //Otherwise, gets the reference to the first character in the party
         else
         {
-            this.ChangeCharacter(CharacterManager.globalReference.playerParty[0]);
+            this.ChangeInventory(CharacterManager.globalReference.playerParty[0].GetComponent<Inventory>());
         }
     }
 
 
-    //Function called to change character references
-    public void ChangeCharacter(Character newCharacterRef_)
+    //Function called to change inventory references
+    public void ChangeInventory(Inventory newInventoryRef)
     {
         //Gets the reference to the inventory component
-        this.selectedCharacterInventory = newCharacterRef_.GetComponent<Inventory>();
-        //Sets the name of the character in the text slot
-        this.selectedCharacterName.text = newCharacterRef_.firstName + " " + newCharacterRef_.lastName;
+        this.selectedCharacterInventory = newInventoryRef;
+
+        //Sets the name of the character in the text slot if this is a character
+        if (this.selectedCharacterName != null && newInventoryRef.GetComponent<Character>())
+        {
+            this.selectedCharacterName.text = newInventoryRef.GetComponent<Character>().firstName + " " + newInventoryRef.GetComponent<Character>().lastName;
+        }
 
         //Updates all of the images in the UI
         this.UpdateImages();
@@ -74,7 +79,20 @@ public class CharacterInventoryUI : MonoBehaviour
     public void UpdateImages()
     {
         //Sets the weight text
-        this.selectedCharacterWeight.text = "Weight: " + this.selectedCharacterInventory.currentWeight;
+        if (this.selectedCharacterWeight != null)
+        {
+            this.selectedCharacterWeight.text = "Weight: " + this.selectedCharacterInventory.currentWeight;
+        }
+
+        //Sets the armor text
+        if (this.selectedCharacterArmorPhysical != null)
+        {
+            this.selectedCharacterArmorPhysical.text = "PA: " + this.selectedCharacterInventory.totalPhysicalArmor;
+        }
+        if (this.selectedCharacterArmorMagic != null)
+        {
+            this.selectedCharacterArmorMagic.text = "MA: " + this.selectedCharacterInventory.totalMagicArmor;
+        }
 
         //Sets the image of the head item
         if(this.selectedCharacterInventory.helm != null)

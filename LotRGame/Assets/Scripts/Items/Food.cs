@@ -8,6 +8,9 @@ public class Food : MonoBehaviour
     //The amount of hunger this piece of food restores when eaten
     public float hungerRestored = 1;
 
+    //The amount of thirst this piece of food restores when drunk
+    public float thirstRestored = 0;
+
     //The number of days this food lasts before it becomes rotten
     public int daysOfFreshness = 10;
     //The current number of days this food has lasted

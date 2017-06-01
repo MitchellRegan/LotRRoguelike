@@ -69,22 +69,6 @@ public class CharacterStateUI : MonoBehaviour
         int feet = inches / 12;
         inches = inches % 12;
         this.imperialText.text = feet + "\'" + inches + "\" Tall, " + pounds + " lb.";
-
-        //Setting the sliders to display the character's current health, hunger, thirst, sleep, and energy values
-        this.healthSlider.maxValue = this.selectedCharacterState.maxHealth;
-        this.healthSlider.value = this.selectedCharacterState.currentHealth;
-
-        this.hungerSlider.maxValue = this.selectedCharacterState.maxFood;
-        this.hungerSlider.value = this.selectedCharacterState.currentFood;
-
-        this.thirstSlider.maxValue = this.selectedCharacterState.maxWater;
-        this.thirstSlider.value = this.selectedCharacterState.currentWater;
-
-        this.sleepSlider.maxValue = this.selectedCharacterState.maxSleep;
-        this.sleepSlider.value = this.selectedCharacterState.currentSleep;
-
-        this.energySlider.maxValue = this.selectedCharacterState.maxEnergy;
-        this.energySlider.value = this.selectedCharacterState.currentEnergy;
     }
 
 
@@ -159,5 +143,26 @@ public class CharacterStateUI : MonoBehaviour
 
         //Updating the sliders for the new character
         this.UpdateTextAndSliders();
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //Setting the sliders to display the character's current health, hunger, thirst, sleep, and energy values
+        this.healthSlider.maxValue = this.selectedCharacterState.maxHealth;
+        this.healthSlider.value = this.selectedCharacterState.currentHealth;
+
+        this.hungerSlider.maxValue = this.selectedCharacterState.maxFood;
+        this.hungerSlider.value = this.selectedCharacterState.currentFood;
+
+        this.thirstSlider.maxValue = this.selectedCharacterState.maxWater;
+        this.thirstSlider.value = this.selectedCharacterState.currentWater;
+
+        this.sleepSlider.maxValue = this.selectedCharacterState.maxSleep;
+        this.sleepSlider.value = this.selectedCharacterState.currentSleep;
+
+        this.energySlider.maxValue = this.selectedCharacterState.maxEnergy;
+        this.energySlider.value = this.selectedCharacterState.currentEnergy;
     }
 }

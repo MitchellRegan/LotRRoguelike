@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
@@ -44,7 +45,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         //If the player right clicks to use/equip
         else if(eventData_.button == PointerEventData.InputButton.Right)
         {
-            Debug.Log("Right click");
+            this.UseItem();
         }
     }
 
@@ -796,5 +797,91 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
         //Moves this item to the mouse's position on the screen
         this.transform.position = Input.mousePosition;
+    }
+
+
+    //Function called from OnPointerDown to use the item that was right clicked
+    private void UseItem()
+    {
+
+        //Getting references to the inventory UI of this button
+        CharacterInventoryUI thisButtonUI = this.GetComponentInParent<CharacterInventoryUI>();
+
+        //If this is an inventory button
+        if(this.buttonType == InventoryButtonType.Bag)
+        {
+            Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<Image>());
+
+            //If the clicked button is food
+            if(thisButtonItem.GetComponent<Food>())
+            {
+                //If this character's food isn't full (no sense eating when you're full. Always good to remember)
+                if(thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().currentFood < thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().maxFood)
+                {
+                    //Tells this character to eat this food
+                    thisButtonUI.selectedCharacterInventory.GetComponent<PhysicalState>().EatFood(thisButtonItem.GetComponent<Food>());
+
+                    //If this food has a stack higher than 1, one of the children is eaten, much like Chronos did
+                    if(thisButtonItem.currentStackSize > 1)
+                    {
+                        thisButtonItem.currentStackSize -= 1;
+                        //Finding the child of this button's item and destroying the first instance
+                        Transform childItem = thisButtonItem.transform.FindChild(thisButtonItem.name);
+                        if(childItem != null)
+                        {
+                            Destroy(childItem.gameObject);
+                        }
+                        //If for some reason there's no child, I think something's gone wrong....
+                    }
+                    //Otherwise, this item is completely eaten and set to null
+                    else
+                    {
+                        //Finding the index of this button's item in the inventory
+                        int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                        //Destroying this item's object
+                        Destroy(thisButtonItem.gameObject);
+                        //Setting this inventory's item slot to be empty
+                        thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                    }
+                }
+            }
+            //If the clicked button is armor
+            else if(thisButtonItem.GetComponent<Armor>())
+            {
+                Debug.Log("Equipping Armor");
+            }
+            //If the clicked button is a weapon
+            else if(thisButtonItem.GetComponent<Weapon>())
+            {
+                Debug.Log("Equipping Weapon");
+            }
+        }
+        //If this is an armor button or weapon button
+        else if(this.buttonType == InventoryButtonType.Armor || this.buttonType == InventoryButtonType.Weapon)
+        {
+            //If there's an empty slot in our inventory
+            if(thisButtonUI.selectedCharacterInventory.CheckForEmptySlot() > 0)
+            {
+                //If this item is armor
+                if(this.buttonType == InventoryButtonType.Armor)
+                {
+                    //Finding the slot to unequip
+                    Armor.ArmorSlot slotToUnequip = thisButtonUI.GetArmorSlotFromImage(this.GetComponent<Image>());
+                    thisButtonUI.selectedCharacterInventory.UnequipArmor(slotToUnequip);
+                }
+                //If this is a weapon
+                else
+                {
+                    //Finding the weapon hand to unequip
+                    Inventory.WeaponHand handToUnequip = thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<Image>());
+                    thisButtonUI.selectedCharacterInventory.UnequipWeapon(handToUnequip);
+                }
+            }
+        }
+
+        //Updating the UI for the inventory
+        thisButtonUI.UpdateImages();
+        //Updating the inventory weight
+        thisButtonUI.selectedCharacterInventory.FindTotalWeight();
     }
 }

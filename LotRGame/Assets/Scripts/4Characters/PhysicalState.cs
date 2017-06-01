@@ -178,6 +178,31 @@ public class PhysicalState : MonoBehaviour
     //Function called externally to eat the given piece of food (or water)
     public void EatFood(Food foodToEat_)
     {
+        //Adding this food's hunger and thirst restored to this character's food and water
+        this.currentFood += foodToEat_.hungerRestored;
+        this.currentWater += foodToEat_.thirstRestored;
 
+        //Making sure that the food and water don't exceed the max amounts
+        if(this.currentFood > this.maxFood)
+        {
+            this.currentFood = this.maxFood;
+        }
+        if(this.currentWater > this.maxWater)
+        {
+            this.currentWater = this.maxWater;
+        }
+
+        //Updating the energy level
+        this.CalculateEnergyLevel();
+    }
+
+
+    //Function called externally to make this character sleep
+    public void Sleep()
+    {
+
+
+        //Updating the energy level
+        this.CalculateEnergyLevel();
     }
 }

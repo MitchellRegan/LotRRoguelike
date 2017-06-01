@@ -163,10 +163,14 @@ public class Inventory : MonoBehaviour
     //Finds the total weight in kilograms of all items in this inventory
     public void FindTotalWeight()
     {
-        //The sum that is returned
+        //The sum of the weight that'll be set
         float weightSum = 0;
+        //The sum of the physical armor of equipped gear
+        int physicalArmorSum = 0;
+        //The sum of the magic armor of equipped gear
+        int magicArmorSum = 0;
 
-        //Looping through each slot
+        //Looping through each inventory slot
         for(int s = 0; s < this.itemSlots.Count; ++s)
         {
             if(this.itemSlots[s] != null)
@@ -180,52 +184,82 @@ public class Inventory : MonoBehaviour
         if (this.helm != null)
         {
             weightSum += this.helm.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.helm.physicalDefense;
+            magicArmorSum += this.helm.magicDefense;
         }
 
         //Getting the weight for the chest slot if it isn't empty
         if (this.chestPiece != null)
         {
             weightSum += this.chestPiece.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.chestPiece.physicalDefense;
+            magicArmorSum += this.chestPiece.magicDefense;
         }
 
         //Getting the weight for the leg slot if it isn't empty
         if (this.leggings != null)
         {
             weightSum += this.leggings.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.leggings.physicalDefense;
+            magicArmorSum += this.leggings.magicDefense;
         }
 
         //Getting the weight for the glove slot if it isn't empty
         if (this.gloves != null)
         {
             weightSum += this.gloves.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.gloves.physicalDefense;
+            magicArmorSum += this.gloves.magicDefense;
         }
 
         //Getting the weight for the shoe slot if it isn't empty
         if (this.shoes != null)
         {
             weightSum += this.shoes.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.shoes.physicalDefense;
+            magicArmorSum += this.shoes.magicDefense;
         }
 
         //Getting the weight for the cloak slot if it isn't empty
         if (this.cloak != null)
         {
             weightSum += this.cloak.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.cloak.physicalDefense;
+            magicArmorSum += this.cloak.magicDefense;
         }
 
         //Getting the weight for the necklace slot if it isn't empty
         if (this.necklace != null)
         {
             weightSum += this.necklace.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.necklace.physicalDefense;
+            magicArmorSum += this.necklace.magicDefense;
         }
 
         //Getting the weight for the ring slot if it isn't empty
         if (this.ring != null)
         {
             weightSum += this.ring.GetComponent<Item>().kilogramPerUnit;
+            physicalArmorSum += this.ring.physicalDefense;
+            magicArmorSum += this.ring.magicDefense;
+        }
+
+        //Getting the weight for the right hand slot if it isn't empty
+        if(this.rightHand != null)
+        {
+            weightSum += this.rightHand.GetComponent<Item>().kilogramPerUnit;
+        }
+
+        //Getting the weight for the left hand slot if it isn't empty
+        if(this.leftHand != null)
+        {
+            weightSum += this.leftHand.GetComponent<Item>().kilogramPerUnit;
         }
 
 
         this.currentWeight = weightSum;
+        this.totalPhysicalArmor = physicalArmorSum;
+        this.totalMagicArmor = magicArmorSum;
     }
 
 
