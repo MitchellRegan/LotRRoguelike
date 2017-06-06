@@ -18,9 +18,6 @@ public class CharacterInventoryUI : MonoBehaviour
     public static CharacterInventoryUI bagInventory;
     public static CharacterInventoryUI tradeInventory;
 
-    //The sprite that's shown on an empty inventory slot
-    public Sprite emptySlotSprite;
-
     //Selected Character Name
     public Text selectedCharacterName;
     //Selected Character weight
@@ -154,120 +151,120 @@ public class CharacterInventoryUI : MonoBehaviour
         //Sets the image of the head item
         if(this.selectedCharacterInventory.helm != null)
         {
-            this.head.sprite = this.selectedCharacterInventory.helm.GetComponent<Item>().icon;
+            this.head.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.helm.GetComponent<Item>().icon);
             this.head.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.head.sprite = this.emptySlotSprite;
+            this.head.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.head.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the torso item
         if (this.selectedCharacterInventory.chestPiece != null)
         {
-            this.torso.sprite = this.selectedCharacterInventory.chestPiece.GetComponent<Item>().icon;
+            this.torso.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.chestPiece.GetComponent<Item>().icon);
             this.torso.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.torso.sprite = this.emptySlotSprite;
+            this.torso.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.torso.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the leg item
         if (this.selectedCharacterInventory.leggings != null)
         {
-            this.legs.sprite = this.selectedCharacterInventory.leggings.GetComponent<Item>().icon;
+            this.legs.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.leggings.GetComponent<Item>().icon);
             this.legs.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.legs.sprite = this.emptySlotSprite;
+            this.legs.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.legs.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the feet item
         if (this.selectedCharacterInventory.shoes != null)
         {
-            this.feet.sprite = this.selectedCharacterInventory.shoes.GetComponent<Item>().icon;
+            this.feet.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.shoes.GetComponent<Item>().icon);
             this.feet.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.feet.sprite = this.emptySlotSprite;
+            this.feet.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.feet.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
-        //Sets the image of the hand item
+        //Sets the image of the glove item
         if (this.selectedCharacterInventory.gloves != null)
         {
-            this.hands.sprite = this.selectedCharacterInventory.gloves.GetComponent<Item>().icon;
+            this.hands.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.gloves.GetComponent<Item>().icon);
             this.hands.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.hands.sprite = this.emptySlotSprite;
+            this.hands.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.hands.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the neck item
         if (this.selectedCharacterInventory.necklace != null)
         {
-            this.necklace.sprite = this.selectedCharacterInventory.necklace.GetComponent<Item>().icon;
+            this.necklace.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.necklace.GetComponent<Item>().icon);
             this.necklace.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.necklace.sprite = this.emptySlotSprite;
+            this.necklace.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.necklace.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the cloak item
         if (this.selectedCharacterInventory.cloak != null)
         {
-            this.cloak.sprite = this.selectedCharacterInventory.cloak.GetComponent<Item>().icon;
+            this.cloak.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.cloak.GetComponent<Item>().icon);
             this.cloak.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.cloak.sprite = this.emptySlotSprite;
+            this.cloak.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.cloak.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the ring item
         if (this.selectedCharacterInventory.ring != null)
         {
-            this.ring.sprite = this.selectedCharacterInventory.ring.GetComponent<Item>().icon;
+            this.ring.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.ring.GetComponent<Item>().icon);
             this.ring.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.ring.sprite = this.emptySlotSprite;
+            this.ring.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.ring.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the right hand item
         if (this.selectedCharacterInventory.rightHand != null)
         {
-            this.rightHand.sprite = this.selectedCharacterInventory.rightHand.GetComponent<Item>().icon;
+            this.rightHand.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.rightHand.GetComponent<Item>().icon);
             this.rightHand.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.rightHand.sprite = this.emptySlotSprite;
+            this.rightHand.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.rightHand.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
         //Sets the image of the left hand item
         if (this.selectedCharacterInventory.leftHand != null)
         {
-            this.leftHand.sprite = this.selectedCharacterInventory.leftHand.GetComponent<Item>().icon;
+            this.leftHand.GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.leftHand.GetComponent<Item>().icon);
             this.leftHand.GetComponent<InventoryButton>().slotIsEmpty = false;
         }
         else
         {
-            this.leftHand.sprite = this.emptySlotSprite;
+            this.leftHand.GetComponent<InventoryButton>().SetButtonIcon(null);
             this.leftHand.GetComponent<InventoryButton>().slotIsEmpty = true;
         }
 
@@ -278,13 +275,13 @@ public class CharacterInventoryUI : MonoBehaviour
             //If the current item slot is empty, the image is disabled
             if(this.selectedCharacterInventory.itemSlots[i] == null)
             {
-                this.slotImages[i].sprite = this.emptySlotSprite;
+                this.slotImages[i].GetComponent<InventoryButton>().SetButtonIcon(null);
                 this.slotImages[i].GetComponent<InventoryButton>().slotIsEmpty = true;
             }
             //If the slot isn't empty, the image is enabled and set to the item's icon
             else
             {
-                this.slotImages[i].sprite = this.selectedCharacterInventory.itemSlots[i].GetComponent<Item>().icon;
+                this.slotImages[i].GetComponent<InventoryButton>().SetButtonIcon(this.selectedCharacterInventory.itemSlots[i].GetComponent<Item>().icon);
                 this.slotImages[i].GetComponent<InventoryButton>().slotIsEmpty = false;
             }
         }

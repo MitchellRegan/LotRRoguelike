@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+    //Image that's used when this button doesn't have an item equipped to it
+    public Sprite emptySlotImage;
+
     //Bool that tracks when the player is dragging this inventory item
     private bool isBeingDragged = false;
     //Bool that determines if this slot is empty. If so, it can't be dragged
@@ -18,13 +21,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public InventoryButtonType buttonType = InventoryButtonType.Bag;
 
 
-
-    //Function called in the first frame
-    private void Start()
-    {
-        this.defaultPosition = this.transform.position;
-    }
-
+    
 
     //Function called when the player's mouse clicks down on this inventory item
     public void OnPointerDown(PointerEventData eventData_)
@@ -38,6 +35,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         //If the player left clicks to drag
         if(eventData_.button == PointerEventData.InputButton.Left)
         {
+            this.defaultPosition = this.transform.position;
             //Starts dragging this item and sets it as the front UI element
             this.isBeingDragged = true;
             this.GetComponent<RectTransform>().SetAsLastSibling();
@@ -803,7 +801,6 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     //Function called from OnPointerDown to use the item that was right clicked
     private void UseItem()
     {
-
         //Getting references to the inventory UI of this button
         CharacterInventoryUI thisButtonUI = this.GetComponentInParent<CharacterInventoryUI>();
 
@@ -851,7 +848,11 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                 //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
                 else
                 {
+                    //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
+                    if(InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
+                    {
 
+                    }
                 }
             }
             //If the clicked button is armor
@@ -892,5 +893,21 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         thisButtonUI.UpdateImages();
         //Updating the inventory weight
         thisButtonUI.selectedCharacterInventory.FindTotalWeight();
+    }
+
+
+    //Function called from CharacterInventoryUI.cs. If the image given isn't null, it's set as this button's image
+    public void SetButtonIcon(Sprite buttonIcon_)
+    {
+        //If no icon was given, this button's image is set to the empty slot image
+        if(buttonIcon_ == null)
+        {
+            this.GetComponent<Image>().sprite = this.emptySlotImage;
+        }
+        //Otherwise, this button's image is set to the image given
+        else
+        {
+            this.GetComponent<Image>().sprite = buttonIcon_;
+        }
     }
 }

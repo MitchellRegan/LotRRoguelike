@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class InventoryOpener : MonoBehaviour
 {
+    //Static reference to this component
+    public static InventoryOpener globalReference;
+
     //The reference to the Inventory UI screen for selected party members
     public GameObject partyInventoryUIObject;
     //The reference to the Inventory UI screen for bag/chest objects
@@ -12,6 +15,21 @@ public class InventoryOpener : MonoBehaviour
     public GameObject tradeInventoryUIObject;
 
 
+
+    //Function called when this game object is created
+    private void Awake()
+    {
+        //If there isn't already a global reference, this object becomes it
+        if(InventoryOpener.globalReference == null)
+        {
+            InventoryOpener.globalReference = this;
+        }
+        //If a global reference already exists, this object is destroyed
+        else
+        {
+            Destroy(this);
+        }
+    }
 	
     //Function called from the Character List Panel buttons. Sets the party inventory to the character at the given index
     public void OpenPartyInventoryAtIndex(int partyCharacterIndex_)
