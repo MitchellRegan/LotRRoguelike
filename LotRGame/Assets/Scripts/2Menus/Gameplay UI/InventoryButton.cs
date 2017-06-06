@@ -22,6 +22,13 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
 
     
+    //Function called when this component is enabled
+    private void OnEnable()
+    {
+        //Sets this button's default position
+        this.defaultPosition = this.transform.position;
+    }
+
 
     //Function called when the player's mouse clicks down on this inventory item
     public void OnPointerDown(PointerEventData eventData_)
@@ -851,42 +858,109 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
                     if(InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
                     {
+                        //Getting a quick reference to the hit button's Character Inventory UI component
+                        CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
 
+                        //If true, all items in this stack were successfully added to the party inventory and we can empty this button
+                        if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                        {
+                            //Finding the index of this button's item in the inventory and setting the slot to be empty
+                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                        }
+                        //Otherwise, not all of the stack could fit, so we can't set this button to empty
                     }
                 }
             }
             //If the clicked button is armor
             else if(thisButtonItem.GetComponent<Armor>())
             {
-                Debug.Log("Equipping Armor");
+                //If this button's inventory is on a character in the player party, it can be equipped
+                if(thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
+                {
+                    //Finding the index of this button's item in the inventory
+                    int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                    //Equipping this piece of armor
+                    thisButtonUI.selectedCharacterInventory.EquipArmor(thisItemsIndex);
+                }
+                //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
+                else
+                {
+                    //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
+                    if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
+                    {
+                        //Getting a quick reference to the hit button's Character Inventory UI component
+                        CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
+
+                        //If true, all items in this stack were successfully added to the party inventory and we can empty this button
+                        if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                        {
+                            //Finding the index of this button's item in the inventory and setting the slot to be empty
+                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                        }
+                        //Otherwise, not all of the stack could fit, so we can't set this button to empty
+                    }
+                }
             }
             //If the clicked button is a weapon
             else if(thisButtonItem.GetComponent<Weapon>())
             {
-                Debug.Log("Equipping Weapon");
+                //If this button's inventory is on a character in the player party
+                if(thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
+                {
+                    //Finding the index of this button's item in the inventory
+                    int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                    //Equipping this piece of armor
+                    thisButtonUI.selectedCharacterInventory.EquipWeapon(thisItemsIndex);
+                }
+                //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
+                else
+                {
+                    //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
+                    if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
+                    {
+                        //Getting a quick reference to the hit button's Character Inventory UI component
+                        CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
+
+                        //If true, all items in this stack were successfully added to the party inventory and we can empty this button
+                        if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                        {
+                            //Finding the index of this button's item in the inventory and setting the slot to be empty
+                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                        }
+                        //Otherwise, not all of the stack could fit, so we can't set this button to empty
+                    }
+                }
             }
         }
         //If this is an armor button or weapon button
         else if(this.buttonType == InventoryButtonType.Armor || this.buttonType == InventoryButtonType.Weapon)
         {
-            //If there's an empty slot in our inventory
-            if(thisButtonUI.selectedCharacterInventory.CheckForEmptySlot() > 0)
+            //If this button's inventory is a party character's, we can add it to their inventory
+            if (CharacterManager.globalReference.playerParty.Contains(thisButtonUI.selectedCharacterInventory.GetComponent<Character>()))
             {
-                //If this item is armor
-                if(this.buttonType == InventoryButtonType.Armor)
+                //If there's an empty slot in our inventory
+                if (thisButtonUI.selectedCharacterInventory.CheckForEmptySlot() > 0)
                 {
-                    //Finding the slot to unequip
-                    Armor.ArmorSlot slotToUnequip = thisButtonUI.GetArmorSlotFromImage(this.GetComponent<Image>());
-                    thisButtonUI.selectedCharacterInventory.UnequipArmor(slotToUnequip);
-                }
-                //If this is a weapon
-                else
-                {
-                    //Finding the weapon hand to unequip
-                    Inventory.WeaponHand handToUnequip = thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<Image>());
-                    thisButtonUI.selectedCharacterInventory.UnequipWeapon(handToUnequip);
+                    //If this item is armor
+                    if (this.buttonType == InventoryButtonType.Armor)
+                    {
+                        //Finding the slot to unequip
+                        Armor.ArmorSlot slotToUnequip = thisButtonUI.GetArmorSlotFromImage(this.GetComponent<Image>());
+                        thisButtonUI.selectedCharacterInventory.UnequipArmor(slotToUnequip);
+                    }
+                    //If this is a weapon
+                    else
+                    {
+                        //Finding the weapon hand to unequip
+                        Inventory.WeaponHand handToUnequip = thisButtonUI.GetWeaponHandSlotFromImage(this.GetComponent<Image>());
+                        thisButtonUI.selectedCharacterInventory.UnequipWeapon(handToUnequip);
+                    }
                 }
             }
+            //If this button's inventory is NOT a party character's, it's left alone. No stealing from others
         }
 
         //Updating the UI for the inventory
