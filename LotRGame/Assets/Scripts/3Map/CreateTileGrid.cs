@@ -32,6 +32,7 @@ public class CreateTileGrid : MonoBehaviour
 
     //Empty character prefab to use while testing
     public GameObject testCharacter;
+    public GameObject testCharacter2;
     
 
 
@@ -542,10 +543,13 @@ public class CreateTileGrid : MonoBehaviour
 
         //Instantiating the test character at the starting tile's location
         GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
+        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
         startChar.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
+        startChar2.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
 
         //Adding the starting character to the character manager's list of party members
         CharacterManager.globalReference.AddCharacterToParty(startChar.GetComponent<Character>());
+        CharacterManager.globalReference.AddCharacterToParty(startChar2.GetComponent<Character>());
 
         //Setting the camera base's position to the character position
         this.cameraBase.position = this.tileGrid[startRow][startCol].transform.position;

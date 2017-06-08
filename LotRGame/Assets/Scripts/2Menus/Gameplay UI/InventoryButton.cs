@@ -20,6 +20,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public enum InventoryButtonType { Bag, Armor, Weapon};
     public InventoryButtonType buttonType = InventoryButtonType.Bag;
 
+    //Text box that displays the stack size of the item shown
+    public Text stackSizeText;
+
 
     
     //Function called when this component is enabled
@@ -869,6 +872,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                             thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
                         }
                         //Otherwise, not all of the stack could fit, so we can't set this button to empty
+
+                        //Telling the party inventory UI screen to update so it shows the items that were added
+                        InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
                     }
                 }
             }
@@ -900,6 +906,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                             thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
                         }
                         //Otherwise, not all of the stack could fit, so we can't set this button to empty
+
+                        //Telling the party inventory UI screen to update so it shows the items that were added
+                        InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
                     }
                 }
             }
@@ -931,6 +940,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                             thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
                         }
                         //Otherwise, not all of the stack could fit, so we can't set this button to empty
+
+                        //Telling the party inventory UI screen to update so it shows the items that were added
+                        InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
                     }
                 }
             }
@@ -982,6 +994,31 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         else
         {
             this.GetComponent<Image>().sprite = buttonIcon_;
+        }
+
+        //If the stack size text box isn't null, we can display the count of items in this stack
+        if(this.stackSizeText != null)
+        {
+            //Getting references to the inventory UIs of this button and the hit button
+            CharacterInventoryUI thisButtonUI = this.GetComponentInParent<CharacterInventoryUI>();
+            //Getting the items that each button shows from their given inventories
+            Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<Image>());
+
+            //If this button's slot is empty, we make sure the text is empty
+            if(thisButtonItem == null)
+            {
+                this.stackSizeText.text = "";
+            }
+            //If this button's item has more than 1 item in its stack, we show how many there is
+            else if(thisButtonItem.currentStackSize > 1)
+            {
+                this.stackSizeText.text = "" + thisButtonItem.currentStackSize;
+            }
+            //If this button's item doesn't have any others in its stack, we don't show the count
+            else
+            {
+                this.stackSizeText.text = "";
+            }
         }
     }
 }

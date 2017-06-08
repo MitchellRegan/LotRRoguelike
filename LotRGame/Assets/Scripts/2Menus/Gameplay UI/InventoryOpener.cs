@@ -44,19 +44,59 @@ public class InventoryOpener : MonoBehaviour
             return;
         }
 
-        //If the given character is already showing in the player inventory UI screen
-        if (this.partyInventoryUIObject.activeSelf && CharacterInventoryUI.partyInventory.selectedCharacterInventory.gameObject == CharacterManager.globalReference.playerParty[partyCharacterIndex_].gameObject)
+        //If the player inventory UI screen is already showing
+        if (this.partyInventoryUIObject.activeSelf)
         {
-            //Disables the party inventory UI screen
-            this.partyInventoryUIObject.SetActive(false);
+
+            //If the displayed character in the party inventory screen is this character, all of the inventory UIs are disabled
+            if(CharacterInventoryUI.partyInventory.selectedCharacterInventory.gameObject == CharacterManager.globalReference.playerParty[partyCharacterIndex_].gameObject)
+            {
+                this.partyInventoryUIObject.SetActive(false);
+                this.tradeInventoryUIObject.SetActive(false);
+                this.bagInventoryUIObject.SetActive(false);
+            }
+            //If the displayed character ISN'T this character, this character is displayed in the trade character inventory screen
+            else
+            {
+                //If the trade inventory screen isn't showing
+                if (!this.tradeInventoryUIObject.activeSelf)
+                {
+                    //If the bag/chest inventory is showing, it needs to be disabled first
+                    if (this.bagInventoryUIObject.activeSelf)
+                    {
+                        this.bagInventoryUIObject.SetActive(false);
+                    }
+
+                    //Sets the global reference to the trade character inventory to the selected character's inventory component
+                    this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
+                    //Makes sure the trade Inventory UI screen is opened
+                    this.tradeInventoryUIObject.SetActive(true);
+                }
+                //If the trade inventory screen is showing
+                else
+                {
+                    //If the displayed character in the trade inventory screen is this character, the trade inventory UI is disabled
+                    if(CharacterInventoryUI.tradeInventory.selectedCharacterInventory.gameObject == CharacterManager.globalReference.playerParty[partyCharacterIndex_].gameObject)
+                    {
+                        this.tradeInventoryUIObject.SetActive(false);
+                    }
+                    //If the displayed character in the trade inventory screen is NOT this character, the trade inventory UI will display this character
+                    else
+                    {
+                        //Sets the global reference to the trade character inventory to the selected character's inventory component
+                        this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
+                        //Refreshes the trade inventory UI to display this character's inventory
+                        this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
+                    }
+                }
+            }
         }
-        //If the given character is not already showing on the player inventory UI screen
+        //If the player inventory screen isn't showing
         else
         {
-            //Sets the global reference to the player party inventory to the selected character's inventory component
-            CharacterInventoryUI.partyInventory.selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
-
-            //Makes sure the party Inventory UI screen is opened
+            //Sets the global reference to the trade character inventory to the selected character's inventory component
+            this.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
+            //Makes sure the trade Inventory UI screen is opened
             this.partyInventoryUIObject.SetActive(true);
         }
     }

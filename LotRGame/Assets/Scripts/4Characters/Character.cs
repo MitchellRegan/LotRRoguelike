@@ -11,6 +11,8 @@ public enum Races {Human, Elf, Dwarf, Orc, HalfMan, GillFolk, ScaleSkin, Amazon,
 [RequireComponent(typeof(Inventory))]
 [RequireComponent(typeof(Skills))]
 [RequireComponent(typeof(PhysicalState))]
+[RequireComponent(typeof(Movement))]
+[RequireComponent(typeof(ReceiveEvent))]
 public class Character : MonoBehaviour
 {
     //This character's first name

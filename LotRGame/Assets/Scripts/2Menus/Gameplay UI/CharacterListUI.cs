@@ -33,15 +33,15 @@ public class CharacterListUI : MonoBehaviour
 	// Update is called once per frame
 	private void Update ()
     {
-        //Updates the player health if there's a player in the given index
-		if(this.displayedCharacter != null)
-        {
-            this.healthBar.value = this.characterState.currentHealth;
-        }
-        //If the displayed character is empty but the character exists, we need to get the reference to it
-        else if (CharacterManager.globalReference.GetCharacterAtIndex(this.characterIndex) != null)
+        //If the displayed character isn't the one at this index, we need to change our character reference
+        if(CharacterManager.globalReference.GetCharacterAtIndex(this.characterIndex) != this.displayedCharacter)
         {
             this.SetCharacterInfo();
+        }
+        //Updates the player health if there's a player in the given index
+		else if(this.displayedCharacter != null)
+        {
+            this.healthBar.value = this.characterState.currentHealth;
         }
         //If there's no character at the index, the info is hidden
         else
@@ -67,6 +67,9 @@ public class CharacterListUI : MonoBehaviour
         //Sets the stats if the character exists
         if (this.displayedCharacter != null)
         {
+            //Displaying the minimizer game object
+            this.minimizer.SetActive(true);
+
             //Gets the character state component reference
             this.characterState = this.displayedCharacter.GetComponent<PhysicalState>();
 
