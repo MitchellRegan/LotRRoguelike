@@ -6,8 +6,6 @@ public class PathPoint : MonoBehaviour
 {
     //A list of all of the path points that are connected to this point
     public List<PathPoint> connectedPoints = new List<PathPoint>(6);
-    //A line renderer that draws lines between all connected points
-    LineRenderer ourLineRenderer;
 
     //Reference in pathfinding algorithms to the path point that lead to this one. Used in CreateTileGrid algorithms
     [HideInInspector]
@@ -32,9 +30,6 @@ public class PathPoint : MonoBehaviour
     //Function called on the first frame
     private void Start()
     {
-        //Setting the instance of our line renderer to this object's component
-        this.ourLineRenderer = this.GetComponent<LineRenderer>();
-
         //Making a list of verts for the line renderer
         List<Vector3> vertList = new List<Vector3>();
 
@@ -47,13 +42,6 @@ public class PathPoint : MonoBehaviour
                 vertList.Add(this.transform.position);
                 vertList.Add(connection.transform.position);
             }
-        }
-
-        //Looping through and adding all of the vertex positions to our line renderer's positions
-        this.ourLineRenderer.numPositions = vertList.Count;
-        for(int v = 0; v < vertList.Count; ++v)
-        {
-            this.ourLineRenderer.SetPosition(v, vertList[v]);
         }
     }
 
