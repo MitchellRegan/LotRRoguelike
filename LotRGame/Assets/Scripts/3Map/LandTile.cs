@@ -9,6 +9,9 @@ public class LandTile : MonoBehaviour
     //Static reference to the tile that the player has selected
     public static LandTile selectedTile;
 
+    //List of all moving objects (player characters and enemy encounters) that are on this tile
+    private List<GameObject> objectsOnThisTile;
+
     //The list of items that can be found on this tile from foraging. MUST be listed in ascending order of skill checks needed
     public List<Item> forageList;
     //The list of skill rolls needed for each foraged item. MUST align with the same index of the item in the forage list
@@ -31,9 +34,10 @@ public class LandTile : MonoBehaviour
 
 
     //Function called on initialization
-    private void Start()
+    private void Awake()
     {
         this.HilightThisTile(false);
+        this.objectsOnThisTile = new List<GameObject>(0);
     }
 
 
@@ -141,6 +145,56 @@ public class LandTile : MonoBehaviour
         {
             this.GetComponent<MeshRenderer>().materials[0].color = new Color(0.5f, 0.5f, 0.5f, 1);
             this.GetComponent<LineRenderer>().enabled = false;
+        }
+    }
+
+
+    //Function called from Movement.cs to tell this tile that a character is now on it
+    public void AddCharacterToThisTile(GameObject characterObjectToAdd_)
+    {
+        //Making sure we aren't adding a character more than once
+        if(!this.objectsOnThisTile.Contains(characterObjectToAdd_))
+        {
+            this.objectsOnThisTile.Add(characterObjectToAdd_);
+
+            //If an enemy encounter is added to this tile
+            if(characterObjectToAdd_.GetComponent<EnemyEncounter>())
+            {
+                //Looping through all of the player characters to see if any of them are on this tile
+                foreach(Character playerChar in CharacterManager.globalReference.playerParty)
+                {
+                    if(playerChar.GetComponent<Movement>().currentTile = this)
+                    {
+                        //Gets all player characters that are on this tile
+                        List<Character> playerCharsOnThisTile = new List<Character>(0);
+                        foreach(GameObject obj in this.objectsOnThisTile)
+                        {
+                            if(obj.GetComponent<Character>())
+                            {
+                                playerCharsOnThisTile.Add(obj.GetComponent<Character>());
+                            }
+                        }
+
+                        //Initiates combat
+                        CombatManager.globalReference.InitiateCombat(this.GetComponent<PathPoint>().type,
+                                            playerCharsOnThisTile, characterObjectToAdd_.GetComponent<EnemyEncounter>());
+
+                        //Stops this loop to prevent multiple combats from starting
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    //Function called from Movement.cs to tell this tile that a character is no longer on it
+    public void RemoveCharacterFromThisTile(GameObject characterObjectToRemove_)
+    {
+        //Making sure we aren't removing a character that's not on this tile
+        if(this.objectsOnThisTile.Contains(characterObjectToRemove_))
+        {
+            this.objectsOnThisTile.Remove(characterObjectToRemove_);
         }
     }
 }

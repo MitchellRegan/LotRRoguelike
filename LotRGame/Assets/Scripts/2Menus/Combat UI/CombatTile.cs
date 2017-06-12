@@ -7,6 +7,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PathPoint))]
 public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    //Row and column
+    public int row = 0;
+    public int col = 0;
+
     //Reference to this tile's path point reference
     private PathPoint ourPathPoint;
 
@@ -25,6 +29,14 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         //Setting this tile's color to the inactive color
         this.GetComponent<Image>().color = this.inactiveColor;
 	}
+
+
+    //Function called on the first frame of the game
+    private void Start()
+    {
+        //Adding this combat tile to the grid in the combat manager
+        CombatManager.globalReference.AddCombatTileToGrid(this, this.row, this.col);
+    }
 	
 
     //Function called when the player's mouse starts hovering over this tile

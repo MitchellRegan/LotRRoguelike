@@ -27,8 +27,14 @@ public class Movement : MonoBehaviour
     //Function called externally to set the tile that this character is on
     public void SetCurrentTile(LandTile currentTile_)
     {
+        //Leaving the previous tile
+        if(this.currentTile != null)
+        {
+            this.currentTile.RemoveCharacterFromThisTile(this.gameObject);
+        }
         //Setting the current tile
         this.currentTile = currentTile_;
+        this.currentTile.AddCharacterToThisTile(this.gameObject);
 
         //Resetting the travel times and clearing the tile to travel to
         this.currentTravelTime = 0;
