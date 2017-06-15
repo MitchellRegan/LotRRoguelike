@@ -48,7 +48,7 @@ public class CombatManager : MonoBehaviour
         //Initializing our combat tile grid
         this.combatTileGrid = new List<List<CombatTile>>();
         //Setting up each column of rows
-        for (int col = 0; col < 13; ++col)
+        for (int col = 0; col < 14; ++col)
         {
             this.combatTileGrid.Add(new List<CombatTile>());
             //Setting up each row inside the current column
