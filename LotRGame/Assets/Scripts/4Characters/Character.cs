@@ -6,7 +6,7 @@ using UnityEngine;
 //Enum that determines a character's gender and some stat modifiers
 public enum Genders { Male, Female, Genderless };
 //Enum for the different types of character races
-public enum Races {Human, Elf, Dwarf, Orc, HalfMan, GillFolk, ScaleSkin, Amazon, Minotaur};
+public enum Races {Human, Elf, Dwarf, Orc, HalfMan, GillFolk, ScaleSkin, Amazon, Minotaur, Other};
 
 [RequireComponent(typeof(Inventory))]
 [RequireComponent(typeof(Skills))]

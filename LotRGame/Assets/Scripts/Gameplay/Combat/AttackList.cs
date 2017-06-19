@@ -17,7 +17,7 @@ public class AttackInfo
     public string attackName = "";
 
     //The type of action this attack requires
-    public enum AttackActionType { Standard, FullRound, Quick, Free };
+    public enum AttackActionType { Standard, FullRound, Quick };
     public AttackActionType actionType = AttackActionType.Standard;
 
     //The range of this attack in terms of spaces

@@ -8,6 +8,13 @@ public class CombatManager : MonoBehaviour
     //Static reference to this combat manager
     public static CombatManager globalReference;
 
+    //Enum for the state of this combat manager to decide what to do on update
+    private enum combatState {Wait, IncreaseInitiative, SelectAction, SelectItem, SelectAbility, SelectTarget};
+    private combatState currentState = combatState.IncreaseInitiative;
+
+    //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
+    private List<Character> actingCharacters = null;
+
     //2D List of all combat tiles in the combat screen map. Col[row}
     public List<List<CombatTile>> combatTileGrid;
 
@@ -20,6 +27,18 @@ public class CombatManager : MonoBehaviour
     [HideInInspector]
     public List<Character> enemyCharactersInCombat;
 
+    //The color of player initiative panels when they're the acting character
+    public Color actingCharacterColor = Color.green;
+    //The color of enemy initiative panels when they're the acting character
+    public Color actingEnemyColor = Color.red;
+    //The color of initiative panels when not acting
+    public Color inactivePanelColor = Color.white;
+
+    //The list of all sliders that show each player character's initiative
+    public List<InitiativePanel> playerInitiativeSliders;
+    //The list of all sliders that show each enemy character's initiative
+    public List<InitiativePanel> enemyInitiativeSliders;
+
     //Reference to the background image that's set at the start of combat based on the type of land tile
     public Image backgroundImageObject;
 
@@ -28,7 +47,7 @@ public class CombatManager : MonoBehaviour
 
 
 
-	// Use this for initialization
+	// Function called when this object is created
 	private void Awake ()
     {
         //Setting the static reference
@@ -57,10 +76,44 @@ public class CombatManager : MonoBehaviour
                 this.combatTileGrid[col].Add(null);
             }
         }
-	}
+    }
 
 
-    //Adds a combat tile to our combat tile grid at the row and column given
+    //Function called every frame
+    private void Update()
+    {
+        //Determine what we do based on the current state
+        switch(this.currentState)
+        {
+            //Nothing, waiting for player feedback
+            case combatState.Wait:
+                return;
+            //Adding each character's attack speed to their current initative 
+            case combatState.IncreaseInitiative:
+                this.IncreaseInitiative();
+                break;
+
+            //Hilighting the selected character whose turn it is
+            case combatState.SelectAction:
+                //If the selected character is a player
+                if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
+                {
+                    int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
+                    this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
+                }
+                //If the selected character is an enemy
+                else
+                {
+                    int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
+                    this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
+                    Debug.Log("Combat Manager.Update. Enemies need AI here");
+                }
+                break;
+        }
+    }
+
+
+    //Function called externally from CombatTile.cs on Start. Adds a combat tile to our combat tile grid at the row and column given
     public void AddCombatTileToGrid(CombatTile tileToAdd_, int row_, int col_)
     {
         if(this.combatTileGrid[col_][row_] != null)
@@ -73,11 +126,73 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    //Function called to initiate combat
+    //Function called externally from LandTile.cs to initiate combat
     public void InitiateCombat(LandType combatLandType_, List<Character> charactersInCombat_, EnemyEncounter encounter_)
     {
         //Setting the background image
         this.SetBackgroundImage(combatLandType_);
+
+        //Clearing the list of player characters and adding all of the ones given
+        this.playerCharactersInCombat.Clear();
+        this.playerCharactersInCombat = charactersInCombat_;
+
+        //Clearing the list of enemy characters and adding all of the ones from the given encounter
+        this.enemyCharactersInCombat.Clear();
+        foreach(EncounterEnemy enemy in encounter_.enemies)
+        {
+            this.enemyCharactersInCombat.Add(enemy.enemyCreature);
+        }
+
+        //Looping through and setting all of the player initiative bars to display the correct character
+        for(int p = 0; p < this.playerInitiativeSliders.Count; ++p)
+        {
+            //if the current index isn't outside the count of characters
+            if(p <= this.playerCharactersInCombat.Count)
+            {
+                //The initiative slider is shown
+                this.playerInitiativeSliders[p].initiativeSlider.gameObject.SetActive(true);
+                //Makes sure the initiative is set to 0
+                this.playerInitiativeSliders[p].initiativeSlider.value = 0;
+                //Setting the character's name
+                this.playerInitiativeSliders[p].characterName.text = this.playerCharactersInCombat[p].firstName;
+                //Making the background panel set to the inactive color
+                this.playerInitiativeSliders[p].background.color = this.inactivePanelColor;
+
+            }
+            //If the index is outside the count of characters
+            else
+            {
+                //The initiative slider is hidden
+                this.playerInitiativeSliders[p].initiativeSlider.gameObject.SetActive(false);
+            }
+        }
+
+        //Looping through and setting all of the enemy initiative bars to display the correct enemy
+        for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
+        {
+            //if the current index isn't outside the count of enemies
+            if (e <= this.enemyCharactersInCombat.Count)
+            {
+                //The initiative slider is shown
+                this.enemyInitiativeSliders[e].initiativeSlider.gameObject.SetActive(true);
+                //Makes sure the initiative is set to 0
+                this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
+                //Setting the enemy's name
+                this.enemyInitiativeSliders[e].characterName.text = this.enemyCharactersInCombat[e].firstName;
+                //Making the background panel set to the inactive color
+                this.enemyInitiativeSliders[e].background.color = this.inactivePanelColor;
+
+            }
+            //If the index is outside the count of enemies
+            else
+            {
+                //The initiative slider is hidden
+                this.enemyInitiativeSliders[e].initiativeSlider.gameObject.SetActive(false);
+            }
+        }
+
+        //Setting the state to start increasing initiatives
+        this.currentState = combatState.IncreaseInitiative;
     }
 
 
@@ -122,6 +237,45 @@ public class CombatManager : MonoBehaviour
 
         return totalDamage;
     }
+
+
+    //Function called from Update. Loops through all characters and increases their initiative
+    private void IncreaseInitiative()
+    {
+        //Looping through each player character
+        for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
+        {
+            //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
+            PhysicalState physState = this.playerCharactersInCombat[p].GetComponent<PhysicalState>();
+            this.playerInitiativeSliders[p].initiativeSlider.value += physState.currentInitiativeSpeed * (physState.currentEnergy / physState.maxEnergy);
+
+            //If the slider is filled, this character is added to the acting character list
+            if(this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
+            {
+                this.actingCharacters.Add(this.playerCharactersInCombat[p]);
+            }
+        }
+
+        //Looping through each enemy character
+        for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
+        {
+            //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
+            PhysicalState physState = this.enemyCharactersInCombat[e].GetComponent<PhysicalState>();
+            this.enemyInitiativeSliders[e].initiativeSlider.value += physState.currentInitiativeSpeed * (physState.currentEnergy / physState.maxEnergy);
+
+            //If the slider is filled, this character is added to the acting character list
+            if(this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
+            {
+                this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+            }
+        }
+
+        //If there are any characters in the acting Characters list, the state changes so we stop updating initiative meters
+        if(this.actingCharacters.Count != 0)
+        {
+            this.currentState = combatState.SelectAction;
+        }
+    }
 }
 
 [System.Serializable]
@@ -131,4 +285,13 @@ public class BackgroundImageTypes
     public LandType tileType = LandType.Empty;
     //The background image associated with this tile type
     public Sprite backgroundImage;
+}
+
+
+[System.Serializable]
+public class InitiativePanel
+{
+    public Slider initiativeSlider;
+    public Text characterName;
+    public Image background;
 }

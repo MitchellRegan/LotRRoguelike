@@ -20,6 +20,7 @@ public class CharacterGenerator : MonoBehaviour
     public Vector2 height = new Vector2(150, 190);
     public Vector2 weight = new Vector2(58, 105);
     public Vector2 health = new Vector2(85, 115);
+    public Vector2 initiative = new Vector2(0.005f, 0.015f);
 
     public bool requiresFood = true;
     public bool requiresWater = true;
@@ -125,6 +126,9 @@ public class CharacterGenerator : MonoBehaviour
         characterStateRef.maxFood = this.daysBeforeStarving;
         characterStateRef.maxWater = this.daysBeforeDehydrated;
         characterStateRef.maxSleep = this.daysBeforeFatalInsomnia;
+
+        //Sets the base initiative
+        characterStateRef.currentInitiativeSpeed = Random.Range(this.initiative.x, this.initiative.y);
     }
 
 
