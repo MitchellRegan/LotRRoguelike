@@ -52,41 +52,4 @@ public class Skills : MonoBehaviour
     [Range(1, 100)]
     public int swimming = 30;
     public int swimmingMod = 0;
-
-
-
-    //How damaging this character can punch
-    [Range(1, 100)]
-    public int punching = 30;
-    public int punchingMod = 0;
-
-    //How well this character can use daggers in combat
-    [Range(1, 100)]
-    public int daggers = 30;
-    public int daggersMod = 0;
-
-    //How well this character can use swords in combat
-    [Range(1, 100)]
-    public int swords = 30;
-    public int swordsMod = 0;
-
-    //How well this character can use axes in combat
-    [Range(1, 100)]
-    public int axes = 30;
-    public int axesMod = 0;
-
-    //How well this character can use spears in combat
-    [Range(1, 100)]
-    public int spears = 30;
-    public int spearsMod = 0;
-
-    //How well this character can use bows in combat
-    [Range(1, 100)]
-    public int bows = 30;
-    public int bowsMod = 0;
-
-    //How well this character can use improvised weapons in combat
-    [Range(1, 100)]
-    public int improvised = 30;
-    public int improvisedMod = 0;
 }

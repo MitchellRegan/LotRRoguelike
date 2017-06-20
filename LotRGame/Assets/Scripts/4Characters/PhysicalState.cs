@@ -38,10 +38,7 @@ public class PhysicalState : MonoBehaviour
     public float currentEnergy = 1;
     //The maximum amount of energy this character can have
     public float maxEnergy = 1;
-
-
-    //The speed that this character's initiative meter increases each frame during combat
-    public float currentInitiativeSpeed = 0.01f;
+    
 
 
 

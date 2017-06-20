@@ -246,8 +246,8 @@ public class CombatManager : MonoBehaviour
         for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
         {
             //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
-            PhysicalState physState = this.playerCharactersInCombat[p].GetComponent<PhysicalState>();
-            this.playerInitiativeSliders[p].initiativeSlider.value += physState.currentInitiativeSpeed * (physState.currentEnergy / physState.maxEnergy);
+            CombatStats combatStats = this.playerCharactersInCombat[p].GetComponent<CombatStats>();
+            this.playerInitiativeSliders[p].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
             //If the slider is filled, this character is added to the acting character list
             if(this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
@@ -260,8 +260,8 @@ public class CombatManager : MonoBehaviour
         for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
         {
             //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
-            PhysicalState physState = this.enemyCharactersInCombat[e].GetComponent<PhysicalState>();
-            this.enemyInitiativeSliders[e].initiativeSlider.value += physState.currentInitiativeSpeed * (physState.currentEnergy / physState.maxEnergy);
+            CombatStats combatStats = this.enemyCharactersInCombat[e].GetComponent<CombatStats>();
+            this.enemyInitiativeSliders[e].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
             //If the slider is filled, this character is added to the acting character list
             if(this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)

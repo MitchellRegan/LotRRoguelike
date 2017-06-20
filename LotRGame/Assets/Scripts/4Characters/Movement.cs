@@ -30,11 +30,11 @@ public class Movement : MonoBehaviour
         //Leaving the previous tile
         if(this.currentTile != null)
         {
-            this.currentTile.RemoveCharacterFromThisTile(this.gameObject);
+            this.currentTile.RemoveObjectFromThisTile(this.gameObject);
         }
         //Setting the current tile
         this.currentTile = currentTile_;
-        this.currentTile.AddCharacterToThisTile(this.gameObject);
+        this.currentTile.AddObjectToThisTile(this.gameObject);
 
         //Resetting the travel times and clearing the tile to travel to
         this.currentTravelTime = 0;

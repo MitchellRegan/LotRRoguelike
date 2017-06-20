@@ -25,14 +25,6 @@ public class CharacterSkillsUI : MonoBehaviour
     public Slider hidingSlider;
     public Slider swimmingSlider;
 
-    public Slider punchingSlider;
-    public Slider daggersSlider;
-    public Slider swordsSlider;
-    public Slider axesSlider;
-    public Slider spearsSlider;
-    public Slider bowsSlider;
-    public Slider improvisedSlider;
-
 
 
     //Function called when this component is enabled
@@ -75,14 +67,6 @@ public class CharacterSkillsUI : MonoBehaviour
         this.climbingSlider.value = this.selectedCharacterSkillList.climbing + this.selectedCharacterSkillList.climbingMod;
         this.hidingSlider.value = this.selectedCharacterSkillList.hiding + this.selectedCharacterSkillList.hidingMod;
         this.swimmingSlider.value = this.selectedCharacterSkillList.swimming + this.selectedCharacterSkillList.swimmingMod;
-
-        this.punchingSlider.value = this.selectedCharacterSkillList.punching + this.selectedCharacterSkillList.punchingMod;
-        this.daggersSlider.value = this.selectedCharacterSkillList.daggers + this.selectedCharacterSkillList.daggersMod;
-        this.swordsSlider.value = this.selectedCharacterSkillList.swords + this.selectedCharacterSkillList.swordsMod;
-        this.axesSlider.value = this.selectedCharacterSkillList.axes + this.selectedCharacterSkillList.axesMod;
-        this.spearsSlider.value = this.selectedCharacterSkillList.spears + this.selectedCharacterSkillList.spearsMod;
-        this.bowsSlider.value = this.selectedCharacterSkillList.bows + this.selectedCharacterSkillList.bowsMod;
-        this.improvisedSlider.value = this.selectedCharacterSkillList.improvised + this.selectedCharacterSkillList.improvisedMod;
     }
 
 

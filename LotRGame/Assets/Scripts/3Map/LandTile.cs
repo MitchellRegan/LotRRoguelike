@@ -150,37 +150,28 @@ public class LandTile : MonoBehaviour
 
 
     //Function called from Movement.cs to tell this tile that a character is now on it
-    public void AddCharacterToThisTile(GameObject characterObjectToAdd_)
+    public void AddObjectToThisTile(GameObject objectToAdd_)
     {
         //Making sure we aren't adding a character more than once
-        if(!this.objectsOnThisTile.Contains(characterObjectToAdd_))
+        if(!this.objectsOnThisTile.Contains(objectToAdd_))
         {
-            this.objectsOnThisTile.Add(characterObjectToAdd_);
+            this.objectsOnThisTile.Add(objectToAdd_);
 
             //If an enemy encounter is added to this tile
-            if(characterObjectToAdd_.GetComponent<EnemyEncounter>())
+            if(objectToAdd_.GetComponent<EnemyEncounter>())
             {
-                //Looping through all of the player characters to see if any of them are on this tile
-                foreach(Character playerChar in CharacterManager.globalReference.playerParty)
+                //Looping through all of the objects on this tile to see if a player party is on it
+                foreach(GameObject currentObj in this.objectsOnThisTile)
                 {
-                    if(playerChar.GetComponent<Movement>().currentTile = this)
+                    //If the current object is a player party
+                    if(currentObj.GetComponent<PartyGroup>())
                     {
-                        //Gets all player characters that are on this tile
-                        List<Character> playerCharsOnThisTile = new List<Character>(0);
-                        foreach(GameObject obj in this.objectsOnThisTile)
-                        {
-                            if(obj.GetComponent<Character>())
-                            {
-                                playerCharsOnThisTile.Add(obj.GetComponent<Character>());
-                            }
-                        }
-
-                        //Initiates combat
-                        CombatManager.globalReference.InitiateCombat(this.GetComponent<PathPoint>().type,
-                                            playerCharsOnThisTile, characterObjectToAdd_.GetComponent<EnemyEncounter>());
-
-                        //Stops this loop to prevent multiple combats from starting
-                        break;
+                        //Initiating combat with the first group of characters found.
+                        //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
+                        LandType ourTileType = this.GetComponent<PathPoint>().type;
+                        List<Character> playerCharsOnTile = currentObj.GetComponent<PartyGroup>().charactersInParty;
+                        EnemyEncounter newEncounter = objectToAdd_.GetComponent<EnemyEncounter>();
+                        CombatManager.globalReference.InitiateCombat(ourTileType, playerCharsOnTile, newEncounter);
                     }
                 }
             }
@@ -189,12 +180,12 @@ public class LandTile : MonoBehaviour
 
 
     //Function called from Movement.cs to tell this tile that a character is no longer on it
-    public void RemoveCharacterFromThisTile(GameObject characterObjectToRemove_)
+    public void RemoveObjectFromThisTile(GameObject objectToRemove_)
     {
         //Making sure we aren't removing a character that's not on this tile
-        if(this.objectsOnThisTile.Contains(characterObjectToRemove_))
+        if(this.objectsOnThisTile.Contains(objectToRemove_))
         {
-            this.objectsOnThisTile.Remove(characterObjectToRemove_);
+            this.objectsOnThisTile.Remove(objectToRemove_);
         }
     }
 }

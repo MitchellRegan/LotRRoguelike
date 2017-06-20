@@ -20,7 +20,6 @@ public class CharacterGenerator : MonoBehaviour
     public Vector2 height = new Vector2(150, 190);
     public Vector2 weight = new Vector2(58, 105);
     public Vector2 health = new Vector2(85, 115);
-    public Vector2 initiative = new Vector2(0.005f, 0.015f);
 
     public bool requiresFood = true;
     public bool requiresWater = true;
@@ -44,6 +43,8 @@ public class CharacterGenerator : MonoBehaviour
     public Vector2 hiding = new Vector2(10, 50);
     public Vector2 swimming = new Vector2(10, 50);
 
+
+    /* ~~~~~~ COMBAT ~~~~~~*/
     public Vector2 punching = new Vector2(10, 50);
     public Vector2 daggers = new Vector2(10, 50);
     public Vector2 swords = new Vector2(10, 50);
@@ -51,6 +52,10 @@ public class CharacterGenerator : MonoBehaviour
     public Vector2 spears = new Vector2(10, 50);
     public Vector2 bows = new Vector2(10, 50);
     public Vector2 improvised = new Vector2(10, 50);
+
+    public Vector2 initiative = new Vector2(0.005f, 0.015f);
+
+    public Vector2 combatSpeed = new Vector2(2, 5);
 
 
     /* ~~~~~~ ARMOR ~~~~~~*/
@@ -76,6 +81,7 @@ public class CharacterGenerator : MonoBehaviour
         this.GenerateCharacter();
         this.GeneratePhysicalState();
         this.GenerateSkills();
+        this.GenerateCombatStats();
         this.GenerateArmor();
 
         //Removes this component from the character since we no longer need it
@@ -126,9 +132,6 @@ public class CharacterGenerator : MonoBehaviour
         characterStateRef.maxFood = this.daysBeforeStarving;
         characterStateRef.maxWater = this.daysBeforeDehydrated;
         characterStateRef.maxSleep = this.daysBeforeFatalInsomnia;
-
-        //Sets the base initiative
-        characterStateRef.currentInitiativeSpeed = Random.Range(this.initiative.x, this.initiative.y);
     }
 
 
@@ -149,14 +152,25 @@ public class CharacterGenerator : MonoBehaviour
         characterSkillsRef.climbing = Mathf.RoundToInt(Random.Range(this.climbing.x, this.climbing.y));
         characterSkillsRef.hiding = Mathf.RoundToInt(Random.Range(this.hiding.x, this.hiding.y));
         characterSkillsRef.swimming = Mathf.RoundToInt(Random.Range(this.swimming.x, this.swimming.y));
+    }
 
-        characterSkillsRef.punching = Mathf.RoundToInt(Random.Range(this.punching.x, this.punching.y));
-        characterSkillsRef.daggers = Mathf.RoundToInt(Random.Range(this.daggers.x, this.daggers.y));
-        characterSkillsRef.swords = Mathf.RoundToInt(Random.Range(this.swords.x, this.swords.y));
-        characterSkillsRef.axes = Mathf.RoundToInt(Random.Range(this.axes.x, this.axes.y));
-        characterSkillsRef.spears = Mathf.RoundToInt(Random.Range(this.spears.x, this.spears.y));
-        characterSkillsRef.bows = Mathf.RoundToInt(Random.Range(this.bows.x, this.bows.y));
-        characterSkillsRef.improvised = Mathf.RoundToInt(Random.Range(this.improvised.x, this.improvised.y));
+
+    //Generates this character's Combat Stats
+    private void GenerateCombatStats()
+    {
+        //Getting the reference ot this object's Combat Stats component
+        CombatStats characterCombatStatsRef = this.GetComponent<CombatStats>();
+
+        characterCombatStatsRef.punching = Mathf.RoundToInt(Random.Range(this.punching.x, this.punching.y));
+        characterCombatStatsRef.daggers = Mathf.RoundToInt(Random.Range(this.daggers.x, this.daggers.y));
+        characterCombatStatsRef.swords = Mathf.RoundToInt(Random.Range(this.swords.x, this.swords.y));
+        characterCombatStatsRef.axes = Mathf.RoundToInt(Random.Range(this.axes.x, this.axes.y));
+        characterCombatStatsRef.spears = Mathf.RoundToInt(Random.Range(this.spears.x, this.spears.y));
+        characterCombatStatsRef.bows = Mathf.RoundToInt(Random.Range(this.bows.x, this.bows.y));
+        characterCombatStatsRef.improvised = Mathf.RoundToInt(Random.Range(this.improvised.x, this.improvised.y));
+
+        //Sets the base initiative
+        characterCombatStatsRef.currentInitiativeSpeed = Random.Range(this.initiative.x, this.initiative.y);
     }
 
 
