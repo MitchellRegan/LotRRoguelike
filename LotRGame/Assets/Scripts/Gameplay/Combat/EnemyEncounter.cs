@@ -21,7 +21,9 @@ public class EncounterEnemy
     public colPositionAreas colArea = colPositionAreas.Random;
     public rowPositionAreas rowArea = rowPositionAreas.Random;
 
-    //Ints for specific row/col positions. If negative, they're ignored and set to randomized
-    public int specificCol = -1;
-    public int specificRow = -1;
+    //Ints for specific row/col positions
+    [Range(0,7)]
+    public int specificCol = 0;
+    [Range(0,2)]
+    public int specificRow = 0;
 }

@@ -15,6 +15,12 @@ public class CombatStats : MonoBehaviour
     //The number of spaces this character can move as a standard action in combat
     public uint combatSpeed = 5;
 
+    //The grid position on the combat tiles where this character is
+    [HideInInspector]
+    public int gridPositionCol = 0;
+    [HideInInspector]
+    public int gridPositionRow = 0;
+
     //How skilled this character is at avoiding physical attacks. Directly counters weapon skills (below)
     [Range(0, 50)]
     public int evasion = 10;

@@ -18,6 +18,14 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public Color inactiveColor = Color.white;
     //Color picker for when this tile is hilighted
     public Color hilightColor = Color.blue;
+    //Color picker for when a player character occupies this space
+    public Color playerOccupiedColor = Color.green;
+    //Color picker for when an enemy occupies this space
+    public Color enemyOccupiedColor = Color.red;
+
+    //The game object that occupies this tile
+    [HideInInspector]
+    public GameObject objectOnThisTile = null;
 
 
 
@@ -61,6 +69,41 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         foreach (PathPoint connection in this.ourPathPoint.connectedPoints)
         {
             connection.GetComponent<Image>().color = this.inactiveColor;
+        }
+    }
+
+
+    //Function called to reset this tile so there's nothing on it and it's set to the inactive color
+    public void ResetTile()
+    {
+        this.objectOnThisTile = null;
+        this.GetComponent<Image>().color = this.inactiveColor;
+    }
+
+
+    //Function called from CombatManager.cs to set what object is on this tile
+    public enum ObjectType { Player, Enemy, Object, Nothing };
+    public void SetObjectOnTile(GameObject objOnTile_, ObjectType type_)
+    {
+        //If no object is added
+        if(objOnTile_ == null || type_ == ObjectType.Nothing)
+        {
+            this.ResetTile();
+        }
+        else if(type_ == ObjectType.Player)
+        {
+            this.objectOnThisTile = objOnTile_;
+            this.GetComponent<Image>().color = this.playerOccupiedColor;
+        }
+        else if(type_ == ObjectType.Enemy)
+        {
+            this.objectOnThisTile = objOnTile_;
+            this.GetComponent<Image>().color = this.enemyOccupiedColor;
+        }
+        else if(type_ == ObjectType.Object)
+        {
+            this.objectOnThisTile = objOnTile_;
+            this.GetComponent<Image>().color = this.inactiveColor;
         }
     }
 }

@@ -29,6 +29,8 @@ public class CombatManager : MonoBehaviour
 
     //The canvas that is activated at the start of combat
     public Canvas combatCanvas;
+    //The panel that's activated when a player character can perform actions
+    public GameObject actionPanel;
 
     //The color of player initiative panels when they're the acting character
     public Color actingCharacterColor = Color.green;
@@ -109,6 +111,7 @@ public class CombatManager : MonoBehaviour
                 {
                     int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
+                    this.actionPanel.SetActive(true);
                 }
                 //If the selected character is an enemy
                 else
@@ -116,6 +119,18 @@ public class CombatManager : MonoBehaviour
                     int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
                     Debug.Log("Combat Manager.Update. Enemies need AI here");
+                    //Resetting this enemy's initiative for now. Can't do much until I get AI in
+                    this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
+                    this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
+                    if (this.actingCharacters.Count == 1)
+                    {
+                        this.actingCharacters.Clear();
+                    }
+                    else
+                    {
+                        this.actingCharacters.RemoveAt(0);
+                    }
+                    this.currentState = combatState.IncreaseInitiative;
                 }
                 break;
         }
@@ -141,6 +156,15 @@ public class CombatManager : MonoBehaviour
         //Activating the combat canvas so we can show everything
         this.combatCanvas.enabled = true;
 
+        //Looping through and resetting the combat tiles
+        for(int c = 0; c < this.combatTileGrid.Count; ++c)
+        {
+            for(int r = 0; r < this.combatTileGrid[c].Count; ++r)
+            {
+                this.combatTileGrid[c][r].ResetTile();
+            }
+        }
+
         //Setting the background image
         this.SetBackgroundImage(combatLandType_);
 
@@ -149,6 +173,10 @@ public class CombatManager : MonoBehaviour
         foreach(Character c in charactersInCombat_.charactersInParty.Keys)
         {
             this.playerCharactersInCombat.Add(c);
+
+            //Setting each character's grid position
+            c.charCombatStats.gridPositionCol = Mathf.RoundToInt(charactersInCombat_.charactersInParty[c].x);
+            c.charCombatStats.gridPositionRow = Mathf.RoundToInt(charactersInCombat_.charactersInParty[c].y);
         }
 
         //Clearing the list of enemy characters and adding all of the ones from the given encounter
@@ -157,6 +185,48 @@ public class CombatManager : MonoBehaviour
         {
             GameObject createdEnemy = Object.Instantiate(enemy.enemyCreature.gameObject, encounter_.transform.position, new Quaternion());
             this.enemyCharactersInCombat.Add(createdEnemy.GetComponent<Character>());
+            //Getting a reference to the enemy's combat stats component
+            CombatStats enemyCombatStats = createdEnemy.GetComponent<CombatStats>();
+
+            //Setting the enemy's column position
+            switch(enemy.colArea)
+            {
+                case EncounterEnemy.colPositionAreas.Back:
+                    enemyCombatStats.gridPositionCol = 12;
+                    break;
+                case EncounterEnemy.colPositionAreas.Front:
+                    enemyCombatStats.gridPositionCol = 10;
+                    break;
+                case EncounterEnemy.colPositionAreas.Middle:
+                    enemyCombatStats.gridPositionCol = 11;
+                    break;
+                case EncounterEnemy.colPositionAreas.Random:
+                    enemyCombatStats.gridPositionCol = Mathf.RoundToInt(Random.Range(10,12));
+                    break;
+                case EncounterEnemy.colPositionAreas.SpecificPos:
+                    enemyCombatStats.gridPositionCol = enemy.specificCol + 10;
+                    break;
+            }
+
+            //Setting the enemy's row position
+            switch(enemy.rowArea)
+            {
+                case EncounterEnemy.rowPositionAreas.Top:
+                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(0,1));
+                    break;
+                case EncounterEnemy.rowPositionAreas.Middle:
+                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(2, 5));
+                    break;
+                case EncounterEnemy.rowPositionAreas.Bottom:
+                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(6, 7));
+                    break;
+                case EncounterEnemy.rowPositionAreas.Random:
+                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(0, 7));
+                    break;
+                case EncounterEnemy.rowPositionAreas.SpecificPos:
+                    enemyCombatStats.gridPositionRow = enemy.specificRow;
+                    break;
+            }
         }
 
         //Looping through and setting all of the player initiative bars to display the correct character
@@ -206,8 +276,28 @@ public class CombatManager : MonoBehaviour
             }
         }
 
+        //Setting each character on the tile positions
+        this.UpdateCombatTilePositions();
+
         //Setting the state to start increasing initiatives
         this.currentState = combatState.IncreaseInitiative;
+    }
+
+
+    //Function called internally to hilight the occupied tiles to show where characters are
+    private void UpdateCombatTilePositions()
+    {
+        //Looping through and setting the character objects on each tile
+        foreach(Character currentChar in this.playerCharactersInCombat)
+        {
+            this.combatTileGrid[currentChar.charCombatStats.gridPositionCol][currentChar.charCombatStats.gridPositionRow].SetObjectOnTile(currentChar.gameObject, CombatTile.ObjectType.Player);
+        }
+
+        //Looping through and setting the enemy objects on each tile
+        foreach(Character currentEnemy in this.enemyCharactersInCombat)
+        {
+            this.combatTileGrid[currentEnemy.charCombatStats.gridPositionCol][currentEnemy.charCombatStats.gridPositionRow].SetObjectOnTile(currentEnemy.gameObject, CombatTile.ObjectType.Enemy);
+        }
     }
 
 
