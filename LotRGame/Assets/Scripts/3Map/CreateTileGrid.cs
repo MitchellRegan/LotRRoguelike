@@ -549,12 +549,9 @@ public class CreateTileGrid : MonoBehaviour
         //Adding the starting characters to the party group
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
-        /*startChar.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
-        startChar2.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
-        
-        //Adding the starting character to the character manager's list of party members
-        CharacterManager.globalReference.AddCharacterToParty(startChar.GetComponent<Character>());
-        CharacterManager.globalReference.AddCharacterToParty(startChar2.GetComponent<Character>());*/
+
+        //Setting the character manager to be selecting the player party 1
+        CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
 
         //Setting the camera base's position to the character position
         this.cameraBase.position = this.tileGrid[startRow][startCol].transform.position;

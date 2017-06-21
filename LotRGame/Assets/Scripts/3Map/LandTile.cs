@@ -79,20 +79,16 @@ public class LandTile : MonoBehaviour
                 //If the selection mode is on "Movement" then the selected characters are told to move to this tile
                 if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.Movement)
                 {
-                    //Looping through each character that's selected
-                    foreach(Character person in CharacterManager.globalReference.selectedCharacters)
-                    {
-                        //Using the Dijkstra search to find the dravel path for each character
-                        PathPoint startingTile = person.GetComponent<Movement>().currentTile.GetComponent<PathPoint>();
-                        PathPoint endTile = LandTile.selectedTile.GetComponent<PathPoint>();
-                        List<LandTile> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
+                    //Using the Dijkstra search to find the dravel path for each character
+                    PathPoint startingTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile.GetComponent<PathPoint>();
+                    PathPoint endTile = LandTile.selectedTile.GetComponent<PathPoint>();
+                    List<LandTile> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
 
-                        //Setting the path to follow for the character's movement
-                        person.GetComponent<Movement>().TravelToPath(pathToFollow);
+                    //Setting the path to follow for the character's movement
+                    CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().TravelToPath(pathToFollow);
 
-                        //Setting the selection mode to nothing so that it doesn't have to be turned off constantly
-                        TileSelectionMode.GlobalReference.ClearSelectionMode();
-                    }
+                    //Setting the selection mode to nothing so that it doesn't have to be turned off constantly
+                    TileSelectionMode.GlobalReference.ClearSelectionMode();
                 }
             }
         }

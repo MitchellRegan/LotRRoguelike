@@ -68,7 +68,7 @@ public class InventoryOpener : MonoBehaviour
                     }
 
                     //Sets the global reference to the trade character inventory to the selected character's inventory component
-                    this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
+                    this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].charInventory;
                     //Makes sure the trade Inventory UI screen is opened
                     this.tradeInventoryUIObject.SetActive(true);
                 }
@@ -84,7 +84,7 @@ public class InventoryOpener : MonoBehaviour
                     else
                     {
                         //Sets the global reference to the trade character inventory to the selected character's inventory component
-                        this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
+                        this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].charInventory;
                         //Refreshes the trade inventory UI to display this character's inventory
                         this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
                     }
@@ -95,7 +95,7 @@ public class InventoryOpener : MonoBehaviour
         else
         {
             //Sets the global reference to the trade character inventory to the selected character's inventory component
-            this.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].GetComponent<Inventory>();
+            this.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().selectedCharacterInventory = CharacterManager.globalReference.playerParty[partyCharacterIndex_].charInventory;
             //Makes sure the trade Inventory UI screen is opened
             this.partyInventoryUIObject.SetActive(true);
         }
@@ -171,21 +171,14 @@ public class InventoryOpener : MonoBehaviour
             return;
         }
 
-        //If the selected characters list has at least one character in it
-        if(CharacterManager.globalReference.selectedCharacters.Count > 0)
+        //Sets the party inventory to show the first character in the player party list's inventory
+        foreach (Character selectedChar in CharacterManager.globalReference.selectedGroup.charactersInParty.Keys)
         {
-            //Sets the party inventory to show the first character in the selection list's inventory
-            CharacterInventoryUI.partyInventory.selectedCharacterInventory = CharacterManager.globalReference.selectedCharacters[0].GetComponent<Inventory>();
-            //Shows the party inventory UI screen
-            this.partyInventoryUIObject.SetActive(true);
+            CharacterInventoryUI.partyInventory.selectedCharacterInventory = selectedChar.charInventory;
+            break;
         }
-        //If no character is currently selected
-        else
-        {
-            //Sets the party inventory to show the first character in the player party list's inventory
-            CharacterInventoryUI.partyInventory.selectedCharacterInventory = CharacterManager.globalReference.playerParty[0].GetComponent<Inventory>();
-            //Shows the party inventory UI screen
-            this.partyInventoryUIObject.SetActive(true);
-        }
+        
+        //Shows the party inventory UI screen
+        this.partyInventoryUIObject.SetActive(true);
     }
 }

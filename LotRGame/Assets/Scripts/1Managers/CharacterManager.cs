@@ -14,9 +14,9 @@ public class CharacterManager : MonoBehaviour
     //The maximum number of characters that can be in the player's party
     public int maxPartySize = 10;
 
-    //The list of characters currently selected in the overworld
+    //The group of characters currently selected in the overworld
     [HideInInspector]
-    public List<Character> selectedCharacters;
+    public PartyGroup selectedGroup;
 
     //The list of characters that have died in the current game
     [HideInInspector]
@@ -99,24 +99,24 @@ public class CharacterManager : MonoBehaviour
     }
 
 
-    //Function called externally from the character UI to add a character to the selection
-    public void SelectCharacterAtIndex(int charIndex_)
+    //Selects the party group based on the number given
+    public void SelectPartyGroup(int groupNumber_)
     {
-        //Making sure the character to add isn't null and that the character isn't already in the selection list
-        if(this.playerParty[charIndex_] != null && !this.selectedCharacters.Contains(this.playerParty[charIndex_]))
+        //Sets the selected group
+        switch(groupNumber_)
         {
-            this.selectedCharacters.Add(this.playerParty[charIndex_]);
-        }
-    }
-
-
-    //Function called externally from the character UI to remove a character from the selection
-    public void DeselectCharacterAtIndex(int charIndex_)
-    {
-        //Making sure the character to remove isn't null and that the character is in the selection list
-        if (this.playerParty[charIndex_] != null && this.selectedCharacters.Contains(this.playerParty[charIndex_]))
-        {
-            this.selectedCharacters.Remove(this.playerParty[charIndex_]);
+            case 1:
+                this.selectedGroup = PartyGroup.group1;
+                break;
+            case 2:
+                this.selectedGroup = PartyGroup.group2;
+                break;
+            case 3:
+                this.selectedGroup = PartyGroup.group3;
+                break;
+            default:
+                this.selectedGroup = PartyGroup.group1;
+                break;
         }
     }
 
