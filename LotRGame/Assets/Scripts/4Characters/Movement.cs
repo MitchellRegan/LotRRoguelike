@@ -100,7 +100,7 @@ public class Movement : MonoBehaviour
         {
             this.currentTravelTime = 1;
             this.isTraveling = false;
-            this.currentTile = this.tileToTravelTo;
+            this.SetCurrentTile(this.tileToTravelTo);
 
 
             //If there are still tiles left in the travel path, the one at the front becomes the tile to travel to

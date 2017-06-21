@@ -10,7 +10,7 @@ public class CombatManager : MonoBehaviour
 
     //Enum for the state of this combat manager to decide what to do on update
     private enum combatState {Wait, IncreaseInitiative, SelectAction, SelectItem, SelectAbility, SelectTarget};
-    private combatState currentState = combatState.IncreaseInitiative;
+    private combatState currentState = combatState.Wait;
 
     //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
     private List<Character> actingCharacters = null;
@@ -26,6 +26,9 @@ public class CombatManager : MonoBehaviour
     public List<Character> playerCharactersInCombat;
     [HideInInspector]
     public List<Character> enemyCharactersInCombat;
+
+    //The canvas that is activated at the start of combat
+    public Canvas combatCanvas;
 
     //The color of player initiative panels when they're the acting character
     public Color actingCharacterColor = Color.green;
@@ -76,6 +79,12 @@ public class CombatManager : MonoBehaviour
                 this.combatTileGrid[col].Add(null);
             }
         }
+
+        //Initializing the active characters list
+        this.actingCharacters = new List<Character>();
+
+        this.playerCharactersInCombat = new List<Character>();
+        this.enemyCharactersInCombat = new List<Character>();
     }
 
 
@@ -129,6 +138,9 @@ public class CombatManager : MonoBehaviour
     //Function called externally from LandTile.cs to initiate combat
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
+        //Activating the combat canvas so we can show everything
+        this.combatCanvas.enabled = true;
+
         //Setting the background image
         this.SetBackgroundImage(combatLandType_);
 
@@ -143,14 +155,15 @@ public class CombatManager : MonoBehaviour
         this.enemyCharactersInCombat.Clear();
         foreach(EncounterEnemy enemy in encounter_.enemies)
         {
-            this.enemyCharactersInCombat.Add(enemy.enemyCreature);
+            GameObject createdEnemy = Object.Instantiate(enemy.enemyCreature.gameObject, encounter_.transform.position, new Quaternion());
+            this.enemyCharactersInCombat.Add(createdEnemy.GetComponent<Character>());
         }
 
         //Looping through and setting all of the player initiative bars to display the correct character
-        for(int p = 0; p < this.playerInitiativeSliders.Count; ++p)
+        for (int p = 0; p < this.playerInitiativeSliders.Count; ++p)
         {
             //if the current index isn't outside the count of characters
-            if(p <= this.playerCharactersInCombat.Count)
+            if(p < this.playerCharactersInCombat.Count)
             {
                 //The initiative slider is shown
                 this.playerInitiativeSliders[p].initiativeSlider.gameObject.SetActive(true);
@@ -169,12 +182,12 @@ public class CombatManager : MonoBehaviour
                 this.playerInitiativeSliders[p].initiativeSlider.gameObject.SetActive(false);
             }
         }
-
+        
         //Looping through and setting all of the enemy initiative bars to display the correct enemy
         for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
         {
             //if the current index isn't outside the count of enemies
-            if (e <= this.enemyCharactersInCombat.Count)
+            if (e < this.enemyCharactersInCombat.Count)
             {
                 //The initiative slider is shown
                 this.enemyInitiativeSliders[e].initiativeSlider.gameObject.SetActive(true);
@@ -184,7 +197,6 @@ public class CombatManager : MonoBehaviour
                 this.enemyInitiativeSliders[e].characterName.text = this.enemyCharactersInCombat[e].firstName;
                 //Making the background panel set to the inactive color
                 this.enemyInitiativeSliders[e].background.color = this.inactivePanelColor;
-
             }
             //If the index is outside the count of enemies
             else
@@ -259,6 +271,7 @@ public class CombatManager : MonoBehaviour
             }
         }
 
+
         //Looping through each enemy character
         for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
         {
@@ -272,7 +285,7 @@ public class CombatManager : MonoBehaviour
                 this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
             }
         }
-
+        
         //If there are any characters in the acting Characters list, the state changes so we stop updating initiative meters
         if(this.actingCharacters.Count != 0)
         {

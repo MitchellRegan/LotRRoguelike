@@ -6,6 +6,7 @@ using UnityEngine;
 public class CombatStats : MonoBehaviour
 {
     //Reference to this character's physical state so we can get the health and energy
+    [HideInInspector]
     public PhysicalState currentState;
 
     //The speed that this character's initiative meter increases each frame during combat

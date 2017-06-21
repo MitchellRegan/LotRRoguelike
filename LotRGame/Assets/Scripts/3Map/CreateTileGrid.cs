@@ -36,6 +36,9 @@ public class CreateTileGrid : MonoBehaviour
     //Empty character prefab to use while testing
     public GameObject testCharacter;
     public GameObject testCharacter2;
+
+    //Enemy encounter for testing
+    public GameObject testEnemyEncounter;
     
 
 
@@ -555,6 +558,9 @@ public class CreateTileGrid : MonoBehaviour
 
         //Setting the camera base's position to the character position
         this.cameraBase.position = this.tileGrid[startRow][startCol].transform.position;
+
+        GameObject enemy = GameObject.Instantiate(this.testEnemyEncounter, this.tileGrid[startRow - 1][startCol].transform.position, new Quaternion());
+        enemy.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow - 1][startCol].GetComponent<LandTile>());
     }
 
 

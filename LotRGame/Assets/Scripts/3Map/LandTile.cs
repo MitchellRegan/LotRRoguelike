@@ -171,6 +171,24 @@ public class LandTile : MonoBehaviour
                     }
                 }
             }
+            //If a Party Group is added to this tile
+            else if(objectToAdd_.GetComponent<PartyGroup>())
+            {
+                //Looping through all of the objects on this tile to see if an enemy encounter is on it
+                foreach(GameObject currentObj in this.objectsOnThisTile)
+                {
+                    //If the current object is an enemy encounter
+                    if(currentObj.GetComponent<EnemyEncounter>())
+                    {
+                        //Initiating combat with the first group of characters found.
+                        //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
+                        LandType ourTileType = this.GetComponent<PathPoint>().type;
+                        PartyGroup playerGroupOnTile = objectToAdd_.GetComponent<PartyGroup>();
+                        EnemyEncounter newEncounter = currentObj.GetComponent<EnemyEncounter>();
+                        CombatManager.globalReference.InitiateCombat(ourTileType, playerGroupOnTile, newEncounter);
+                    }
+                }
+            }
         }
     }
 
