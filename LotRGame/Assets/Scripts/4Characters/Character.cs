@@ -11,7 +11,6 @@ public enum Races {Human, Elf, Dwarf, Orc, HalfMan, GillFolk, ScaleSkin, Amazon,
 [RequireComponent(typeof(Inventory))]
 [RequireComponent(typeof(Skills))]
 [RequireComponent(typeof(PhysicalState))]
-[RequireComponent(typeof(ReceiveEvent))]
 [RequireComponent(typeof(CombatStats))]
 public class Character : MonoBehaviour
 {
@@ -34,4 +33,26 @@ public class Character : MonoBehaviour
 
     //This character's weight (in kilograms)
     public int weight = 80;
+
+
+    //References to each of the required components
+    [HideInInspector]
+    public Inventory charInventory;
+    [HideInInspector]
+    public Skills charSkills;
+    [HideInInspector]
+    public PhysicalState charPhysState;
+    [HideInInspector]
+    public CombatStats charCombatStats;
+
+
+    //Function called when this character is created
+    private void Awake()
+    {
+        //Setting the references to each of the required components
+        this.charInventory = this.GetComponent<Inventory>();
+        this.charSkills = this.GetComponent<Skills>();
+        this.charPhysState = this.GetComponent<PhysicalState>();
+        this.charCombatStats = this.GetComponent<CombatStats>();
+    }
 }

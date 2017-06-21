@@ -119,6 +119,25 @@ public class CharacterManager : MonoBehaviour
             this.selectedCharacters.Remove(this.playerParty[charIndex_]);
         }
     }
+
+
+    //Function called externally to find out how many more characters can be added to the player party
+    public int FindEmptyPartySlots()
+    {
+        //Int to count how many empty slots there are
+        int slots = 0;
+
+        //Looping through each of the party slots
+        foreach(Character charSlot in this.playerParty)
+        {
+            if(charSlot == null)
+            {
+                slots += 1;
+            }
+        }
+
+        return slots;
+    }
 }
 
 

@@ -61,10 +61,4 @@ public class CombatStats : MonoBehaviour
         //Getting the reference to the physical state component on this object
         this.currentState = this.GetComponent<PhysicalState>();
 	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
 }

@@ -30,6 +30,9 @@ public class CreateTileGrid : MonoBehaviour
     //The camera object that is set to the player position
     public Transform cameraBase;
 
+    //Prefab for the group that the player characters are added to
+    public GameObject partyGroup1Prefab;
+
     //Empty character prefab to use while testing
     public GameObject testCharacter;
     public GameObject testCharacter2;
@@ -110,7 +113,6 @@ public class CreateTileGrid : MonoBehaviour
         
         //Initializing the 2D list of tiles
         this.tileGrid = new List<List<GameObject>>(this.cols);
-        
         //Vector to hold the starting position for grid generation in the top-left quadrant
         Vector3 startPos = new Vector3();
         //Finding the starting x coordinate using width and number of columns
@@ -138,8 +140,7 @@ public class CreateTileGrid : MonoBehaviour
                 this.tileGrid.Add(new List<GameObject>(this.rows + 1));
             }
 
-            //Looping through each row in the current column
-            for(int r = 0; r < this.rows; ++r)
+            for (int r = 0; r < this.rows; ++r)
             {
                 offsetPos.x = c * this.tileWidth; //Positive so that the grid is generated from left to right
                 offsetPos.z = r * this.tileHeight * -1; //Negative so that the grid is generated downward
@@ -149,18 +150,15 @@ public class CreateTileGrid : MonoBehaviour
                 {
                     offsetPos.z += this.tileHeight / 2;
                 }
-                
                 //Creating a new tile and positioning it at the offset of the start position
                 this.tileGrid[c].Add(Instantiate(this.landTile) as GameObject);
                 this.tileGrid[c][r].transform.position = startPos + offsetPos;
-
 
                 //If the parent isn't null, parents the current tile to it
                 if (this.gridParent != null)
                 {
                     this.tileGrid[c][r].transform.SetParent(this.gridParent.transform);
                 }
-
 
                 //Offset tile rows have an added tile at the end if the addExtraTileOnOffset is true
                 if (this.addExtraTileOnOffset && offsetCol && (r + 1) == this.rows)
@@ -178,7 +176,6 @@ public class CreateTileGrid : MonoBehaviour
                     }
                 }
             }
-            
             //Changes the column offset for the next loop
             offsetCol = !offsetCol;
         }
@@ -541,15 +538,23 @@ public class CreateTileGrid : MonoBehaviour
         int startRow = Random.Range(2, (this.tileGrid.Count / 3) + 1);
         int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
 
+        //Instantiating the player group at the starting tile's location
+        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
+        playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
+
         //Instantiating the test character at the starting tile's location
         GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
         GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startRow][startCol].transform.position, new Quaternion());
-        startChar.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
-        startChar2.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
 
+        //Adding the starting characters to the party group
+        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
+        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
+        /*startChar.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
+        startChar2.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol].GetComponent<LandTile>());
+        
         //Adding the starting character to the character manager's list of party members
         CharacterManager.globalReference.AddCharacterToParty(startChar.GetComponent<Character>());
-        CharacterManager.globalReference.AddCharacterToParty(startChar2.GetComponent<Character>());
+        CharacterManager.globalReference.AddCharacterToParty(startChar2.GetComponent<Character>());*/
 
         //Setting the camera base's position to the character position
         this.cameraBase.position = this.tileGrid[startRow][startCol].transform.position;

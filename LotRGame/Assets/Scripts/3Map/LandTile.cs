@@ -169,9 +169,9 @@ public class LandTile : MonoBehaviour
                         //Initiating combat with the first group of characters found.
                         //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
                         LandType ourTileType = this.GetComponent<PathPoint>().type;
-                        List<Character> playerCharsOnTile = currentObj.GetComponent<PartyGroup>().charactersInParty;
+                        PartyGroup playerGroupOnTile = currentObj.GetComponent<PartyGroup>();
                         EnemyEncounter newEncounter = objectToAdd_.GetComponent<EnemyEncounter>();
-                        CombatManager.globalReference.InitiateCombat(ourTileType, playerCharsOnTile, newEncounter);
+                        CombatManager.globalReference.InitiateCombat(ourTileType, playerGroupOnTile, newEncounter);
                     }
                 }
             }

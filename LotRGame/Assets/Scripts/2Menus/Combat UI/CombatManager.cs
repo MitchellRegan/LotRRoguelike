@@ -127,14 +127,17 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called externally from LandTile.cs to initiate combat
-    public void InitiateCombat(LandType combatLandType_, List<Character> charactersInCombat_, EnemyEncounter encounter_)
+    public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
         //Setting the background image
         this.SetBackgroundImage(combatLandType_);
 
         //Clearing the list of player characters and adding all of the ones given
         this.playerCharactersInCombat.Clear();
-        this.playerCharactersInCombat = charactersInCombat_;
+        foreach(Character c in charactersInCombat_.charactersInParty.Keys)
+        {
+            this.playerCharactersInCombat.Add(c);
+        }
 
         //Clearing the list of enemy characters and adding all of the ones from the given encounter
         this.enemyCharactersInCombat.Clear();
@@ -246,7 +249,7 @@ public class CombatManager : MonoBehaviour
         for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
         {
             //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
-            CombatStats combatStats = this.playerCharactersInCombat[p].GetComponent<CombatStats>();
+            CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
             this.playerInitiativeSliders[p].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
             //If the slider is filled, this character is added to the acting character list
@@ -260,7 +263,7 @@ public class CombatManager : MonoBehaviour
         for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
         {
             //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
-            CombatStats combatStats = this.enemyCharactersInCombat[e].GetComponent<CombatStats>();
+            CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
             this.enemyInitiativeSliders[e].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
             //If the slider is filled, this character is added to the acting character list
