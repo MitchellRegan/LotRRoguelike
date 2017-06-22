@@ -12,6 +12,7 @@ public enum Races {Human, Elf, Dwarf, Orc, HalfMan, GillFolk, ScaleSkin, Amazon,
 [RequireComponent(typeof(Skills))]
 [RequireComponent(typeof(PhysicalState))]
 [RequireComponent(typeof(CombatStats))]
+[RequireComponent(typeof(ActionList))]
 public class Character : MonoBehaviour
 {
     //This character's first name
@@ -44,6 +45,8 @@ public class Character : MonoBehaviour
     public PhysicalState charPhysState;
     [HideInInspector]
     public CombatStats charCombatStats;
+    [HideInInspector]
+    public ActionList charActionList;
 
 
     //Function called when this character is created
@@ -54,5 +57,6 @@ public class Character : MonoBehaviour
         this.charSkills = this.GetComponent<Skills>();
         this.charPhysState = this.GetComponent<PhysicalState>();
         this.charCombatStats = this.GetComponent<CombatStats>();
+        this.charActionList = this.GetComponent<ActionList>();
     }
 }

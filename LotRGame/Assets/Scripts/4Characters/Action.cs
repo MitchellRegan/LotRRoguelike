@@ -11,6 +11,7 @@ public class Action : MonoBehaviour
     public string actionDescription = "";
 
     //Enum for the type of action this is
+    [System.Serializable]
     public enum ActionType { Standard, Secondary, Quick, FullRound };
     public ActionType type = ActionType.Standard;
 }

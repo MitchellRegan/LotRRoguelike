@@ -134,35 +134,35 @@ public class ActionList : MonoBehaviour
         Inventory ourInventory = this.GetComponent<Inventory>();
 
         //Searching each slot of equipped armor to see if they have an action 
-        if(ourInventory.helm.GetComponent<Action>())
+        if(ourInventory.helm != null && ourInventory.helm.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.helm.GetComponent<Action>());
         }
-        if (ourInventory.chestPiece.GetComponent<Action>())
+        if (ourInventory.chestPiece != null && ourInventory.chestPiece.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.chestPiece.GetComponent<Action>());
         }
-        if (ourInventory.leggings.GetComponent<Action>())
+        if (ourInventory.leggings != null && ourInventory.leggings.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.leggings.GetComponent<Action>());
         }
-        if (ourInventory.shoes.GetComponent<Action>())
+        if (ourInventory.shoes != null && ourInventory.shoes.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.shoes.GetComponent<Action>());
         }
-        if (ourInventory.gloves.GetComponent<Action>())
+        if (ourInventory.gloves != null && ourInventory.gloves.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.gloves.GetComponent<Action>());
         }
-        if (ourInventory.necklace.GetComponent<Action>())
+        if (ourInventory.necklace != null && ourInventory.necklace.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.necklace.GetComponent<Action>());
         }
-        if (ourInventory.cloak.GetComponent<Action>())
+        if (ourInventory.cloak != null && ourInventory.cloak.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.cloak.GetComponent<Action>());
         }
-        if (ourInventory.ring.GetComponent<Action>())
+        if (ourInventory.ring != null && ourInventory.ring.GetComponent<Action>())
         {
             this.AddActionToList(ourInventory.ring.GetComponent<Action>());
         }

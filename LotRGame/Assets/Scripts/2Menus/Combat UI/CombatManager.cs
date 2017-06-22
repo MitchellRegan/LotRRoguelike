@@ -14,7 +14,7 @@ public class CombatManager : MonoBehaviour
     private combatState currentState = combatState.Wait;
 
     //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
-    private List<Character> actingCharacters = null;
+    public List<Character> actingCharacters = null;
 
     //2D List of all combat tiles in the combat screen map. Col[row}
     public List<List<CombatTile>> combatTileGrid;
@@ -110,9 +110,13 @@ public class CombatManager : MonoBehaviour
                 //If the selected character is a player
                 if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
                 {
+                    //Hilighting the slider of the player character whose turn it is
                     int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
+                    //Displaying the action panel so players can decide what to do
                     this.showPlayerActions.Invoke();
+                    //Default to showing the acting character's standard actions
+                    CombatActionPanelUI.globalReference.DisplayActionTypes(0);
                 }
                 //If the selected character is an enemy
                 else
