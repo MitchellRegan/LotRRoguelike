@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class CombatManager : MonoBehaviour
 {
@@ -29,8 +30,8 @@ public class CombatManager : MonoBehaviour
 
     //The canvas that is activated at the start of combat
     public Canvas combatCanvas;
-    //The panel that's activated when a player character can perform actions
-    public GameObject actionPanel;
+    //The unity event that's invoked when a player character can perform actions
+    public UnityEvent showPlayerActions;
 
     //The color of player initiative panels when they're the acting character
     public Color actingCharacterColor = Color.green;
@@ -111,7 +112,7 @@ public class CombatManager : MonoBehaviour
                 {
                     int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
-                    this.actionPanel.SetActive(true);
+                    this.showPlayerActions.Invoke();
                 }
                 //If the selected character is an enemy
                 else

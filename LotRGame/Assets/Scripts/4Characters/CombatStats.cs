@@ -60,6 +60,21 @@ public class CombatStats : MonoBehaviour
     public int improvised = 30;
     public int improvisedMod = 0;
 
+    //How accurately this character can use holy magic spells in combat
+    [Range(1, 100)]
+    public int holyMagic = 30;
+    public int holyMagicMod = 0;
+
+    //How accurately this character can use dark magic spells in combat
+    [Range(1, 100)]
+    public int darkMagic = 30;
+    public int darkMagicMod = 0;
+
+    //How accurately this character can use nature magic in combat
+    [Range(1, 100)]
+    public int natureMagic = 30;
+    public int natureMagicMod = 0;
+
 
 
     //Function called when this object is created

@@ -52,6 +52,9 @@ public class CharacterGenerator : MonoBehaviour
     public Vector2 spears = new Vector2(10, 50);
     public Vector2 bows = new Vector2(10, 50);
     public Vector2 improvised = new Vector2(10, 50);
+    public Vector2 holyMagic = new Vector2(10, 50);
+    public Vector2 darkMagic = new Vector2(10, 50);
+    public Vector2 natureMagic = new Vector2(10, 50);
 
     public Vector2 initiative = new Vector2(0.005f, 0.015f);
 
@@ -168,6 +171,9 @@ public class CharacterGenerator : MonoBehaviour
         characterCombatStatsRef.spears = Mathf.RoundToInt(Random.Range(this.spears.x, this.spears.y));
         characterCombatStatsRef.bows = Mathf.RoundToInt(Random.Range(this.bows.x, this.bows.y));
         characterCombatStatsRef.improvised = Mathf.RoundToInt(Random.Range(this.improvised.x, this.improvised.y));
+        characterCombatStatsRef.holyMagic = Mathf.RoundToInt(Random.Range(this.holyMagic.x, this.holyMagic.y));
+        characterCombatStatsRef.darkMagic = Mathf.RoundToInt(Random.Range(this.darkMagic.x, this.darkMagic.y));
+        characterCombatStatsRef.natureMagic = Mathf.RoundToInt(Random.Range(this.natureMagic.x, this.natureMagic.y));
 
         //Sets the base initiative
         characterCombatStatsRef.currentInitiativeSpeed = Random.Range(this.initiative.x, this.initiative.y);
