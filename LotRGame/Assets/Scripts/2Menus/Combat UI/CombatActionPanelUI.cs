@@ -44,6 +44,9 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             Destroy(this);
         }
+
+        //Clears the action detail panel
+        this.UpdateActionDetailsPanel();
     }
 
 
@@ -155,6 +158,9 @@ public class CombatActionPanelUI : MonoBehaviour
             tile.inAttackRange = true;
             tile.HighlightTile(true);
         }
+
+        //Displays the action's details
+        this.UpdateActionDetailsPanel();
     }
 
 
@@ -168,18 +174,11 @@ public class CombatActionPanelUI : MonoBehaviour
             this.selectedPanelDetails.descriptionText.text = "";
             this.selectedPanelDetails.rangeText.text = "";
 
+            this.selectedPanelDetails.touchTypeText.text = "";
             this.selectedPanelDetails.critText.text = "";
             this.selectedPanelDetails.multiplierText.text = "";
 
-            this.selectedPanelDetails.physDamageText.text = "";
-            this.selectedPanelDetails.magicDamageText.text = "";
-            this.selectedPanelDetails.fireDamageText.text = "";
-            this.selectedPanelDetails.waterDamageText.text = "";
-            this.selectedPanelDetails.electridDamageText.text = "";
-            this.selectedPanelDetails.windDamageText.text = "";
-            this.selectedPanelDetails.rockDamageText.text = "";
-            this.selectedPanelDetails.lightDamageText.text = "";
-            this.selectedPanelDetails.darkDamageText.text = "";
+            this.selectedPanelDetails.damageText.text = "";
 
             this.selectedPanelDetails.effectNameText.text = "";
         }
@@ -188,72 +187,92 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.selectedPanelDetails.nameText.text = this.selectedAction.actionName;
             this.selectedPanelDetails.descriptionText.text = this.selectedAction.actionDescription;
-            this.selectedPanelDetails.rangeText.text = "" + this.selectedAction.range;
+            this.selectedPanelDetails.rangeText.text = "Range: " + this.selectedAction.range;
 
             //If this action is also an attack
             if(this.selectedAction.gameObject.GetComponent<AttackAction>())
             {
                 AttackAction atkDetails = this.selectedAction.gameObject.GetComponent<AttackAction>();
 
+                //Displays the attack damage grid
+                this.selectedPanelDetails.attackDetails.SetActive(true);
+
                 //Setting the crit details
-                this.selectedPanelDetails.critText.text = "" + atkDetails.critChance;
-                this.selectedPanelDetails.multiplierText.text = "" + atkDetails.critMultiplier;
+                this.selectedPanelDetails.critText.text = "Crit: " + Mathf.RoundToInt(atkDetails.critChance * 100) + "%";
+                this.selectedPanelDetails.multiplierText.text = "Crit Multiplier: x" + atkDetails.critMultiplier;
+
+                //Setting the type of touch type it is
+                switch(atkDetails.touchType)
+                {
+                    case AttackAction.attackTouchType.Regular:
+                        this.selectedPanelDetails.touchTypeText.text = "";
+                        break;
+                    case AttackAction.attackTouchType.IgnoreEvasion:
+                        this.selectedPanelDetails.touchTypeText.text = "Ignores Evasion";
+                        break;
+                    case AttackAction.attackTouchType.IgnoreArmor:
+                        this.selectedPanelDetails.touchTypeText.text = "Ignores Armor";
+                        break;
+                    case AttackAction.attackTouchType.IgnoreEvasionAndArmor:
+                        this.selectedPanelDetails.touchTypeText.text = "Ignores Evasion & Armor";
+                        break;
+                }
 
                 //Looping through each of the attacks to display their effects
+                this.selectedPanelDetails.damageText.text = "Damage: ";
                 for(int a = 0; a < atkDetails.damageDealt.Count; ++a)
                 {
-                    //Finding out which text box to display damage
-                    Text damageText;
-                    switch(atkDetails.damageDealt[a].type)
-                    {
-                        case AttackDamage.DamageType.Physical:
-                            damageText = this.selectedPanelDetails.physDamageText;
-                            break;
-                        case AttackDamage.DamageType.Magic:
-                            damageText = this.selectedPanelDetails.magicDamageText;
-                            break;
-                        case AttackDamage.DamageType.Fire:
-                            damageText = this.selectedPanelDetails.fireDamageText;
-                            break;
-                        case AttackDamage.DamageType.Water:
-                            damageText = this.selectedPanelDetails.waterDamageText;
-                            break;
-                        case AttackDamage.DamageType.Electric:
-                            damageText = this.selectedPanelDetails.electridDamageText;
-                            break;
-                        case AttackDamage.DamageType.Wind:
-                            damageText = this.selectedPanelDetails.windDamageText;
-                            break;
-                        case AttackDamage.DamageType.Rock:
-                            damageText = this.selectedPanelDetails.rockDamageText;
-                            break;
-                        case AttackDamage.DamageType.Light:
-                            damageText = this.selectedPanelDetails.lightDamageText;
-                            break;
-                        case AttackDamage.DamageType.Dark:
-                            damageText = this.selectedPanelDetails.darkDamageText;
-                            break;
-                        default:
-                            damageText = this.selectedPanelDetails.physDamageText;
-                            break;
-                    }
-
                     //If the text box isn't blank (meaning it's already displaying damage) we add a space
-                    if(damageText.text != "")
+                    if (this.selectedPanelDetails.damageText.text != "")
                     {
-                        damageText.text += ", ";
+                        this.selectedPanelDetails.damageText.text += ", + ";
                     }
 
                     //Shows base damage first
-                    if(atkDetails.damageDealt[a].baseDamage > 0)
+                    if (atkDetails.damageDealt[a].baseDamage > 0)
                     {
-                        damageText.text += "" + atkDetails.damageDealt[a].baseDamage;
+                        this.selectedPanelDetails.damageText.text += "" + atkDetails.damageDealt[a].baseDamage;
                     }
 
                     //Then shows the dice damage
-                    if(atkDetails.damageDealt[a].diceRolled > 0 && atkDetails.damageDealt[a].diceSides > 0)
+                    if (atkDetails.damageDealt[a].diceRolled > 0 && atkDetails.damageDealt[a].diceSides > 0)
                     {
-                        damageText.text += "" + atkDetails.damageDealt[a].diceRolled + "d" + atkDetails.damageDealt[a].diceSides;
+                        this.selectedPanelDetails.damageText.text += "" + atkDetails.damageDealt[a].diceRolled + "d" + atkDetails.damageDealt[a].diceSides;
+                    }
+
+                    //Finding out which type of damage it is
+                    switch(atkDetails.damageDealt[a].type)
+                    {
+                        case AttackDamage.DamageType.Physical:
+                            this.selectedPanelDetails.damageText.text += " Physical";
+                            break;
+                        case AttackDamage.DamageType.Magic:
+                            this.selectedPanelDetails.damageText.text += " Magic";
+                            break;
+                        case AttackDamage.DamageType.Fire:
+                            this.selectedPanelDetails.damageText.text += " Fire";
+                            break;
+                        case AttackDamage.DamageType.Water:
+                            this.selectedPanelDetails.damageText.text += " Water";
+                            break;
+                        case AttackDamage.DamageType.Electric:
+                            this.selectedPanelDetails.damageText.text += " Electric";
+                            break;
+                        case AttackDamage.DamageType.Wind:
+                            this.selectedPanelDetails.damageText.text += " Wind";
+                            break;
+                        case AttackDamage.DamageType.Rock:
+                            this.selectedPanelDetails.damageText.text += " Rock";
+                            break;
+                        case AttackDamage.DamageType.Light:
+                            this.selectedPanelDetails.damageText.text += " Light";
+                            break;
+                        case AttackDamage.DamageType.Dark:
+                            this.selectedPanelDetails.damageText.text += " Dark";
+                            break;
+                        default:
+                            this.selectedPanelDetails.damageText.text += " Physical";
+                            break;
                     }
                 }
 
@@ -276,6 +295,12 @@ public class CombatActionPanelUI : MonoBehaviour
                                                                          atkDetails.effectsOnHit[e].effectChance + ")";
                     }
                 }
+            }
+            //If this isn't an attack action, the attack details are hidden
+            else
+            {
+                //Hides the attack damage grid
+                this.selectedPanelDetails.attackDetails.SetActive(false);
             }
         }
     }
@@ -304,25 +329,19 @@ public class SelectedActionPanel
 
     [Space(8)]
 
+    //The parent object of the damage display
+    public GameObject attackDetails;
+
     //The crit range of the attack
     public Text critText;
     //The crit multiplier of the attack
     public Text multiplierText;
 
-    [Space(8)]
+    //The touch type of this attack
+    public Text touchTypeText;
 
     //The damage of the attack
-    public Text physDamageText;
-    public Text magicDamageText;
-    public Text fireDamageText;
-    public Text waterDamageText;
-    public Text electridDamageText;
-    public Text windDamageText;
-    public Text rockDamageText;
-    public Text lightDamageText;
-    public Text darkDamageText;
-
-    [Space(8)]
+    public Text damageText;
 
     //Effect on hit
     public Text effectNameText;
