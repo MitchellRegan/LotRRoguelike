@@ -117,6 +117,8 @@ public class CombatManager : MonoBehaviour
                     this.showPlayerActions.Invoke();
                     //Default to showing the acting character's standard actions
                     CombatActionPanelUI.globalReference.DisplayActionTypes(0);
+                    //Now we wait for player input
+                    this.currentState = combatState.Wait;
                 }
                 //If the selected character is an enemy
                 else
@@ -152,6 +154,20 @@ public class CombatManager : MonoBehaviour
 
         //Setting the given tile to the correct row and column
         this.combatTileGrid[col_][row_] = tileToAdd_;
+    }
+
+
+    //Function called from CombatActionPanelUI to turn off combat tile highlights
+    public void ClearCombatTileHighlights()
+    {
+        foreach(List<CombatTile> col in this.combatTileGrid)
+        {
+            foreach(CombatTile tile in col)
+            {
+                tile.inAttackRange = false;
+                tile.HighlightTile(false);
+            }
+        }
     }
 
 
@@ -386,6 +402,23 @@ public class CombatManager : MonoBehaviour
         {
             this.currentState = combatState.SelectAction;
         }
+    }
+
+
+    //Function called externally to find out which combat tile the given character is on
+    public CombatTile FindCharactersTile(Character characterToFind_)
+    {
+        //Making sure the given character is in the current combat encounter
+        if(!this.playerCharactersInCombat.Contains(characterToFind_))
+        {
+            return null;
+        }
+
+        //Getting less confusing references to the character's row/column position
+        int row = characterToFind_.charCombatStats.gridPositionRow;
+        int col = characterToFind_.charCombatStats.gridPositionCol;
+
+        return this.combatTileGrid[col][row];
     }
 }
 

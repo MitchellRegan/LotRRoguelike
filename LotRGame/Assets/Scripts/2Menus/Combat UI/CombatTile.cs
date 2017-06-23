@@ -12,8 +12,18 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public int col = 0;
 
     //Reference to this tile's path point reference
-    private PathPoint ourPathPoint;
+    public PathPoint ourPathPoint;
 
+    //If this combat tile is semi-highlighted to show an attack's radius
+    [HideInInspector]
+    public bool inAttackRange = false;
+
+    //The transparency of this tile when not hilighted
+    [Range(0, 1f)]
+    public float inactiveTransparency = 0.3f;
+    //The transparency of this tile when not highlighted, but still in attack radius
+    [Range(0, 1f)]
+    public float atkRadiusTransparency = 0.7f;
     //Color picker for when this tile is not in use
     public Color inactiveColor = Color.white;
     //Color picker for when this tile is hilighted
@@ -35,7 +45,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         //Setting the reference to our path point component
         this.ourPathPoint = this.GetComponent<PathPoint>();
         //Setting this tile's color to the inactive color
-        this.GetComponent<Image>().color = this.inactiveColor;
+        this.HighlightTile(false);
 	}
 
 
@@ -45,18 +55,13 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         //Adding this combat tile to the grid in the combat manager
         CombatManager.globalReference.AddCombatTileToGrid(this, this.row, this.col);
     }
-	
+
 
     //Function called when the player's mouse starts hovering over this tile
 	public void OnPointerEnter(PointerEventData eventData_)
     {
         //Hilighting this tile's image
-        this.GetComponent<Image>().color = this.hilightColor;
-        //Looping through each connected tile and hilighting them
-        foreach(PathPoint connection in this.ourPathPoint.connectedPoints)
-        {
-            connection.GetComponent<Image>().color = this.hilightColor;
-        }
+        this.HighlightTile(true);
     }
 
 
@@ -64,12 +69,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerExit(PointerEventData eventData_)
     {
         //Stops hilighting this tile's image
-        this.GetComponent<Image>().color = this.inactiveColor;
-        //Looping through each connected tile and stops hilighting them
-        foreach (PathPoint connection in this.ourPathPoint.connectedPoints)
-        {
-            connection.GetComponent<Image>().color = this.inactiveColor;
-        }
+        this.HighlightTile(false);
     }
 
 
@@ -78,6 +78,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         this.objectOnThisTile = null;
         this.GetComponent<Image>().color = this.inactiveColor;
+        this.HighlightTile(false);
     }
 
 
@@ -104,6 +105,38 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             this.objectOnThisTile = objOnTile_;
             this.GetComponent<Image>().color = this.inactiveColor;
+        }
+        
+        this.HighlightTile(false);
+    }
+
+
+    //Determines if this tile should be hilighed or not
+    public void HighlightTile(bool highlightOn_)
+    {
+        //Getting the reference to our image component
+        Image ourImage = this.GetComponent<Image>();
+
+        float r = ourImage.color.r;
+        float g = ourImage.color.g;
+        float b = ourImage.color.b;
+
+        //Setting the image color so that there's no alpha
+        if(highlightOn_)
+        {
+            ourImage.color = new Color(r, g, b, 1);
+        }
+        //Setting the image color so that it's transparent
+        else
+        {
+            if (this.inAttackRange)
+            {
+                ourImage.color = new Color(r, g, b, this.atkRadiusTransparency);
+            }
+            else
+            {
+                ourImage.color = new Color(r, g, b, this.inactiveTransparency);
+            }
         }
     }
 }

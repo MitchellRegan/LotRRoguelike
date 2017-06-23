@@ -11,10 +11,6 @@ public class AttackAction : Action
     public enum attackTouchType { Regular, IgnoreEvasion, IgnoreArmor, IgnoreEvasionAndArmor};
     public attackTouchType touchType = attackTouchType.Regular;
 
-    //The range of this attack interms of spaces
-    [Range(1, 12)]
-    public int attackRange = 1;
-
     //The percent chance that this attack will crit
     [Range(0, 1)]
     public float critChance = 0.2f;

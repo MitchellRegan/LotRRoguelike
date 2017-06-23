@@ -626,4 +626,67 @@ public class PathfindingAlgorithms : MonoBehaviour
         //Returning the completed list of tiles
         return tilePath;
     }
+
+
+    //Function called from CombatActionPanelUI.cs. Returns all combat tiles within the given range of the starting tile
+    public static List<CombatTile> FindTilesInActionRange(CombatTile startingTile_, int actionRange_)
+    {
+        //The list of combat tiles that are returned
+        List<CombatTile> allTilesInRange = new List<CombatTile>();
+
+        //The list of each group of tiles in every range incriment. The index is the range
+        List<List<CombatTile>> tilesInEachIncriment = new List<List<CombatTile>>();
+        //Creating the first range incriment which always includes the starting tile
+        List<CombatTile> range0 = new List<CombatTile>() { startingTile_ };
+        tilesInEachIncriment.Add(range0);
+
+        for(int r = 1; r <= actionRange_; ++r)
+        {
+            //Creating a new list of tiles for this range incriment
+            List<CombatTile> newRange = new List<CombatTile>();
+
+            //Looping through each tile in the previous range
+            foreach(CombatTile tile in tilesInEachIncriment[r-1])
+            {
+                //Looping through each tile connected to the one we're checking
+                foreach(PathPoint connection in tile.ourPathPoint.connectedPoints)
+                {
+                    //If the connected tile isn't in the same range group since we only want to add new tiles
+                    if(!tilesInEachIncriment[r-1].Contains(connection.GetComponent<CombatTile>()))
+                    {
+                        //If there are range groups 2 ranges back
+                        if(r - 2 >= 0)
+                        {
+                            //If the connected tile isn't in the group 2 ranges back
+                            if(!tilesInEachIncriment[r-2].Contains(connection.GetComponent<CombatTile>()))
+                            {
+                                //Adding the connected tile to our new range
+                                newRange.Add(connection.GetComponent<CombatTile>());
+                            }
+                        }
+                        //If there are no range groups 2 ranges back
+                        else
+                        {
+                            //Adding the connected tile to our new range
+                            newRange.Add(connection.GetComponent<CombatTile>());
+                        }
+                    }
+                }
+            }
+
+            //Adding this range incriment to the list
+            tilesInEachIncriment.Add(newRange);
+        }
+
+        //Grouping all of the tiles into the list that is returned
+        foreach(List<CombatTile> rangeList in tilesInEachIncriment)
+        {
+            foreach(CombatTile tile in rangeList)
+            {
+                allTilesInRange.Add(tile);
+            }
+        }
+
+        return allTilesInRange;
+    }
 }
