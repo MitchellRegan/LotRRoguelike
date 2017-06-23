@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Effect : MonoBehaviour
 {
+    //The name of this effect
+    public string effectName;
+
     //Bool that determines if this effect happens to the character that created it
     public bool effectUser = false;
     //Bool that determines if this effect happens to the character that it's used on
