@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(PathPoint))]
-public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     //Row and column
     public int row = 0;
@@ -16,7 +16,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     //If this combat tile is semi-highlighted to show an attack's radius
     [HideInInspector]
-    public bool inAttackRange = false;
+    public bool inActionRange = false;
 
     //The transparency of this tile when not hilighted
     [Range(0, 1f)]
@@ -70,6 +70,18 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         //Stops hilighting this tile's image
         this.HighlightTile(false);
+    }
+
+
+    //Function called when the player's mouse clicks over this tile
+    public void OnPointerClick(PointerEventData eventData_)
+    {
+        //If this button isn't in range of an action, nothing happens
+        if(this.inActionRange)
+        {
+            //Telling the combat manager that the selected action is going to happen on this tile
+            CombatManager.globalReference.PerformActionAtClickedTile(this);
+        }
     }
 
 
@@ -129,7 +141,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         //Setting the image color so that it's transparent
         else
         {
-            if (this.inAttackRange)
+            if (this.inActionRange)
             {
                 ourImage.color = new Color(r, g, b, this.atkRadiusTransparency);
             }

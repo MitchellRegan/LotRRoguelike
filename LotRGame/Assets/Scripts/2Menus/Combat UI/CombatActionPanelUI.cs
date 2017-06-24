@@ -155,7 +155,7 @@ public class CombatActionPanelUI : MonoBehaviour
         //Looping through all tiles in range and hilighting them
         foreach(CombatTile tile in tilesToHilight)
         {
-            tile.inAttackRange = true;
+            tile.inActionRange = true;
             tile.HighlightTile(true);
         }
 

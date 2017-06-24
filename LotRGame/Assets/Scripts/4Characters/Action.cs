@@ -18,4 +18,11 @@ public class Action : MonoBehaviour
     [System.Serializable]
     public enum ActionType { Standard, Secondary, Quick, FullRound };
     public ActionType type = ActionType.Standard;
+
+
+    //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
+    public virtual void PerformAction(CombatTile targetTile_)
+    {
+        Debug.Log(this.actionName + " is being performed on tile " + targetTile_.col + ", " + targetTile_.row);
+    }
 }

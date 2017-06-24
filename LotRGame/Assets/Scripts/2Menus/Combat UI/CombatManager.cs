@@ -10,8 +10,13 @@ public class CombatManager : MonoBehaviour
     public static CombatManager globalReference;
 
     //Enum for the state of this combat manager to decide what to do on update
-    private enum combatState {Wait, IncreaseInitiative, SelectAction, SelectItem, SelectAbility, SelectTarget};
+    private enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput};
     private combatState currentState = combatState.Wait;
+
+    //The amount of time that has passed while waiting
+    private float waitTime = 0;
+    //The combat state to switch to after the wait time is up
+    private combatState stateAfterWait = combatState.IncreaseInitiative;
 
     //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
     public List<Character> actingCharacters = null;
@@ -50,6 +55,9 @@ public class CombatManager : MonoBehaviour
 
     //Dictionary that determines which background sprite to set based on the land tile type
     public List<BackgroundImageTypes> tileTypeBackgrounds;
+
+    //Unity Event called right after a player performs an action
+    public UnityEvent eventAfterActionPerformed;
 
 
 
@@ -98,8 +106,17 @@ public class CombatManager : MonoBehaviour
         switch(this.currentState)
         {
             //Nothing, waiting for player feedback
-            case combatState.Wait:
+            case combatState.PlayerInput:
                 return;
+            //Counting down the wait time
+            case combatState.Wait:
+                this.waitTime -= Time.deltaTime;
+                //If the timer is up, the state changes to the one that was previously designated
+                if(this.waitTime <= 0)
+                {
+                    this.currentState = this.stateAfterWait;
+                }
+                break;
             //Adding each character's attack speed to their current initative 
             case combatState.IncreaseInitiative:
                 this.IncreaseInitiative();
@@ -118,7 +135,7 @@ public class CombatManager : MonoBehaviour
                     //Default to showing the acting character's standard actions
                     CombatActionPanelUI.globalReference.DisplayActionTypes(0);
                     //Now we wait for player input
-                    this.currentState = combatState.Wait;
+                    this.currentState = combatState.PlayerInput;
                 }
                 //If the selected character is an enemy
                 else
@@ -160,11 +177,12 @@ public class CombatManager : MonoBehaviour
     //Function called from CombatActionPanelUI to turn off combat tile highlights
     public void ClearCombatTileHighlights()
     {
+        //Looping through every tile in each row and column in the grid, making sure they're all not highlighted
         foreach(List<CombatTile> col in this.combatTileGrid)
         {
             foreach(CombatTile tile in col)
             {
-                tile.inAttackRange = false;
+                tile.inActionRange = false;
                 tile.HighlightTile(false);
             }
         }
@@ -305,6 +323,14 @@ public class CombatManager : MonoBehaviour
     }
 
 
+    //Function called to set the amount of time to wait
+    private void SetWaitTime(float timeToWait_, combatState stateAfterWait_ = combatState.IncreaseInitiative)
+    {
+        this.waitTime = timeToWait_;
+        this.currentState = combatState.Wait;
+    }
+
+
     //Function called internally to hilight the occupied tiles to show where characters are
     private void UpdateCombatTilePositions()
     {
@@ -419,6 +445,32 @@ public class CombatManager : MonoBehaviour
         int col = characterToFind_.charCombatStats.gridPositionCol;
 
         return this.combatTileGrid[col][row];
+    }
+
+
+    //Function called from CombatTile.cs to perform the selected action in the CombatActionPanelUI
+    public void PerformActionAtClickedTile(CombatTile tileClicked_)
+    {
+        //Tells the action to be performed at the tile clicked
+        CombatActionPanelUI.globalReference.selectedAction.PerformAction(tileClicked_);
+        //Have this combat manager wait a bit before going back to increasing initiative because there could be animations
+        this.SetWaitTime(3);
+        //Perform the unity event after the action so we can hide some UI elements
+        this.eventAfterActionPerformed.Invoke();
+        //Resets the acting character's initiative and removes them from the list of acting characters
+        if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
+        {
+            int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
+            //Resetting their initiative slider's color
+            this.playerInitiativeSliders[selectedCharIndex].background.color = this.inactivePanelColor;
+            //Resetting their initiative slider
+            this.playerInitiativeSliders[selectedCharIndex].initiativeSlider.value = 0;
+            //Removing the currently acting character
+            this.actingCharacters.Remove(this.actingCharacters[0]);
+        }
+
+        //Clearing the highlighted area showing the previously used action's range
+        this.ClearCombatTileHighlights();
     }
 }
 
