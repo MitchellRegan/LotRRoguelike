@@ -206,4 +206,43 @@ public class PhysicalState : MonoBehaviour
         //Updating the energy level
         this.CalculateEnergyLevel();
     }
+
+
+    //Function called externally to deal damage to this character
+    public void DamageCharacter(int damageTaken_)
+    {
+        //Making sure the amount dealt isn't negative, because healing should only happen in HealCharacter
+        if(damageTaken_ < 0)
+        {
+            return;
+        }
+
+        this.currentHealth -= damageTaken_;
+
+        //If this character's health drops to 0, they are dead
+        if(this.currentHealth <= 0)
+        {
+            this.currentHealth = 0;
+            Debug.Log(this.name + " is now dead!");
+        }
+    }
+
+
+    //Function called externally to heal damage on this character
+    public void HealCharacter(int healthRestored_)
+    {
+        //Making sure the amount dealt isn't negative, because damage should only happen in DamageCharacter
+        if(healthRestored_ < 0)
+        {
+            return;
+        }
+
+        this.currentHealth += healthRestored_;
+
+        //Making sure the health doesn't exceed the maximum
+        if(this.currentHealth > this.maxHealth)
+        {
+            this.currentHealth = this.maxHealth;
+        }
+    }
 }

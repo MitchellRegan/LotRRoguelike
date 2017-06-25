@@ -10,9 +10,30 @@ public class Armor : MonoBehaviour
     //The slot that this piece of armor is equipped to
     public ArmorSlot slot = ArmorSlot.Torso;
 
-    //Damage blocked from physical attacks
+    //Amount reduced from the hit roll of whoever attacks the character wearing this
     public int physicalDefense = 0;
 
-    //Damage blocked from magic attacks
-    public int magicDefense = 0;
+    //Damage blocked from magic damage
+    public int magicResist = 0;
+
+    //Damage blocked from light attacks
+    public int lightResist = 0;
+
+    //Damage blocked from dark attacks
+    public int darkResist = 0;
+
+    //Damage blocked from fire attacks
+    public int fireResist = 0;
+
+    //Damage blocked from water attacks
+    public int waterResist = 0;
+
+    //Damage blocked from electric attacks
+    public int electricResist = 0;
+
+    //Damage blocked from wind attacks
+    public int windResist = 0;
+
+    //Damage blocked from rock attacks
+    public int rockResist = 0;
 }

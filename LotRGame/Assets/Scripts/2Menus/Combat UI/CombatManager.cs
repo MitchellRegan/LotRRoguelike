@@ -59,6 +59,9 @@ public class CombatManager : MonoBehaviour
     //Unity Event called right after a player performs an action
     public UnityEvent eventAfterActionPerformed;
 
+    //Object that's created to display damage on an attacked character's tile
+    public DamageText damageTextPrefab;
+
 
 
 	// Function called when this object is created
@@ -364,30 +367,18 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    //Function called when one character attacks another. Returns the damage based on the mathematical distribution
-    public int CalculateDamage(int minDamage_, int maxDamage_, EaseType distribution_)
+    //Function called from AttackAction.PerformAction to show damage dealt to a character at the given tile
+    public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Light, Dark };
+    public void DisplayDamageDealt(int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_)
     {
-        //If the max damage is 0, no damage can be dealt
-        if(maxDamage_ == 0)
-        {
-            return 0;
-        }
-
-        //Int to hold the damage that's returned. It's automatically set to the min
-        int totalDamage = minDamage_;
-        //Finding the difference between the min and max
-        int damageDiff = maxDamage_ - minDamage_;
-
-        //Setting the distribution type of the interpolator and resetting the progress
-        this.ourInterpolator.ease = distribution_;
-        this.ourInterpolator.ResetTime();
-        //Setting the interp to a random value from 0 - 1
-        this.ourInterpolator.AddTime(Random.Range(0, 1));
-
-        //Adding a weighted percentage of the difference to the total
-        totalDamage += damageDiff * Mathf.RoundToInt(this.ourInterpolator.GetProgress());
-
-        return totalDamage;
+        //Creating an instance of the damage text object prefab
+        GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
+        //Parenting the damage text object to this object's transform
+        newDamageDisplay.transform.SetParent(this.transform);
+        //Getting the DamageText component reference
+        DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
+        //Setting the info for the text
+        newDamageText.SetDamageToDisplay(damage_, type_, damagedCharTile_.transform.position, isCrit_);
     }
 
 

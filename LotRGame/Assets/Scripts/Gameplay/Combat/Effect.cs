@@ -13,13 +13,10 @@ public class Effect : MonoBehaviour
     public bool effectTarget = true;
 
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+	//Function called externally to trigger this effect
+    public virtual void TriggerEffect(Character usingCharacter_, Character targetCharacter_)
+    {
+
+    }
 }

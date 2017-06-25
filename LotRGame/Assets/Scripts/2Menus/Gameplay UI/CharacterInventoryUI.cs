@@ -24,8 +24,16 @@ public class CharacterInventoryUI : MonoBehaviour
     public Text selectedCharacterWeight;
     //Selected Character physical armor
     public Text selectedCharacterArmorPhysical;
-    //Selected Character magic armor
-    public Text selectedCharacterArmorMagic;
+
+    //Selected Character magic resist
+    public Text selectedCharacterResistMagic;
+    public Text selectedCharacterResistFire;
+    public Text selectedCharacterResistWater;
+    public Text selectedCharacterResistElectric;
+    public Text selectedCharacterResistWind;
+    public Text selectedCharacterResistRock;
+    public Text selectedCharacterResistLight;
+    public Text selectedCharacterResistDark;
 
     //Selected Character equipped items
     public Image head;
@@ -148,11 +156,40 @@ public class CharacterInventoryUI : MonoBehaviour
         //Sets the armor text
         if (this.selectedCharacterArmorPhysical != null)
         {
-            this.selectedCharacterArmorPhysical.text = "PA: " + this.selectedCharacterInventory.totalPhysicalArmor;
+            this.selectedCharacterArmorPhysical.text = "Armor: " + this.selectedCharacterInventory.totalPhysicalArmor;
         }
-        if (this.selectedCharacterArmorMagic != null)
+        //Sets magic resist texts
+        if (this.selectedCharacterResistMagic != null)
         {
-            this.selectedCharacterArmorMagic.text = "MA: " + this.selectedCharacterInventory.totalMagicArmor;
+            this.selectedCharacterResistMagic.text = "" + this.selectedCharacterInventory.totalMagicResist;
+        }
+        if (this.selectedCharacterResistFire != null)
+        {
+            this.selectedCharacterResistFire.text = "" + this.selectedCharacterInventory.totalFireResist;
+        }
+        if (this.selectedCharacterResistWater != null)
+        {
+            this.selectedCharacterResistWater.text = "" + this.selectedCharacterInventory.totalWaterResist;
+        }
+        if (this.selectedCharacterResistElectric != null)
+        {
+            this.selectedCharacterResistElectric.text = "" + this.selectedCharacterInventory.totalElectricResist;
+        }
+        if (this.selectedCharacterResistWind != null)
+        {
+            this.selectedCharacterResistWind.text = "" + this.selectedCharacterInventory.totalWindResist;
+        }
+        if (this.selectedCharacterResistRock != null)
+        {
+            this.selectedCharacterResistRock.text = "" + this.selectedCharacterInventory.totalRockResist;
+        }
+        if (this.selectedCharacterResistLight != null)
+        {
+            this.selectedCharacterResistLight.text = "" + this.selectedCharacterInventory.totalLightResist;
+        }
+        if (this.selectedCharacterResistDark != null)
+        {
+            this.selectedCharacterResistDark.text = "" + this.selectedCharacterInventory.totalDarkResist;
         }
 
         //If this inventory displays a character and their armor
