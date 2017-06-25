@@ -212,7 +212,7 @@ public class PhysicalState : MonoBehaviour
     public void DamageCharacter(int damageTaken_)
     {
         //Making sure the amount dealt isn't negative, because healing should only happen in HealCharacter
-        if(damageTaken_ < 0)
+        if(damageTaken_ <= 0)
         {
             return;
         }
@@ -223,7 +223,6 @@ public class PhysicalState : MonoBehaviour
         if(this.currentHealth <= 0)
         {
             this.currentHealth = 0;
-            Debug.Log(this.name + " is now dead!");
         }
     }
 

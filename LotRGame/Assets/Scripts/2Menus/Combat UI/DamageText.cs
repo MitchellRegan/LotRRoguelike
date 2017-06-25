@@ -12,8 +12,8 @@ public class DamageText : MonoBehaviour
     //The amount of time in seconds that this object is displayed before it disappears
     public float timeBeforeDestroyed = 1;
 
-    //Reference to the background image for when crits happen
-    public Image critBackground;
+    //The max offset from the hit position that this can be moved
+    public float maxOffset = 1;
 
     //The size of the text when displaying normal damage
     public int normalDamageFontSize = 14;
@@ -38,8 +38,6 @@ public class DamageText : MonoBehaviour
     {
         //Gets this object's text component
         this.ourText = this.GetComponent<Text>();
-        //Sets our background crit image to be hidden by default
-        this.critBackground.enabled = false;
     }
 
 
@@ -48,6 +46,14 @@ public class DamageText : MonoBehaviour
     {
         //Moving this object to the given position
         this.transform.position = position_;
+
+        //Finding the random position offset
+        float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+        float offset = Random.Range(0, this.maxOffset);
+        float xOffset = Mathf.Cos(angle) * offset;
+        float yOffset = Mathf.Sin(angle) * offset;
+        this.transform.position += new Vector3(xOffset, yOffset, 0);
+
         //Setting the text for the damage dealt
         this.ourText.text = "" + damageDealt_;
 
@@ -87,12 +93,30 @@ public class DamageText : MonoBehaviour
         if(isCrit_)
         {
             this.ourText.fontSize = this.critDamageFontSize;
-            this.critBackground.enabled = true;
         }
         else
         {
             this.ourText.fontSize = this.normalDamageFontSize;
         }
+    }
+
+
+    //Function called from the combat manager to show that an attack missed
+    public void DisplayMiss(Vector3 position_)
+    {
+        //Moving this object to the given position
+        this.transform.position = position_;
+
+        //Finding the random position offset
+        float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+        float offset = Random.Range(0, this.maxOffset);
+        float xOffset = Mathf.Cos(angle) * offset;
+        float yOffset = Mathf.Sin(angle) * offset;
+        this.transform.position += new Vector3(xOffset, yOffset, 0);
+
+        this.ourText.text = "MISS";
+        this.ourText.fontSize = this.normalDamageFontSize;
+        this.ourText.color = Color.black;
     }
 
 
@@ -105,7 +129,7 @@ public class DamageText : MonoBehaviour
         //If our time is up, this object is destroyed
         if(this.timeBeforeDestroyed <= 0)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
 }

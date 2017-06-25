@@ -371,6 +371,12 @@ public class CombatManager : MonoBehaviour
     public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Light, Dark };
     public void DisplayDamageDealt(int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_)
     {
+        //If the damage dealt was 0, nothing happens
+        if(damage_ <= 0)
+        {
+            return;
+        }
+
         //Creating an instance of the damage text object prefab
         GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
         //Parenting the damage text object to this object's transform
@@ -379,6 +385,26 @@ public class CombatManager : MonoBehaviour
         DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
         //Setting the info for the text
         newDamageText.SetDamageToDisplay(damage_, type_, damagedCharTile_.transform.position, isCrit_);
+
+        //Checking to see if the attacked character is dead
+        if(damagedCharTile_.objectOnThisTile.GetComponent<Character>().charPhysState.currentHealth == 0)
+        {
+            Debug.Log(damagedCharTile_.objectOnThisTile.name + " is dead!");
+        }
+    }
+
+
+    //Function called from AttackAction.PerformAction to show that an attack missed
+    public void DisplayMissedAttack(CombatTile attackedCharTile_)
+    {
+        //Creating an instance of the damage text object prefab
+        GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
+        //Parenting the damage text object to this object's transform
+        newDamageDisplay.transform.SetParent(this.transform);
+        //Getting the DamageText component reference
+        DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
+        //Setting the info for the text
+        newDamageText.DisplayMiss(attackedCharTile_.transform.position);
     }
 
 

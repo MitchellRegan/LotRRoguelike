@@ -35,13 +35,14 @@ public class AttackAction : Action
         Character defendingChar;
 
         //Making sure there's a character on the targeted tile
-        if(targetTile_.objectOnThisTile.GetComponent<Character>())
+        if(targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>())
         {
             defendingChar = targetTile_.objectOnThisTile.GetComponent<Character>();
         }
-        //If there isn't a character on the tile, nothing happens
+        //If there isn't a character on the tile, nothing happens because it misses anything it could hit
         else
         {
+            CombatManager.globalReference.DisplayMissedAttack(targetTile_);
             return;
         }
 
@@ -103,6 +104,7 @@ public class AttackAction : Action
         if(hitRoll <= 66)
         {
             //Miss
+            CombatManager.globalReference.DisplayMissedAttack(targetTile_);
             return;
         }
 
