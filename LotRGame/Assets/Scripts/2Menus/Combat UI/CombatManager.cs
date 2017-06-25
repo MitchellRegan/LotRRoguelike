@@ -291,7 +291,7 @@ public class CombatManager : MonoBehaviour
             else
             {
                 //The initiative slider is hidden
-                this.playerInitiativeSliders[p].initiativeSlider.gameObject.SetActive(false);
+                this.playerInitiativeSliders[p].background.gameObject.SetActive(false);
             }
         }
         
@@ -314,12 +314,15 @@ public class CombatManager : MonoBehaviour
             else
             {
                 //The initiative slider is hidden
-                this.enemyInitiativeSliders[e].initiativeSlider.gameObject.SetActive(false);
+                this.enemyInitiativeSliders[e].background.gameObject.SetActive(false);
             }
         }
 
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
+
+        //Setting the health bars to display the correct initiatives
+        this.UpdateHealthBars();
 
         //Setting the state to start increasing initiatives
         this.currentState = combatState.IncreaseInitiative;
@@ -391,6 +394,66 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log(damagedCharTile_.objectOnThisTile.name + " is dead!");
         }
+
+        //Updating the health bars so we can see how much health characters have
+        this.UpdateHealthBars();
+    }
+
+
+    //Function called from DisplayDamageDealt to update all character's health sliders
+    private void UpdateHealthBars()
+    {
+        //Looping through each player character's initiative slider
+        for (int p = 0; p < this.playerCharactersInCombat.Count; ++p)
+        {
+            //Setting the health slider to show the current health based on the max health
+            this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
+            this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
+
+            //If this character is dead, their initiative slider is set to 0 so they can't act
+            if(this.playerCharactersInCombat[p].charPhysState.currentHealth == 0)
+            {
+                this.playerInitiativeSliders[p].initiativeSlider.value = 0;
+
+                this.playerInitiativeSliders[p].background.color = Color.grey;
+
+                //If this character is in line to act, they are removed from the list
+                for(int a = 1; a < this.actingCharacters.Count; ++a)
+                {
+                    if(this.actingCharacters[a] == this.playerCharactersInCombat[p])
+                    {
+                        this.actingCharacters.RemoveAt(a);
+                        a -= 1;
+                    }
+                }
+            }
+        }
+
+        //Looping through each enemy's initiative slider
+        for (int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
+        {
+            //Setting the health slider to show the current health based on the max health
+            this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
+            this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
+
+            //If this enemy is dead, their initiative slider is set to 0 so they can't act
+            if (this.enemyCharactersInCombat[e].charPhysState.currentHealth == 0)
+            {
+                this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
+
+                this.enemyInitiativeSliders[e].background.color = Color.grey;
+
+                //If this character is in line to act, they are removed from the list
+                for (int a = 1; a < this.actingCharacters.Count; ++a)
+                {
+                    if (this.actingCharacters[a] == this.enemyCharactersInCombat[e])
+                    {
+                        this.actingCharacters.RemoveAt(a);
+                        a -= 1;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -414,14 +477,18 @@ public class CombatManager : MonoBehaviour
         //Looping through each player character
         for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
         {
-            //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
-            CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-            this.playerInitiativeSliders[p].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
-
-            //If the slider is filled, this character is added to the acting character list
-            if(this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
+            //Making sure the current character isn't dead first
+            if (this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
             {
-                this.actingCharacters.Add(this.playerCharactersInCombat[p]);
+                //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
+                CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
+                this.playerInitiativeSliders[p].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+
+                //If the slider is filled, this character is added to the acting character list
+                if (this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
+                {
+                    this.actingCharacters.Add(this.playerCharactersInCombat[p]);
+                }
             }
         }
 
@@ -429,14 +496,18 @@ public class CombatManager : MonoBehaviour
         //Looping through each enemy character
         for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
         {
-            //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
-            CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-            this.enemyInitiativeSliders[e].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
-
-            //If the slider is filled, this character is added to the acting character list
-            if(this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
+            //Making sure the current enemy isn't dead first
+            if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
             {
-                this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+                //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
+                CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
+                this.enemyInitiativeSliders[e].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+
+                //If the slider is filled, this character is added to the acting character list
+                if (this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
+                {
+                    this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+                }
             }
         }
         
@@ -501,10 +572,12 @@ public class BackgroundImageTypes
 }
 
 
+//Class used in CombatManager.cs that represents an individual character's name/health/initiative panel
 [System.Serializable]
 public class InitiativePanel
 {
     public Slider initiativeSlider;
     public Text characterName;
     public Image background;
+    public Slider healthSlider;
 }
