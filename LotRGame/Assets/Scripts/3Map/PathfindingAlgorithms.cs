@@ -638,6 +638,7 @@ public class PathfindingAlgorithms : MonoBehaviour
         List<List<CombatTile>> tilesInEachIncriment = new List<List<CombatTile>>();
         //Creating the first range incriment which always includes the starting tile
         List<CombatTile> range0 = new List<CombatTile>() { startingTile_ };
+        range0[0].ourPathPoint.hasBeenChecked = true;
         tilesInEachIncriment.Add(range0);
 
         for(int r = 1; r <= actionRange_; ++r)
@@ -651,25 +652,12 @@ public class PathfindingAlgorithms : MonoBehaviour
                 //Looping through each tile connected to the one we're checking
                 foreach(PathPoint connection in tile.ourPathPoint.connectedPoints)
                 {
-                    //If the connected tile isn't in the same range group since we only want to add new tiles
-                    if(!tilesInEachIncriment[r-1].Contains(connection.GetComponent<CombatTile>()))
+                    //If the connected tile hasn't already been checked
+                    if(!connection.hasBeenChecked)
                     {
-                        //If there are range groups 2 ranges back
-                        if(r - 2 >= 0)
-                        {
-                            //If the connected tile isn't in the group 2 ranges back
-                            if(!tilesInEachIncriment[r-2].Contains(connection.GetComponent<CombatTile>()))
-                            {
-                                //Adding the connected tile to our new range
-                                newRange.Add(connection.GetComponent<CombatTile>());
-                            }
-                        }
-                        //If there are no range groups 2 ranges back
-                        else
-                        {
-                            //Adding the connected tile to our new range
-                            newRange.Add(connection.GetComponent<CombatTile>());
-                        }
+                        //Adding the connected tile to this new range and marking it as checked
+                        newRange.Add(connection.GetComponent<CombatTile>());
+                        connection.hasBeenChecked = true;
                     }
                 }
             }
@@ -684,6 +672,8 @@ public class PathfindingAlgorithms : MonoBehaviour
             foreach(CombatTile tile in rangeList)
             {
                 allTilesInRange.Add(tile);
+                //Resetting the tile to say it hasn't been checked
+                tile.ourPathPoint.hasBeenChecked = false;
             }
         }
 
