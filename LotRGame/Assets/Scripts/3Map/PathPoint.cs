@@ -15,16 +15,13 @@ public class PathPoint : MonoBehaviour
     [HideInInspector]
     public bool hasBeenChecked = false;
 
-    //The type of land tile this is
-    [HideInInspector]
-    public LandType type = LandType.Empty;
-
     //Bool used in the pathfinding algorithms in CreateTileGrid.cs. Represents the number of turns it takes to traverse this point
     [HideInInspector]
     public int movementCost = 1;
     //The current number of cycles in the pathfinding algorithms that have been spent on this point.
     [HideInInspector]
     public int currentMovement = 0;
+
 
 
     //Function called on the first frame
@@ -53,20 +50,4 @@ public class PathPoint : MonoBehaviour
         this.hasBeenChecked = false;
         this.currentMovement = 0;
     }
-
-}
-
-
-//Enum used in PathPoint.cs to denote the type of environment it's on
-public enum LandType
-{
-    Empty,
-    Ocean,
-    River,
-    Swamp,
-    Grasslands,
-    Forrest,
-    Desert,
-    Mountain,
-    Volcano
 }

@@ -5,34 +5,34 @@ using UnityEngine;
 public class PathfindingAlgorithms : MonoBehaviour
 {
     //Function called from GenerateSpokeRegion. Fills in all tiles along a line with the given tile type
-    public static List<PathPoint> FindLineOfTiles(PathPoint startPoint_, PathPoint endPoint_)
+    public static List<TileInfo> FindLineOfTiles(TileInfo startPoint_, TileInfo endPoint_)
     {
         //List of game objects that form the line that will be filled in
-        List<PathPoint> pathLine = new List<PathPoint>();
+        List<TileInfo> pathLine = new List<TileInfo>();
 
-        PathPoint currentPoint = startPoint_;
+        TileInfo currentPoint = startPoint_;
 
         //Looping through path points until we find the correct one
         while (currentPoint != endPoint_)
         {
             //Creating a var to hold the reference to the point connected to the current point that's closest to the end
-            PathPoint closestPoint = null;
+            TileInfo closestPoint = null;
             float closestPointDist = 0;
 
             //Looping through each connection to find the one that's closest to the end
-            foreach (PathPoint connection in currentPoint.connectedPoints)
+            foreach (TileInfo connection in currentPoint.connectedPoints)
             {
                 if (connection != null)
                 {
                     if (closestPoint == null)
                     {
                         closestPoint = connection;
-                        closestPointDist = Vector3.Distance(closestPoint.transform.position, endPoint_.transform.position);
+                        closestPointDist = Vector3.Distance(closestPoint.transform.position, endPoint_.tilePosition);
                     }
                     else
                     {
                         //Finding the distance between this connected point and the end point
-                        float connectionDist = Vector3.Distance(connection.transform.position, endPoint_.transform.position);
+                        float connectionDist = Vector3.Distance(connection.transform.position, endPoint_.tilePosition);
 
                         //If this connected point is closer to the end than the current closest, this point becomes the new closest
                         if (connectionDist < closestPointDist)
@@ -280,10 +280,10 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that's identical to Breadth First Search, but takes into account movement costs. Returns the tile path taken to get to the target tile.
-    public static List<LandTile> DijkstraSearchLandTile(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    public static List<TileInfo> DijkstraSearchLandTile(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
     {
         //Creating the 2D list of game objects (tiles) that will be returned
-        List<LandTile> tilePath = new List<LandTile>();
+        List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier
         List<PathPoint> frontier = new List<PathPoint>();
@@ -309,7 +309,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             if (currentPoint == targetPoint_)
             {
                 //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.GetComponent<LandTile>());
+                tilePath.Add(currentPoint.GetComponent<TileInfo>());
 
                 //Creating a variable to hold the reference to the previous point
                 PathPoint prev = currentPoint.previousPoint;
@@ -318,7 +318,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 while (true)
                 {
                     //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.GetComponent<LandTile>());
+                    tilePath.Add(prev.GetComponent<TileInfo>());
 
                     //If the point isn't the starting point
                     if (prev != startingPoint_)
@@ -507,10 +507,10 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
-    public static List<LandTile> GreedyBestFirstSearchLandTile(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    public static List<TileInfo> GreedyBestFirstSearchLandTile(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
     {
         //Creating the 2D list of game objects (tiles) that will be returned
-        List<LandTile> tilePath = new List<LandTile>();
+        List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier (definition) and their distance from the target (key)
         SortedList<float, PathPoint> frontier = new SortedList<float, PathPoint>();
@@ -536,7 +536,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             if (currentPoint == targetPoint_)
             {
                 //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.GetComponent<LandTile>());
+                tilePath.Add(currentPoint.GetComponent<TileInfo>());
 
                 //Creating a variable to hold the reference to the previous point
                 PathPoint prev = currentPoint.previousPoint;
@@ -545,7 +545,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 while (true)
                 {
                     //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.GetComponent<LandTile>());
+                    tilePath.Add(prev.GetComponent<TileInfo>());
 
                     //If the point isn't the starting point
                     if (prev != startingPoint_)

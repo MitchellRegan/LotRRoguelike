@@ -9,6 +9,13 @@ public class LandTile : MonoBehaviour
     //Static reference to the tile that the player has selected
     public static LandTile selectedTile;
 
+    //The reference to this tile's path point component
+    private PathPoint ourPathPoint;
+
+    //The type of land tile this is
+    [HideInInspector]
+    public LandType type = LandType.Empty;
+
     //List of all moving objects (player characters and enemy encounters) that are on this tile
     private List<GameObject> objectsOnThisTile;
 
@@ -30,14 +37,15 @@ public class LandTile : MonoBehaviour
     [Range(0, 100)]
     public List<int> trackingSkillList;
 
-
-
+    
 
     //Function called on initialization
     private void Awake()
     {
         this.HilightThisTile(false);
         this.objectsOnThisTile = new List<GameObject>(0);
+
+        this.ourPathPoint = this.GetComponent<PathPoint>();
     }
 
 
@@ -82,7 +90,7 @@ public class LandTile : MonoBehaviour
                     //Using the Dijkstra search to find the dravel path for each character
                     PathPoint startingTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile.GetComponent<PathPoint>();
                     PathPoint endTile = LandTile.selectedTile.GetComponent<PathPoint>();
-                    List<LandTile> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
+                    List<TileInfo> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
 
                     //Setting the path to follow for the character's movement
                     CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().TravelToPath(pathToFollow);
@@ -164,10 +172,9 @@ public class LandTile : MonoBehaviour
                     {
                         //Initiating combat with the first group of characters found.
                         //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
-                        LandType ourTileType = this.GetComponent<PathPoint>().type;
                         PartyGroup playerGroupOnTile = currentObj.GetComponent<PartyGroup>();
                         EnemyEncounter newEncounter = objectToAdd_.GetComponent<EnemyEncounter>();
-                        CombatManager.globalReference.InitiateCombat(ourTileType, playerGroupOnTile, newEncounter);
+                        CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
                     }
                 }
             }
@@ -182,10 +189,9 @@ public class LandTile : MonoBehaviour
                     {
                         //Initiating combat with the first group of characters found.
                         //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
-                        LandType ourTileType = this.GetComponent<PathPoint>().type;
                         PartyGroup playerGroupOnTile = objectToAdd_.GetComponent<PartyGroup>();
                         EnemyEncounter newEncounter = currentObj.GetComponent<EnemyEncounter>();
-                        CombatManager.globalReference.InitiateCombat(ourTileType, playerGroupOnTile, newEncounter);
+                        CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
                     }
                 }
             }

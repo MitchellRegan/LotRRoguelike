@@ -6,13 +6,13 @@ public class Movement : MonoBehaviour
 {
     //The land tile that this character is currently on
     [HideInInspector]
-    public LandTile currentTile;
+    public TileInfo currentTile;
     //The land tile that this character is traveling toward
     [HideInInspector]
-    public LandTile tileToTravelTo;
+    public TileInfo tileToTravelTo;
     //The list of land tiles that make up the path that this character is following
     [HideInInspector]
-    public List<LandTile> travelPath;
+    public List<TileInfo> travelPath;
 
     //The amount of frames it takes to travel between the current tile and the tile to travel to
     private int totalTravelTime = 24;
@@ -25,7 +25,7 @@ public class Movement : MonoBehaviour
 
 	
     //Function called externally to set the tile that this character is on
-    public void SetCurrentTile(LandTile currentTile_)
+    public void SetCurrentTile(TileInfo currentTile_)
     {
         //Leaving the previous tile
         if(this.currentTile != null)
@@ -41,12 +41,18 @@ public class Movement : MonoBehaviour
         this.tileToTravelTo = null;
 
         //Moving this character to the current tile's position
-        this.transform.position = this.currentTile.transform.position;
+        this.transform.position = this.currentTile.tilePosition;
+
+        //If this movement script is attached to a player party group, the tile grid needs to update the visible tiles
+        if(this.GetComponent<PartyGroup>())
+        {
+            CreateTileGrid.GenerateVisibleLand(this);
+        }
     }
 
 
     //Function called externally to set the tile that this character should travel to
-    public void TravelToPath(List<LandTile> pathToTravelOn_)
+    public void TravelToPath(List<TileInfo> pathToTravelOn_)
     {
         //Resetting the player back to the current tile to prevent weird position offsets
         this.SetCurrentTile(this.currentTile);
@@ -84,9 +90,9 @@ public class Movement : MonoBehaviour
         }
         
         //Finds the difference between the the current tile and the tile to travel to
-        Vector3 distDiff = new Vector3(this.tileToTravelTo.transform.position.x - this.currentTile.transform.position.x,
-                                        this.tileToTravelTo.transform.position.y - this.currentTile.transform.position.y,
-                                        this.tileToTravelTo.transform.position.z - this.currentTile.transform.position.z);
+        Vector3 distDiff = new Vector3(this.tileToTravelTo.tilePosition.x - this.currentTile.tilePosition.x,
+                                        this.tileToTravelTo.tilePosition.y - this.currentTile.tilePosition.y,
+                                        this.tileToTravelTo.tilePosition.z - this.currentTile.tilePosition.z);
         //Multiplying the difference by the percentage of the travel time that's passed
         distDiff = distDiff / (this.totalTravelTime * 1f);
         

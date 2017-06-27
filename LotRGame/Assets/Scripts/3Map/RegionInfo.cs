@@ -19,9 +19,12 @@ public class RegionInfo : MonoBehaviour
     //The movement cost ranges for tiles in this region
     public Vector2 movementCostMinMax = new Vector2(1, 2);
 
+    //The list of objects that can be used to decorate this tile
+    public List<GameObject> tileDecorations;
+
 
     //The list of resources that can be generated from foraging
-    public List<ResourceBlock> foragenResources;
+    public List<ResourceBlock> foragingResources;
 
     //The list of resources that can be generated from fishing
     public List<ResourceBlock> fishingResources;

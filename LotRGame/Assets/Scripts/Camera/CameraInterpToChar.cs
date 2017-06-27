@@ -20,6 +20,7 @@ public class CameraInterpToChar : MonoBehaviour
 	private void Start ()
     {
         //Sets the groupToFollow as the selected party group in the character manager
+        this.transform.position = CharacterManager.globalReference.selectedGroup.transform.position;
         this.ChangeGroupToFollow();
 	}
 	
