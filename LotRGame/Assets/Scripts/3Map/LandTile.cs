@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshCollider))]
-[RequireComponent(typeof(PathPoint))]
 public class LandTile : MonoBehaviour
 {
     //Static reference to the tile that the player has selected
     public static LandTile selectedTile;
 
-    //The reference to this tile's path point component
-    private PathPoint ourPathPoint;
-
-    //The type of land tile this is
+    //The reference to the TileInfo class it represents
     [HideInInspector]
-    public LandType type = LandType.Empty;
-
-    //List of all moving objects (player characters and enemy encounters) that are on this tile
-    private List<GameObject> objectsOnThisTile;
+    public TileInfo tileReference;
 
     //The list of items that can be found on this tile from foraging. MUST be listed in ascending order of skill checks needed
     public List<Item> forageList;
@@ -43,9 +36,6 @@ public class LandTile : MonoBehaviour
     private void Awake()
     {
         this.HilightThisTile(false);
-        this.objectsOnThisTile = new List<GameObject>(0);
-
-        this.ourPathPoint = this.GetComponent<PathPoint>();
     }
 
 
@@ -88,8 +78,8 @@ public class LandTile : MonoBehaviour
                 if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.Movement)
                 {
                     //Using the Dijkstra search to find the dravel path for each character
-                    PathPoint startingTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile.GetComponent<PathPoint>();
-                    PathPoint endTile = LandTile.selectedTile.GetComponent<PathPoint>();
+                    TileInfo startingTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile;
+                    TileInfo endTile = LandTile.selectedTile.tileReference;
                     List<TileInfo> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
 
                     //Setting the path to follow for the character's movement
@@ -142,70 +132,11 @@ public class LandTile : MonoBehaviour
         if (hilightOn_)
         {
             this.GetComponent<MeshRenderer>().materials[0].color = new Color(1, 1, 1, 1);
-            this.GetComponent<LineRenderer>().enabled = true;
         }
         //If it's off, the material is dark
         else
         {
             this.GetComponent<MeshRenderer>().materials[0].color = new Color(0.5f, 0.5f, 0.5f, 1);
-            this.GetComponent<LineRenderer>().enabled = false;
-        }
-    }
-
-
-    //Function called from Movement.cs to tell this tile that a character is now on it
-    public void AddObjectToThisTile(GameObject objectToAdd_)
-    {
-        //Making sure we aren't adding a character more than once
-        if(!this.objectsOnThisTile.Contains(objectToAdd_))
-        {
-            this.objectsOnThisTile.Add(objectToAdd_);
-
-            //If an enemy encounter is added to this tile
-            if(objectToAdd_.GetComponent<EnemyEncounter>())
-            {
-                //Looping through all of the objects on this tile to see if a player party is on it
-                foreach(GameObject currentObj in this.objectsOnThisTile)
-                {
-                    //If the current object is a player party
-                    if(currentObj.GetComponent<PartyGroup>())
-                    {
-                        //Initiating combat with the first group of characters found.
-                        //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
-                        PartyGroup playerGroupOnTile = currentObj.GetComponent<PartyGroup>();
-                        EnemyEncounter newEncounter = objectToAdd_.GetComponent<EnemyEncounter>();
-                        CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
-                    }
-                }
-            }
-            //If a Party Group is added to this tile
-            else if(objectToAdd_.GetComponent<PartyGroup>())
-            {
-                //Looping through all of the objects on this tile to see if an enemy encounter is on it
-                foreach(GameObject currentObj in this.objectsOnThisTile)
-                {
-                    //If the current object is an enemy encounter
-                    if(currentObj.GetComponent<EnemyEncounter>())
-                    {
-                        //Initiating combat with the first group of characters found.
-                        //NOTE: Even if multiple parties are on the same tile, they're still considered as separated, so only 1 group at a time
-                        PartyGroup playerGroupOnTile = objectToAdd_.GetComponent<PartyGroup>();
-                        EnemyEncounter newEncounter = currentObj.GetComponent<EnemyEncounter>();
-                        CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
-                    }
-                }
-            }
-        }
-    }
-
-
-    //Function called from Movement.cs to tell this tile that a character is no longer on it
-    public void RemoveObjectFromThisTile(GameObject objectToRemove_)
-    {
-        //Making sure we aren't removing a character that's not on this tile
-        if(this.objectsOnThisTile.Contains(objectToRemove_))
-        {
-            this.objectsOnThisTile.Remove(objectToRemove_);
         }
     }
 }

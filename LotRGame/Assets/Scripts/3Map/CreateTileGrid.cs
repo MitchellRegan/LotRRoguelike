@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(PathfindingAlgorithms))]
 public class CreateTileGrid : MonoBehaviour
 {
+    //Static reference to this tile grid
+    public static CreateTileGrid globalReference;
+
     //The number of columns of hexes this grid has
     public int cols = 6;
     //The number of rows of hexes there are in each column
@@ -15,15 +18,18 @@ public class CreateTileGrid : MonoBehaviour
     //The width of each tile. This value is generated on Awake using the tile height given
     private float tileWidth = 1;
 
+    //The hexagon model prefab that's used for every tile
+    public MeshRenderer hexMesh;
+
     //2 dimensional array of tiles that's generated
     public List<List<TileInfo>> tileGrid;
 
     //The number of tiles that are visible at a given time
     [Range(2, 15)]
-    static public int visibilityRange = 7;
+    public int visibilityRange = 7;
 
     //The list of all tiles that are currently visible
-    public List<TileInfo> visibleTiles;
+    public List<GameObject> visibleTileObjects;
 
     //Prefab for the RegionInfo of the ocean
     public RegionInfo oceanRegion;
@@ -56,9 +62,22 @@ public class CreateTileGrid : MonoBehaviour
     //Called on initialization
     private void Awake()
     {
+        //Setting the static reference
+        if(globalReference == null)
+        {
+            globalReference = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+
         //Finding the width of the tiles based on the height given and the ratio between a hex's height and width
         this.tileWidth = this.tileHeight * 1.1547f;
         this.tileWidth -= (this.tileWidth - this.tileHeight) * 2;
+
+        //Initializing our list of visible tile objects
+        this.visibleTileObjects = new List<GameObject>();
 
         //If we're starting a new game, we need to generate the map first
         if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
@@ -138,7 +157,7 @@ public class CreateTileGrid : MonoBehaviour
 
         //Bool that changes through every column loop. If true, offsets the current column up
         bool offsetCol = false;
-
+        
         //Looping through each column
         for (int c = 0; c < this.cols; ++c)
         {
@@ -190,10 +209,10 @@ public class CreateTileGrid : MonoBehaviour
                         //Making sure the tile below exists
                         if(this.tileGrid[c][r+1] != null)
                         {
-                            PathPoint bottomTile = this.tileGrid[c][r + 1];
+                            TileInfo bottomTile = this.tileGrid[c][r + 1];
                             //Connecting the current tile's south (bottom) point to the north (top) point of the tile below, and vice versa
-                            currentTile.connectedPoints[0] = bottomTile;
-                            bottomTile.connectedPoints[3] = currentTile;
+                            currentTile.connectedTiles[0] = bottomTile;
+                            bottomTile.connectedTiles[3] = currentTile;
                         }
                     }
 
@@ -205,10 +224,10 @@ public class CreateTileGrid : MonoBehaviour
                         if (c + 1 < this.cols)
                         {
                             //The northeast tile is the same row, next column
-                            PathPoint northEastTile = this.tileGrid[c + 1][r];
+                            TileInfo northEastTile = this.tileGrid[c + 1][r];
                             //Connecting the current tile's northeast point to the southwest point in the next tile, and vice versa
-                            currentTile.connectedPoints[1] = northEastTile;
-                            northEastTile.connectedPoints[4] = currentTile;
+                            currentTile.connectedTiles[1] = northEastTile;
+                            northEastTile.connectedTiles[4] = currentTile;
 
 
                             //Making sure the row down exists
@@ -217,10 +236,10 @@ public class CreateTileGrid : MonoBehaviour
                                 if(this.tileGrid[c+1][r+1] != null)
                                 {
                                     //The southeast tile is 1 row down, next column
-                                    PathPoint southEastTile = this.tileGrid[c + 1][r + 1];
+                                    TileInfo southEastTile = this.tileGrid[c + 1][r + 1];
                                     //Connecting the current tile's southeast point to the northwest point to the next tile, and vice versa
-                                    currentTile.connectedPoints[2] = southEastTile;
-                                    southEastTile.connectedPoints[5] = currentTile;
+                                    currentTile.connectedTiles[2] = southEastTile;
+                                    southEastTile.connectedTiles[5] = currentTile;
                                 }
                             }
                         }
@@ -233,20 +252,20 @@ public class CreateTileGrid : MonoBehaviour
                         if (c + 1 < this.cols)
                         {
                             //The southeast tile is the same row, next column
-                            PathPoint southEastTile = this.tileGrid[c + 1][r];
+                            TileInfo southEastTile = this.tileGrid[c + 1][r];
                             //Connecting the current tile's southeast point to the northwest point in the next tile, and vice versa
-                            currentTile.connectedPoints[2] = southEastTile;
-                            southEastTile.connectedPoints[5] = currentTile;
+                            currentTile.connectedTiles[2] = southEastTile;
+                            southEastTile.connectedTiles[5] = currentTile;
 
 
                             //Making sure the row up exists
                             if (r - 1 > -1)
                             {
                                 //The northeast tile is 1 row up, next column
-                                PathPoint northEastTile = this.tileGrid[c + 1][r - 1];
+                                TileInfo northEastTile = this.tileGrid[c + 1][r - 1];
                                 //Connecting the current tile's northeast point to the southwest point of the next tile, and vice versa
-                                currentTile.connectedPoints[1] = northEastTile;
-                                northEastTile.connectedPoints[4] = currentTile;
+                                currentTile.connectedTiles[1] = northEastTile;
+                                northEastTile.connectedTiles[4] = currentTile;
                             }
                         }
                     }
@@ -263,7 +282,7 @@ public class CreateTileGrid : MonoBehaviour
     private void FillEmptyWithOcean()
     {
         //Looping through each tile in the tile grid
-        for(int x = 0; x < this.tileGrid.Count; ++x)
+        for (int x = 0; x < this.tileGrid.Count; ++x)
         {
             for(int y = 0; y < this.tileGrid[0].Count; ++y)
             {
@@ -282,7 +301,7 @@ public class CreateTileGrid : MonoBehaviour
     private void GenerateSpokeRegion(int startTileRow_, int startTileCol_, Vector2 spokeMinMax_, Vector2 spokeLengthMinMax_, RegionInfo regionInfo_)
     {
         //Throwing an exception if the user inputs a starting tile that isn't on the grid
-        if(startTileCol_ < 0 || startTileCol_ >= this.tileGrid.Count || startTileRow_ < 0 || startTileRow_ >= this.tileGrid[0].Count)
+        if (startTileCol_ < 0 || startTileCol_ >= this.tileGrid.Count || startTileRow_ < 0 || startTileRow_ >= this.tileGrid[0].Count)
         {
             throw new System.Exception("The starting tile row or column must be within the bounds of the tile grid");
         }
@@ -429,7 +448,7 @@ public class CreateTileGrid : MonoBehaviour
         List<TileInfo> frontier = new List<TileInfo>();
         //Adding the starting point to the frontier and making sure its previous point is cleared
         frontier.Add(startPoint_);
-        startPoint_.previousPoint = null;
+        startPoint_.previousTile = null;
         startPoint_.hasBeenChecked = false;
 
         //The list of path points that have already been visited
@@ -451,7 +470,7 @@ public class CreateTileGrid : MonoBehaviour
             TileInfo currentPoint = frontier[0];
 
             //Looping through each path point that's connected to the current point
-            foreach(TileInfo connection in currentPoint.connectedPoints)
+            foreach(TileInfo connection in currentPoint.connectedTiles)
             {
                 if(connection != null)
                 {
@@ -491,20 +510,21 @@ public class CreateTileGrid : MonoBehaviour
     {
         int centerRow = (this.tileGrid.Count / 2) + 1;
         int centerCol = (this.tileGrid[0].Count / 2) + 1;
-        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.grasslandRegions[0]);
 
+        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.grasslandRegions[0]);
+        
         //Setting the starting point at a random location in the first third of the map
         int startRow = Random.Range(2, (this.tileGrid.Count / 3) + 1);
         int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
-
+        
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
         playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol]);
-
+        
         //Instantiating the test character at the starting tile's location
         GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
         GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
-
+        
         //Adding the starting characters to the party group
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
@@ -518,20 +538,17 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Function called externally and from StartMapCreation. Only spawns the nearest tiles around the player party
-    public static void GenerateVisibleLand(Movement visiblePlayerParty_)
+    public void GenerateVisibleLand(Movement visiblePlayerParty_)
     {
-        //Clearing the current list of visible tiles
-        s; //Instead of having a list of all visible tiles, maybe have a list of all game objects (tile hex models) that were generated?
-
         //THe list of each group of tiles in every range incriment. The index is the range
         List<List<TileInfo>> tilesInEachIncriment = new List<List<TileInfo>>();
         //Creating the first range incriment which always includes only the player party's tile
         List<TileInfo> range0 = new List<TileInfo>() { visiblePlayerParty_.currentTile };
         range0[0].hasBeenChecked = true;
         tilesInEachIncriment.Add(range0);
-
+        
         //Looping through each radius of tiles in the visibility range
-        for(int r = 1; r <= visibilityRange; ++r)
+        for (int r = 1; r <= this.visibilityRange; ++r)
         {
             //Creating a new list of tiles for this range incriment
             List<TileInfo> newRange = new List<TileInfo>();
@@ -540,10 +557,10 @@ public class CreateTileGrid : MonoBehaviour
             foreach(TileInfo tile in tilesInEachIncriment[r-1])
             {
                 //Looping through each tile connected to the one we're checking
-                foreach(TileInfo connection in tile.connectedPoints)
+                foreach(TileInfo connection in tile.connectedTiles)
                 {
                     //If the connected tile hasn't already been checked
-                    if(!connection.hasBeenChecked)
+                    if(connection != null && !connection.hasBeenChecked)
                     {
                         //Adding the connected tile to this new range and marking it as checked
                         newRange.Add(connection);
@@ -551,20 +568,42 @@ public class CreateTileGrid : MonoBehaviour
                     }
                 }
             }
-
             //Adding this range incriment to the list
             tilesInEachIncriment.Add(newRange);
         }
 
+        //Clearing the current list of visible tile objects and destroying them
+        for (int o = 0; o < this.visibleTileObjects.Count; ++o)
+        {
+            Destroy(this.visibleTileObjects[o]);
+            this.visibleTileObjects[o] = null;
+        }
+        this.visibleTileObjects.Clear();
+        
         //Grouping all of the tiles into the list that are visible
-        foreach(List<TileInfo> rangeList in tilesInEachIncriment)
+        foreach (List<TileInfo> rangeList in tilesInEachIncriment)
         {
             foreach(TileInfo tile in rangeList)
             {
                 //Resetting the tile to say it hasn't been checked
                 tile.hasBeenChecked = false;
 
-                jd;//Spawn the tile models and everything else in the TileInfo here!
+                //Creating an instance of the hex mesh for this tile
+                GameObject tileMesh = Instantiate(this.hexMesh.gameObject, new Vector3(tile.tilePosition.x, tile.elevation, tile.tilePosition.z), new Quaternion());
+                //Setting the mesh's material to the correct one for the tile
+                tileMesh.GetComponent<MeshRenderer>().materials[0] = tile.tileMaterial;
+                //Setting the tile's reference in the LandTile component
+                tileMesh.GetComponent<LandTile>().tileReference = tile;
+
+                //Adding the hex mesh to our list of visible tile objects
+                this.visibleTileObjects.Add(tileMesh);
+
+                //If this tile has a decoration model, an instance of it is created and added to the visible objects list
+                if(tile.decorationModel != null)
+                {
+                    GameObject decor = Instantiate(tile.decorationModel, tile.tilePosition, new Quaternion());
+                    this.visibleTileObjects.Add(decor);
+                }
             }
         }
     }

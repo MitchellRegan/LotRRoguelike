@@ -3,8 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Class used in CreateTileGrid.cs to hold info for each tile in the map's tile grid
-public class TileInfo : PathPoint
+public class TileInfo
 {
+    //A list of all of the tiles that are connected to this point
+    public List<TileInfo> connectedTiles = new List<TileInfo>(6);
+
+    //Reference in pathfinding algorithms to the tile that lead to this one. Used in CreateTileGrid algorithms
+    [HideInInspector]
+    public TileInfo previousTile;
+
+    //Bool used in the pathfinding algorithms in CreateTileGrid.cs. If true, it will be ignored during the search.
+    [HideInInspector]
+    public bool hasBeenChecked = false;
+
+    //Bool used in the pathfinding algorithms in CreateTileGrid.cs. Represents the number of turns it takes to traverse this point
+    [HideInInspector]
+    public int movementCost = 1;
+    //The current number of cycles in the pathfinding algorithms that have been spent on this point.
+    [HideInInspector]
+    public int currentMovement = 0;
+
     //The name of the region that this tile is in
     public string regionName = "";
 
@@ -37,6 +55,11 @@ public class TileInfo : PathPoint
         this.type = LandType.Empty;
         //Initializing the (now empty) list of objects on this tile
         this.objectsOnThisTile = new List<GameObject>();
+        this.connectedTiles = new List<TileInfo>();
+        for (int c = 0; c < 6; ++c)
+        {
+            this.connectedTiles.Add(null);
+        }
     }
 
 
@@ -44,6 +67,11 @@ public class TileInfo : PathPoint
     public TileInfo(RegionInfo thisTilesRegion_)
     {
         this.SetTileBasedOnRegion(thisTilesRegion_);
+        this.connectedTiles = new List<TileInfo>();
+        for(int c = 0; c < 6; ++c)
+        {
+            this.connectedTiles.Add(null);
+        }
     }
 
 
@@ -70,6 +98,15 @@ public class TileInfo : PathPoint
 
         //Initializing the (now empty) list of objects on this tile
         this.objectsOnThisTile = new List<GameObject>();
+    }
+
+
+    //Function called in the pathfinding algorithms in CreateTileGrid.cs. Clears this tile's previous point and the fact that it's been checked
+    public void ClearPathfinding()
+    {
+        this.previousTile = null;
+        this.hasBeenChecked = false;
+        this.currentMovement = 0;
     }
 
 

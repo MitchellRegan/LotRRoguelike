@@ -20,19 +20,19 @@ public class PathfindingAlgorithms : MonoBehaviour
             float closestPointDist = 0;
 
             //Looping through each connection to find the one that's closest to the end
-            foreach (TileInfo connection in currentPoint.connectedPoints)
+            foreach (TileInfo connection in currentPoint.connectedTiles)
             {
                 if (connection != null)
                 {
                     if (closestPoint == null)
                     {
                         closestPoint = connection;
-                        closestPointDist = Vector3.Distance(closestPoint.transform.position, endPoint_.tilePosition);
+                        closestPointDist = Vector3.Distance(closestPoint.tilePosition, endPoint_.tilePosition);
                     }
                     else
                     {
                         //Finding the distance between this connected point and the end point
-                        float connectionDist = Vector3.Distance(connection.transform.position, endPoint_.tilePosition);
+                        float connectionDist = Vector3.Distance(connection.tilePosition, endPoint_.tilePosition);
 
                         //If this connected point is closer to the end than the current closest, this point becomes the new closest
                         if (connectionDist < closestPointDist)
@@ -56,21 +56,21 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that uses Breadth First Search to check all directions equally. Returns the tile path taken to get to the target tile.
-    public static List<GameObject> BreadthFirstSearch(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    public static List<TileInfo> BreadthFirstSearch(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
     {
         //Creating the 2D list of game objects (tiles) that will be returned
-        List<GameObject> tilePath = new List<GameObject>();
+        List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier
-        List<PathPoint> frontier = new List<PathPoint>();
+        List<TileInfo> frontier = new List<TileInfo>();
         //Adding the starting tile to the fronteir and making sure its previous point is cleared
         frontier.Add(startingPoint_);
 
         //The list of path points that have already been visited
-        List<PathPoint> visitedPoints = new List<PathPoint>();
+        List<TileInfo> visitedPoints = new List<TileInfo>();
         visitedPoints.Add(startingPoint_);
 
-        startingPoint_.previousPoint = null;
+        startingPoint_.previousTile = null;
         startingPoint_.hasBeenChecked = true;
 
 
@@ -78,29 +78,29 @@ public class PathfindingAlgorithms : MonoBehaviour
         while (frontier.Count != 0)
         {
             //Getting the reference to the next path point to check
-            PathPoint currentPoint = frontier[0];
+            TileInfo currentPoint = frontier[0];
 
 
             //If the current point is the path point we're looking for
             if (currentPoint == targetPoint_)
             {
                 //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.gameObject);
+                tilePath.Add(currentPoint);
 
                 //Creating a variable to hold the reference to the previous point
-                PathPoint prev = currentPoint.previousPoint;
+                TileInfo prev = currentPoint.previousTile;
 
                 //Looping through the trail of points back to the starting point
                 while (true)
                 {
                     //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.gameObject);
+                    tilePath.Add(prev);
 
                     //If the point isn't the starting point
                     if (prev != startingPoint_)
                     {
                         //Setting the previous point to the next point in the path
-                        prev = prev.previousPoint;
+                        prev = prev.previousTile;
                     }
                     //If the point is the starting point
                     else
@@ -123,7 +123,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             else
             {
                 //Looping through each path point that's connected to the current point
-                foreach (PathPoint connection in currentPoint.connectedPoints)
+                foreach (TileInfo connection in currentPoint.connectedTiles)
                 {
                     if (connection != null)
                     {
@@ -131,7 +131,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                         if (!connection.hasBeenChecked)
                         {
                             //Telling the connected point came from the current point we're checking
-                            connection.previousPoint = currentPoint;
+                            connection.previousTile = currentPoint;
 
                             //Adding the connected point to the frontier and list of visited tiles
                             frontier.Add(connection);
@@ -149,7 +149,7 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
         //Looping through all path points in the list of visited points to clear their data
-        foreach (PathPoint point in visitedPoints)
+        foreach (TileInfo point in visitedPoints)
         {
             point.ClearPathfinding();
         }
@@ -161,21 +161,21 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that's identical to Breadth First Search, but takes into account movement costs. Returns the tile path taken to get to the target tile.
-    public static List<GameObject> DijkstraSearch(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    public static List<TileInfo> DijkstraSearch(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
     {
         //Creating the 2D list of game objects (tiles) that will be returned
-        List<GameObject> tilePath = new List<GameObject>();
+        List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier
-        List<PathPoint> frontier = new List<PathPoint>();
+        List<TileInfo> frontier = new List<TileInfo>();
         //Adding the starting tile to the fronteir and making sure its previous point is cleared
         frontier.Add(startingPoint_);
 
         //The list of path points that have already been visited
-        List<PathPoint> visitedPoints = new List<PathPoint>();
+        List<TileInfo> visitedPoints = new List<TileInfo>();
         visitedPoints.Add(startingPoint_);
 
-        startingPoint_.previousPoint = null;
+        startingPoint_.previousTile = null;
         startingPoint_.hasBeenChecked = true;
 
 
@@ -183,29 +183,29 @@ public class PathfindingAlgorithms : MonoBehaviour
         while (frontier.Count != 0)
         {
             //Getting the reference to the next path point to check
-            PathPoint currentPoint = frontier[0];
+            TileInfo currentPoint = frontier[0];
 
 
             //If the current point is the path point we're looking for
             if (currentPoint == targetPoint_)
             {
                 //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.gameObject);
+                tilePath.Add(currentPoint);
 
                 //Creating a variable to hold the reference to the previous point
-                PathPoint prev = currentPoint.previousPoint;
+                TileInfo prev = currentPoint;
 
                 //Looping through the trail of points back to the starting point
                 while (true)
                 {
                     //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.gameObject);
+                    tilePath.Add(prev);
 
                     //If the point isn't the starting point
                     if (prev != startingPoint_)
                     {
                         //Setting the previous point to the next point in the path
-                        prev = prev.previousPoint;
+                        prev = prev.previousTile;
                     }
                     //If the point is the starting point
                     else
@@ -234,7 +234,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 if (currentPoint.currentMovement >= currentPoint.movementCost)
                 {
                     //Looping through each path point that's connected to the current point
-                    foreach (PathPoint connection in currentPoint.connectedPoints)
+                    foreach (TileInfo connection in currentPoint.connectedTiles)
                     {
                         if (connection != null)
                         {
@@ -242,7 +242,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                             if (!connection.hasBeenChecked)
                             {
                                 //Telling the connected point came from the current point we're checking
-                                connection.previousPoint = currentPoint;
+                                connection.previousTile = currentPoint;
 
                                 //Adding the connected point to the frontier and list of visited tiles
                                 frontier.Add(connection);
@@ -268,7 +268,7 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
         //Looping through all path points in the list of visited points to clear their data
-        foreach (PathPoint point in visitedPoints)
+        foreach (TileInfo point in visitedPoints)
         {
             point.ClearPathfinding();
         }
@@ -280,21 +280,21 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that's identical to Breadth First Search, but takes into account movement costs. Returns the tile path taken to get to the target tile.
-    public static List<TileInfo> DijkstraSearchLandTile(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    public static List<TileInfo> DijkstraSearchLandTile(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
     {
         //Creating the 2D list of game objects (tiles) that will be returned
         List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier
-        List<PathPoint> frontier = new List<PathPoint>();
+        List<TileInfo> frontier = new List<TileInfo>();
         //Adding the starting tile to the fronteir and making sure its previous point is cleared
         frontier.Add(startingPoint_);
 
         //The list of path points that have already been visited
-        List<PathPoint> visitedPoints = new List<PathPoint>();
+        List<TileInfo> visitedPoints = new List<TileInfo>();
         visitedPoints.Add(startingPoint_);
 
-        startingPoint_.previousPoint = null;
+        startingPoint_.previousTile = null;
         startingPoint_.hasBeenChecked = true;
 
 
@@ -302,29 +302,29 @@ public class PathfindingAlgorithms : MonoBehaviour
         while (frontier.Count != 0)
         {
             //Getting the reference to the next path point to check
-            PathPoint currentPoint = frontier[0];
+            TileInfo currentPoint = frontier[0];
 
 
             //If the current point is the path point we're looking for
             if (currentPoint == targetPoint_)
             {
                 //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.GetComponent<TileInfo>());
+                tilePath.Add(currentPoint);
 
                 //Creating a variable to hold the reference to the previous point
-                PathPoint prev = currentPoint.previousPoint;
+                TileInfo prev = currentPoint.previousTile;
 
                 //Looping through the trail of points back to the starting point
                 while (true)
                 {
                     //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.GetComponent<TileInfo>());
+                    tilePath.Add(prev);
 
                     //If the point isn't the starting point
                     if (prev != startingPoint_)
                     {
                         //Setting the previous point to the next point in the path
-                        prev = prev.previousPoint;
+                        prev = prev.previousTile;
                     }
                     //If the point is the starting point
                     else
@@ -353,7 +353,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 if (currentPoint.currentMovement >= currentPoint.movementCost)
                 {
                     //Looping through each path point that's connected to the current point
-                    foreach (PathPoint connection in currentPoint.connectedPoints)
+                    foreach (TileInfo connection in currentPoint.connectedTiles)
                     {
                         if (connection != null)
                         {
@@ -361,7 +361,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                             if (!connection.hasBeenChecked)
                             {
                                 //Telling the connected point came from the current point we're checking
-                                connection.previousPoint = currentPoint;
+                                connection.previousTile = currentPoint;
 
                                 //Adding the connected point to the frontier and list of visited tiles
                                 frontier.Add(connection);
@@ -387,7 +387,7 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
         //Looping through all path points in the list of visited points to clear their data
-        foreach (PathPoint point in visitedPoints)
+        foreach (TileInfo point in visitedPoints)
         {
             point.ClearPathfinding();
         }
@@ -399,129 +399,21 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
-    public static List<GameObject> GreedyBestFirstSearch(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
-    {
-        //Creating the 2D list of game objects (tiles) that will be returned
-        List<GameObject> tilePath = new List<GameObject>();
-
-        //The list of path points that make up the frontier (definition) and their distance from the target (key)
-        SortedList<float, PathPoint> frontier = new SortedList<float, PathPoint>();
-        //Adding the starting tile to the fronteir and making sure its previous point is cleared
-        frontier.Add(Vector3.Distance(startingPoint_.transform.position, targetPoint_.transform.position), startingPoint_);
-
-        //The list of path points that have already been visited
-        List<PathPoint> visitedPoints = new List<PathPoint>();
-        visitedPoints.Add(startingPoint_);
-
-        startingPoint_.previousPoint = null;
-        startingPoint_.hasBeenChecked = true;
-
-
-        //Loop through each path point until the frontier is empty
-        while (frontier.Count != 0)
-        {
-            //Getting the reference to the next path point to check
-            PathPoint currentPoint = frontier[0];
-
-
-            //If the current point is the path point we're looking for
-            if (currentPoint == targetPoint_)
-            {
-                //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.gameObject);
-
-                //Creating a variable to hold the reference to the previous point
-                PathPoint prev = currentPoint.previousPoint;
-
-                //Looping through the trail of points back to the starting point
-                while (true)
-                {
-                    //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.gameObject);
-
-                    //If the point isn't the starting point
-                    if (prev != startingPoint_)
-                    {
-                        //Setting the previous point to the next point in the path
-                        prev = prev.previousPoint;
-                    }
-                    //If the point is the starting point
-                    else
-                    {
-                        //We break out of the loop
-                        break;
-                    }
-                }
-
-                //Reversing the list of path points since it's currently backward
-                tilePath.Reverse();
-
-                //If we exit early, the loop is broken
-                if (earlyExit_)
-                {
-                    break;
-                }
-            }
-            //If the current point isn't the point we're looking for
-            else
-            {
-                //Looping through each path point that's connected to the current point
-                foreach (PathPoint connection in currentPoint.connectedPoints)
-                {
-                    if (connection != null)
-                    {
-                        //If the connected point hasn't been visited yet
-                        if (!connection.hasBeenChecked)
-                        {
-                            //Telling the connected point came from the current point we're checking
-                            connection.previousPoint = currentPoint;
-
-                            //Finding the distance from this connection to the target point
-                            float connectionDist = Vector3.Distance(connection.transform.position, targetPoint_.transform.position);
-
-                            //Adding the connected point to the frontier and list of visited tiles
-                            frontier.Add(connectionDist, connection);
-                            visitedPoints.Add(connection);
-                            //Marking the tile as already checked so that it isn't added again
-                            connection.hasBeenChecked = true;
-                        }
-                    }
-                }
-
-                //Adding the current point to the list of visited points and removing it from the frontier
-                frontier.RemoveAt(frontier.IndexOfValue(currentPoint));
-            }
-        }
-
-
-        //Looping through all path points in the list of visited points to clear their data
-        foreach (PathPoint point in visitedPoints)
-        {
-            point.ClearPathfinding();
-        }
-
-
-        //Returning the completed list of tiles
-        return tilePath;
-    }
-
-
-    //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
-    public static List<TileInfo> GreedyBestFirstSearchLandTile(PathPoint startingPoint_, PathPoint targetPoint_, bool earlyExit_ = true)
+    public static List<TileInfo> GreedyBestFirstSearch(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
     {
         //Creating the 2D list of game objects (tiles) that will be returned
         List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier (definition) and their distance from the target (key)
-        SortedList<float, PathPoint> frontier = new SortedList<float, PathPoint>();
+        SortedList<float, TileInfo> frontier = new SortedList<float, TileInfo>();
         //Adding the starting tile to the fronteir and making sure its previous point is cleared
-        frontier.Add(Vector3.Distance(startingPoint_.transform.position, targetPoint_.transform.position), startingPoint_);
+        frontier.Add(Vector3.Distance(startingPoint_.tilePosition, targetPoint_.tilePosition), startingPoint_);
 
         //The list of path points that have already been visited
-        List<PathPoint> visitedPoints = new List<PathPoint>();
+        List<TileInfo> visitedPoints = new List<TileInfo>();
         visitedPoints.Add(startingPoint_);
 
-        startingPoint_.previousPoint = null;
+        startingPoint_.previousTile = null;
         startingPoint_.hasBeenChecked = true;
 
 
@@ -529,29 +421,29 @@ public class PathfindingAlgorithms : MonoBehaviour
         while (frontier.Count != 0)
         {
             //Getting the reference to the next path point to check
-            PathPoint currentPoint = frontier[0];
+            TileInfo currentPoint = frontier[0];
 
 
             //If the current point is the path point we're looking for
             if (currentPoint == targetPoint_)
             {
                 //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint.GetComponent<TileInfo>());
+                tilePath.Add(currentPoint);
 
                 //Creating a variable to hold the reference to the previous point
-                PathPoint prev = currentPoint.previousPoint;
+                TileInfo prev = currentPoint.previousTile;
 
                 //Looping through the trail of points back to the starting point
                 while (true)
                 {
                     //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev.GetComponent<TileInfo>());
+                    tilePath.Add(prev);
 
                     //If the point isn't the starting point
                     if (prev != startingPoint_)
                     {
                         //Setting the previous point to the next point in the path
-                        prev = prev.previousPoint;
+                        prev = prev;
                     }
                     //If the point is the starting point
                     else
@@ -574,7 +466,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             else
             {
                 //Looping through each path point that's connected to the current point
-                foreach (PathPoint connection in currentPoint.connectedPoints)
+                foreach (TileInfo connection in currentPoint.connectedTiles)
                 {
                     if (connection != null)
                     {
@@ -582,10 +474,10 @@ public class PathfindingAlgorithms : MonoBehaviour
                         if (!connection.hasBeenChecked)
                         {
                             //Telling the connected point came from the current point we're checking
-                            connection.previousPoint = currentPoint;
+                            connection.previousTile = currentPoint;
 
                             //Finding the distance from this connection to the target point
-                            float connectionDist = Vector3.Distance(connection.transform.position, targetPoint_.transform.position);
+                            float connectionDist = Vector3.Distance(connection.tilePosition, targetPoint_.tilePosition);
 
                             //Adding the connected point to the frontier and list of visited tiles
                             frontier.Add(connectionDist, connection);
@@ -603,7 +495,115 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
         //Looping through all path points in the list of visited points to clear their data
-        foreach (PathPoint point in visitedPoints)
+        foreach (TileInfo point in visitedPoints)
+        {
+            point.ClearPathfinding();
+        }
+
+
+        //Returning the completed list of tiles
+        return tilePath;
+    }
+
+
+    //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
+    public static List<TileInfo> GreedyBestFirstSearchLandTile(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
+    {
+        //Creating the 2D list of game objects (tiles) that will be returned
+        List<TileInfo> tilePath = new List<TileInfo>();
+
+        //The list of path points that make up the frontier (definition) and their distance from the target (key)
+        SortedList<float, TileInfo> frontier = new SortedList<float, TileInfo>();
+        //Adding the starting tile to the fronteir and making sure its previous point is cleared
+        frontier.Add(Vector3.Distance(startingPoint_.tilePosition, targetPoint_.tilePosition), startingPoint_);
+
+        //The list of path points that have already been visited
+        List<TileInfo> visitedPoints = new List<TileInfo>();
+        visitedPoints.Add(startingPoint_);
+
+        startingPoint_.previousTile = null;
+        startingPoint_.hasBeenChecked = true;
+
+
+        //Loop through each path point until the frontier is empty
+        while (frontier.Count != 0)
+        {
+            //Getting the reference to the next path point to check
+            TileInfo currentPoint = frontier[0];
+
+
+            //If the current point is the path point we're looking for
+            if (currentPoint == targetPoint_)
+            {
+                //Adding the current point's game object to the list of returned objects
+                tilePath.Add(currentPoint);
+
+                //Creating a variable to hold the reference to the previous point
+                TileInfo prev = currentPoint.previousTile;
+
+                //Looping through the trail of points back to the starting point
+                while (true)
+                {
+                    //Adding the point's game object to the list of returned objects
+                    tilePath.Add(prev);
+
+                    //If the point isn't the starting point
+                    if (prev != startingPoint_)
+                    {
+                        //Setting the previous point to the next point in the path
+                        prev = prev;
+                    }
+                    //If the point is the starting point
+                    else
+                    {
+                        //We break out of the loop
+                        break;
+                    }
+                }
+
+                //Reversing the list of path points since it's currently backward
+                tilePath.Reverse();
+
+                //If we exit early, the loop is broken
+                if (earlyExit_)
+                {
+                    break;
+                }
+            }
+            //If the current point isn't the point we're looking for
+            else
+            {
+                //Looping through each path point that's connected to the current point
+                foreach (TileInfo connection in currentPoint.connectedTiles)
+                {
+                    if (connection != null)
+                    {
+                        //If the connected point hasn't been visited yet
+                        if (!connection.hasBeenChecked)
+                        {
+                            //Telling the connected point came from the current point we're checking
+                            connection.previousTile = currentPoint;
+
+                            //Finding the distance from this connection to the target point
+                            float connectionDist = Vector3.Distance(connection.tilePosition, targetPoint_.tilePosition);
+
+                            //Adding the connected point to the frontier and list of visited tiles
+                            frontier.Add(connectionDist, connection);
+                            visitedPoints.Add(connection);
+                            //Marking the tile as already checked so that it isn't added again
+                            connection.hasBeenChecked = true;
+                        }
+                    }
+                }
+
+                //Adding the current point to the list of visited points and removing it from the frontier
+                frontier.RemoveAt(frontier.IndexOfValue(currentPoint));
+            }
+        }
+
+
+        //Looping through all path points in the list of visited points to clear their data
+        foreach (TileInfo point in visitedPoints)
         {
             point.ClearPathfinding();
         }

@@ -41,12 +41,12 @@ public class Movement : MonoBehaviour
         this.tileToTravelTo = null;
 
         //Moving this character to the current tile's position
-        this.transform.position = this.currentTile.tilePosition;
+        this.transform.position = new Vector3(this.currentTile.tilePosition.x, this.currentTile.elevation, this.currentTile.tilePosition.z);
 
         //If this movement script is attached to a player party group, the tile grid needs to update the visible tiles
         if(this.GetComponent<PartyGroup>())
         {
-            CreateTileGrid.GenerateVisibleLand(this);
+            CreateTileGrid.globalReference.GenerateVisibleLand(this);
         }
     }
 
@@ -91,7 +91,7 @@ public class Movement : MonoBehaviour
         
         //Finds the difference between the the current tile and the tile to travel to
         Vector3 distDiff = new Vector3(this.tileToTravelTo.tilePosition.x - this.currentTile.tilePosition.x,
-                                        this.tileToTravelTo.tilePosition.y - this.currentTile.tilePosition.y,
+                                        this.tileToTravelTo.elevation - this.currentTile.elevation,
                                         this.tileToTravelTo.tilePosition.z - this.currentTile.tilePosition.z);
         //Multiplying the difference by the percentage of the travel time that's passed
         distDiff = distDiff / (this.totalTravelTime * 1f);
@@ -122,33 +122,5 @@ public class Movement : MonoBehaviour
                 this.tileToTravelTo = null;
             }
         }
-        /*//Adding the percentage of a day that's passed
-        this.currentTravelTime += (TimePanelUI.globalReference.hoursAdvancedPerUpdate * 1f) / 24f;
-
-        //If the current travel time has reached the total travel time, this character is now on that tile
-        if (this.currentTravelTime >= this.totalTravelTime)
-        {
-            this.SetCurrentTile(this.tileToTravelTo);
-
-            //If there are more tiles in the travel path, the next one is set as the tile to travel to
-            if (this.travelPath.Count > 0)
-            {
-                this.tileToTravelTo = this.travelPath[0];
-
-                //Removing the tile from the path
-                this.travelPath.RemoveAt(0);
-            }
-        }
-        //If the character is still traveling, their position is updated to move toward
-        else
-        {
-            //Finding the difference in position between the current tile and the tile to travel toward
-            Vector3 tilePosDiff = this.tileToTravelTo.transform.position - this.currentTile.transform.position;
-            //Finding the percentage of the travel distance that this character has traveled
-            float percentTraveled = this.currentTravelTime / this.totalTravelTime;
-
-            //Setting this character's position to the offset location based on the percent traveled
-            this.transform.position += tilePosDiff * percentTraveled;
-        }*/
     }
 }
