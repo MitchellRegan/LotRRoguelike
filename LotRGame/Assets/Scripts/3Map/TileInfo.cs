@@ -116,8 +116,6 @@ public class TileInfo
         //Making sure we aren't adding a character more than once
         if (!this.objectsOnThisTile.Contains(objectToAdd_))
         {
-            this.objectsOnThisTile.Add(objectToAdd_);
-
             //If an enemy encounter is added to this tile
             if (objectToAdd_.GetComponent<EnemyEncounter>())
             {
@@ -132,12 +130,23 @@ public class TileInfo
                         PartyGroup playerGroupOnTile = currentObj.GetComponent<PartyGroup>();
                         EnemyEncounter newEncounter = objectToAdd_.GetComponent<EnemyEncounter>();
                         CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
+
+                        //After combat is initiated, the enemy encounter is destroyed before it is added to this tile
+                        GameObject.Destroy(objectToAdd_);
+                        //Breaking out of the function before multiple combats start at once
+                        return;
                     }
                 }
+
+                //If there weren't any party groups on this tile, the enemy encounter is added
+                this.objectsOnThisTile.Add(objectToAdd_);
             }
             //If a Party Group is added to this tile
             else if (objectToAdd_.GetComponent<PartyGroup>())
             {
+                //The player group is added
+                this.objectsOnThisTile.Add(objectToAdd_);
+
                 //Looping through all of the objects on this tile to see if an enemy encounter is on it
                 foreach (GameObject currentObj in this.objectsOnThisTile)
                 {
@@ -149,6 +158,11 @@ public class TileInfo
                         PartyGroup playerGroupOnTile = objectToAdd_.GetComponent<PartyGroup>();
                         EnemyEncounter newEncounter = currentObj.GetComponent<EnemyEncounter>();
                         CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
+
+                        //After combat is initiated, the enemy encounter is destroyed and we break out of the loop before multiple combats start at once
+                        this.objectsOnThisTile.Remove(currentObj);
+                        GameObject.Destroy(currentObj);
+                        return;
                     }
                 }
             }

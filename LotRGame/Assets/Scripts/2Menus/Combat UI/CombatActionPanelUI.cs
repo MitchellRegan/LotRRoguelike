@@ -50,6 +50,15 @@ public class CombatActionPanelUI : MonoBehaviour
     }
 
 
+    //Function called when this game object is enabled
+    private void OnEnable()
+    {
+        //Resetting the Action Details Panel
+        this.selectedAction = null;
+        this.UpdateActionDetailsPanel();
+    }
+
+
     //Function called externally to display all of a certain type of action
     public void DisplayActionTypes(int typeIndex_)
     {

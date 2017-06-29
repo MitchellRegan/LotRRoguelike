@@ -33,8 +33,10 @@ public class CombatManager : MonoBehaviour
     [HideInInspector]
     public List<Character> enemyCharactersInCombat;
 
-    //The canvas that is activated at the start of combat
-    public Canvas combatCanvas;
+    //The event that is activated at the start of combat
+    public UnityEvent combatInitializeEvent;
+    //The event that is activated at the end of combat
+    public UnityEvent combatEndEvent;
     //The unity event that's invoked when a player character can perform actions
     public UnityEvent showPlayerActions;
 
@@ -196,7 +198,7 @@ public class CombatManager : MonoBehaviour
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
         //Activating the combat canvas so we can show everything
-        this.combatCanvas.enabled = true;
+        this.combatInitializeEvent.Invoke();
 
         //Looping through and resetting the combat tiles
         for(int c = 0; c < this.combatTileGrid.Count; ++c)
@@ -324,8 +326,8 @@ public class CombatManager : MonoBehaviour
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
 
-        //Setting the state to start increasing initiatives
-        this.currentState = combatState.IncreaseInitiative;
+        //Setting the state to start increasing initiatives after a brief wait
+        this.SetWaitTime(3, combatState.IncreaseInitiative);
     }
 
 
@@ -452,6 +454,18 @@ public class CombatManager : MonoBehaviour
                         a -= 1;
                     }
                 }
+
+                //Looping through all enemy characters to check their health
+                foreach(Character enemy in this.enemyCharactersInCombat)
+                {
+                    //If at least 1 enemy is still alive, we break out of the loop
+                    if(enemy.charPhysState.currentHealth > 0)
+                    {
+                        return;
+                    }
+                }
+                //If we get through the loop, that means that all enemies are dead and combat is over
+                this.combatEndEvent.Invoke();
             }
         }
     }
