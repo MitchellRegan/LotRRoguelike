@@ -28,7 +28,7 @@ public class CameraInterpToChar : MonoBehaviour
         int middleCol = CreateTileGrid.globalReference.cols / 2;
         Vector3 middleTilePos = CreateTileGrid.globalReference.tileGrid[middleCol][middleRow].tilePosition;
 
-        float newRotation = Mathf.Atan2(middleTilePos.z - groupToFollow.transform.position.z, middleTilePos.x - groupToFollow.transform.position.x) * Mathf.Rad2Deg;
+        float newRotation = Mathf.Atan2(middleTilePos.x - groupToFollow.transform.position.x, middleTilePos.z - groupToFollow.transform.position.z) * Mathf.Rad2Deg;
         this.transform.Rotate(new Vector3(0, newRotation, 0));
 	}
 	

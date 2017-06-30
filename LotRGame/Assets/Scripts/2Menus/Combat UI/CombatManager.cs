@@ -10,7 +10,7 @@ public class CombatManager : MonoBehaviour
     public static CombatManager globalReference;
 
     //Enum for the state of this combat manager to decide what to do on update
-    private enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput};
+    private enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
     private combatState currentState = combatState.Wait;
 
     //The amount of time that has passed while waiting
@@ -161,6 +161,10 @@ public class CombatManager : MonoBehaviour
                     }
                     this.currentState = combatState.IncreaseInitiative;
                 }
+                break;
+            //Calls the unity event for when this combat encounter is over
+            case combatState.EndCombat:
+                this.combatEndEvent.Invoke();
                 break;
         }
     }
@@ -323,11 +327,11 @@ public class CombatManager : MonoBehaviour
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
 
-        //Setting the health bars to display the correct initiatives
-        this.UpdateHealthBars();
-
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, combatState.IncreaseInitiative);
+
+        //Setting the health bars to display the correct initiatives
+        this.UpdateHealthBars();
     }
 
 
@@ -336,6 +340,7 @@ public class CombatManager : MonoBehaviour
     {
         this.waitTime = timeToWait_;
         this.currentState = combatState.Wait;
+        this.stateAfterWait = stateAfterWait_;
     }
 
 
@@ -465,7 +470,7 @@ public class CombatManager : MonoBehaviour
                     }
                 }
                 //If we get through the loop, that means that all enemies are dead and combat is over
-                this.combatEndEvent.Invoke();
+                this.SetWaitTime(1.5f, combatState.EndCombat);
             }
         }
     }
@@ -556,7 +561,10 @@ public class CombatManager : MonoBehaviour
         //Tells the action to be performed at the tile clicked
         CombatActionPanelUI.globalReference.selectedAction.PerformAction(tileClicked_);
         //Have this combat manager wait a bit before going back to increasing initiative because there could be animations
-        this.SetWaitTime(3);
+        if (this.stateAfterWait != combatState.EndCombat)
+        {
+            this.SetWaitTime(3);
+        }
         //Perform the unity event after the action so we can hide some UI elements
         this.eventAfterActionPerformed.Invoke();
         //Resets the acting character's initiative and removes them from the list of acting characters

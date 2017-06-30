@@ -165,7 +165,7 @@ public class CombatActionPanelUI : MonoBehaviour
         foreach(CombatTile tile in tilesToHilight)
         {
             tile.inActionRange = true;
-            tile.HighlightTile(true);
+            tile.HighlightTile(false);
         }
 
         //Displays the action's details
