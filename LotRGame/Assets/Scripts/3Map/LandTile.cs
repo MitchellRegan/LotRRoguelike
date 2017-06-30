@@ -33,7 +33,7 @@ public class LandTile : MonoBehaviour
     
 
     //Function called on initialization
-    private void Awake()
+    private void Start()
     {
         this.HilightThisTile(false);
     }

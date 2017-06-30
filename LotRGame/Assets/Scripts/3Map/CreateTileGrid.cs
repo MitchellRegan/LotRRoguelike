@@ -132,7 +132,40 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Fills in all empty tiles with ocean tiles
-        this.FillEmptyWithOcean();
+        //this.FillEmptyWithOcean();
+    }
+
+
+    //Creates a map for normal games
+    private void CreateMapNormal()
+    {
+        //Creating a test spoke grassland region in the center of the map
+        int centerRow = (this.tileGrid.Count / 2) + 1;
+        int centerCol = (this.tileGrid[0].Count / 2) + 1;
+
+        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.grasslandRegions[0]);
+
+        //Setting the starting point at a random location in the first third of the map
+        int startRow = Random.Range(2, (this.tileGrid.Count / 3) + 1);
+        int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
+
+        //Instantiating the player group at the starting tile's location
+        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
+        playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol]);
+
+        //Instantiating the test character at the starting tile's location
+        GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
+        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
+
+        //Adding the starting characters to the party group
+        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
+        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
+
+        //Setting the character manager to be selecting the player party 1
+        CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
+
+        GameObject enemy = GameObject.Instantiate(this.testEnemyEncounter, this.tileGrid[startRow - 1][startCol].tilePosition, new Quaternion());
+        enemy.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow - 1][startCol]);
     }
 
 
@@ -176,7 +209,7 @@ public class CreateTileGrid : MonoBehaviour
                     offsetPos.z += this.tileHeight / 2;
                 }
                 //Creating a new tile and positioning it at the offset of the start position
-                this.tileGrid[c].Add(new TileInfo());
+                this.tileGrid[c].Add(new TileInfo(this.oceanRegion));
                 this.tileGrid[c][r].tilePosition = startPos + offsetPos;
             }
             //Changes the column offset for the next loop
@@ -274,25 +307,6 @@ public class CreateTileGrid : MonoBehaviour
 
             //Changes the offset after every loop
             offsetCol = !offsetCol;
-        }
-    }
-
-
-    //Loops through all tiles in the map and fills in empty ones with ocean tiles
-    private void FillEmptyWithOcean()
-    {
-        //Looping through each tile in the tile grid
-        for (int x = 0; x < this.tileGrid.Count; ++x)
-        {
-            for(int y = 0; y < this.tileGrid[0].Count; ++y)
-            {
-                //If the current tile is empty (has no designated land type)
-                if(this.tileGrid[x][y].type == LandType.Empty)
-                {
-                    //Setting the tile's data based on the ocean region prefab
-                    this.tileGrid[x][y] = new TileInfo(this.oceanRegion);
-                }
-            }
         }
     }
 
@@ -442,7 +456,7 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Function called from GenerateSpokeRegion. Uses the same kind of algorithm as Breadth First Search to fill all tiles within a given region
-    public void FillInRegionOfTiles(TileInfo startPoint_, List<TileInfo> edgeTiles_, RegionInfo regionInfo_, bool onlyPaintEmpty = true)
+    public void FillInRegionOfTiles(TileInfo startPoint_, List<TileInfo> edgeTiles_, RegionInfo regionInfo_)
     {
         //The list of path points that make up the frontier
         List<TileInfo> frontier = new List<TileInfo>();
@@ -493,47 +507,12 @@ public class CreateTileGrid : MonoBehaviour
         //Looping through all of the tiles in our selection so that we can give them the region info
         foreach(TileInfo regionTile in visitedPoints)
         {
-            //The tile is only given info if it's empty, or we don't care about only painting empty tiles
-            if ( (onlyPaintEmpty && regionTile.type == LandType.Empty) || !onlyPaintEmpty)
-            {
-                regionTile.SetTileBasedOnRegion(regionInfo_);
-            }
+            //Setting the tile's info using the region given
+            regionTile.SetTileBasedOnRegion(regionInfo_);
 
             //Clearing the pathfinding for each tile once we're finished with them
             regionTile.ClearPathfinding();
         }
-    }
-
-
-    //Creates a map for normal games
-    private void CreateMapNormal()
-    {
-        int centerRow = (this.tileGrid.Count / 2) + 1;
-        int centerCol = (this.tileGrid[0].Count / 2) + 1;
-
-        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.grasslandRegions[0]);
-        
-        //Setting the starting point at a random location in the first third of the map
-        int startRow = Random.Range(2, (this.tileGrid.Count / 3) + 1);
-        int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
-        
-        //Instantiating the player group at the starting tile's location
-        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
-        playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol]);
-        
-        //Instantiating the test character at the starting tile's location
-        GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
-        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
-        
-        //Adding the starting characters to the party group
-        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
-        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
-
-        //Setting the character manager to be selecting the player party 1
-        CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
-
-        GameObject enemy = GameObject.Instantiate(this.testEnemyEncounter, this.tileGrid[startRow - 1][startCol].tilePosition, new Quaternion());
-        enemy.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow - 1][startCol]);
     }
 
 
@@ -591,7 +570,9 @@ public class CreateTileGrid : MonoBehaviour
                 //Creating an instance of the hex mesh for this tile
                 GameObject tileMesh = Instantiate(this.hexMesh.gameObject, new Vector3(tile.tilePosition.x, tile.elevation, tile.tilePosition.z), new Quaternion());
                 //Setting the mesh's material to the correct one for the tile
-                tileMesh.GetComponent<MeshRenderer>().materials[0] = tile.tileMaterial;
+                Material[] tileMat = tileMesh.GetComponent<MeshRenderer>().materials;
+                tileMat[0] = tile.tileMaterial;
+                tileMesh.GetComponent<MeshRenderer>().materials = tileMat;
                 //Setting the tile's reference in the LandTile component
                 tileMesh.GetComponent<LandTile>().tileReference = tile;
 
