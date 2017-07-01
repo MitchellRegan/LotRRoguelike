@@ -77,10 +77,49 @@ public class CombatStats : MonoBehaviour
 
 
 
-    //Function called when this object is created
+    //Function called when this character is created
     private void Awake ()
     {
         //Getting the reference to the physical state component on this object
         this.currentState = this.GetComponent<PhysicalState>();
 	}
+
+
+    //Function called from the character manager when this character is added to the player party
+    public void SetCombatPosition()
+    {
+        //Looping throuch each of the combat positions characters can be in
+        for (int c = 0; c < 3; ++c)
+        {
+            for (int r = 0; r < 8; ++r)
+            {
+                //Bool that tracks if the current position is empty
+                bool emptyPos = true;
+
+                //Looping through each character in the player party
+                foreach (Character currentChar in CharacterManager.globalReference.playerParty)
+                {
+                    //Making sure the character we're checking isn't an empty slot in the party and also isn't this character
+                    if (currentChar != null && currentChar.charCombatStats != this)
+                    {
+                        //If the current character is in the same position as this character, we break out of this loop and go to the next tile
+                        if (currentChar.charCombatStats.gridPositionRow == r && currentChar.charCombatStats.gridPositionCol == c)
+                        {
+                            //Marking this tile as not empty and breaking the loop
+                            emptyPos = false;
+                        }
+                    }
+                }
+
+                //If we make it through all of the characters without finding someone else in this character's position
+                if (emptyPos)
+                {
+                    //We set this character to the current row and column, then end this function
+                    this.gridPositionCol = c;
+                    this.gridPositionRow = r;
+                    return;
+                }
+            }
+        }
+    }
 }

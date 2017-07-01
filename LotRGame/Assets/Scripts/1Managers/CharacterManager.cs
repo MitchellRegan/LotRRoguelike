@@ -72,6 +72,8 @@ public class CharacterManager : MonoBehaviour
             if(this.playerParty[i] == null)
             {
                 this.playerParty[i] = newCharacter_;
+                //Setting the new character's position in the combat grid so that they aren't sharing a tile with someone else
+                this.playerParty[i].charCombatStats.SetCombatPosition();
                 return true;
             }
         }

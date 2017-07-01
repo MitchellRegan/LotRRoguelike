@@ -15,9 +15,9 @@ public class PartyGroup : MonoBehaviour
     [Range(1, 3)]
     public int groupIndex = 1;
 
-    //The list of all characters currently in this party and their position on the combat board
+    //The list of all characters currently in this party
     [HideInInspector]
-    public Dictionary<Character, Vector2> charactersInParty;
+    public List<Character> charactersInParty;
 
     //The maximum number of combat board positions
     private Vector2 combatColsRows = new Vector2(3, 8);
@@ -28,7 +28,7 @@ public class PartyGroup : MonoBehaviour
     private void Awake()
     {
         //Initializing the character in party dictionary
-        this.charactersInParty = new Dictionary<Character, Vector2>();
+        this.charactersInParty = new List<Character>();
 
         //Setting the static reference for this group
         switch(this.groupIndex)
@@ -74,17 +74,16 @@ public class PartyGroup : MonoBehaviour
         if(CharacterManager.globalReference.playerParty.Contains(charToAdd_))
         {
             //Making sure the character isn't already in this group
-            if (!this.charactersInParty.ContainsKey(charToAdd_))
+            if (!this.charactersInParty.Contains(charToAdd_))
             {
                 //Checking to see if the character is in group 1 (as long as this group isn't group 1)
-                if(PartyGroup.group1 != this && PartyGroup.group1.charactersInParty.ContainsKey(charToAdd_))
+                if(PartyGroup.group1 != this && PartyGroup.group1.charactersInParty.Contains(charToAdd_))
                 {
                     //Making sure the group is on the same tile as we are
                     if(this.GetComponent<Movement>().currentTile == PartyGroup.group1.GetComponent<Movement>().currentTile)
                     {
                         //Adding the character to our group
-                        Vector2 charPosition = PartyGroup.group1.charactersInParty[charToAdd_];
-                        this.charactersInParty.Add(charToAdd_, charPosition);
+                        this.charactersInParty.Add(charToAdd_);
                         //Removing the character from the other group
                         PartyGroup.group1.charactersInParty.Remove(charToAdd_);
                         //Parenting the character to this group's transform
@@ -92,14 +91,13 @@ public class PartyGroup : MonoBehaviour
                     }
                 }
                 //Checking group 2
-                else if(PartyGroup.group2 != this && PartyGroup.group2.charactersInParty.ContainsKey(charToAdd_))
+                else if(PartyGroup.group2 != this && PartyGroup.group2.charactersInParty.Contains(charToAdd_))
                 {
                     //Making sure the group is on the same tile as we are
                     if (this.GetComponent<Movement>().currentTile == PartyGroup.group2.GetComponent<Movement>().currentTile)
                     {
                         //Adding the character to our group
-                        Vector2 charPosition = PartyGroup.group2.charactersInParty[charToAdd_];
-                        this.charactersInParty.Add(charToAdd_, charPosition);
+                        this.charactersInParty.Add(charToAdd_);
                         //Removing the character from the other group
                         PartyGroup.group2.charactersInParty.Remove(charToAdd_);
                         //Parenting the character to this group's transform
@@ -107,14 +105,13 @@ public class PartyGroup : MonoBehaviour
                     }
                 }
                 //Checking group 3
-                else if(PartyGroup.group3 != this && PartyGroup.group3.charactersInParty.ContainsKey(charToAdd_))
+                else if(PartyGroup.group3 != this && PartyGroup.group3.charactersInParty.Contains(charToAdd_))
                 {
                     //Making sure the group is on the same tile as we are
                     if (this.GetComponent<Movement>().currentTile == PartyGroup.group3.GetComponent<Movement>().currentTile)
                     {
                         //Adding the character to our group
-                        Vector2 charPosition = PartyGroup.group3.charactersInParty[charToAdd_];
-                        this.charactersInParty.Add(charToAdd_, charPosition);
+                        this.charactersInParty.Add(charToAdd_);
                         //Removing the character from the other group
                         PartyGroup.group3.charactersInParty.Remove(charToAdd_);
                         //Parenting the character to this group's transform
@@ -134,8 +131,7 @@ public class PartyGroup : MonoBehaviour
             //Adding the character to the CharacterManager's player party
             CharacterManager.globalReference.AddCharacterToParty(charToAdd_);
             //Adding the character to our group
-            Vector2 charPosition = new Vector2(1,0);
-            this.charactersInParty.Add(charToAdd_, charPosition);
+            this.charactersInParty.Add(charToAdd_);
             //Parenting the character to this group's transform
             charToAdd_.transform.SetParent(this.transform);
             charToAdd_.transform.position = new Vector3(0, 0, 0);
@@ -152,35 +148,17 @@ public class PartyGroup : MonoBehaviour
     //Making sure two characters in the group aren't taking up the same spot in combat
     private void CheckCombatPositionForCharacter(Character charToCheck_)
     {
-        //The position of the character we're checking
-        Vector2 charactersPosition = this.charactersInParty[charToCheck_];
-        
-        foreach (Character charInGroup in this.charactersInParty.Keys)
+        //Looping through each character in this party
+        foreach (Character charInGroup in this.charactersInParty)
         {
             //Making sure we aren't checking against the same character, because that will ALWAYS cause a problem
             if (charInGroup != charToCheck_)
             {
                 //If someone else is already occupying the same spot as the character we're checking
-                if (charactersPosition == this.charactersInParty[charInGroup])
+                if (charToCheck_.charCombatStats.gridPositionCol == charInGroup.charCombatStats.gridPositionCol && charToCheck_.charCombatStats.gridPositionRow == charInGroup.charCombatStats.gridPositionRow)
                 {
-                    //Loop through each column of combat positions on the grid starting from the middle
-                    for (int c = 1; c < this.combatColsRows.x; ++c)
-                    {
-                        //Looping through each row of combat positions in the current column
-                        for(int r = 0; r < this.combatColsRows.y; ++r)
-                        {
-                            //Creating a vector2 to hold the new position
-                            Vector2 newCombatPos = new Vector2(c, r);
-
-                            //Checking to see if any other character currently occupies this position
-                            if(!this.charactersInParty.ContainsValue(newCombatPos))
-                            {
-                                //If nobody else is in this new position, the character to check is set to be there
-                                this.charactersInParty[charToCheck_] = newCombatPos;
-                                return;
-                            }
-                        }
-                    }
+                    //The character we're checking finds an empty spot using the Set Combat Position function in Combat Stats
+                    charToCheck_.charCombatStats.SetCombatPosition();
                 }
             }
         }

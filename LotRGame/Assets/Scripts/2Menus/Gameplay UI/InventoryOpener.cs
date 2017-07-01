@@ -172,7 +172,7 @@ public class InventoryOpener : MonoBehaviour
         }
 
         //Sets the party inventory to show the first character in the player party list's inventory
-        foreach (Character selectedChar in CharacterManager.globalReference.selectedGroup.charactersInParty.Keys)
+        foreach (Character selectedChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
         {
             CharacterInventoryUI.partyInventory.selectedCharacterInventory = selectedChar.charInventory;
             break;

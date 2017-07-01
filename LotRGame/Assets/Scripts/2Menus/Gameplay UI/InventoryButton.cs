@@ -72,7 +72,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         this.transform.position = this.defaultPosition;
 
         //Turning off this button's raycast blocking so that we can see what's behind it
-        this.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
+        this.GetComponent<Image>().raycastTarget = false;
 
         //Casting a ray from the pointer to hit all targets under it
         List<RaycastResult> results = new List<RaycastResult>();

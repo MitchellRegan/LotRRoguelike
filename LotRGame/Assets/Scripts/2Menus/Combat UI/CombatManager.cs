@@ -218,13 +218,9 @@ public class CombatManager : MonoBehaviour
 
         //Clearing the list of player characters and adding all of the ones given
         this.playerCharactersInCombat.Clear();
-        foreach(Character c in charactersInCombat_.charactersInParty.Keys)
+        foreach(Character c in charactersInCombat_.charactersInParty)
         {
             this.playerCharactersInCombat.Add(c);
-
-            //Setting each character's grid position
-            c.charCombatStats.gridPositionCol = Mathf.RoundToInt(charactersInCombat_.charactersInParty[c].x);
-            c.charCombatStats.gridPositionRow = Mathf.RoundToInt(charactersInCombat_.charactersInParty[c].y);
         }
 
         //Clearing the list of enemy characters and adding all of the ones from the given encounter
