@@ -9,6 +9,5 @@ public class MoveAction : Action
     {
         //Start working on making characters move
         Debug.Log("Move Action Called");
-        base.PerformAction(targetTile_);
     }
 }

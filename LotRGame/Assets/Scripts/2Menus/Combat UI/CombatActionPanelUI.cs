@@ -29,6 +29,9 @@ public class CombatActionPanelUI : MonoBehaviour
     //The panel that displays the selected action's details
     public SelectedActionPanel selectedPanelDetails;
 
+    //The list of all combat tiles that show the travel path of the selected movement action
+    private List<CombatTile> movementPath;
+
 
 
     //Function called when this object is created
@@ -47,6 +50,9 @@ public class CombatActionPanelUI : MonoBehaviour
 
         //Clears the action detail panel
         this.UpdateActionDetailsPanel();
+
+        //Initializes the movement path list
+        this.movementPath = new List<CombatTile>();
     }
 
 
@@ -157,6 +163,10 @@ public class CombatActionPanelUI : MonoBehaviour
                 this.selectedAction = actingCharacter.charActionList.fullRoundActions[actionIndex_];
                 break;
         }
+
+        //Clearing the current travel path for movement and adding in the selected character's tile as the starting point
+        this.movementPath.Clear();
+        this.movementPath.Add(CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]));
 
         //Finding out which tiles need to be hilighted
         List<CombatTile> tilesToHilight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
@@ -313,7 +323,50 @@ public class CombatActionPanelUI : MonoBehaviour
             }
         }
     }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If the currently selected action isn't empty and it's a movement action
+        if(this.selectedAction != null && this.selectedAction.gameObject.GetComponent<MoveAction>())
+        {
+            //If there are tiles in the movement path and the mouse is hovering over a combat tile
+            if (this.movementPath.Count > 0 && CombatTile.mouseOverTile != null)
+            {
+                //If the current movement path doesn't have more tiles than the character can move
+                if (this.movementPath.Count <= this.selectedAction.range)
+                {
+                    //If the tile that the mouse is over is connected to the last tile in the current movement path
+                    if (this.movementPath[this.movementPath.Count - 1].ourPathPoint.connectedPoints.Contains(CombatTile.mouseOverTile.ourPathPoint))
+                    {
+                        //If the tile that the mouse is over isn't already in the movement path
+                        if (!this.movementPath.Contains(CombatTile.mouseOverTile))
+                        {
+                            Debug.Log("1");
+                            this.movementPath.Add(CombatTile.mouseOverTile);
+                            CombatTile.mouseOverTile.GetComponent<Image>().color = Color.blue;
+                        }
+                        //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
+                        else if(this.movementPath[this.movementPath.Count - 1] != CombatTile.mouseOverTile && this.movementPath[0] != CombatTile.mouseOverTile)
+                        {
+                            Debug.Log("2");
+                            //Removing all tiles in the movement path that come after this one
+                            int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
+                            for (int t = indexOfPrevTile; t < this.movementPath.Count; )
+                            {
+                                CombatTile.mouseOverTile.GetComponent<Image>().color = Color.white;
+
+                                this.movementPath.RemoveAt(t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 [System.Serializable]
 public class ActionButton
@@ -325,6 +378,7 @@ public class ActionButton
     //The button component that can be enabled/disabled
     public Button buttonComponent;
 }
+
 
 [System.Serializable]
 public class SelectedActionPanel

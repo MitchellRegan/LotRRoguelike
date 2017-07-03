@@ -20,6 +20,7 @@ public class Action : MonoBehaviour
     public ActionType type = ActionType.Standard;
 
 
+    
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
     public virtual void PerformAction(CombatTile targetTile_)
     {

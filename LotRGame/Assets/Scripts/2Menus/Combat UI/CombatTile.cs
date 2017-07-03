@@ -7,6 +7,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PathPoint))]
 public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    //Static reference to the Combat tile that the mouse is currently over
+    public static CombatTile mouseOverTile;
+
     //Row and column
     public int row = 0;
     public int col = 0;
@@ -62,6 +65,8 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         //Hilighting this tile's image
         this.HighlightTile(true);
+
+        mouseOverTile = this;
     }
 
 
@@ -70,6 +75,8 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         //Stops hilighting this tile's image
         this.HighlightTile(false);
+
+        mouseOverTile = null;
     }
 
 

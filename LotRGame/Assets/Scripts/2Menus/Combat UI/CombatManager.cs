@@ -555,15 +555,18 @@ public class CombatManager : MonoBehaviour
     //Function called from CombatTile.cs to perform the selected action in the CombatActionPanelUI
     public void PerformActionAtClickedTile(CombatTile tileClicked_)
     {
-        //Tells the action to be performed at the tile clicked
+        //Tells the action to be performed at the tile clicked and stops highlighting it
         CombatActionPanelUI.globalReference.selectedAction.PerformAction(tileClicked_);
+
         //Have this combat manager wait a bit before going back to increasing initiative because there could be animations
         if (this.stateAfterWait != combatState.EndCombat)
         {
             this.SetWaitTime(3);
         }
+
         //Perform the unity event after the action so we can hide some UI elements
         this.eventAfterActionPerformed.Invoke();
+
         //Resets the acting character's initiative and removes them from the list of acting characters
         if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
         {
