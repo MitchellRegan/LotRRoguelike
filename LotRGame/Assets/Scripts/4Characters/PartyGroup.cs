@@ -19,8 +19,8 @@ public class PartyGroup : MonoBehaviour
     [HideInInspector]
     public List<Character> charactersInParty;
 
-    //The maximum number of combat board positions
-    private Vector2 combatColsRows = new Vector2(3, 8);
+    //Public enum that determines what distance this party prefers to engage enemies at in combat
+    public CombatManager.GroupCombatDistance combatDistance = CombatManager.GroupCombatDistance.Medium;
 
 
 

@@ -16,7 +16,7 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
 
     //The index for this character in the character manager
     [HideInInspector]
-    public Character characterInThisPosition;
+    public Character characterInThisPosition = null;
 
     //Reference to this button's Image component
     private Image buttonImage;
@@ -34,8 +34,27 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
         //Setting the reference for this button's image component
         this.buttonImage = this.GetComponent<Image>();
 
-        //Looping through each character in the character manager to check their starting positions
-        foreach(Character currentChar in CharacterManager.globalReference.playerParty)
+        //Refreshes this image to determine if there's a character in this position
+        this.RefreshButton();
+    }
+
+
+    //Function called when this component is enabled
+    private void OnEnable()
+    {
+        //Sets this button's default position
+        this.defaultPosition = this.transform.position;
+
+        //Refreshes this image to determine if there's a character in this position
+        this.RefreshButton();
+    }
+
+
+    //Finds out if a character in the selected party group in this tile's position and updates our image
+    public void RefreshButton()
+    {
+        //Looping through each character in the selected party group to check their starting positions
+        foreach (Character currentChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
         {
             //Making sure the current party position isn't empty
             if (currentChar != null)
@@ -48,14 +67,6 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
                 }
             }
         }
-    }
-
-
-    //Function called when this component is enabled
-    private void OnEnable()
-    {
-        //Sets this button's default position
-        this.defaultPosition = this.transform.position;
 
         //If there's a character in this button's position
         if (this.characterInThisPosition != null)
@@ -101,7 +112,7 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
         {
             return;
         }
-
+        
         //Ends dragging this button and resets back to the default position
         this.isBeingDragged = false;
         this.transform.position = this.defaultPosition;
@@ -128,9 +139,13 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
 
                 //Swapping the characters on these buttons
                 otherButton.SetCharacterInThisPosition(this.characterInThisPosition);
+
                 this.SetCharacterInThisPosition(otherButtonCharacter);
             }
         }
+
+        //Turning this button's raycast blocking on so that we can click it again
+        this.GetComponent<Image>().raycastTarget = true;
     }
 
 

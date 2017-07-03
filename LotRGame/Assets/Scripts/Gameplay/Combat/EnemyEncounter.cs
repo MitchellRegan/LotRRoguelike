@@ -7,6 +7,15 @@ public class EnemyEncounter : MonoBehaviour
 {
     //The list of all enemies that are spawned when combat begins
     public List<EncounterEnemy> enemies;
+
+    //Enum for the different ranges that this encounter group can be spawned
+    public enum EnemyCombatPosition { MeleeFront, MeleeFlanking, MeleeBehind, RangedFront, RangedFlanking, RangedBehind, MiddleFront, MiddleFlanking, MiddleBehind };
+
+    //The distance that this enemy encounter engages the player party at by default
+    public EnemyCombatPosition defaultPosition = EnemyCombatPosition.MiddleFront;
+
+    //The distance that this enemy encounter engages the player party when ambushing
+    public EnemyCombatPosition ambushPosition = EnemyCombatPosition.MiddleFlanking;
 }
 
 [System.Serializable]
