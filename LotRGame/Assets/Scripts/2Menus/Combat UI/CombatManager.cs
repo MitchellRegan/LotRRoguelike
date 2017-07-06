@@ -342,7 +342,7 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called internally to hilight the occupied tiles to show where characters are
-    private void UpdateCombatTilePositions()
+    public void UpdateCombatTilePositions()
     {
         //Looping through and setting the character objects on each tile
         foreach(Character currentChar in this.playerCharactersInCombat)
@@ -555,13 +555,19 @@ public class CombatManager : MonoBehaviour
     //Function called from CombatTile.cs to perform the selected action in the CombatActionPanelUI
     public void PerformActionAtClickedTile(CombatTile tileClicked_)
     {
+        //If the current action is a movement action and the tile clicked isn't in the CombatActionPanelUI's movement path, nothing happens
+        if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && !CombatActionPanelUI.globalReference.movementPath.Contains(tileClicked_))
+        {
+            return;
+        }
+
         //Tells the action to be performed at the tile clicked and stops highlighting it
         CombatActionPanelUI.globalReference.selectedAction.PerformAction(tileClicked_);
 
         //Have this combat manager wait a bit before going back to increasing initiative because there could be animations
         if (this.stateAfterWait != combatState.EndCombat)
         {
-            this.SetWaitTime(3);
+            this.SetWaitTime(CombatActionPanelUI.globalReference.selectedAction.timeToCompleteAction);
         }
 
         //Perform the unity event after the action so we can hide some UI elements

@@ -19,6 +19,9 @@ public class Action : MonoBehaviour
     public enum ActionType { Standard, Secondary, Quick, FullRound };
     public ActionType type = ActionType.Standard;
 
+    //The amount of time in seconds that this action takes to be performed
+    public float timeToCompleteAction = 3;
+
 
     
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability

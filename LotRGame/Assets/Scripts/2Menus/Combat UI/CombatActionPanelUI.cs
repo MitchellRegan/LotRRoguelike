@@ -30,7 +30,7 @@ public class CombatActionPanelUI : MonoBehaviour
     public SelectedActionPanel selectedPanelDetails;
 
     //The list of all combat tiles that show the travel path of the selected movement action
-    private List<CombatTile> movementPath;
+    public List<CombatTile> movementPath;
 
 
 
@@ -334,36 +334,63 @@ public class CombatActionPanelUI : MonoBehaviour
             //If there are tiles in the movement path and the mouse is hovering over a combat tile
             if (this.movementPath.Count > 0 && CombatTile.mouseOverTile != null)
             {
-                //If the current movement path doesn't have more tiles than the character can move
-                if (this.movementPath.Count <= this.selectedAction.range)
+                //If the tile that the mouse is over is connected to the last tile in the current movement path
+                if (this.movementPath[this.movementPath.Count - 1].ourPathPoint.connectedPoints.Contains(CombatTile.mouseOverTile.ourPathPoint))
                 {
-                    //If the tile that the mouse is over is connected to the last tile in the current movement path
-                    if (this.movementPath[this.movementPath.Count - 1].ourPathPoint.connectedPoints.Contains(CombatTile.mouseOverTile.ourPathPoint))
+                    //If the tile that the mouse is over isn't already in the movement path and this type of movement allows the user to ignore obstacles
+                    if (!this.movementPath.Contains(CombatTile.mouseOverTile))
                     {
-                        //If the tile that the mouse is over isn't already in the movement path
-                        if (!this.movementPath.Contains(CombatTile.mouseOverTile))
+                        //If the tile has no object on it OR if there is an object and the movement action ignores objects
+                        if(CombatTile.mouseOverTile.objectOnThisTile == null || (CombatTile.mouseOverTile.objectOnThisTile != null && !this.selectedAction.GetComponent<MoveAction>().ignoreObstacles))
+                        //If the current path doesn't travel further than the movement range
+                        if (this.movementPath.Count <= this.selectedAction.range)
                         {
-                            Debug.Log("1");
                             this.movementPath.Add(CombatTile.mouseOverTile);
                             CombatTile.mouseOverTile.GetComponent<Image>().color = Color.blue;
                         }
-                        //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
-                        else if(this.movementPath[this.movementPath.Count - 1] != CombatTile.mouseOverTile && this.movementPath[0] != CombatTile.mouseOverTile)
+                    }
+                    //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
+                    else 
+                    {
+                        //Removing all tiles in the movement path that come after this one
+                        int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
+                        for (int t = indexOfPrevTile; t < this.movementPath.Count; )
                         {
-                            Debug.Log("2");
-                            //Removing all tiles in the movement path that come after this one
-                            int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
-                            for (int t = indexOfPrevTile; t < this.movementPath.Count; )
-                            {
-                                CombatTile.mouseOverTile.GetComponent<Image>().color = Color.white;
+                            this.movementPath[t].GetComponent<Image>().color = Color.white;
 
-                                this.movementPath.RemoveAt(t);
-                            }
+                            this.movementPath.RemoveAt(t);
                         }
+                    }
+                }
+                //If the tile that the mouse is over is NOT connected to the last tile in the current movement path but is still in the path
+                else if(this.movementPath.Contains(CombatTile.mouseOverTile))
+                {
+                    //Removing all tiles in the movement path that come after this one
+                    int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
+                    for (int t = indexOfPrevTile; t < this.movementPath.Count;)
+                    {
+                        this.movementPath[t].GetComponent<Image>().color = Color.white;
+
+                        this.movementPath.RemoveAt(t);
                     }
                 }
             }
         }
+    }
+
+
+    //Function called externally from MoveAction to delay time between each tile movement
+    public void MoveTimeDelay(float timeToDelay_)
+    {
+        StartCoroutine(this.Wait(timeToDelay_));
+    }
+
+
+    //Enumerator called from MoveTimeDelay
+    private IEnumerator Wait(float time_)
+    {
+        Debug.Log("THE GAME ISN'T WAITING FOR THIS!!!! FIX IT");
+        yield return new WaitForSeconds(time_);
     }
 }
 
