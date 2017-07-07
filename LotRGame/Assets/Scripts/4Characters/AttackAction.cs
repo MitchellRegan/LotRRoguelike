@@ -18,6 +18,9 @@ public class AttackAction : Action
     //The damage multiplier applied when this weapon crits
     public int critMultiplier = 2;
 
+    //The amount added to the user's hit chance 
+    public int accuracyBonus = 0;
+
     //The list of damage dice that are rolled when this attack deals damage
     public List<AttackDamage> damageDealt;
 
@@ -46,8 +49,8 @@ public class AttackAction : Action
             return;
         }
 
-        //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit
-        int hitRoll = Random.Range(1, 100);
+        //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit and adding this attack's accuracy bonus
+        int hitRoll = Random.Range(1, 100) + this.accuracyBonus;
         //Adding the correct skill modifier of the acting character to their hit roll
         switch (this.weaponSkillUsed)
         {

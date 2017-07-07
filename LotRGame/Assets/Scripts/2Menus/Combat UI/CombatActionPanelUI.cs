@@ -204,6 +204,7 @@ public class CombatActionPanelUI : MonoBehaviour
             this.selectedPanelDetails.touchTypeText.text = "";
             this.selectedPanelDetails.critText.text = "";
             this.selectedPanelDetails.multiplierText.text = "";
+            this.selectedPanelDetails.accuracyText.text = "";
 
             this.selectedPanelDetails.damageText.text = "";
 
@@ -243,6 +244,26 @@ public class CombatActionPanelUI : MonoBehaviour
                     case AttackAction.attackTouchType.IgnoreEvasionAndArmor:
                         this.selectedPanelDetails.touchTypeText.text = "Ignores Evasion & Armor";
                         break;
+                }
+
+                //Setting the accuracy bonus details
+                if(atkDetails.accuracyBonus != 0)
+                {
+                    //If the attacker's accuracy is increased
+                    if (atkDetails.accuracyBonus > 0)
+                    {
+                        this.selectedPanelDetails.accuracyText.text = atkDetails.accuracyBonus + "% Bonus to Accuracy";
+                    }
+                    //If the accuracy is lowered
+                    else
+                    {
+                        this.selectedPanelDetails.accuracyText.text = atkDetails.accuracyBonus + "% Penalty to Accuracy";
+                    }
+                }
+                //If there is no bonus, no text is shown
+                else
+                {
+                    this.selectedPanelDetails.accuracyText.text = "";
                 }
 
                 //Looping through each of the attacks to display their effects
@@ -368,6 +389,9 @@ public class SelectedActionPanel
 
     //The touch type of this attack
     public Text touchTypeText;
+
+    //The accuracy of this attack
+    public Text accuracyText;
 
     //The damage of the attack
     public Text damageText;
