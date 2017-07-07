@@ -53,7 +53,11 @@ public class CombatActionPanelUI : MonoBehaviour
     //Function called when this game object is enabled
     private void OnEnable()
     {
-        //Resetting the Action Details Panel
+        //Resetting the Action Details Panel and destroying the previously selected action's object if it exists
+        if(this.selectedAction != null)
+        {
+            Destroy(this.selectedAction.gameObject);
+        }
         this.selectedAction = null;
         this.UpdateActionDetailsPanel();
     }
@@ -246,7 +250,7 @@ public class CombatActionPanelUI : MonoBehaviour
                 for(int a = 0; a < atkDetails.damageDealt.Count; ++a)
                 {
                     //If the text box isn't blank (meaning it's already displaying damage) we add a space
-                    if (this.selectedPanelDetails.damageText.text != "")
+                    if (a > 0)
                     {
                         this.selectedPanelDetails.damageText.text += ", + ";
                     }
