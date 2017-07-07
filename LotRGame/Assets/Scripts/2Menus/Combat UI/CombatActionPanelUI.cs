@@ -29,9 +29,6 @@ public class CombatActionPanelUI : MonoBehaviour
     //The panel that displays the selected action's details
     public SelectedActionPanel selectedPanelDetails;
 
-    //The list of all combat tiles that show the travel path of the selected movement action
-    public List<CombatTile> movementPath;
-
 
 
     //Function called when this object is created
@@ -50,9 +47,6 @@ public class CombatActionPanelUI : MonoBehaviour
 
         //Clears the action detail panel
         this.UpdateActionDetailsPanel();
-
-        //Initializes the movement path list
-        this.movementPath = new List<CombatTile>();
     }
 
 
@@ -142,31 +136,41 @@ public class CombatActionPanelUI : MonoBehaviour
         Character actingCharacter = CombatManager.globalReference.actingCharacters[0];
         //Finding out which tile the acting character is on
         CombatTile actingCharsTile = CombatManager.globalReference.FindCharactersTile(actingCharacter);
+
+        //Destroying the game object that holds the currently selected action
+        if(this.selectedAction != null)
+        {
+            Destroy(this.selectedAction.gameObject);
+        }
+
+        //Creating an instance of the newly selected action prefab object
+        GameObject actionObj = null;
+
         //Finding the range of the action based on the button hit
         int actionRange = 0;
         switch(this.actionTypeShown)
         {
             case Action.ActionType.Standard:
                 actionRange = actingCharacter.charActionList.standardActions[actionIndex_].range;
-                this.selectedAction = actingCharacter.charActionList.standardActions[actionIndex_];
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.standardActions[actionIndex_].gameObject);
+                //this.selectedAction = actingCharacter.charActionList.standardActions[actionIndex_];
                 break;
             case Action.ActionType.Secondary:
                 actionRange = actingCharacter.charActionList.secondaryActions[actionIndex_].range;
-                this.selectedAction = actingCharacter.charActionList.secondaryActions[actionIndex_];
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.secondaryActions[actionIndex_].gameObject);
                 break;
             case Action.ActionType.Quick:
                 actionRange = actingCharacter.charActionList.quickActions[actionIndex_].range;
-                this.selectedAction = actingCharacter.charActionList.quickActions[actionIndex_];
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.quickActions[actionIndex_].gameObject);
                 break;
             case Action.ActionType.FullRound:
                 actionRange = actingCharacter.charActionList.fullRoundActions[actionIndex_].range;
-                this.selectedAction = actingCharacter.charActionList.fullRoundActions[actionIndex_];
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.fullRoundActions[actionIndex_].gameObject);
                 break;
         }
 
-        //Clearing the current travel path for movement and adding in the selected character's tile as the starting point
-        this.movementPath.Clear();
-        this.movementPath.Add(CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]));
+        //Getting the action component reference from the created action object
+        this.selectedAction = actionObj.GetComponent<Action>();
 
         //Finding out which tiles need to be hilighted
         List<CombatTile> tilesToHilight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
@@ -322,75 +326,6 @@ public class CombatActionPanelUI : MonoBehaviour
                 this.selectedPanelDetails.attackDetails.SetActive(false);
             }
         }
-    }
-
-
-    //Function called every frame
-    private void Update()
-    {
-        //If the currently selected action isn't empty and it's a movement action
-        if(this.selectedAction != null && this.selectedAction.gameObject.GetComponent<MoveAction>())
-        {
-            //If there are tiles in the movement path and the mouse is hovering over a combat tile
-            if (this.movementPath.Count > 0 && CombatTile.mouseOverTile != null)
-            {
-                //If the tile that the mouse is over is connected to the last tile in the current movement path
-                if (this.movementPath[this.movementPath.Count - 1].ourPathPoint.connectedPoints.Contains(CombatTile.mouseOverTile.ourPathPoint))
-                {
-                    //If the tile that the mouse is over isn't already in the movement path and this type of movement allows the user to ignore obstacles
-                    if (!this.movementPath.Contains(CombatTile.mouseOverTile))
-                    {
-                        //If the tile has no object on it OR if there is an object and the movement action ignores objects
-                        if(CombatTile.mouseOverTile.objectOnThisTile == null || (CombatTile.mouseOverTile.objectOnThisTile != null && !this.selectedAction.GetComponent<MoveAction>().ignoreObstacles))
-                        //If the current path doesn't travel further than the movement range
-                        if (this.movementPath.Count <= this.selectedAction.range)
-                        {
-                            this.movementPath.Add(CombatTile.mouseOverTile);
-                            CombatTile.mouseOverTile.GetComponent<Image>().color = Color.blue;
-                        }
-                    }
-                    //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
-                    else 
-                    {
-                        //Removing all tiles in the movement path that come after this one
-                        int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
-                        for (int t = indexOfPrevTile; t < this.movementPath.Count; )
-                        {
-                            this.movementPath[t].GetComponent<Image>().color = Color.white;
-
-                            this.movementPath.RemoveAt(t);
-                        }
-                    }
-                }
-                //If the tile that the mouse is over is NOT connected to the last tile in the current movement path but is still in the path
-                else if(this.movementPath.Contains(CombatTile.mouseOverTile))
-                {
-                    //Removing all tiles in the movement path that come after this one
-                    int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
-                    for (int t = indexOfPrevTile; t < this.movementPath.Count;)
-                    {
-                        this.movementPath[t].GetComponent<Image>().color = Color.white;
-
-                        this.movementPath.RemoveAt(t);
-                    }
-                }
-            }
-        }
-    }
-
-
-    //Function called externally from MoveAction to delay time between each tile movement
-    public void MoveTimeDelay(float timeToDelay_)
-    {
-        StartCoroutine(this.Wait(timeToDelay_));
-    }
-
-
-    //Enumerator called from MoveTimeDelay
-    private IEnumerator Wait(float time_)
-    {
-        Debug.Log("THE GAME ISN'T WAITING FOR THIS!!!! FIX IT");
-        yield return new WaitForSeconds(time_);
     }
 }
 

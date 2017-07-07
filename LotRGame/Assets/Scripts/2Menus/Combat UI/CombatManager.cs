@@ -555,8 +555,8 @@ public class CombatManager : MonoBehaviour
     //Function called from CombatTile.cs to perform the selected action in the CombatActionPanelUI
     public void PerformActionAtClickedTile(CombatTile tileClicked_)
     {
-        //If the current action is a movement action and the tile clicked isn't in the CombatActionPanelUI's movement path, nothing happens
-        if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && !CombatActionPanelUI.globalReference.movementPath.Contains(tileClicked_))
+        //If the action being performed is a movement action and the tile clicked isn't empty, nothing happens
+        if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && tileClicked_.objectOnThisTile != null)
         {
             return;
         }
