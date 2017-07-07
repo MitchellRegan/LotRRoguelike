@@ -12,7 +12,7 @@ public class MoveAction : Action
     public bool ignoreEnemies = false;
 
     //The list of all combat tiles that show the travel path of the selected movement action
-    public List<CombatTile> movementPath;
+    private List<CombatTile> movementPath;
 
     //Bool that determines if we should be animating the player moving yet or not
     private bool moveCharacter = false;
@@ -73,6 +73,7 @@ public class MoveAction : Action
                 //If we've moved through all of the tiles on the movement path, this object is destroyed
                 if (newTileMoved + 1 == this.movementPath.Count)
                 {
+                    CombatManager.globalReference.UpdateCombatTilePositions();
                     Destroy(this.gameObject);
                 }
             }
@@ -87,13 +88,13 @@ public class MoveAction : Action
                 if (!this.movementPath.Contains(CombatTile.mouseOverTile))
                 {
                     //If the tile has no object on it OR if there is an object and the movement action ignores objects
-                    if (CombatTile.mouseOverTile.objectOnThisTile == null || (CombatTile.mouseOverTile.objectOnThisTile != null && !this.ignoreObstacles))
-                        //If the current path doesn't travel further than the movement range
-                        if (this.movementPath.Count <= this.range)
-                        {
-                            this.movementPath.Add(CombatTile.mouseOverTile);
-                            CombatTile.mouseOverTile.GetComponent<Image>().color = Color.blue;
-                        }
+                    if (CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Nothing || 
+                            (CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Object && this.ignoreObstacles) ||
+                            ((CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Enemy || CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Player) && this.ignoreEnemies))
+                    {
+                        this.movementPath.Add(CombatTile.mouseOverTile);
+                        CombatTile.mouseOverTile.GetComponent<Image>().color = Color.blue;
+                    }
                 }
                 //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
                 else
@@ -133,7 +134,11 @@ public class MoveAction : Action
                     }
 
                     //Use the breadth first search algorithm to find the path to this tile from the player
-                    this.movementPath = this.BreadthFirstSearch(this.movementPath[0], CombatTile.mouseOverTile);
+                    List<CombatTile> newPath = this.BreadthFirstSearch(this.movementPath[0], CombatTile.mouseOverTile);
+                    if (newPath.Count > 0)
+                    {
+                        this.movementPath = newPath;
+                    }
 
                     //Looping through each tile that's now in the movement path and coloring it in
                     for(int t = 1; t < this.movementPath.Count; ++t)
@@ -173,8 +178,12 @@ public class MoveAction : Action
             //If the current point is the path point we're looking for
             if (currentPoint == targetPoint_)
             {
-                //Adding the current point's game object to the list of returned objects
-                tilePath.Add(currentPoint);
+                //If the target tile has nothing on it
+                if (currentPoint.typeOnTile == CombatTile.ObjectType.Nothing)
+                {
+                    //Adding the current point's tile to the list of returned objects
+                    tilePath.Add(currentPoint);
+                }
 
                 //Creating a variable to hold the reference to the previous point
                 CombatTile prev = currentPoint.ourPathPoint.previousPoint.GetComponent<CombatTile>();
@@ -222,8 +231,23 @@ public class MoveAction : Action
                             //Telling the connected point came from the current point we're checking
                             connection.previousPoint = currentPoint.ourPathPoint;
 
-                            //Adding the connected point to the frontier and list of visited tiles
-                            frontier.Add(connection.GetComponent<CombatTile>());
+                            //If the connected tile isn't empty, we have to check it first
+                            if (connection.GetComponent<CombatTile>().typeOnTile != CombatTile.ObjectType.Nothing)
+                            {
+                                //Making sure that this type of movement can safely travel across the type of object on the tile
+                                if (connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Object && this.ignoreObstacles ||
+                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Enemy && this.ignoreEnemies ||
+                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Player && this.ignoreEnemies)
+                                {
+                                    //Adding the connected point to the frontier and list of visited tiles
+                                    frontier.Add(connection.GetComponent<CombatTile>());
+                                }
+                            }
+                            else
+                            {
+                                //Adding the connected point to the frontier and list of visited tiles
+                                frontier.Add(connection.GetComponent<CombatTile>());
+                            }
                             visitedPoints.Add(connection.GetComponent<CombatTile>());
                             //Marking the tile as already checked so that it isn't added again
                             connection.hasBeenChecked = true;
