@@ -15,7 +15,13 @@ public class CombatStats : MonoBehaviour
     //The number of spaces this character can move as a standard action in combat
     public uint combatSpeed = 5;
 
-    //The grid position on the combat tiles where this character is
+    //The starting grid position on the combat tiles for this character
+    [HideInInspector]
+    public int startingPositionCol = 0;
+    [HideInInspector]
+    public int startingPositionRow = 0;
+
+    //The grid position on the combat tiles where this character currently is
     [HideInInspector]
     public int gridPositionCol = 0;
     [HideInInspector]
@@ -103,7 +109,7 @@ public class CombatStats : MonoBehaviour
                     if (currentChar != null && currentChar.charCombatStats != this)
                     {
                         //If the current character is in the same position as this character, we break out of this loop and go to the next tile
-                        if (currentChar.charCombatStats.gridPositionRow == r && currentChar.charCombatStats.gridPositionCol == c)
+                        if (currentChar.charCombatStats.startingPositionRow == r && currentChar.charCombatStats.startingPositionCol == c)
                         {
                             //Marking this tile as not empty and breaking the loop
                             emptyPos = false;
@@ -115,8 +121,8 @@ public class CombatStats : MonoBehaviour
                 if (emptyPos)
                 {
                     //We set this character to the current row and column, then end this function
-                    this.gridPositionCol = c;
-                    this.gridPositionRow = r;
+                    this.startingPositionCol = c;
+                    this.startingPositionRow = r;
                     return;
                 }
             }

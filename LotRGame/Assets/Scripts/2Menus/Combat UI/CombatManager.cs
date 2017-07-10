@@ -217,62 +217,8 @@ public class CombatManager : MonoBehaviour
         //Setting the background image
         this.SetBackgroundImage(combatLandType_);
 
-        //Clearing the list of player characters and adding all of the ones given
-        this.playerCharactersInCombat.Clear();
-        foreach(Character c in charactersInCombat_.charactersInParty)
-        {
-            this.playerCharactersInCombat.Add(c);
-        }
-
-        //Clearing the list of enemy characters and adding all of the ones from the given encounter
-        this.enemyCharactersInCombat.Clear();
-        foreach(EncounterEnemy enemy in encounter_.enemies)
-        {
-            GameObject createdEnemy = Object.Instantiate(enemy.enemyCreature.gameObject, encounter_.transform.position, new Quaternion());
-            this.enemyCharactersInCombat.Add(createdEnemy.GetComponent<Character>());
-            //Getting a reference to the enemy's combat stats component
-            CombatStats enemyCombatStats = createdEnemy.GetComponent<CombatStats>();
-
-            //Setting the enemy's column position
-            switch(enemy.colArea)
-            {
-                case EncounterEnemy.colPositionAreas.Back:
-                    enemyCombatStats.gridPositionCol = 12;
-                    break;
-                case EncounterEnemy.colPositionAreas.Front:
-                    enemyCombatStats.gridPositionCol = 10;
-                    break;
-                case EncounterEnemy.colPositionAreas.Middle:
-                    enemyCombatStats.gridPositionCol = 11;
-                    break;
-                case EncounterEnemy.colPositionAreas.Random:
-                    enemyCombatStats.gridPositionCol = Mathf.RoundToInt(Random.Range(10,12));
-                    break;
-                case EncounterEnemy.colPositionAreas.SpecificPos:
-                    enemyCombatStats.gridPositionCol = enemy.specificCol + 10;
-                    break;
-            }
-
-            //Setting the enemy's row position
-            switch(enemy.rowArea)
-            {
-                case EncounterEnemy.rowPositionAreas.Top:
-                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(0,1));
-                    break;
-                case EncounterEnemy.rowPositionAreas.Middle:
-                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(2, 5));
-                    break;
-                case EncounterEnemy.rowPositionAreas.Bottom:
-                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(6, 7));
-                    break;
-                case EncounterEnemy.rowPositionAreas.Random:
-                    enemyCombatStats.gridPositionRow = Mathf.RoundToInt(Random.Range(0, 7));
-                    break;
-                case EncounterEnemy.rowPositionAreas.SpecificPos:
-                    enemyCombatStats.gridPositionRow = enemy.specificRow;
-                    break;
-            }
-        }
+        //Setting the combat positions for the player characters and enemies based on their distances
+        this.SetCombatPositions(charactersInCombat_, encounter_);
 
         //Looping through and setting all of the player initiative bars to display the correct character
         for (int p = 0; p < this.playerInitiativeSliders.Count; ++p)
@@ -325,10 +271,304 @@ public class CombatManager : MonoBehaviour
         this.UpdateCombatTilePositions();
 
         //Setting the state to start increasing initiatives after a brief wait
-        this.SetWaitTime(3, combatState.IncreaseInitiative);
+        this.SetWaitTime(2, combatState.IncreaseInitiative);
 
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
+    }
+
+
+    //Function called from InitiateCombat to set the positions of characters and enemies based on the party and enemy combat positions
+    private void SetCombatPositions(PartyGroup playerParty_, EnemyEncounter enemyParty_)
+    {
+        //The number of columns the player party is shifted
+        int playerColShift = 0;
+
+        //The number of columns the front half of the enemy encounter is shifted
+        int enemyColShift0 = 0;
+        int enemyColShift1 = 1;
+        int enemyColShift2 = 2;
+        int enemyColShift3 = 3;
+
+        //Determine if we use the default enemy position or the ambush position
+        EnemyEncounter.EnemyCombatPosition encounterPos = enemyParty_.defaultPosition;
+
+        //Determining which kind of enemy encounter the player's will be facing
+        switch(encounterPos)
+        {
+            //If the enemy is in melee range
+            case EnemyEncounter.EnemyCombatPosition.MeleeFront:
+                {
+                    //Setting the player positions between col 0 - 6
+                    switch(playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://0-2
+                            playerColShift = 0;
+                            break;
+                        case GroupCombatDistance.Medium://2-4
+                            playerColShift = 2;
+                            break;
+                        case GroupCombatDistance.Close://4-6
+                            playerColShift = 4;
+                            break;
+                    }
+
+                    //Setting the enemy positions between col 7-10
+                    enemyColShift0 += 7;
+                    enemyColShift1 += 7;
+                    enemyColShift2 += 7;
+                    enemyColShift3 += 7;
+                }
+                break;
+
+            case EnemyEncounter.EnemyCombatPosition.MeleeFlanking:
+                {
+                    //Setting the player positions between col 6-8 regardless of their preferred distance
+                    playerColShift = 6;
+
+                    //Setting the enemy positions so that they're split between cols 4-5 and 9-10
+                    enemyColShift0 += 4;//Col 5
+                    enemyColShift1 += 8;//Col 9
+                    enemyColShift2 += 1;//Col 4
+                    enemyColShift3 += 7;//Col 10
+                }
+                break;
+
+            case EnemyEncounter.EnemyCombatPosition.MeleeBehind:
+                {
+                    //Setting the player positions between col 7-13
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://7-9
+                            playerColShift = 7;
+                            break;
+                        case GroupCombatDistance.Medium://9-11
+                            playerColShift = 9;
+                            break;
+                        case GroupCombatDistance.Close://11-13
+                            playerColShift = 11;
+                            break;
+                    }
+
+                    //Setting the enemy positions between col 3-6 but in reverse order
+                    enemyColShift0 += 6;
+                    enemyColShift1 += 4;
+                    enemyColShift2 += 2;
+                    enemyColShift3 += 0;
+                }
+                break;
+
+            //If the enemy is in middle range
+            case EnemyEncounter.EnemyCombatPosition.MiddleFront:
+                {
+                    //Setting the player positions between col 0 - 6
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://0-2
+                            playerColShift = 0;
+                            break;
+                        case GroupCombatDistance.Medium://2-4
+                            playerColShift = 2;
+                            break;
+                        case GroupCombatDistance.Close://4-6
+                            playerColShift = 4;
+                            break;
+                    }
+
+                    //Setting the enemy positions between col 9-12
+                    enemyColShift0 += 9;
+                    enemyColShift1 += 9;
+                    enemyColShift2 += 9;
+                    enemyColShift3 += 9;
+                }
+                break;
+
+            case EnemyEncounter.EnemyCombatPosition.MiddleFlanking:
+                {
+                    //Setting the player positions between col 5-8
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://5-7
+                            playerColShift = 5;
+                            break;
+                        case GroupCombatDistance.Medium://6-8
+                            playerColShift = 6;
+                            break;
+                        case GroupCombatDistance.Close://6-8
+                            playerColShift = 6;
+                            break;
+                    }
+
+                    //Setting the enemy positions split between cols 2-3 and cols 10-11
+                    enemyColShift0 += 3;//Col 3
+                    enemyColShift1 += 9;//Col 10
+                    enemyColShift2 += 0;//Col 2
+                    enemyColShift3 += 8;//Col 11
+                }
+                break;
+
+            case EnemyEncounter.EnemyCombatPosition.MiddleBehind:
+                {
+                    //Setting the player positions between col 7-13
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://7-9
+                            playerColShift = 7;
+                            break;
+                        case GroupCombatDistance.Medium://9-11
+                            playerColShift = 9;
+                            break;
+                        case GroupCombatDistance.Close://11-13
+                            playerColShift = 11;
+                            break;
+                    }
+
+                    //Setting the enemy positions between col 1-4 but in reverse order
+                    enemyColShift0 += 4;
+                    enemyColShift1 += 2;
+                    enemyColShift2 += 0;
+                    enemyColShift3 += -2;
+                }
+                break;
+            
+            //If the enemy is in a far range
+            case EnemyEncounter.EnemyCombatPosition.RangedFront:
+                {
+                    //Setting the player positions between col 0 - 6
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://0-2
+                            playerColShift = 0;
+                            break;
+                        case GroupCombatDistance.Medium://2-4
+                            playerColShift = 2;
+                            break;
+                        case GroupCombatDistance.Close://4-6
+                            playerColShift = 4;
+                            break;
+                    }
+
+                    //Setting the enemy positions between col 10-13
+                    enemyColShift0 += 10;
+                    enemyColShift1 += 10;
+                    enemyColShift2 += 10;
+                    enemyColShift3 += 10;
+                }
+                break;
+
+            case EnemyEncounter.EnemyCombatPosition.RangedFlanking:
+                {
+                    //Setting the player positions between col 5-8
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://5-7
+                            playerColShift = 5;
+                            break;
+                        case GroupCombatDistance.Medium://6-8
+                            playerColShift = 6;
+                            break;
+                        case GroupCombatDistance.Close://6-8
+                            playerColShift = 6;
+                            break;
+                    }
+
+                    //Setting the enemy positions split between cols 0-1 and cols 12-13
+                    enemyColShift0 += 1;//Col 1
+                    enemyColShift1 += 3;//Col 12
+                    enemyColShift2 += -2;//Col 0
+                    enemyColShift3 += 10;//Col 13
+                }
+                break;
+
+            case EnemyEncounter.EnemyCombatPosition.RangedBehind:
+                {
+                    //Setting the player positions between col 7-11
+                    switch (playerParty_.combatDistance)
+                    {
+                        case GroupCombatDistance.Far://7-9
+                            playerColShift = 7;
+                            break;
+                        case GroupCombatDistance.Medium://9-11
+                            playerColShift = 9;
+                            break;
+                        case GroupCombatDistance.Close://11-13
+                            playerColShift = 11;
+                            break;
+                    }
+
+                    //Setting the enemy positions between col 0-3, so no change
+                }
+                break;
+        }
+
+        //After we've found the column shifts, we loop through and set the player positions
+        this.playerCharactersInCombat.Clear();
+        foreach(Character playerChar in playerParty_.charactersInParty)
+        {
+            //Offsetting the player position column from the starting position
+            playerChar.charCombatStats.gridPositionCol = playerChar.charCombatStats.startingPositionCol + playerColShift;
+            playerChar.charCombatStats.gridPositionRow = playerChar.charCombatStats.startingPositionRow;
+
+            //Adding the current character to the list of player characters
+            this.playerCharactersInCombat.Add(playerChar);
+        }
+
+        //Now we set the enemy positions based on the column shifts
+        this.enemyCharactersInCombat.Clear();
+        foreach(EncounterEnemy enemyChar in enemyParty_.enemies)
+        {
+            //Creating an instance of the enemy prefab
+            GameObject createdEnemy = Object.Instantiate(enemyChar.enemyCreature.gameObject, enemyParty_.transform.position, new Quaternion());
+            this.enemyCharactersInCombat.Add(createdEnemy.GetComponent<Character>());
+            //Getting a reference to the enemy's combat stats component
+            CombatStats enemyCombatStats = createdEnemy.GetComponent<CombatStats>();
+
+            //Adding the current enemy to the list of enemy characters
+            this.enemyCharactersInCombat.Add(createdEnemy.GetComponent<Character>());
+
+            //If this enemy's column position is random
+            if(enemyChar.randomCol)
+            {
+                enemyCombatStats.gridPositionCol = Random.Range(0, 3);
+            }
+            //If this enemy's column position isn't random
+            else
+            {
+                enemyCombatStats.gridPositionCol = enemyChar.specificCol;
+            }
+
+            //If this enemy's row position is random
+            if(enemyChar.randomRow)
+            {
+                enemyCombatStats.gridPositionRow = Random.Range(0, 7);
+            }
+            //If this enemy's row position isn't random
+            else
+            {
+                enemyCombatStats.gridPositionRow = enemyChar.specificRow;
+            }
+
+            //offsetting the enemy column position based on what their default position is
+            switch(enemyCombatStats.gridPositionCol)
+            {
+                case 0:
+                    enemyCombatStats.gridPositionCol += enemyColShift0;
+                    break;
+                case 1:
+                    enemyCombatStats.gridPositionCol += enemyColShift1;
+                    break;
+                case 2:
+                    enemyCombatStats.gridPositionCol += enemyColShift2;
+                    break;
+                case 3:
+                    enemyCombatStats.gridPositionCol += enemyColShift3;
+                    break;
+                default:
+                    //This case SHOULDN'T happen, but if it does, we treat it like the character's col is 0
+                    enemyCombatStats.gridPositionCol = enemyColShift0;
+                    break;
+            }
+        }
     }
 
 

@@ -60,7 +60,7 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
             if (currentChar != null)
             {
                 //If the character we're currently checking has the same row and column position that this button represents
-                if (currentChar.charCombatStats.gridPositionCol == this.col && currentChar.charCombatStats.gridPositionRow == this.row)
+                if (currentChar.charCombatStats.startingPositionCol == this.col && currentChar.charCombatStats.startingPositionRow == this.row)
                 {
                     //We save this character reference as the character on this button
                     this.SetCharacterInThisPosition(currentChar);
@@ -158,8 +158,8 @@ public class CombatPositionButton : MonoBehaviour, IPointerDownHandler, IPointer
         //If we the given a character isn't null, we update the character's row/col position
         if(newCharacter_ != null)
         {
-            newCharacter_.charCombatStats.gridPositionCol = this.col;
-            newCharacter_.charCombatStats.gridPositionRow = this.row;
+            newCharacter_.charCombatStats.startingPositionCol = this.col;
+            newCharacter_.charCombatStats.startingPositionRow = this.row;
 
             this.buttonImage.color = Color.red;
         }

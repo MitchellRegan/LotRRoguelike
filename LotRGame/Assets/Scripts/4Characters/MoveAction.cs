@@ -73,7 +73,7 @@ public class MoveAction : Action
                 //If we've moved through all of the tiles on the movement path, this object is destroyed
                 if (newTileMoved + 1 == this.movementPath.Count)
                 {
-                    CombatManager.globalReference.UpdateCombatTilePositions();
+                    //CombatManager.globalReference.UpdateCombatTilePositions();
                     Destroy(this.gameObject);
                 }
             }
