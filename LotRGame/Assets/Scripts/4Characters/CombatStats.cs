@@ -81,6 +81,10 @@ public class CombatStats : MonoBehaviour
     public int natureMagic = 30;
     public int natureMagicMod = 0;
 
+    //List of effects that are on this character in combat
+    [HideInInspector]
+    public List<Effect> combatEffects;
+
 
 
     //Function called when this character is created
@@ -88,7 +92,10 @@ public class CombatStats : MonoBehaviour
     {
         //Getting the reference to the physical state component on this object
         this.currentState = this.GetComponent<PhysicalState>();
-	}
+
+        //Initializing the empty list of combat effects
+        this.combatEffects = new List<Effect>();
+    }
 
 
     //Function called from the character manager when this character is added to the player party

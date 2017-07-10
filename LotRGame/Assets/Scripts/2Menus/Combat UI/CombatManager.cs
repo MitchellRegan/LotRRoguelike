@@ -113,6 +113,7 @@ public class CombatManager : MonoBehaviour
             //Nothing, waiting for player feedback
             case combatState.PlayerInput:
                 return;
+
             //Counting down the wait time
             case combatState.Wait:
                 this.waitTime -= Time.deltaTime;
@@ -122,6 +123,7 @@ public class CombatManager : MonoBehaviour
                     this.currentState = this.stateAfterWait;
                 }
                 break;
+
             //Adding each character's attack speed to their current initative 
             case combatState.IncreaseInitiative:
                 this.IncreaseInitiative();

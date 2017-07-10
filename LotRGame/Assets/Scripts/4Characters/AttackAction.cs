@@ -249,10 +249,12 @@ public class AttackAction : Action
         foreach(AttackEffect effect in this.effectsOnHit)
         {
             float effectRoll = Random.Range(0, 1);
-            //If the roll is less than the effect chance, the effect is triggered
+            //If the roll is less than the effect chance, it was sucessful
             if(effectRoll < effect.effectChance)
             {
-                effect.effectOnHit.TriggerEffect(actingChar, defendingChar);
+                //Creating an instance of the effect object prefab and triggering it's effect
+                GameObject effectObj = Instantiate(effect.effectOnHit.gameObject, new Vector3(), new Quaternion());
+                effectObj.GetComponent<Effect>().TriggerEffect(actingChar, defendingChar);
             }
         }
     }
