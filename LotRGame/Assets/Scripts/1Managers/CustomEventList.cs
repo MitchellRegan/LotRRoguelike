@@ -10,6 +10,7 @@ public class EVTData
     public UIMusicCueEVT musicCue = null;
     public SoundCutoutEVT soundCutout = null;
     public SceneTransitionEVT sceneTransition = null;
+    public CombatTransitionEVT combatTransition = null;
 }
 
 
@@ -90,5 +91,32 @@ public class SceneTransitionEVT
     {
         this.newSceneName = newSceneName_;
         this.transitionTime = transitionTime_;
+    }
+}
+
+
+//Event data when we transition to and from the combat screen
+public class CombatTransitionEVT
+{
+    //The name used to call this event from the event manager
+    public static string eventName = "Combat Transition";
+
+    //The amount of time it takes to fade to black
+    public float fadeToBlackTime = 1;
+    //The amount of time we'll stay on a black screen
+    public float stayOnBlackTime = 1;
+    //The amount of time it takes to fade back in
+    public float fadeInTime = 1;
+
+    //The UnityEvent that's invoked when the transition gets to black
+    public UnityEvent eventOnBlack = null;
+
+    //Public constructor for this class
+    public CombatTransitionEVT(float fadeToBlackTime_ = 1, float stayOnBlackTime_ = 1, float fadeInTime_ = 1, UnityEvent eventOnBlack_ = null)
+    {
+        this.fadeToBlackTime = fadeToBlackTime_;
+        this.stayOnBlackTime = stayOnBlackTime_;
+        this.fadeInTime = fadeInTime_;
+        this.eventOnBlack = eventOnBlack_;
     }
 }

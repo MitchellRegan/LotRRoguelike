@@ -439,14 +439,8 @@ public class PathfindingAlgorithms : MonoBehaviour
                     //Adding the point's game object to the list of returned objects
                     tilePath.Add(prev);
 
-                    //If the point isn't the starting point
-                    if (prev != startingPoint_)
-                    {
-                        //Setting the previous point to the next point in the path
-                        prev = prev;
-                    }
                     //If the point is the starting point
-                    else
+                    if (prev == startingPoint_)
                     {
                         //We break out of the loop
                         break;
@@ -547,14 +541,8 @@ public class PathfindingAlgorithms : MonoBehaviour
                     //Adding the point's game object to the list of returned objects
                     tilePath.Add(prev);
 
-                    //If the point isn't the starting point
-                    if (prev != startingPoint_)
-                    {
-                        //Setting the previous point to the next point in the path
-                        prev = prev;
-                    }
                     //If the point is the starting point
-                    else
+                    if (prev != startingPoint_)
                     {
                         //We break out of the loop
                         break;

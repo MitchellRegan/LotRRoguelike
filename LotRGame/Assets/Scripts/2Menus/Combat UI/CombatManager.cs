@@ -24,9 +24,6 @@ public class CombatManager : MonoBehaviour
     //2D List of all combat tiles in the combat screen map. Col[row}
     public List<List<CombatTile>> combatTileGrid;
 
-    //The mathematical interpolator that we'll use to find damage using min/max ranges
-    private Interpolator ourInterpolator;
-
     //The list of all characters involved in this combat
     [HideInInspector]
     public List<Character> playerCharactersInCombat;
@@ -79,9 +76,6 @@ public class CombatManager : MonoBehaviour
         {
             Destroy(this);
         }
-
-        //Initializing our interpolator
-        this.ourInterpolator = new Interpolator();
 
         //Initializing our combat tile grid
         this.combatTileGrid = new List<List<CombatTile>>();
@@ -173,7 +167,14 @@ public class CombatManager : MonoBehaviour
 
             //Calls the unity event for when this combat encounter is over
             case combatState.EndCombat:
-                this.combatEndEvent.Invoke();
+                //Creating the event data that we'll pass to the TransitionFade through the EventManager
+                EVTData transitionEvent = new EVTData();
+                //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
+                transitionEvent.combatTransition = new CombatTransitionEVT(0.5f, 1, 0.5f, this.combatEndEvent);
+                //Invoking the transition event through the EventManager
+                EventManager.TriggerEvent(CombatTransitionEVT.eventName, transitionEvent);
+                //this.combatEndEvent.Invoke();
+                this.currentState = combatState.PlayerInput;
                 break;
         }
     }
@@ -211,8 +212,12 @@ public class CombatManager : MonoBehaviour
     public enum GroupCombatDistance { Far, Medium, Close };
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
-        //Activating the combat canvas so we can show everything
-        this.combatInitializeEvent.Invoke();
+        //Creating the event data that we'll pass to the TransitionFade through the EventManager
+        EVTData transitionEvent = new EVTData();
+        //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to display the combat canvas
+        transitionEvent.combatTransition = new CombatTransitionEVT(0.5f, 1, 0.5f, this.combatInitializeEvent);
+        //Invoking the transition event through the EventManager
+        EventManager.TriggerEvent(CombatTransitionEVT.eventName, transitionEvent);
 
         //Looping through and resetting the combat tiles
         for(int c = 0; c < this.combatTileGrid.Count; ++c)
@@ -280,7 +285,7 @@ public class CombatManager : MonoBehaviour
         this.UpdateCombatTilePositions();
 
         //Setting the state to start increasing initiatives after a brief wait
-        this.SetWaitTime(2, combatState.IncreaseInitiative);
+        this.SetWaitTime(3, combatState.IncreaseInitiative);
 
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
@@ -725,6 +730,17 @@ public class CombatManager : MonoBehaviour
                     }
                 }
                 //If we get through the loop, that means that all enemies are dead and combat is over
+                //Perform the unity event after the action so we can hide some UI elements
+                this.eventAfterActionPerformed.Invoke();
+
+                //Looping through and triggering all effects on the acting character for when their turn ends
+                foreach (Effect ef in this.actingCharacters[0].charCombatStats.combatEffects)
+                {
+                    ef.EffectOnEndOfTurn();
+                }
+
+                //Clearing the highlighted area showing the previously used action's range
+                this.ClearCombatTileHighlights();
                 this.SetWaitTime(1.5f, combatState.EndCombat);
             }
         }
@@ -841,6 +857,12 @@ public class CombatManager : MonoBehaviour
     {
         //Perform the unity event after the action so we can hide some UI elements
         this.eventAfterActionPerformed.Invoke();
+
+        //Looping through and triggering all effects on the acting character for when their turn ends
+        foreach(Effect e in this.actingCharacters[0].charCombatStats.combatEffects)
+        {
+            e.EffectOnEndOfTurn();
+        }
 
         //Resets the acting character's initiative and removes them from the list of acting characters
         if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
