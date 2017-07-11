@@ -74,6 +74,19 @@ public class MoveAction : Action
                 foreach(Effect e in this.actingCharacter.combatEffects)
                 {
                     e.EffectOnMove();
+
+                    //Checking to see if the acting character has died due to some effect
+                    if(this.actingCharacter.GetComponent<PhysicalState>().currentHealth <= 0)
+                    {
+                        //Clearing the movement path tiles
+                        for(int t = newTileMoved + 1; t < this.movementPath.Count; ++t)
+                        {
+                            this.movementPath[t].GetComponent<Image>().color = new Color(1,1,1, this.movementPath[t].inactiveTransparency);
+                        }
+                        //This game object is destroyed
+                        Destroy(this.gameObject);
+                        break;
+                    }
                 }
 
                 //If we've moved through all of the tiles on the movement path, this object is destroyed

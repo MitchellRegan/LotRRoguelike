@@ -63,6 +63,9 @@ public class DamageOverTimeEffect : Effect
 
         this.characterToEffect = targetCharacter_;
 
+        //Adding this effect to the targeted character's combat effects list
+        this.characterToEffect.charCombatStats.combatEffects.Add(this);
+
         //Determining how many ticks this effect will have (if it's not unlimited that is)
         if(!this.unlimitedTicks)
         {

@@ -649,7 +649,6 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log(damagedCharTile_.objectOnThisTile.name + " is dead!");
         }
-
         //Updating the health bars so we can see how much health characters have
         this.UpdateHealthBars();
     }
@@ -673,18 +672,28 @@ public class CombatManager : MonoBehaviour
                 this.playerInitiativeSliders[p].background.color = Color.grey;
 
                 //Looping through and clearing all of the effects on the dead character
-                foreach(Effect e in this.playerCharactersInCombat[p].charCombatStats.combatEffects)
+                for(int e = 0; e < this.playerCharactersInCombat[p].charCombatStats.combatEffects.Count; ++e)
                 {
-                    e.RemoveEffect();
+                    this.playerCharactersInCombat[p].charCombatStats.combatEffects[e].RemoveEffect();
                 }
 
-                //If this character is in line to act, they are removed from the list
-                for(int a = 1; a < this.actingCharacters.Count; ++a)
+                //If this character is the acting character
+                if(this.playerCharactersInCombat[p] == this.actingCharacters[0])
                 {
-                    if(this.actingCharacters[a] == this.playerCharactersInCombat[p])
+                    //Their turn is ended
+                    this.EndActingCharactersTurn();
+                }
+                //Otherwise we check to see if they'll be acting soon
+                else
+                {
+                    //If this character is in line to act, they are removed from the list
+                    for (int a = 1; a < this.actingCharacters.Count; ++a)
                     {
-                        this.actingCharacters.RemoveAt(a);
-                        a -= 1;
+                        if (this.actingCharacters[a] == this.playerCharactersInCombat[p])
+                        {
+                            this.actingCharacters.RemoveAt(a);
+                            a -= 1;
+                        }
                     }
                 }
             }
