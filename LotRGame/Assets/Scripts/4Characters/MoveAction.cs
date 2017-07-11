@@ -70,6 +70,12 @@ public class MoveAction : Action
                 this.actingCharacter.gridPositionRow = this.movementPath[newTileMoved].row;
                 CombatManager.globalReference.combatTileGrid[this.actingCharacter.gridPositionCol][this.actingCharacter.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, CombatTile.ObjectType.Player);
 
+                //Looping through and triggering all effects on the moving character that happen during movement
+                foreach(Effect e in this.actingCharacter.combatEffects)
+                {
+                    e.EffectOnMove();
+                }
+
                 //If we've moved through all of the tiles on the movement path, this object is destroyed
                 if (newTileMoved + 1 == this.movementPath.Count)
                 {

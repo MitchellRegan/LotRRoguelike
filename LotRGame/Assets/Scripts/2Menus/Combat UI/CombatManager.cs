@@ -131,6 +131,12 @@ public class CombatManager : MonoBehaviour
 
             //Hilighting the selected character whose turn it is
             case combatState.SelectAction:
+                //Triggering each combat effect on the acting character for the beginning of their turn
+                foreach (Effect e in this.actingCharacters[0].charCombatStats.combatEffects)
+                {
+                    e.EffectOnStartOfTurn();
+                }
+
                 //If the selected character is a player
                 if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
                 {
@@ -164,6 +170,7 @@ public class CombatManager : MonoBehaviour
                     this.currentState = combatState.IncreaseInitiative;
                 }
                 break;
+
             //Calls the unity event for when this combat encounter is over
             case combatState.EndCombat:
                 this.combatEndEvent.Invoke();
@@ -525,9 +532,6 @@ public class CombatManager : MonoBehaviour
             //Getting a reference to the enemy's combat stats component
             CombatStats enemyCombatStats = createdEnemy.GetComponent<CombatStats>();
 
-            //Adding the current enemy to the list of enemy characters
-            this.enemyCharactersInCombat.Add(createdEnemy.GetComponent<Character>());
-
             //If this enemy's column position is random
             if(enemyChar.randomCol)
             {
@@ -663,6 +667,12 @@ public class CombatManager : MonoBehaviour
 
                 this.playerInitiativeSliders[p].background.color = Color.grey;
 
+                //Looping through and clearing all of the effects on the dead character
+                foreach(Effect e in this.playerCharactersInCombat[p].charCombatStats.combatEffects)
+                {
+                    e.RemoveEffect();
+                }
+
                 //If this character is in line to act, they are removed from the list
                 for(int a = 1; a < this.actingCharacters.Count; ++a)
                 {
@@ -688,6 +698,12 @@ public class CombatManager : MonoBehaviour
                 this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
 
                 this.enemyInitiativeSliders[e].background.color = Color.grey;
+
+                //Looping through and clearing all of the effects on the dead enemy
+                foreach (Effect ef in this.enemyCharactersInCombat[e].charCombatStats.combatEffects)
+                {
+                    ef.RemoveEffect();
+                }
 
                 //If this character is in line to act, they are removed from the list
                 for (int a = 1; a < this.actingCharacters.Count; ++a)
@@ -772,7 +788,7 @@ public class CombatManager : MonoBehaviour
         //If there are any characters in the acting Characters list, the state changes so we stop updating initiative meters
         if(this.actingCharacters.Count != 0)
         {
-            this.currentState = combatState.SelectAction;
+            this.SetWaitTime(1, combatState.SelectAction);
         }
     }
 
@@ -806,12 +822,23 @@ public class CombatManager : MonoBehaviour
         //Tells the action to be performed at the tile clicked and stops highlighting it
         CombatActionPanelUI.globalReference.selectedAction.PerformAction(tileClicked_);
 
-        //Have this combat manager wait a bit before going back to increasing initiative because there could be animations
+        //Have this combat manager wait a bit before going back because there could be animations
         if (this.stateAfterWait != combatState.EndCombat)
         {
-            this.SetWaitTime(CombatActionPanelUI.globalReference.selectedAction.timeToCompleteAction);
+            this.SetWaitTime(CombatActionPanelUI.globalReference.selectedAction.timeToCompleteAction, combatState.PlayerInput);
         }
 
+        //Disables the types of actions that were used 
+        CombatActionPanelUI.globalReference.DisableUsedActions();
+
+        //Clearing the highlighted area showing the previously used action's range
+        this.ClearCombatTileHighlights();
+    }
+
+
+    //Function called externally to end the acting character's turn
+    public void EndActingCharactersTurn()
+    {
         //Perform the unity event after the action so we can hide some UI elements
         this.eventAfterActionPerformed.Invoke();
 
@@ -829,6 +856,9 @@ public class CombatManager : MonoBehaviour
 
         //Clearing the highlighted area showing the previously used action's range
         this.ClearCombatTileHighlights();
+
+        //Have the combat manager wait a moment before going back to increasing initiatives
+        this.SetWaitTime(1, combatState.IncreaseInitiative);
     }
 }
 

@@ -37,6 +37,12 @@ public class AttackAction : Action
         //Reference to the character that's being attacked
         Character defendingChar;
 
+        //Looping through and triggering all combat effects on the acting character that happen on attack
+        foreach(Effect e in actingChar.charCombatStats.combatEffects)
+        {
+            e.EffectOnAttack();
+        }
+
         //Making sure there's a character on the targeted tile
         if(targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>())
         {

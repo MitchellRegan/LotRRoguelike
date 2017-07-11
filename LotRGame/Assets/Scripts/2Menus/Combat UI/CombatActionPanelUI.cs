@@ -29,6 +29,16 @@ public class CombatActionPanelUI : MonoBehaviour
     //The panel that displays the selected action's details
     public SelectedActionPanel selectedPanelDetails;
 
+    [Space(8)]
+
+    //References to the buttons that display the different kinds of actions available to the player
+    public Button standardActButton;
+    public Button secondaryActButton;
+    public Button quickActButton;
+    public Button fullRoundActButton;
+    //Reference to the object that displays all of the actions of the selected type
+    public GameObject actionDisplay;
+
 
 
     //Function called when this object is created
@@ -60,6 +70,14 @@ public class CombatActionPanelUI : MonoBehaviour
         }
         this.selectedAction = null;
         this.UpdateActionDetailsPanel();
+
+        //Enabling all of the action buttons
+        this.standardActButton.interactable = true;
+        this.secondaryActButton.interactable = true;
+        this.quickActButton.interactable = true;
+        this.fullRoundActButton.interactable = true;
+        //Hiding the action display until one of the action buttons is pressed
+        this.actionDisplay.SetActive(false);
     }
 
 
@@ -351,6 +369,46 @@ public class CombatActionPanelUI : MonoBehaviour
                 this.selectedPanelDetails.attackDetails.SetActive(false);
             }
         }
+    }
+
+
+    //Function called externally when an action is used. Disables that kind of action so the player can't use it again this turn
+    public void DisableUsedActions()
+    {
+        //The actions are disabled based on what type was used
+        switch(this.selectedAction.type)
+        {
+            case Action.ActionType.Standard:
+                this.standardActButton.interactable = false;
+                this.fullRoundActButton.interactable = false;
+                break;
+            case Action.ActionType.Secondary:
+                this.secondaryActButton.interactable = false;
+                this.fullRoundActButton.interactable = false;
+                break;
+            case Action.ActionType.Quick:
+                this.quickActButton.interactable = false;
+                break;
+            case Action.ActionType.FullRound:
+                this.fullRoundActButton.interactable = false;
+                this.standardActButton.interactable = false;
+                this.secondaryActButton.interactable = false;
+                break;
+
+        }
+
+        //Regardless of what kind of action was used, the action display is disabled
+        this.actionDisplay.SetActive(false);
+
+        //Destroying the object for the selected action as long as it's not a movement action (they destroy themselves)
+        if(this.selectedAction != null && !this.selectedAction.GetComponent<MoveAction>())
+        {
+            Destroy(this.selectedAction);
+        }
+        this.selectedAction = null;
+
+        //Clearing the action details panel
+        this.UpdateActionDetailsPanel();
     }
 }
 
