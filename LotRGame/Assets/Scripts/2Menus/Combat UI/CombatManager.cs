@@ -781,7 +781,15 @@ public class CombatManager : MonoBehaviour
             {
                 //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-                this.playerInitiativeSliders[p].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+
+                //If the character's initiative is lower than 10% of their base initiative, we set it to 10%
+                if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
+                {
+                    initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
+                }
+
+                this.playerInitiativeSliders[p].initiativeSlider.value += initiativeToAdd;
 
                 //If the slider is filled, this character is added to the acting character list
                 if (this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
@@ -800,7 +808,15 @@ public class CombatManager : MonoBehaviour
             {
                 //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-                this.enemyInitiativeSliders[e].initiativeSlider.value += combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = combatStats.currentInitiativeSpeed * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+
+                //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
+                if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
+                {
+                    initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
+                }
+
+                this.enemyInitiativeSliders[e].initiativeSlider.value += initiativeToAdd;
 
                 //If the slider is filled, this character is added to the acting character list
                 if (this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)

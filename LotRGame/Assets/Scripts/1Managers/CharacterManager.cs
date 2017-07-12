@@ -140,6 +140,21 @@ public class CharacterManager : MonoBehaviour
 
         return slots;
     }
+
+
+    //Function called externally On Time Advance to update each character's food/water/sleep/energy levels
+    public void AdvanceTimeForAllCharacters()
+    {
+        //Looping through each player character in this manager
+        foreach(Character c in this.playerParty)
+        {
+            //If the current character we're checking isn't an empty slot, we advance their time
+            if(c != null)
+            {
+                c.charPhysState.OnTimeAdvanced();
+            }
+        }
+    }
 }
 
 
