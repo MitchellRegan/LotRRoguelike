@@ -41,6 +41,12 @@ public class AttackAction : Action
         foreach(Effect e in actingChar.charCombatStats.combatEffects)
         {
             e.EffectOnAttack();
+
+            //Checking to see if the character has died due to some effect. If so, we break the loop
+            if(actingChar.charPhysState.currentHealth <= 0)
+            {
+                break;
+            }
         }
 
         //Making sure there's a character on the targeted tile

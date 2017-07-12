@@ -112,7 +112,8 @@ public class MoveAction : Action
                             ((CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Enemy || CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Player) && this.ignoreEnemies))
                     {
                         this.movementPath.Add(CombatTile.mouseOverTile);
-                        CombatTile.mouseOverTile.GetComponent<Image>().color = Color.blue;
+                        CombatTile.mouseOverTile.HighlightTile(true);
+                        CombatTile.mouseOverTile.SetTileColor(Color.blue);
                     }
                 }
                 //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
@@ -122,7 +123,8 @@ public class MoveAction : Action
                     int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
                     for (int t = indexOfPrevTile; t < this.movementPath.Count;)
                     {
-                        this.movementPath[t].GetComponent<Image>().color = Color.white;
+                        this.movementPath[t].HighlightTile(false);
+                        this.movementPath[t].SetTileColor(Color.white);
 
                         this.movementPath.RemoveAt(t);
                     }
@@ -135,7 +137,8 @@ public class MoveAction : Action
                 int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
                 for (int t = indexOfPrevTile; t < this.movementPath.Count;)
                 {
-                    this.movementPath[t].GetComponent<Image>().color = Color.white;
+                    this.movementPath[t].HighlightTile(false);
+                    this.movementPath[t].SetTileColor(Color.white);
 
                     this.movementPath.RemoveAt(t);
                 }
@@ -149,7 +152,8 @@ public class MoveAction : Action
                     //Looping through all of the tiles currently in the movement path and clearing them
                     for (int p = 1; p < this.movementPath.Count; ++p)
                     {
-                        this.movementPath[p].GetComponent<Image>().color = Color.white;
+                        this.movementPath[p].HighlightTile(false);
+                        this.movementPath[p].SetTileColor(Color.white);
                     }
 
                     //Use the breadth first search algorithm to find the path to this tile from the player
@@ -162,11 +166,30 @@ public class MoveAction : Action
                     //Looping through each tile that's now in the movement path and coloring it in
                     for(int t = 1; t < this.movementPath.Count; ++t)
                     {
+                        this.movementPath[t].HighlightTile(true);
                         this.movementPath[t].GetComponent<Image>().color = Color.blue;
                     }
                 }
             }
         }
+    }
+
+
+    //Function called from CombatTile.cs to see if a specific tile is in the current movement path
+    public bool IsTileInMovementPath(CombatTile tileToCheck_)
+    {
+        //Looping through each tile in the current movement path
+        foreach(CombatTile ct in this.movementPath)
+        {
+            //Returns true if the current tile is the one we're looking for
+            if(ct == tileToCheck_)
+            {
+                return true;
+            }
+        }
+
+        //If we make it through the loop, the tile we're looking for isn't in the movement path
+        return false;
     }
 
 

@@ -57,6 +57,9 @@ public class CombatActionPanelUI : MonoBehaviour
 
         //Clears the action detail panel
         this.UpdateActionDetailsPanel();
+
+        //Disables this game object
+        this.gameObject.SetActive(false);
     }
 
 

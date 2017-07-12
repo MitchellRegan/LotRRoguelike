@@ -77,16 +77,25 @@ public class LandTile : MonoBehaviour
                 //If the selection mode is on "Movement" then the selected characters are told to move to this tile
                 if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.Movement)
                 {
-                    //Using the Dijkstra search to find the dravel path for each character
-                    TileInfo startingTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile;
-                    TileInfo endTile = LandTile.selectedTile.tileReference;
-                    List<TileInfo> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
+                    //Making sure the clicked tile isn't the one that the group is already on
+                    if(CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile != LandTile.selectedTile.tileReference)
+                    {
+                        //Using the Dijkstra search to find the dravel path for each character
+                        TileInfo startingTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile;
+                        TileInfo endTile = LandTile.selectedTile.tileReference;
+                        List<TileInfo> pathToFollow = PathfindingAlgorithms.DijkstraSearchLandTile(startingTile, endTile);
 
-                    //Setting the path to follow for the character's movement
-                    CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().TravelToPath(pathToFollow);
+                        //Setting the path to follow for the character's movement
+                        CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().TravelToPath(pathToFollow);
 
-                    //Setting the selection mode to nothing so that it doesn't have to be turned off constantly
-                    TileSelectionMode.GlobalReference.ClearSelectionMode();
+                        //Setting the selection mode to nothing so that it doesn't have to be turned off constantly
+                        TileSelectionMode.GlobalReference.ClearSelectionMode();
+                    }
+                    //If the clicked tile IS the one the player group is already on, the selection mode is turned off
+                    else
+                    {
+                        TileSelectionMode.GlobalReference.ClearSelectionMode();
+                    }
                 }
             }
         }

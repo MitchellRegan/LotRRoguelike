@@ -42,7 +42,7 @@ public class DamageText : MonoBehaviour
 
 
     //Function called from the combat manager to set our damage text, color, and position
-    public void SetDamageToDisplay(int damageDealt_, CombatManager.DamageType type_, Vector3 position_, bool isCrit_)
+    public void SetDamageToDisplay(int damageDealt_, CombatManager.DamageType type_, Vector3 position_, bool isCrit_, bool isHeal_ = false)
     {
         //Moving this object to the given position
         this.transform.position = position_;
@@ -56,6 +56,12 @@ public class DamageText : MonoBehaviour
 
         //Setting the text for the damage dealt
         this.ourText.text = "" + damageDealt_;
+
+        //If this was a healing effect, we add a + sign
+        if(isHeal_)
+        {
+            this.ourText.text = "+" + this.ourText.text;
+        }
 
         //Setting the color of the text based on the damage type
         switch(type_)

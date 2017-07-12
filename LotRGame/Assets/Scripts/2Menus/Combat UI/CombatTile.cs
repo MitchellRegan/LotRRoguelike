@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(PathPoint))]
+[RequireComponent(typeof(Image))]
 public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     //Static reference to the Combat tile that the mouse is currently over
@@ -79,8 +80,20 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     //Function called when the player's mouse is no longer over this tile
     public void OnPointerExit(PointerEventData eventData_)
     {
-        //Stops hilighting this tile's image
-        this.HighlightTile(false);
+        //If a character is moving right now and this tile is in the movement path, we don't stop highlighting
+        if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
+        {
+            //If this tile isn't in the movement path, this tile isn't highlighted
+            if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
+            {
+                this.HighlightTile(false);
+            }
+        }
+        else
+        {
+            //Stops hilighting this tile's image
+            this.HighlightTile(false);
+        }
 
         mouseOverTile = null;
     }
@@ -102,7 +115,8 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void ResetTile()
     {
         this.objectOnThisTile = null;
-        this.GetComponent<Image>().color = this.inactiveColor;
+        //this.GetComponent<Image>().color = this.inactiveColor;
+        this.SetTileColor(this.inactiveColor);
         this.HighlightTile(false);
     }
 
@@ -120,17 +134,20 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         else if(type_ == ObjectType.Player)
         {
             this.objectOnThisTile = objOnTile_;
-            this.GetComponent<Image>().color = this.playerOccupiedColor;
+            //this.GetComponent<Image>().color = this.playerOccupiedColor;
+            this.SetTileColor(this.playerOccupiedColor);
         }
         else if(type_ == ObjectType.Enemy)
         {
             this.objectOnThisTile = objOnTile_;
-            this.GetComponent<Image>().color = this.enemyOccupiedColor;
+            //this.GetComponent<Image>().color = this.enemyOccupiedColor;
+            this.SetTileColor(this.enemyOccupiedColor);
         }
         else if(type_ == ObjectType.Object)
         {
             this.objectOnThisTile = objOnTile_;
-            this.GetComponent<Image>().color = this.inactiveColor;
+            //this.GetComponent<Image>().color = this.inactiveColor;
+            this.SetTileColor(this.inactiveColor);
         }
         
         this.HighlightTile(false);
@@ -164,5 +181,12 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 ourImage.color = new Color(r, g, b, this.inactiveTransparency);
             }
         }
+    }
+
+
+    //Sets the color of this tile while retaining the same transparency
+    public void SetTileColor(Color newTileColor_)
+    {
+        this.GetComponent<Image>().color = new Color(newTileColor_.r, newTileColor_.g, newTileColor_.b, this.GetComponent<Image>().color.a);
     }
 }

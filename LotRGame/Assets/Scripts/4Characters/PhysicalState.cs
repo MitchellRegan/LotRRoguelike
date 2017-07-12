@@ -49,6 +49,8 @@ public class PhysicalState : MonoBehaviour
         this.currentFood = this.maxFood;
         this.currentWater = this.maxWater;
         this.currentSleep = this.maxSleep;
+
+        this.CalculateEnergyLevel();
     }
 
 
