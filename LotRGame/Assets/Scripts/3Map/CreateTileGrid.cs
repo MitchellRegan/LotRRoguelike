@@ -74,7 +74,7 @@ public class CreateTileGrid : MonoBehaviour
 
         //Finding the width of the tiles based on the height given and the ratio between a hex's height and width
         this.tileWidth = this.tileHeight * 1.1547f;
-        this.tileWidth -= (this.tileWidth - this.tileHeight) * 2;
+        this.tileWidth -= (this.tileWidth - this.tileHeight) * 1.9f;
 
         //Initializing our list of visible tile objects
         this.visibleTileObjects = new List<GameObject>();
