@@ -38,20 +38,9 @@ public class CharacterStateUI : MonoBehaviour
     //Function called when this component is enabled
     public void OnEnable()
     {
-        //If there isn't a selected character or the one we have isn't in the party anymore, we need to find one
-        if (this.selectedCharacter == null || !CharacterManager.globalReference.playerParty.Contains(this.selectedCharacter))
-        {
-            foreach (Character playerChar in CharacterManager.globalReference.playerParty)
-            {
-                //As soon as we find a character that isn't null, we get the component references and the loop is broken
-                if (playerChar != null)
-                {
-                    this.selectedCharacter = playerChar;
-                    this.selectedCharacterState = this.selectedCharacter.GetComponent<PhysicalState>();
-                    break;
-                }
-            }
-        }
+        //Finding the index of the character that's currently selected
+        this.selectedCharacter = CharacterManager.globalReference.selectedCharacter;
+        this.selectedCharacterState = this.selectedCharacter.charPhysState;
 
         //Updating the sliders
         this.UpdateTextAndSliders();
@@ -84,25 +73,12 @@ public class CharacterStateUI : MonoBehaviour
     //Function called externally to cycle to the next character in the player party
     public void GoToNextCharacter()
     {
+        //Telling the character manager to go to the next character
+        CharacterManager.globalReference.SelectNextCharacter();
+
         //Finding the index of the character that's currently selected
-        int currentIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.IndexOf(this.selectedCharacter);
-
-        for (int i = currentIndex + 1; ; ++i)
-        {
-            //Making sure we stay within the bounds of the player party list
-            if (i >= CharacterManager.globalReference.selectedGroup.charactersInParty.Count)
-            {
-                i = 0;
-            }
-
-            //Once we find a character that isn't null, we save the reference to it and break the loop
-            if (CharacterManager.globalReference.selectedGroup.charactersInParty[i] != null)
-            {
-                this.selectedCharacter = CharacterManager.globalReference.selectedGroup.charactersInParty[i];
-                this.selectedCharacterState = this.selectedCharacter.GetComponent<PhysicalState>();
-                break;
-            }
-        }
+        this.selectedCharacter = CharacterManager.globalReference.selectedCharacter;
+        this.selectedCharacterState = this.selectedCharacter.charPhysState;
 
         //Updating the sliders
         this.UpdateTextAndSliders();
@@ -112,25 +88,12 @@ public class CharacterStateUI : MonoBehaviour
     //Function called externally to cycle to the previous character in the player party
     public void GoToPrevCharacter()
     {
+        //Telling the character manager to go to the previous character
+        CharacterManager.globalReference.SelectPreviousCharacter();
+
         //Finding the index of the character that's currently selected
-        int currentIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.IndexOf(this.selectedCharacter);
-
-        for (int i = currentIndex-1; ; --i)
-        {
-            //Making sure we stay within the bounds of the player party list
-            if (i < 0)
-            {
-                i = CharacterManager.globalReference.selectedGroup.charactersInParty.Count - 1;
-            }
-
-            //Once we find a character that isn't null, we save the reference to it and break the loop
-            if (CharacterManager.globalReference.selectedGroup.charactersInParty[i] != null)
-            {
-                this.selectedCharacter = CharacterManager.globalReference.selectedGroup.charactersInParty[i];
-                this.selectedCharacterState = this.selectedCharacter.GetComponent<PhysicalState>();
-                break;
-            }
-        }
+        this.selectedCharacter = CharacterManager.globalReference.selectedCharacter;
+        this.selectedCharacterState = this.selectedCharacter.charPhysState;
 
         //Updating the sliders
         this.UpdateTextAndSliders();

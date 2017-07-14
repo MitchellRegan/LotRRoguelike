@@ -97,6 +97,7 @@ public class CharacterInventoryUI : MonoBehaviour
         }
     }
 	
+
     //Function called when this component is enabled
     private void OnEnable()
     {

@@ -52,20 +52,9 @@ public class CharacterSkillsUI : MonoBehaviour
     //Function called when this component is enabled
     public void OnEnable()
     {
-        //If there isn't a selected character or the one we have isn't in the party anymore, we need to find one
-        if(this.selectedCharacter == null || !CharacterManager.globalReference.playerParty.Contains(this.selectedCharacter))
-        {
-            foreach(Character playerChar in CharacterManager.globalReference.playerParty)
-            {
-                //As soon as we find a character that isn't null, we get the component references and the loop is broken
-                if(playerChar != null)
-                {
-                    this.selectedCharacter = playerChar;
-                    this.selectedCharacterSkillList = this.selectedCharacter.GetComponent<Skills>();
-                    break;
-                }
-            }
-        }
+        //Finding the index of the character that's currently selected
+        this.selectedCharacter = CharacterManager.globalReference.selectedCharacter;
+        this.selectedCharacterSkillList = this.selectedCharacter.charSkills;
 
         //Updating the sliders
         this.UpdateSliders();
@@ -107,25 +96,12 @@ public class CharacterSkillsUI : MonoBehaviour
     //Function called externally to cycle to the next character in the player party
 	public void GoToNextCharacter()
     {
+        //Telling the character manager to go to the next character
+        CharacterManager.globalReference.SelectNextCharacter();
+
         //Finding the index of the character that's currently selected
-        int currentIndex = CharacterManager.globalReference.playerParty.IndexOf(this.selectedCharacter);
-
-        for(int i = currentIndex; ; ++i)
-        {
-            //Making sure we stay within the bounds of the player party list
-            if(i >= CharacterManager.globalReference.maxPartySize)
-            {
-                i = 0;
-            }
-
-            //Once we find a character that isn't null, we save the reference to it and break the loop
-            if(CharacterManager.globalReference.GetCharacterAtIndex(i) != null)
-            {
-                this.selectedCharacter = CharacterManager.globalReference.GetCharacterAtIndex(i);
-                this.selectedCharacterSkillList = this.selectedCharacter.GetComponent<Skills>();
-                break;
-            }
-        }
+        this.selectedCharacter = CharacterManager.globalReference.selectedCharacter;
+        this.selectedCharacterSkillList = this.selectedCharacter.charSkills;
 
         //Updating the sliders
         this.UpdateSliders();
@@ -135,25 +111,12 @@ public class CharacterSkillsUI : MonoBehaviour
     //Function called externally to cycle to the previous character in the player party
     public void GoToPrevCharacter()
     {
+        //Telling the character manager to go to the previous character
+        CharacterManager.globalReference.SelectPreviousCharacter();
+
         //Finding the index of the character that's currently selected
-        int currentIndex = CharacterManager.globalReference.playerParty.IndexOf(this.selectedCharacter);
-
-        for (int i = currentIndex; ; --i)
-        {
-            //Making sure we stay within the bounds of the player party list
-            if (i < 0)
-            {
-                i = CharacterManager.globalReference.maxPartySize - 1;
-            }
-
-            //Once we find a character that isn't null, we save the reference to it and break the loop
-            if (CharacterManager.globalReference.GetCharacterAtIndex(i) != null)
-            {
-                this.selectedCharacter = CharacterManager.globalReference.GetCharacterAtIndex(i);
-                this.selectedCharacterSkillList = this.selectedCharacter.GetComponent<Skills>();
-                break;
-            }
-        }
+        this.selectedCharacter = CharacterManager.globalReference.selectedCharacter;
+        this.selectedCharacterSkillList = this.selectedCharacter.charSkills;
 
         //Updating the sliders
         this.UpdateSliders();

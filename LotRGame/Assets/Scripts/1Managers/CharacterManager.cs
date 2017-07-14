@@ -18,6 +18,10 @@ public class CharacterManager : MonoBehaviour
     [HideInInspector]
     public PartyGroup selectedGroup;
 
+    //The character that's currently selected to show the stats and skills of
+    [HideInInspector]
+    public Character selectedCharacter;
+
     //The list of characters that have died in the current game
     [HideInInspector]
     public List<Character> deadCharacters;
@@ -74,6 +78,12 @@ public class CharacterManager : MonoBehaviour
                 this.playerParty[i] = newCharacter_;
                 //Setting the new character's position in the combat grid so that they aren't sharing a tile with someone else
                 this.playerParty[i].charCombatStats.SetCombatPosition();
+
+                //If the character was added to the first slot, they become the selected character
+                if(i == 0)
+                {
+                    this.selectedCharacter = newCharacter_;
+                }
                 return true;
             }
         }
@@ -104,21 +114,90 @@ public class CharacterManager : MonoBehaviour
     //Selects the party group based on the number given
     public void SelectPartyGroup(int groupNumber_)
     {
+        //The party group that we'll be setting as the selected group
+        PartyGroup newGroup;
+
         //Sets the selected group
         switch(groupNumber_)
         {
             case 1:
-                this.selectedGroup = PartyGroup.group1;
+                newGroup = PartyGroup.group1;
                 break;
             case 2:
-                this.selectedGroup = PartyGroup.group2;
+                newGroup = PartyGroup.group2;
                 break;
             case 3:
-                this.selectedGroup = PartyGroup.group3;
+                newGroup = PartyGroup.group3;
                 break;
             default:
-                this.selectedGroup = PartyGroup.group1;
+                newGroup = PartyGroup.group1;
                 break;
+        }
+
+        //Looping through each character index in the selected party and setting the first one we find to the selected character
+        Character charToSelect = null;
+        foreach(Character charSlot in newGroup.charactersInParty)
+        {
+            if(charSlot != null)
+            {
+                charToSelect = charSlot;
+                break;
+            }
+        }
+
+        //If the selected character is null, that means there wasn't a character in the party, so we stick with the party we have
+        if(charToSelect != null)
+        {
+            this.selectedGroup = newGroup;
+            this.selectedCharacter = charToSelect;
+        }
+    }
+
+
+    //Function called externally to select the next character in line in the party group
+    public void SelectNextCharacter()
+    {
+        //Finding the index of the character that's currently selected
+        int currentIndex = this.selectedGroup.charactersInParty.IndexOf(this.selectedCharacter);
+
+        for (int i = currentIndex+1; ; ++i)
+        {
+            //Making sure we stay within the bounds of the player party list
+            if (i >= this.selectedGroup.charactersInParty.Count)
+            {
+                i = 0;
+            }
+
+            //Once we find a character that isn't null, we save the reference to it and break the loop
+            if (this.selectedGroup.charactersInParty[i] != null)
+            {
+                this.selectedCharacter = this.selectedGroup.charactersInParty[i];
+                break;
+            }
+        }
+    }
+
+
+    //Function called externally to select the previous character in line in the party group
+    public void SelectPreviousCharacter()
+    {
+        //Finding the index of the character that's currently selected
+        int currentIndex = this.selectedGroup.charactersInParty.IndexOf(this.selectedCharacter);
+
+        for(int i = currentIndex-1; ; --i)
+        {
+            //Making sure we stay within the bounds of the player party list
+            if(i < 0)
+            {
+                i = this.selectedGroup.charactersInParty.Count - 1;
+            }
+
+            //Once we find a character that isn't null, we save the reference to it and break the loop
+            if(this.selectedGroup.charactersInParty[i] != null)
+            {
+                this.selectedCharacter = this.selectedGroup.charactersInParty[i];
+                break;
+            }
         }
     }
 

@@ -31,6 +31,7 @@ public class InventoryOpener : MonoBehaviour
         }
     }
 	
+
     //Function called from the Character List Panel buttons. Sets the party inventory to the character at the given index
     public void OpenPartyInventoryAtIndex(int partyCharacterIndex_)
     {
