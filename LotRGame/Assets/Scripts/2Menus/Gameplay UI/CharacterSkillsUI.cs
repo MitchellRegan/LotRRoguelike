@@ -17,13 +17,35 @@ public class CharacterSkillsUI : MonoBehaviour
     public Slider healingSlider;
     public Slider craftingSlider;
 
+    [Space(8)]
+
     public Slider foragingSlider;
     public Slider trackingSlider;
     public Slider fishingSlider;
 
+    [Space(8)]
+
     public Slider climbingSlider;
     public Slider hidingSlider;
     public Slider swimmingSlider;
+
+    [Space(8)]
+
+    public Slider punchingSlider;
+    public Slider daggerSlider;
+    public Slider swordSlider;
+    public Slider axeSlider;
+    public Slider spearSlider;
+    public Slider bowSlider;
+    public Slider improvisedSlider;
+
+    [Space(8)]
+
+    public Slider holyMagicSlider;
+    public Slider darkMagicSlider;
+    public Slider natureMagicSlider;
+
+
 
 
 
@@ -54,7 +76,7 @@ public class CharacterSkillsUI : MonoBehaviour
     private void UpdateSliders()
     {
         //Setting the name field to display the selected character's name
-        this.nameText.text = this.selectedCharacter.firstName + "'s Skills";
+        this.nameText.text = this.selectedCharacter.firstName + " " + this.selectedCharacter.lastName;
 
         this.cookingSlider.value = this.selectedCharacterSkillList.cooking + this.selectedCharacterSkillList.cookingMod;
         this.healingSlider.value = this.selectedCharacterSkillList.healing + this.selectedCharacterSkillList.healingMod;
@@ -67,6 +89,18 @@ public class CharacterSkillsUI : MonoBehaviour
         this.climbingSlider.value = this.selectedCharacterSkillList.climbing + this.selectedCharacterSkillList.climbingMod;
         this.hidingSlider.value = this.selectedCharacterSkillList.hiding + this.selectedCharacterSkillList.hidingMod;
         this.swimmingSlider.value = this.selectedCharacterSkillList.swimming + this.selectedCharacterSkillList.swimmingMod;
+
+        this.punchingSlider.value = this.selectedCharacter.charCombatStats.punching + this.selectedCharacter.charCombatStats.punchingMod;
+        this.daggerSlider.value = this.selectedCharacter.charCombatStats.daggers + this.selectedCharacter.charCombatStats.daggersMod;
+        this.swordSlider.value = this.selectedCharacter.charCombatStats.swords + this.selectedCharacter.charCombatStats.swordsMod;
+        this.axeSlider.value = this.selectedCharacter.charCombatStats.axes + this.selectedCharacter.charCombatStats.axesMod;
+        this.spearSlider.value = this.selectedCharacter.charCombatStats.spears + this.selectedCharacter.charCombatStats.spearsMod;
+        this.bowSlider.value = this.selectedCharacter.charCombatStats.bows + this.selectedCharacter.charCombatStats.bowsMod;
+        this.improvisedSlider.value = this.selectedCharacter.charCombatStats.improvised + this.selectedCharacter.charCombatStats.improvisedMod;
+
+        this.holyMagicSlider.value = this.selectedCharacter.charCombatStats.holyMagic + this.selectedCharacter.charCombatStats.holyMagicMod;
+        this.darkMagicSlider.value = this.selectedCharacter.charCombatStats.darkMagic + this.selectedCharacter.charCombatStats.darkMagicMod;
+        this.natureMagicSlider.value = this.selectedCharacter.charCombatStats.natureMagic + this.selectedCharacter.charCombatStats.natureMagicMod;
     }
 
 

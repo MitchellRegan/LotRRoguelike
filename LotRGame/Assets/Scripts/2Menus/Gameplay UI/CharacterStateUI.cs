@@ -19,10 +19,19 @@ public class CharacterStateUI : MonoBehaviour
 
     //References to the sliders that display the selected character's health, hunger, thirst, sleep, and energy
     public Slider healthSlider;
+    public Text healthValueText;
+
     public Slider hungerSlider;
+    public Text hungerValueText;
+
     public Slider thirstSlider;
+    public Text thirstValueText;
+
     public Slider sleepSlider;
+    public Text sleepValueText;
+
     public Slider energySlider;
+    public Text energyValueText;
 
 
 
@@ -76,20 +85,20 @@ public class CharacterStateUI : MonoBehaviour
     public void GoToNextCharacter()
     {
         //Finding the index of the character that's currently selected
-        int currentIndex = CharacterManager.globalReference.playerParty.IndexOf(this.selectedCharacter);
+        int currentIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.IndexOf(this.selectedCharacter);
 
-        for (int i = currentIndex; ; ++i)
+        for (int i = currentIndex + 1; ; ++i)
         {
             //Making sure we stay within the bounds of the player party list
-            if (i >= CharacterManager.globalReference.maxPartySize)
+            if (i >= CharacterManager.globalReference.selectedGroup.charactersInParty.Count)
             {
                 i = 0;
             }
 
             //Once we find a character that isn't null, we save the reference to it and break the loop
-            if (CharacterManager.globalReference.GetCharacterAtIndex(i) != null)
+            if (CharacterManager.globalReference.selectedGroup.charactersInParty[i] != null)
             {
-                this.selectedCharacter = CharacterManager.globalReference.GetCharacterAtIndex(i);
+                this.selectedCharacter = CharacterManager.globalReference.selectedGroup.charactersInParty[i];
                 this.selectedCharacterState = this.selectedCharacter.GetComponent<PhysicalState>();
                 break;
             }
@@ -104,20 +113,20 @@ public class CharacterStateUI : MonoBehaviour
     public void GoToPrevCharacter()
     {
         //Finding the index of the character that's currently selected
-        int currentIndex = CharacterManager.globalReference.playerParty.IndexOf(this.selectedCharacter);
+        int currentIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.IndexOf(this.selectedCharacter);
 
-        for (int i = currentIndex; ; --i)
+        for (int i = currentIndex-1; ; --i)
         {
             //Making sure we stay within the bounds of the player party list
             if (i < 0)
             {
-                i = CharacterManager.globalReference.maxPartySize - 1;
+                i = CharacterManager.globalReference.selectedGroup.charactersInParty.Count - 1;
             }
 
             //Once we find a character that isn't null, we save the reference to it and break the loop
-            if (CharacterManager.globalReference.GetCharacterAtIndex(i) != null)
+            if (CharacterManager.globalReference.selectedGroup.charactersInParty[i] != null)
             {
-                this.selectedCharacter = CharacterManager.globalReference.GetCharacterAtIndex(i);
+                this.selectedCharacter = CharacterManager.globalReference.selectedGroup.charactersInParty[i];
                 this.selectedCharacterState = this.selectedCharacter.GetComponent<PhysicalState>();
                 break;
             }
@@ -152,17 +161,22 @@ public class CharacterStateUI : MonoBehaviour
         //Setting the sliders to display the character's current health, hunger, thirst, sleep, and energy values
         this.healthSlider.maxValue = this.selectedCharacterState.maxHealth;
         this.healthSlider.value = this.selectedCharacterState.currentHealth;
+        this.healthValueText.text = this.selectedCharacterState.currentHealth + " / " + this.selectedCharacterState.maxHealth;
 
         this.hungerSlider.maxValue = this.selectedCharacterState.maxFood;
         this.hungerSlider.value = this.selectedCharacterState.currentFood;
+        this.hungerValueText.text = this.selectedCharacterState.currentFood + " / " + this.selectedCharacterState.maxFood;
 
         this.thirstSlider.maxValue = this.selectedCharacterState.maxWater;
         this.thirstSlider.value = this.selectedCharacterState.currentWater;
+        this.thirstValueText.text = this.selectedCharacterState.currentWater + " / " + this.selectedCharacterState.maxWater;
 
         this.sleepSlider.maxValue = this.selectedCharacterState.maxSleep;
         this.sleepSlider.value = this.selectedCharacterState.currentSleep;
+        this.sleepValueText.text = this.selectedCharacterState.currentSleep + " / " + this.selectedCharacterState.maxSleep;
 
         this.energySlider.maxValue = this.selectedCharacterState.maxEnergy;
         this.energySlider.value = this.selectedCharacterState.currentEnergy;
+        this.energyValueText.text = Mathf.RoundToInt(this.selectedCharacterState.currentEnergy * 100) + " / " + (this.selectedCharacterState.maxEnergy * 100);
     }
 }
