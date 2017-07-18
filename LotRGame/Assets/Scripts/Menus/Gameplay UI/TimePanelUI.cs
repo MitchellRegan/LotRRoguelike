@@ -60,9 +60,20 @@ public class TimePanelUI : MonoBehaviour
 
         //Setting the text fields to display the correct time
         this.daysElapsedText.text = "Days Elapsed: " + this.daysTaken;
-        if (this.timeOfDay <= 12)
+        if (this.timeOfDay < 12)
         {
-            this.timeOfDayText.text = "Time: " + this.timeOfDay + "AM";
+            if (this.timeOfDay == 0)
+            {
+                this.timeOfDayText.text = "Time: 12AM";
+            }
+            else
+            {
+                this.timeOfDayText.text = "Time: " + this.timeOfDay + "AM";
+            }
+        }
+        else if(this.timeOfDay == 12)
+        {
+            this.timeOfDayText.text = "Time: 12PM";
         }
         else
         {
