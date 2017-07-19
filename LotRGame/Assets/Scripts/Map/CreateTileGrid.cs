@@ -130,15 +130,14 @@ public class CreateTileGrid : MonoBehaviour
                 Debug.LogError("Create Map Hard function is missing!");
                 break;
         }
-
-        //Fills in all empty tiles with ocean tiles
-        //this.FillEmptyWithOcean();
     }
 
 
     //Creates a map for normal games
     private void CreateMapNormal()
     {
+
+
         //Creating a test spoke grassland region in the center of the map
         int centerRow = (this.tileGrid.Count / 2) + 1;
         int centerCol = (this.tileGrid[0].Count / 2) + 1;
