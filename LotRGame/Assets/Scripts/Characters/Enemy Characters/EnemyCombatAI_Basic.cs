@@ -164,6 +164,91 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 this.moveActionList.Add(dftAct.GetComponent<MoveAction>());
             }
         }
+
+
+        //If our attack preference is for quest items, we find our target now and keep it until the target dies
+        if(this.preferredTargetType == PlayerTargetPreference.QuestItem)
+        {
+            //The index for the character that best matches our attack preference
+            int mostQuestItemsIndex = 0;
+            //The number of quest items that the current best character has in their inventory
+            int mostQuestItems = 0;
+
+            //Looping through the threat list to find the character with the most quest items in their inventory
+            for (int t = 0; t < this.threatList.Count; ++t)
+            {
+                //If we don't ignore threat, the loop breaks after the top 3 characters
+                if (!this.ignoreThreat && t > 2)
+                {
+                    break;
+                }
+
+                //Int that tracks the number of quest items the current character has
+                int thisCharsQuestItems = 0;
+
+                //Looping through the current character's inventory to find quest items
+                foreach (Item currentItem in this.threatList[t].characterRef.charInventory.itemSlots)
+                {
+                    //If the current item is a quest item, we increase the count for this character's quest itmes
+                    if (currentItem.GetComponent<QuestItem>())
+                    {
+                        thisCharsQuestItems += 1;
+                    }
+                }
+
+                //Checking each equipped armor slot for quest items
+                if (this.threatList[t].characterRef.charInventory.helm != null && this.threatList[t].characterRef.charInventory.helm.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.chestPiece != null && this.threatList[t].characterRef.charInventory.chestPiece.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.leggings != null && this.threatList[t].characterRef.charInventory.leggings.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.shoes != null && this.threatList[t].characterRef.charInventory.shoes.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.gloves != null && this.threatList[t].characterRef.charInventory.gloves.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.ring != null && this.threatList[t].characterRef.charInventory.ring.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.necklace != null && this.threatList[t].characterRef.charInventory.necklace.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.cloak != null && this.threatList[t].characterRef.charInventory.cloak.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.rightHand != null && this.threatList[t].characterRef.charInventory.rightHand.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.leftHand != null && this.threatList[t].characterRef.charInventory.leftHand.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+
+                //If the current character has more quest items than the best so far, we set the current index as the best
+                if (thisCharsQuestItems > mostQuestItems)
+                {
+                    mostQuestItemsIndex = t;
+                    mostQuestItems = thisCharsQuestItems;
+                }
+            }
+
+            //Now that we've found the character that matches our criteria the best, we set it as the target
+            this.playerCharToAttack = this.threatList[mostQuestItemsIndex].characterRef;
+        }
     }
 
     
@@ -387,6 +472,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
             //Finding the character with the most quest items in their inventory
             case PlayerTargetPreference.QuestItem:
+                //If the current target isn't dead, we don't change targets
+                if(this.playerCharToAttack.charPhysState.currentHealth > 0)
+                {
+                    return;
+                }
+
                 //The index for the character that best matches our attack preference
                 int mostQuestItemsIndex = 0;
                 //The number of quest items that the current best character has in their inventory
@@ -499,7 +590,22 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called from CombatManager.cs to add to a character's threat when they use an action
     public void IncreaseThreat(Character actingCharacter_, int threatToAdd_)
     {
-        .//GET TO WORK HERE!
+        //Looping through our threat list until we find the character that's raising threat
+        foreach(PlayerThreatMeter playerThreat in this.threatList)
+        {
+            //If we find the matching character, their threat is added
+            if(playerThreat.characterRef == actingCharacter_)
+            {
+                playerThreat.threatLevel += threatToAdd_;
+
+                //Making sure that the threat stays at or above 0 since there are effects to lower threat
+                if(playerThreat.threatLevel < 0)
+                {
+                    playerThreat.threatLevel = 0;
+                }
+                break;
+            }
+        }
     }
 }
 

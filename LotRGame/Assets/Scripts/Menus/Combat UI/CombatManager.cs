@@ -907,6 +907,69 @@ public class CombatManager : MonoBehaviour
         //Have the combat manager wait a moment before going back to increasing initiatives
         this.SetWaitTime(1, combatState.IncreaseInitiative);
     }
+
+
+    //Function called from Action.cs and Effect.cs when a player character performs an action
+    public void ApplyActionThreat(Character targetCharacter_, int threatToAdd_, bool increaseForAllEnemies_)
+    {
+        //If the currently acting character is an enemy, nothing happens. Enemies can't increase their own threat
+        if(this.enemyCharactersInCombat.Contains(this.actingCharacters[0]))
+        {
+            return;
+        }
+
+        //If the target character is empty or a player character
+        if(targetCharacter_ == null || this.playerCharactersInCombat.Contains(targetCharacter_))
+        {
+            //If threat is increased for all enemies, we can add threat. If it isn't increased for all enemies, we do nothing
+            if(increaseForAllEnemies_)
+            {
+                //Looping through each enemy character in combat
+                foreach(Character enemy in this.enemyCharactersInCombat)
+                {
+                    //Making sure the enemy is alive first
+                    if(enemy.charPhysState.currentHealth > 0)
+                    {
+                        //Making sure they have the EnemyCombatAI component
+                        if(enemy.GetComponent<EnemyCombatAI_Basic>())
+                        {
+                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                        }
+                    }
+                }
+            }
+        }
+        //If the target character is an enemy and they have the EnemyCombatAI component
+        else if(this.enemyCharactersInCombat.Contains(targetCharacter_))
+        {
+            //If we increase threat for all enemies
+            if(increaseForAllEnemies_)
+            {
+                //Looping through each enemy character in combat
+                foreach (Character enemy in this.enemyCharactersInCombat)
+                {
+                    //Making sure the enemy is alive first
+                    if (enemy.charPhysState.currentHealth > 0)
+                    {
+                        //Making sure they have the EnemyCombatAI component
+                        if (enemy.GetComponent<EnemyCombatAI_Basic>())
+                        {
+                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                        }
+                    }
+                }
+            }
+            //Otherwise we only increase threat on the target
+            else
+            {
+                //Making sure the target is alive and has the EnemyCombatAI component first
+                if(targetCharacter_.charPhysState.currentHealth > 0 && targetCharacter_.GetComponent<EnemyCombatAI_Basic>())
+                {
+                    targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                }
+            }
+        }
+    }
 }
 
 [System.Serializable]

@@ -24,6 +24,7 @@ public class HealOverTimeEffect : Effect
     //The range for the number of times this effects activates before it goes away
     public Vector2 numberOfTicksRange = new Vector2(5, 10);
     //The number of remaining ticks before this effect goes away
+    [HideInInspector]
     public int ticksLeft = 1;
 
     //If true, this effect won't go away on its own, so it doesn't tick down
@@ -62,6 +63,7 @@ public class HealOverTimeEffect : Effect
         }
 
         this.characterToEffect = targetCharacter_;
+        this.characterWhoTriggered = usingCharacter_;
 
         //Adding this effect to the targeted character's combat effects list
         this.characterToEffect.charCombatStats.combatEffects.Add(this);
@@ -135,6 +137,11 @@ public class HealOverTimeEffect : Effect
 
         //Healing the damage to the effected character
         this.characterToEffect.charPhysState.HealCharacter(damagehealed);
+
+
+        //Applying threat to all enemies for the amount that's healed
+        CombatManager.globalReference.ApplyActionThreat(null, damagehealed, true);
+
 
         //Telling the combat manager to display the damage healed
         CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];

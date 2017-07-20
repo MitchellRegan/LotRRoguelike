@@ -257,6 +257,29 @@ public class AttackAction : Action
         CombatManager.globalReference.DisplayDamageDealt(darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
 
 
+        //Increasing the threat to the target based on damage dealt
+        int totalDamage = 0;
+        totalDamage += physDamage + magicDamage;//Adding physical and magical damage
+        totalDamage += fireDamage + waterDamage + windDamage + electricDamage + rockDamage;//Adding elemental damage
+        totalDamage += lightDamage + darkDamage;//Adding light/dark damage
+
+        //If the attack crit, ALL enemies have their threat increased for 25% of the damage
+        if(isCrit)
+        {
+            //Getting 25% of the damage to pass to all enemies
+            int threatForAll = totalDamage / 4;
+            CombatManager.globalReference.ApplyActionThreat(null, threatForAll, true);
+
+            //Applying the rest of the threat to the defending character
+            CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage - threatForAll, false);
+        }
+        //If the attack wasn't a crit, only the defending character takes threat
+        else
+        {
+            CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage, false);
+        }
+
+
         //Looping through each effect that this attack can cause and rolling to see if they happen
         foreach(AttackEffect effect in this.effectsOnHit)
         {

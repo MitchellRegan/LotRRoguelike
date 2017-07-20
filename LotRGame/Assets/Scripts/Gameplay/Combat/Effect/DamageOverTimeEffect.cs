@@ -24,6 +24,7 @@ public class DamageOverTimeEffect : Effect
     //The range for the number of times this effect activates before it goes away
     public Vector2 numberOfTicksRange = new Vector2(5, 10);
     //The number of remaining ticks before this effect goes away
+    [HideInInspector]
     public int ticksLeft = 1;
 
     //If true, this effect won't go away on its own, so it doesn't tick down
@@ -62,6 +63,7 @@ public class DamageOverTimeEffect : Effect
         }
 
         this.characterToEffect = targetCharacter_;
+        this.characterWhoTriggered = usingCharacter_;
 
         //Adding this effect to the targeted character's combat effects list
         this.characterToEffect.charCombatStats.combatEffects.Add(this);
@@ -135,6 +137,12 @@ public class DamageOverTimeEffect : Effect
 
         //Dealing the damage to the effected character
         this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
+
+        //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
+        if(this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
+        {
+            this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt);
+        }
 
         //Telling the combat manager to display the damage dealt
         CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];

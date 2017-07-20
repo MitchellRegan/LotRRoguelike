@@ -7,6 +7,9 @@ public class Effect : MonoBehaviour
     //The name of this effect
     public string effectName;
 
+    [HideInInspector]
+    public Character characterWhoTriggered;
+
     //The character that will be targeted by this effect
     [HideInInspector]
     public Character characterToEffect;
