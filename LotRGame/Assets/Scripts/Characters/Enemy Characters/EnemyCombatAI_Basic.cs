@@ -166,6 +166,22 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
 
+        //Organizing our movement actions in decending order of distance they can move
+        for(int i = 0; i < this.moveActionList.Count - 1; ++i)
+        {
+            for(int j = i + 1; j < this.moveActionList.Count; ++j)
+            {
+                //If the second move action is greater than the first, they're swapped
+                if(this.moveActionList[j].range > this.moveActionList[i].range)
+                {
+                    MoveAction placeholder = this.moveActionList[j];
+                    this.moveActionList[j] = this.moveActionList[i];
+                    this.moveActionList[i] = placeholder;
+                }
+            }
+        }
+
+
         //If our attack preference is for quest items, we find our target now and keep it until the target dies
         if(this.preferredTargetType == PlayerTargetPreference.QuestItem)
         {
@@ -258,7 +274,17 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Find which character to attack
         this.FindPlayerTarget();
 
-        
+        //Using the pathfinding algorithms to find the path to the target
+        CombatTile ourTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
+        CombatTile targetTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
+
+        //Finding the shortest path to the target regardless of obstacles or characters in the way
+        List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, false, false);
+        //Finding the shortest movement path to the target
+        List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, true, true);
+
+        //Implement state manager here?
+
         //When moving:
             //If moving closer to the target to attack
                 //find the movement action with the highest range

@@ -157,7 +157,7 @@ public class MoveAction : Action
                     }
 
                     //Use the breadth first search algorithm to find the path to this tile from the player
-                    List<CombatTile> newPath = this.BreadthFirstSearch(this.movementPath[0], CombatTile.mouseOverTile);
+                    List<CombatTile> newPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], CombatTile.mouseOverTile, this.ignoreObstacles, this.ignoreEnemies);
                     if (newPath.Count > 0)
                     {
                         this.movementPath = newPath;
@@ -190,125 +190,5 @@ public class MoveAction : Action
 
         //If we make it through the loop, the tile we're looking for isn't in the movement path
         return false;
-    }
-
-
-    //Pathfinding algorithm that uses Breadth First Search to check all directions equally. Returns the tile path taken to get to the target tile.
-    private List<CombatTile> BreadthFirstSearch(CombatTile startingPoint_, CombatTile targetPoint_, bool earlyExit_ = true)
-    {
-        //Creating the 2D list of tiles that will be returned
-        List<CombatTile> tilePath = new List<CombatTile>();
-
-        //The list of path points that make up the frontier
-        List<CombatTile> frontier = new List<CombatTile>();
-        //Adding the starting tile to the fronteir and making sure its previous point is cleared
-        frontier.Add(startingPoint_);
-
-        //The list of path points that have already been visited
-        List<CombatTile> visitedPoints = new List<CombatTile>();
-        visitedPoints.Add(startingPoint_);
-
-        startingPoint_.ourPathPoint.previousPoint = null;
-        startingPoint_.ourPathPoint.hasBeenChecked = true;
-
-        //Loop through each path point until the frontier is empty
-        while (frontier.Count != 0)
-        {
-            //Getting the reference to the next path point to check
-            CombatTile currentPoint = frontier[0];
-            
-            //If the current point is the path point we're looking for
-            if (currentPoint == targetPoint_)
-            {
-                //If the target tile has nothing on it
-                if (currentPoint.typeOnTile == CombatTile.ObjectType.Nothing)
-                {
-                    //Adding the current point's tile to the list of returned objects
-                    tilePath.Add(currentPoint);
-                }
-
-                //Creating a variable to hold the reference to the previous point
-                CombatTile prev = currentPoint.ourPathPoint.previousPoint.GetComponent<CombatTile>();
-
-                //Looping through the trail of points back to the starting point
-                while (true)
-                {
-                    //Adding the point's game object to the list of returned objects
-                    tilePath.Add(prev);
-
-                    //If the point isn't the starting point
-                    if (prev != startingPoint_)
-                    {
-                        //Setting the previous point to the next point in the path
-                        prev = prev.ourPathPoint.previousPoint.GetComponent<CombatTile>();
-                    }
-                    //If the point is the starting point
-                    else
-                    {
-                        //We break out of the loop
-                        break;
-                    }
-                }
-
-                //Reversing the list of path points since it's currently backward
-                tilePath.Reverse();
-
-                //If we exit early, the loop is broken
-                if (earlyExit_)
-                {
-                    break;
-                }
-            }
-            //If the current point isn't the point we're looking for
-            else
-            {
-                //Looping through each path point that's connected to the current point
-                foreach (PathPoint connection in currentPoint.ourPathPoint.connectedPoints)
-                {
-                    if (connection != null)
-                    {
-                        //If the connected point hasn't been visited yet
-                        if (!connection.hasBeenChecked)
-                        {
-                            //Telling the connected point came from the current point we're checking
-                            connection.previousPoint = currentPoint.ourPathPoint;
-
-                            //If the connected tile isn't empty, we have to check it first
-                            if (connection.GetComponent<CombatTile>().typeOnTile != CombatTile.ObjectType.Nothing)
-                            {
-                                //Making sure that this type of movement can safely travel across the type of object on the tile
-                                if (connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Object && this.ignoreObstacles ||
-                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Enemy && this.ignoreEnemies ||
-                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Player && this.ignoreEnemies)
-                                {
-                                    //Adding the connected point to the frontier and list of visited tiles
-                                    frontier.Add(connection.GetComponent<CombatTile>());
-                                }
-                            }
-                            else
-                            {
-                                //Adding the connected point to the frontier and list of visited tiles
-                                frontier.Add(connection.GetComponent<CombatTile>());
-                            }
-                            visitedPoints.Add(connection.GetComponent<CombatTile>());
-                            //Marking the tile as already checked so that it isn't added again
-                            connection.hasBeenChecked = true;
-                        }
-                    }
-                }
-
-                //Adding the current point to the list of visited points and removing it from the frontier
-                frontier.Remove(currentPoint);
-            }
-        }
-        
-        //Looping through all path points in the list of visited points to clear their data
-        foreach (CombatTile point in visitedPoints)
-        {
-            point.ourPathPoint.ClearPathfinding();
-        }
-        
-        //Returning the completed list of tiles
-        return tilePath;
     }
 }
