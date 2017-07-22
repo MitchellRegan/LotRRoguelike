@@ -61,6 +61,11 @@ public class CombatManager : MonoBehaviour
     //Object that's created to display damage on an attacked character's tile
     public DamageText damageTextPrefab;
 
+    //Object that's created when combat is initiated to hold each character's sprite
+    public CombatCharacterSprite characterSpritePrefab;
+    //The list of all CombatCharacterSprites for each character and enemy
+    public List<CombatCharacterSprite> characterSpriteList;
+
 
 
 	// Function called when this object is created
@@ -95,6 +100,7 @@ public class CombatManager : MonoBehaviour
 
         this.playerCharactersInCombat = new List<Character>();
         this.enemyCharactersInCombat = new List<Character>();
+        this.characterSpriteList = new List<CombatCharacterSprite>();
     }
 
 
@@ -233,6 +239,9 @@ public class CombatManager : MonoBehaviour
 
         //Setting the combat positions for the player characters and enemies based on their distances
         this.SetCombatPositions(charactersInCombat_, encounter_);
+
+        //Creating the Combat Character Sprites
+        this.CreateCharacterSprites();
 
         //Looping through and setting all of the player initiative bars to display the correct character
         for (int p = 0; p < this.playerInitiativeSliders.Count; ++p)
@@ -583,6 +592,80 @@ public class CombatManager : MonoBehaviour
     }
 
 
+    //Function called from InitializeCombat. Creates all of the CombatCharacterSprite objects for the player characters and enemies
+    private void CreateCharacterSprites()
+    {
+        //Making sure there are no more character sprites from previous combats on the screen
+        foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+        {
+            Destroy(cSprite.gameObject);
+        }
+        this.characterSpriteList.Clear();
+
+        //Looping through each player character in this combat
+        foreach(Character playerChar in this.playerCharactersInCombat)
+        {
+            //Creating a new instance of the character sprite prefab
+            GameObject newCharSprite = GameObject.Instantiate(this.characterSpritePrefab.gameObject);
+
+            //Getting the CombatCharacterSprite component reference
+            CombatCharacterSprite charSpriteRef = newCharSprite.GetComponent<CombatCharacterSprite>();
+
+            //Finding the combat tile that the current player character is on
+            CombatTile playerTile = this.FindCharactersTile(playerChar);
+
+            //Parenting the game object to this object so it shows up on our canvas
+            newCharSprite.transform.SetParent(this.transform);
+
+            //Setting the info for the character sprite
+            charSpriteRef.SetSpriteOnTile(playerChar, playerTile.transform.position);
+
+            //Adding the character sprite to our list
+            this.characterSpriteList.Add(charSpriteRef);
+        }
+
+        //Looping through each enemy character in this combat
+        foreach (Character enemyChar in this.enemyCharactersInCombat)
+        {
+            //Creating a new instance of the character sprite prefab
+            GameObject newCharSprite = GameObject.Instantiate(this.characterSpritePrefab.gameObject);
+
+            //Getting the CombatCharacterSprite component reference
+            CombatCharacterSprite charSpriteRef = newCharSprite.GetComponent<CombatCharacterSprite>();
+
+            //Finding the combat tile that the current enemy character is on
+            CombatTile enemyTile = this.FindCharactersTile(enemyChar);
+
+            //Parenting the game object to this object so it shows up on our canvas
+            newCharSprite.transform.SetParent(this.transform);
+
+            //Setting the info for the character sprite
+            charSpriteRef.SetSpriteOnTile(enemyChar, enemyTile.transform.position);
+
+            //Adding the character sprite to our list
+            this.characterSpriteList.Add(charSpriteRef);
+        }
+    }
+
+
+    //Function called externally to get the CombatCharacterSprite component for the given character
+    public CombatCharacterSprite GetCharacterSprite(Character charToLookFor_)
+    {
+        //Looping through all of the Character Sprites
+        foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+        {
+            //If we find the character, their sprite is returned
+            if(cSprite.ourCharacter == charToLookFor_)
+            {
+                return cSprite;
+            }
+        }
+
+        //If we make it out of the loop, nobody was found, so we return null
+        return null;
+    }
+
+
     //Function called to set the amount of time to wait
     private void SetWaitTime(float timeToWait_, combatState stateAfterWait_ = combatState.IncreaseInitiative)
     {
@@ -838,7 +921,7 @@ public class CombatManager : MonoBehaviour
     public CombatTile FindCharactersTile(Character characterToFind_)
     {
         //Making sure the given character is in the current combat encounter
-        if(!this.playerCharactersInCombat.Contains(characterToFind_))
+        if(!this.playerCharactersInCombat.Contains(characterToFind_) && !this.enemyCharactersInCombat.Contains(characterToFind_))
         {
             return null;
         }

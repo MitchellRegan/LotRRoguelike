@@ -19,7 +19,7 @@ public class MoveAction : Action
     //Counter to hold how much time has passed after this action is called
     private float currentTimePassed = 0;
     //Reference to the character that we'll be moving
-    private CombatStats actingCharacter;
+    private Character actingCharacter;
 
 
 
@@ -32,7 +32,7 @@ public class MoveAction : Action
         //adding in the selected character's tile as the starting point
         this.movementPath.Add(CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]));
         //Getting the reference to the acting character from the Combat Manager
-        this.actingCharacter = CombatManager.globalReference.actingCharacters[0].charCombatStats;
+        this.actingCharacter = CombatManager.globalReference.actingCharacters[0];
     }
 
 
@@ -59,19 +59,22 @@ public class MoveAction : Action
             //Finding the number of tiles that have been moved after this time progression
             int newTileMoved = Mathf.RoundToInt(this.currentTimePassed / (this.timeToCompleteAction / this.movementPath.Count));
 
+            //Moving the character sprite along the movement path
+            this.UpdateCharacterSpritePosition(this.movementPath[tilesMoved], this.movementPath[tilesMoved + 1], this.currentTimePassed, tilesMoved);
+
             //If enough time has passed that we've moved one more tile further. We progress the acting character one more tile along the movement path
             if (tilesMoved < newTileMoved)
             {
                 //Removing the acting character from the tile they're on
-                CombatManager.globalReference.combatTileGrid[this.actingCharacter.gridPositionCol][this.actingCharacter.gridPositionRow].SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
+                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
                 
                 //Once the time has passed for this tile, the selected character's position is updated
-                this.actingCharacter.gridPositionCol = this.movementPath[newTileMoved].col;
-                this.actingCharacter.gridPositionRow = this.movementPath[newTileMoved].row;
-                CombatManager.globalReference.combatTileGrid[this.actingCharacter.gridPositionCol][this.actingCharacter.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, CombatTile.ObjectType.Player);
+                this.actingCharacter.charCombatStats.gridPositionCol = this.movementPath[newTileMoved].col;
+                this.actingCharacter.charCombatStats.gridPositionRow = this.movementPath[newTileMoved].row;
+                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, CombatTile.ObjectType.Player);
 
                 //Looping through and triggering all effects on the moving character that happen during movement
-                foreach(Effect e in this.actingCharacter.combatEffects)
+                foreach(Effect e in this.actingCharacter.charCombatStats.combatEffects)
                 {
                     e.EffectOnMove();
 
@@ -92,7 +95,9 @@ public class MoveAction : Action
                 //If we've moved through all of the tiles on the movement path, this object is destroyed
                 if (newTileMoved + 1 == this.movementPath.Count)
                 {
-                    //CombatManager.globalReference.UpdateCombatTilePositions();
+                    //Setting the character's combat sprite to a stationary position directly on the last tile in our movement path
+                    CombatManager.globalReference.GetCharacterSprite(this.actingCharacter).transform.position = this.movementPath[this.movementPath.Count - 1].transform.position;
+
                     Destroy(this.gameObject);
                 }
             }
@@ -190,5 +195,50 @@ public class MoveAction : Action
 
         //If we make it through the loop, the tile we're looking for isn't in the movement path
         return false;
+    }
+
+
+    //Function called from Update when the character is moving. Interpolates the moving character's combat sprite to follow the path
+    private void UpdateCharacterSpritePosition(CombatTile currentTile_, CombatTile nextTile_, float timeSpentMoving_, int tilesAlreadyMoved_)
+    {
+        //The percent for how far along we are along the path between the two tiles
+        float movePercent = timeSpentMoving_ - ((this.timeToCompleteAction / this.movementPath.Count) * tilesAlreadyMoved_);
+        movePercent = movePercent / (this.timeToCompleteAction / this.movementPath.Count);
+
+        //Getting the reference for the moving character's combat sprite
+        CombatCharacterSprite charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
+
+        //Finding the difference between the tiles given
+        Vector3 distDiff = nextTile_.transform.position - currentTile_.transform.position;
+        //Multiplying the move percent with the difference in distance
+        distDiff = distDiff * movePercent;
+        //Offsetting the distance from the character's current tile
+        distDiff += currentTile_.transform.position;
+
+        //Setting the character sprite's position to the updated offset
+        charSprite.transform.position = distDiff;
+
+        //If the next tile is to the right of the current one, we make the character sprite look right
+        if(nextTile_.transform.position.x > currentTile_.transform.position.x)
+        {
+            //If the current image's X scale is facing left, we face right
+            if (charSprite.spriteImage.transform.localScale.x < 0)
+            {
+                charSprite.spriteImage.transform.localScale = new Vector3(-1 * charSprite.spriteImage.transform.localScale.x,
+                                                                          charSprite.spriteImage.transform.localScale.y,
+                                                                          charSprite.spriteImage.transform.localScale.z);
+            }
+        }
+        //If the next tile is to the left of the current one, we make the character sprite look left
+        else if(nextTile_.transform.position.x < currentTile_.transform.position.x)
+        {
+            //If the current image's X scale is facing right, we face left
+            if (charSprite.spriteImage.transform.localScale.x > 0)
+            {
+                charSprite.spriteImage.transform.localScale = new Vector3(-1 * charSprite.spriteImage.transform.localScale.x,
+                                                                          charSprite.spriteImage.transform.localScale.y,
+                                                                          charSprite.spriteImage.transform.localScale.z);
+            }
+        }
     }
 }

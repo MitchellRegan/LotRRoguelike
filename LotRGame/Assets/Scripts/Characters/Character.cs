@@ -35,6 +35,9 @@ public class Character : MonoBehaviour
     //This character's weight (in kilograms)
     public int weight = 80;
 
+    //The sprite that represents this character in combat
+    public Sprite combatSprite;
+
 
     //References to each of the required components
     [HideInInspector]
