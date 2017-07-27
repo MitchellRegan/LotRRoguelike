@@ -18,6 +18,9 @@ public class CharacterInventoryUI : MonoBehaviour
     public static CharacterInventoryUI bagInventory;
     public static CharacterInventoryUI tradeInventory;
 
+    //The image that displays this character's combat appearance
+    public Image combatSprite;
+
     //Selected Character Name
     public Text selectedCharacterName;
     //Selected Character weight
@@ -141,6 +144,12 @@ public class CharacterInventoryUI : MonoBehaviour
     //Function called to update the inventory images and weight
     public void UpdateImages()
     {
+        //Sets the character combat image
+        if(this.combatSprite != null)
+        {
+            this.combatSprite.sprite = this.selectedCharacterInventory.GetComponent<Character>().combatSprite;
+        }
+
         //Sets the character name
         if(this.selectedCharacterName != null)
         {

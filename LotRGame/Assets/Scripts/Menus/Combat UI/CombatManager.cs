@@ -645,6 +645,9 @@ public class CombatManager : MonoBehaviour
             //Adding the character sprite to our list
             this.characterSpriteList.Add(charSpriteRef);
         }
+
+        //Sorting the sprites so that they appear in front of each other correctly
+        this.UpdateCharacterSpriteOrder();
     }
 
 
@@ -663,6 +666,25 @@ public class CombatManager : MonoBehaviour
 
         //If we make it out of the loop, nobody was found, so we return null
         return null;
+    }
+
+
+    //Function called from MoveAction.cs to update the sprite positions for each character combat sprite to make them overlap correctly
+    public void UpdateCharacterSpriteOrder()
+    {
+        //Looping through for each row we have
+        for(int r = 0; r < this.combatTileGrid[0].Count; ++r)
+        {
+            //Looping through each character sprite in this combat encounter
+            foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+            {
+                //If the character for the current combat sprite is positioned on the row we're checking, we move it to the front
+                if(cSprite.ourCharacter.charCombatStats.gridPositionRow == r)
+                {
+                    cSprite.transform.SetAsLastSibling();
+                }
+            }
+        }
     }
 
 

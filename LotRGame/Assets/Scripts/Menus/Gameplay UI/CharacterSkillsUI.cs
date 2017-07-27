@@ -65,7 +65,7 @@ public class CharacterSkillsUI : MonoBehaviour
     private void UpdateSliders()
     {
         //Setting the name field to display the selected character's name
-        this.nameText.text = this.selectedCharacter.firstName + " " + this.selectedCharacter.lastName;
+        this.nameText.text = this.selectedCharacter.firstName + "\n" + this.selectedCharacter.lastName;
 
         this.cookingSlider.value = this.selectedCharacterSkillList.cooking + this.selectedCharacterSkillList.cookingMod;
         this.healingSlider.value = this.selectedCharacterSkillList.healing + this.selectedCharacterSkillList.healingMod;

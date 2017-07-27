@@ -12,9 +12,6 @@ public class CombatStats : MonoBehaviour
     //The speed that this character's initiative meter increases each frame during combat
     public float currentInitiativeSpeed = 0.01f;
 
-    //The number of spaces this character can move as a standard action in combat
-    public uint combatSpeed = 5;
-
     //The starting grid position on the combat tiles for this character
     [HideInInspector]
     public int startingPositionCol = 0;

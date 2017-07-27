@@ -51,9 +51,9 @@ public class CharacterStateUI : MonoBehaviour
     public void UpdateTextAndSliders()
     {
         //Setting the name field to display the selected character's name
-        this.nameText.text = this.selectedCharacter.firstName + " " + this.selectedCharacter.lastName;
+        this.nameText.text = this.selectedCharacter.firstName + "\n" + this.selectedCharacter.lastName;
         //Setting the clan field to display the character's clan
-        this.clanText.text = "of the " + this.selectedCharacter.clanName + " clan.";
+        this.clanText.text = "Clan: " + this.selectedCharacter.clanName;
         //Setting the sex field to display their sex
         this.sexText.text = "Sex: " + this.selectedCharacter.sex;
         //Setting the race field to display their race

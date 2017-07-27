@@ -25,7 +25,7 @@ public class CreateTileGrid : MonoBehaviour
     public List<List<TileInfo>> tileGrid;
 
     //The number of tiles that are visible at a given time
-    [Range(2, 15)]
+    [Range(2, 25)]
     public int visibilityRange = 7;
 
     //The list of all tiles that are currently visible
@@ -136,25 +136,33 @@ public class CreateTileGrid : MonoBehaviour
     //Creates a map for normal games
     private void CreateMapNormal()
     {
-
-
-        //Creating a test spoke grassland region in the center of the map
+        //Creating a test spoke forrest region in the center of the map
         int centerRow = (this.tileGrid.Count / 2) + 1;
         int centerCol = (this.tileGrid[0].Count / 2) + 1;
-
-        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.grasslandRegions[0]);
+        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.forrestRegions[0]);
 
         //Setting the starting point at a random location in the first third of the map
-        int startRow = Random.Range(2, (this.tileGrid.Count / 3) + 1);
-        int startCol = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
+        int startCol = Random.Range(2, (this.tileGrid.Count / 3) + 1);
+        int startRow = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
+
+        //Creating a test spoke grassland region at the starting point
+        this.GenerateSpokeRegion(startRow, startCol, new Vector2(6, 12), new Vector2(3,10), this.grasslandRegions[0]);
+
+
+        //Creating a small region to show off for the website
+        int showoffCol = startCol + 10;
+        int showoffRow = startRow + 8;
+        this.GenerateSpokeRegion(showoffRow, showoffCol, new Vector2(6, 12), new Vector2(2, 6), this.mountainRegions[0]);//Mountain
+        this.GenerateSpokeRegion(showoffRow, showoffCol, new Vector2(4, 6), new Vector2(2, 4), this.volcanoRegions[0]);//volcano
+
 
         //Instantiating the player group at the starting tile's location
-        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
-        playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow][startCol]);
+        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startCol][startRow].tilePosition, new Quaternion());
+        playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startCol][startRow]);
 
         //Instantiating the test character at the starting tile's location
-        GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
-        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startRow][startCol].tilePosition, new Quaternion());
+        GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startCol][startRow].tilePosition, new Quaternion());
+        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startCol][startRow].tilePosition, new Quaternion());
 
         //Adding the starting characters to the party group
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
@@ -163,8 +171,8 @@ public class CreateTileGrid : MonoBehaviour
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
 
-        GameObject enemy = GameObject.Instantiate(this.testEnemyEncounter, this.tileGrid[startRow - 1][startCol].tilePosition, new Quaternion());
-        enemy.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startRow - 1][startCol]);
+        GameObject enemy = GameObject.Instantiate(this.testEnemyEncounter, this.tileGrid[startCol][startRow + 1].tilePosition, new Quaternion());
+        enemy.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startCol][startRow + 1]);
     }
 
 
