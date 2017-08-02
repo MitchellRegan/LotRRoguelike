@@ -322,4 +322,19 @@ public class AttackEffect
     //The percent chance that the effect on hit will proc
     [Range(0, 1)]
     public float effectChance = 0.2f;
+
+    //The radius of effect from the hit target
+    [Range(0, 10)]
+    public int effectRadius = 0;
+
+    //Enum that determines who is effected
+    public enum EffectedTargets
+    {
+        Attacker,//The person making the attack
+        Defender,//The person being hit by the attack
+        EnemiesOnly,//Hits all enemies in the radius and ignores allies
+        AlliesOnly,//Hits all allies in the radius and ignores enemies
+        Everyone//Hits every ally and enemy in the radius
+        .
+    };
 }
