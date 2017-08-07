@@ -195,7 +195,7 @@ public class CharacterInventoryUI : MonoBehaviour
         }
         if (this.selectedCharacterResistLight != null)
         {
-            this.selectedCharacterResistLight.text = "" + this.selectedCharacterInventory.totalLightResist;
+            this.selectedCharacterResistLight.text = "" + this.selectedCharacterInventory.totalHolyResist;
         }
         if (this.selectedCharacterResistDark != null)
         {

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Text))]
 public class DamageText : MonoBehaviour
 {
-    //Reference to this object's Text component
-    private Text ourText;
+    //Reference to the Text component
+    public Text ourText;
+    //Reference to the background image component
+    public Image background;
 
     //The amount of time in seconds that this object is displayed before it disappears
     public float timeBeforeDestroyed = 1;
@@ -33,14 +34,7 @@ public class DamageText : MonoBehaviour
 
 
 
-    //Function called when this object is created
-    private void Awake()
-    {
-        //Gets this object's text component
-        this.ourText = this.GetComponent<Text>();
-    }
-
-
+    
     //Function called from the combat manager to set our damage text, color, and position
     public void SetDamageToDisplay(int damageDealt_, CombatManager.DamageType type_, Vector3 position_, bool isCrit_, bool isHeal_ = false)
     {
@@ -67,31 +61,31 @@ public class DamageText : MonoBehaviour
         switch(type_)
         {
             case CombatManager.DamageType.Physical:
-                this.ourText.color = this.physDamageColor;
+                this.background.color = this.physDamageColor;
                 break;
             case CombatManager.DamageType.Magic:
-                this.ourText.color = this.magicDamageColor;
+                this.background.color = this.magicDamageColor;
                 break;
             case CombatManager.DamageType.Fire:
-                this.ourText.color = this.fireDamageColor;
+                this.background.color = this.fireDamageColor;
                 break;
             case CombatManager.DamageType.Water:
-                this.ourText.color = this.waterDamageColor;
+                this.background.color = this.waterDamageColor;
                 break;
             case CombatManager.DamageType.Electric:
-                this.ourText.color = this.electricDamageColor;
+                this.background.color = this.electricDamageColor;
                 break;
             case CombatManager.DamageType.Wind:
-                this.ourText.color = this.windDamageColor;
+                this.background.color = this.windDamageColor;
                 break;
             case CombatManager.DamageType.Rock:
-                this.ourText.color = this.rockDamageColor;
+                this.background.color = this.rockDamageColor;
                 break;
             case CombatManager.DamageType.Light:
-                this.ourText.color = this.lightDamageColor;
+                this.background.color = this.lightDamageColor;
                 break;
             case CombatManager.DamageType.Dark:
-                this.ourText.color = this.darkDamageColor;
+                this.background.color = this.darkDamageColor;
                 break;
         }
 
@@ -122,7 +116,7 @@ public class DamageText : MonoBehaviour
 
         this.ourText.text = "MISS";
         this.ourText.fontSize = this.normalDamageFontSize;
-        this.ourText.color = Color.black;
+        this.background.color = Color.black;
     }
 
 

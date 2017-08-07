@@ -5,9 +5,8 @@ using UnityEngine;
 
 //Enum that determines a character's gender and some stat modifiers
 public enum Genders { Male, Female, Genderless };
-//Enum for the different types of character races
-public enum Races {Human, Elf, Dwarf, Orc, HalfMan, GillFolk, ScaleSkin, Amazon, Minotaur, Other};
 
+[RequireComponent(typeof(RaceTypes))]
 [RequireComponent(typeof(Inventory))]
 [RequireComponent(typeof(Skills))]
 [RequireComponent(typeof(PhysicalState))]
@@ -26,9 +25,6 @@ public class Character : MonoBehaviour
     //This character's gender
     public Genders sex = Genders.Male;
 
-    //This character's race
-    public Races race = Races.Human;
-
     //This character's height (in centimeters)
     public int height = 178;
 
@@ -40,6 +36,8 @@ public class Character : MonoBehaviour
 
 
     //References to each of the required components
+    [HideInInspector]
+    public RaceTypes charRaceTypes;
     [HideInInspector]
     public Inventory charInventory;
     [HideInInspector]
@@ -56,6 +54,7 @@ public class Character : MonoBehaviour
     private void Awake()
     {
         //Setting the references to each of the required components
+        this.charRaceTypes = this.GetComponent<RaceTypes>();
         this.charInventory = this.GetComponent<Inventory>();
         this.charSkills = this.GetComponent<Skills>();
         this.charPhysState = this.GetComponent<PhysicalState>();

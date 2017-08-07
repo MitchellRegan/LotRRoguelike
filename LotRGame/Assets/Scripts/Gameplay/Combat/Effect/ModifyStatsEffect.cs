@@ -272,6 +272,132 @@ public class ModifyStatsEffect : Effect
                         this.characterToEffect.charCombatStats.natureMagicMod -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
+
+                //Armor
+                case StatModifier.StatName.Armor:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalPhysicalArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalPhysicalArmor -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Magic resist
+                case StatModifier.StatName.MagicResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalMagicResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalMagicResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Holy resist
+                case StatModifier.StatName.HolyResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalHolyResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalHolyResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Dark resist
+                case StatModifier.StatName.DarkResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalDarkResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalDarkResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Fire resist
+                case StatModifier.StatName.FireResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalFireResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalFireResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Water resist
+                case StatModifier.StatName.WaterResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalWaterResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalWaterResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Electric resist
+                case StatModifier.StatName.ElectricResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalElectricResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalElectricResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Wind resist
+                case StatModifier.StatName.WindResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalWindResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalWindResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Rock resist
+                case StatModifier.StatName.RockResist:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalRockResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalRockResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
             }
         }
     }
@@ -378,7 +504,17 @@ public class StatModifier
 
         HolyMagic,
         DarkMagic,
-        NatureMagic
+        NatureMagic,
+
+        Armor,
+        MagicResist,
+        HolyResist,
+        DarkResist,
+        FireResist,
+        WaterResist,
+        ElectricResist,
+        WindResist,
+        RockResist
     }
 
     //Enum for which stat this modifier changes

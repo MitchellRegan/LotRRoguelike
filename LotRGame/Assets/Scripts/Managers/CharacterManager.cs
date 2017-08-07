@@ -242,7 +242,7 @@ public class CharacterManager : MonoBehaviour
 public class CharacterDefinition
 {
     //The race of the character
-    public Races race = Races.Human;
+    public RaceTypes.Races race = RaceTypes.Races.Human;
     //The sex of the character
     public Genders gender = Genders.Male;
     //The game object for the character that's spawned

@@ -16,7 +16,7 @@ public class Inventory : MonoBehaviour
     public int totalMagicResist = 0;
     //The magic armor total
     [HideInInspector]
-    public int totalLightResist = 0;
+    public int totalHolyResist = 0;
     //The magic armor total
     [HideInInspector]
     public int totalDarkResist = 0;
@@ -395,7 +395,7 @@ public class Inventory : MonoBehaviour
         this.totalElectricResist = electricResistSum;
         this.totalWindResist = windResistSum;
         this.totalRockResist = rockResistSum;
-        this.totalLightResist = lightResistSum;
+        this.totalHolyResist = lightResistSum;
         this.totalDarkResist = darkResistSum;
     }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 public class CharacterGenerator : MonoBehaviour
 {
     /* ~~~~~~ RACE ~~~~~~*/
-    public Races race = Races.Human;
+    public RaceTypes.Races race = RaceTypes.Races.Human;
 
     /* ~~~~~~ NAMES ~~~~~~*/
     public List<string> firstNames;
@@ -98,7 +98,7 @@ public class CharacterGenerator : MonoBehaviour
         //Getting the reference to this object's Character component
         Character characterRef = this.GetComponent<Character>();
 
-        characterRef.race = this.race;
+        characterRef.charRaceTypes.race = this.race;
         characterRef.sex = this.sex;
         characterRef.clanName = this.clanName;
 

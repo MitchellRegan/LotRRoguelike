@@ -13,7 +13,7 @@ public class GameData : MonoBehaviour
     public gameDifficulty currentDifficulty = gameDifficulty.Normal;
 
     //Public enum that lets us know what race the player is starting as in a new game
-    public Races startingRace = Races.Human;
+    public RaceTypes.Races startingRace = RaceTypes.Races.Human;
 
     //The width and height of the game map in tiles for the different difficulty settings
     public Vector2 easyMapSize = new Vector2();
@@ -65,43 +65,43 @@ public class GameData : MonoBehaviour
         switch(startingRace_)
         {
             case 0:
-                this.startingRace = Races.Human;
+                this.startingRace = RaceTypes.Races.Human;
                 break;
 
             case 1:
-                this.startingRace = Races.Elf;
+                this.startingRace = RaceTypes.Races.Elf;
                 break;
 
             case 2:
-                this.startingRace = Races.Dwarf;
+                this.startingRace = RaceTypes.Races.Dwarf;
                 break;
 
             case 3:
-                this.startingRace = Races.HalfMan;
+                this.startingRace = RaceTypes.Races.HalfMan;
                 break;
 
             case 4:
-                this.startingRace = Races.Amazon;
+                this.startingRace = RaceTypes.Races.Amazon;
                 break;
 
             case 5:
-                this.startingRace = Races.Orc;
+                this.startingRace = RaceTypes.Races.Orc;
                 break;
 
             case 6:
-                this.startingRace = Races.GillFolk;
+                this.startingRace = RaceTypes.Races.GillFolk;
                 break;
 
             case 7:
-                this.startingRace = Races.ScaleSkin;
+                this.startingRace = RaceTypes.Races.ScaleSkin;
                 break;
 
             case 8:
-                this.startingRace = Races.Minotaur;
+                this.startingRace = RaceTypes.Races.Minotaur;
                 break;
 
             default:
-                this.startingRace = Races.Human;
+                this.startingRace = RaceTypes.Races.Human;
                 break;
         }
     }

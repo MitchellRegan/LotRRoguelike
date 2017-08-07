@@ -360,7 +360,7 @@ public class CombatActionPanelUI : MonoBehaviour
                         }
 
                         //Displaying the name of the effect and the % of it happening
-                        this.selectedPanelDetails.effectNameText.text += atkDetails.effectsOnHit[e].effectOnHit.effectName + "(" + 
+                        this.selectedPanelDetails.effectNameText.text += atkDetails.effectsOnHit[e].effectToApply.effectName + "(" + 
                                                                          atkDetails.effectsOnHit[e].effectChance * 100 + "%)";
                     }
                 }

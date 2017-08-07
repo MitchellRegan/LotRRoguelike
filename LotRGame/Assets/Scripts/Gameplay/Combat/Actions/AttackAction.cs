@@ -58,6 +58,17 @@ public class AttackAction : Action
         else
         {
             CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+
+            //Looping through each effect that this attack can apply to see if any don't require the attack to land
+            foreach(AttackEffect efc in this.effectsOnHit)
+            {
+                //If the effect doesn't require the attack to land, it's triggered
+                if(!efc.requireHit)
+                {
+                    this.TriggerEffect(efc, targetTile_, actingChar);
+                }
+            }
+
             return;
         }
 
@@ -221,7 +232,7 @@ public class AttackAction : Action
         }
         if (lightDamage > 0)
         {
-            lightDamage -= defendingChar.charInventory.totalLightResist;
+            lightDamage -= defendingChar.charInventory.totalHolyResist;
         }
         if (darkDamage > 0)
         {
@@ -280,16 +291,309 @@ public class AttackAction : Action
         }
 
 
-        //Looping through each effect that this attack can cause and rolling to see if they happen
+        //Looping through each effect that this attack can cause and triggering them
         foreach(AttackEffect effect in this.effectsOnHit)
         {
+            this.TriggerEffect(effect, targetTile_, actingChar);
+        }
+    }
+
+
+    //Function called from TriggerEffect to find all targets within an effect's radius
+    private List<Character> FindCharactersInAttackRange(CombatTile targetTile_, int attackRadius_)
+    {
+        //The list of characters that are returned
+        List<Character> targets = new List<Character>();
+
+        //If the attack radius is less than or equal to 0, it only includes the target tile
+        if(attackRadius_ <= 0)
+        {
+            //If the target tile has an object on it with a character component, we return that character
+            if(targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>())
+            {
+                targets.Add(targetTile_.objectOnThisTile.GetComponent<Character>());
+                return targets;
+            }
+        }
+
+        //If the radius is larger than 0, we have to find all tiles within range of the target
+        List<CombatTile> tilesInRange = PathfindingAlgorithms.FindTilesInActionRange(targetTile_, attackRadius_);
+
+        //Looping through each tile in range to find out if they have character objects on them
+        foreach(CombatTile currentTile in tilesInRange)
+        {
+            if(currentTile.objectOnThisTile != null && currentTile.objectOnThisTile.GetComponent<Character>())
+            {
+                targets.Add(currentTile.objectOnThisTile.GetComponent<Character>());
+            }
+        }
+
+        //Returning the list of characters
+        return targets;
+    }
+
+
+    //Function called when an effect is triggered
+    private void TriggerEffect(AttackEffect effectToTrigger_, CombatTile targetTile_, Character actingChar_)
+    {
+        //Finding all targets within this effect's radius
+        List<Character> targets = this.FindCharactersInAttackRange(targetTile_, effectToTrigger_.effectRadius);
+
+        //If the effected race isn't "None", we need to loop through and remove all targets that don't qualify
+        if(effectToTrigger_.effectedRace != RaceTypes.Races.None)
+        {
+            for(int r = 0; r < targets.Count; ++r)
+            {
+                //If the current character's race isn't the effected race and we only hit the effected type
+                if(targets[r].charRaceTypes.race != effectToTrigger_.effectedRace && effectToTrigger_.hitEffectedType)
+                {
+                    //We remove the character from the targets list
+                    targets.RemoveAt(r);
+                    r -= 1;
+                }
+                //If the current character's race IS the effected race, but we hit everything except that type
+                else if(targets[r].charRaceTypes.race == effectToTrigger_.effectedRace && !effectToTrigger_.hitEffectedType)
+                {
+                    //We remove the character from the targets list
+                    targets.RemoveAt(r);
+                    r -= 1;
+                }
+            }
+        }
+
+        //If the effected subtype isn't "None", we need to loop through and remove all targets that don't qualify
+        if (effectToTrigger_.effectedType != RaceTypes.Subtypes.None)
+        {
+            for (int t = 0; t < targets.Count; ++t)
+            {
+                //If the current character's subtype isn't the effected subtype and we only hit the effected type
+                if (!targets[t].charRaceTypes.subtypeList.Contains(effectToTrigger_.effectedType) && effectToTrigger_.hitEffectedType)
+                {
+                    //We remove the character from the targets list
+                    targets.RemoveAt(t);
+                    t -= 1;
+                }
+                //If the current character's subtype IS the effected subtype, but we hit everything except that type
+                else if (targets[t].charRaceTypes.subtypeList.Contains(effectToTrigger_.effectedType) && !effectToTrigger_.hitEffectedType)
+                {
+                    //We remove the character from the targets list
+                    targets.RemoveAt(t);
+                    t -= 1;
+                }
+            }
+        }
+
+        //Bool to check if the acting character is a player character or an enemy
+        bool isActingCharPlayer = true;
+        if(CombatManager.globalReference.enemyCharactersInCombat.Contains(actingChar_))
+        {
+            isActingCharPlayer = false;
+        }
+
+        //Now we loop through and remove all targets that don't qualify based on the type of targets that are hit
+        if(effectToTrigger_.effectedTargets != AttackEffect.EffectedTargets.Everyone)
+        {
+            for(int e = 0; e < targets.Count; ++e)
+            {
+                //If the current target is an enemy character
+                if(CombatManager.globalReference.enemyCharactersInCombat.Contains(targets[e]))
+                {
+                    switch(effectToTrigger_.effectedTargets)
+                    {
+                        case AttackEffect.EffectedTargets.AlliesExceptAttacker:
+                            //if the target is an enemy and the acting character is a player
+                            if(isActingCharPlayer)
+                            {
+                                //This enemy is removed, because they aren't an ally of the player
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            //If the target is an enemy and the acting character is an enemy
+                            else
+                            {
+                                //If this enemy is the acting character, they're removed
+                                if (targets[e] == actingChar_)
+                                {
+                                    targets.RemoveAt(e);
+                                    e -= 1;
+                                }
+                                //If this enemy is NOT the acting character, they're included in the effect
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.AlliesOnly:
+                            //if the target is an enemy and the acting character is a player
+                            if (isActingCharPlayer)
+                            {
+                                //This enemy is removed, because they aren't an ally of the player
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            //If the target is an enemy and the acting character is an enemy
+                            //They are included in the effect because they're allies
+                            break;
+
+                        case AttackEffect.EffectedTargets.Attacker:
+                            //If this enemy character isn't the attacker, they're removed
+                            if(targets[e] != actingChar_)
+                            {
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.Defender:
+                            //If this enemy character isn't the defending character, or if the target tile doesn't have a character on it, they are removed
+                            if(targetTile_.objectOnThisTile == null || 
+                                (targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>() && targetTile_.objectOnThisTile.GetComponent<Character>() != targets[e]))
+                            {
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.EnemiesExceptDefender:
+                            //if the target is an enemy and the acting character is a player
+                            if (isActingCharPlayer)
+                            {
+                                //If this character is the defending character
+                                if(targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>() && targetTile_.objectOnThisTile.GetComponent<Character>() == targets[e])
+                                {
+                                    //The target is removed, because we exclude the defending character
+                                    targets.RemoveAt(e);
+                                    e -= 1;
+                                }
+                                //If this character isn't the defending character, they are included, because they're enemies
+                            }
+                            //If the target is an enemy and the acting character is an enemy
+                            else
+                            {
+                                //This enemy character is removed because they aren't an enemy
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.EnemiesOnly:
+                            //if the target is an enemy and the acting character is a player
+                                //They are included, because they're enemies
+                            //If the target is an enemy and the acting character is an enemy
+                            if(!isActingCharPlayer)
+                            {
+                                //This character is removed, because they're allies
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+                    }
+                }
+                //If the current target is a player character
+                else if(CombatManager.globalReference.playerCharactersInCombat.Contains(targets[e]))
+                {
+                    switch (effectToTrigger_.effectedTargets)
+                    {
+                        case AttackEffect.EffectedTargets.AlliesExceptAttacker:
+                            //if the target is a player and the acting character is a player
+                            if (isActingCharPlayer)
+                            {
+                                //If this player is the acting character, they're removed
+                                if (targets[e] == actingChar_)
+                                {
+                                    targets.RemoveAt(e);
+                                    e -= 1;
+                                }
+                                //If this player is NOT the acting character, they're included in the effect
+                            }
+                            //If the target is a player and the acting character is an enemy
+                            else
+                            {
+                                //This player is removed, because they aren't an ally of the enemy
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.AlliesOnly:
+                            //if the target is a player and the acting character is a player
+                                //They are included in the effect because they're allies
+                            //If the target is a player and the acting character is an enemy
+                            if (!isActingCharPlayer)
+                            {
+                                //This player is removed, because they aren't an ally of the enemy
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.Attacker:
+                            //If this player character isn't the attacker, they're removed
+                            if (targets[e] != actingChar_)
+                            {
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.Defender:
+                            //If this player character isn't the defending character, or if the target tile doesn't have a character on it, they are removed
+                            if (targetTile_.objectOnThisTile == null ||
+                                (targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>() && targetTile_.objectOnThisTile.GetComponent<Character>() != targets[e]))
+                            {
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.EnemiesExceptDefender:
+                            //if the target is a player and the acting character is a player
+                            if (isActingCharPlayer)
+                            {
+                                //This player character is removed because they aren't an enemy
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            //If the target is a player and the acting character is an enemy
+                            else
+                            {
+                                //If this character is the defending character
+                                if (targetTile_.objectOnThisTile != null && targetTile_.objectOnThisTile.GetComponent<Character>() && targetTile_.objectOnThisTile.GetComponent<Character>() == targets[e])
+                                {
+                                    //The target is removed, because we exclude the defending character
+                                    targets.RemoveAt(e);
+                                    e -= 1;
+                                }
+                                //If this character isn't the defending character, they are included, because they're enemies
+                            }
+                            break;
+
+                        case AttackEffect.EffectedTargets.EnemiesOnly:
+                            //if the target is a player and the acting character is a player
+                            if (isActingCharPlayer)
+                            {
+                                //This character is removed, because they're allies
+                                targets.RemoveAt(e);
+                                e -= 1;
+                            }
+                            //If the target is a player and the acting character is an enemy
+                                //They are included, because they're enemies
+                            break;
+                    }
+                }
+            }
+        }
+
+        //Looping through all of the filtered targets in the list
+        foreach (Character targetChar in targets)
+        {
+            //Rolling to see if the effect hits the target or not
             float effectRoll = Random.Range(0, 1);
+
             //If the roll is less than the effect chance, it was sucessful
-            if(effectRoll < effect.effectChance)
+            if (effectRoll < effectToTrigger_.effectChance)
             {
                 //Creating an instance of the effect object prefab and triggering it's effect
-                GameObject effectObj = Instantiate(effect.effectOnHit.gameObject, new Vector3(), new Quaternion());
-                effectObj.GetComponent<Effect>().TriggerEffect(actingChar, defendingChar);
+                GameObject effectObj = Instantiate(effectToTrigger_.effectToApply.gameObject, new Vector3(), new Quaternion());
+                effectObj.GetComponent<Effect>().TriggerEffect(actingChar_, targetChar);
             }
         }
     }
@@ -316,8 +620,11 @@ public class AttackDamage
 [System.Serializable]
 public class AttackEffect
 {
-    //The effect applied when this attack hits
-    public Effect effectOnHit;
+    //The effect applied when this is triggered
+    public Effect effectToApply;
+
+    //If true, this effect only happens if the attack lands. If false, it will happen even if the initial attack misses
+    public bool requireHit = true;
 
     //The percent chance that the effect on hit will proc
     [Range(0, 1)]
@@ -327,14 +634,24 @@ public class AttackEffect
     [Range(0, 10)]
     public int effectRadius = 0;
 
+    //Determines if this damages specific enemy types
+    public RaceTypes.Races effectedRace = RaceTypes.Races.None;
+    public RaceTypes.Subtypes effectedType = RaceTypes.Subtypes.None;
+    //Determines if the effected type is the only type hit or if it's the only type ignored
+    public bool hitEffectedType = true;
+
     //Enum that determines who is effected
     public enum EffectedTargets
     {
         Attacker,//The person making the attack
         Defender,//The person being hit by the attack
         EnemiesOnly,//Hits all enemies in the radius and ignores allies
+        EnemiesExceptDefender,//Hits all enemies, but doesn't include the defender
         AlliesOnly,//Hits all allies in the radius and ignores enemies
+        AlliesExceptAttacker,//Hits all allies, but doesn't include the attacker
         Everyone//Hits every ally and enemy in the radius
-        .
     };
+
+    //The type of targets that are effected
+    public EffectedTargets effectedTargets = EffectedTargets.Everyone;
 }

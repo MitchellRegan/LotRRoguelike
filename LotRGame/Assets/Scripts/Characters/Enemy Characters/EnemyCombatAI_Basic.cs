@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Character))]
-[RequireComponent(typeof(EnemyTag))]
 public class EnemyCombatAI_Basic : MonoBehaviour
 {
     //Reference to this enemy's Character component

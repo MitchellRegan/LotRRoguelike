@@ -57,7 +57,7 @@ public class CharacterStateUI : MonoBehaviour
         //Setting the sex field to display their sex
         this.sexText.text = "Sex: " + this.selectedCharacter.sex;
         //Setting the race field to display their race
-        this.raceText.text = "Race: " + this.selectedCharacter.race;
+        this.raceText.text = "Race: " + this.selectedCharacter.charRaceTypes.race;
         //Setting the metric text to display their height and width in cm and kg
         this.metricText.text = this.selectedCharacter.height + " cm Tall, " + this.selectedCharacter.weight + " kg.";
 
