@@ -66,6 +66,9 @@ public class CombatManager : MonoBehaviour
     //The list of all CombatCharacterSprites for each character and enemy
     public List<CombatCharacterSprite> characterSpriteList;
 
+    //The object that hilights the acting character
+    public Image highlightRing;
+
 
 
 	// Function called when this object is created
@@ -107,8 +110,14 @@ public class CombatManager : MonoBehaviour
     //Function called every frame
     private void Update()
     {
+        //If the acting character list isn't empty, we highlight the acting character's position
+        if (this.actingCharacters.Count > 0)
+        {
+            this.highlightRing.transform.position = this.FindCharactersTile(this.actingCharacters[0]).transform.position;
+        }
+
         //Determine what we do based on the current state
-        switch(this.currentState)
+        switch (this.currentState)
         {
             //Nothing, waiting for player feedback
             case combatState.PlayerInput:
@@ -126,6 +135,7 @@ public class CombatManager : MonoBehaviour
 
             //Adding each character's attack speed to their current initative 
             case combatState.IncreaseInitiative:
+                //Making sure the highlight ring is invisible
                 this.IncreaseInitiative();
                 break;
 
@@ -137,12 +147,18 @@ public class CombatManager : MonoBehaviour
                     e.EffectOnStartOfTurn();
                 }
 
+                //Moving the highlight ring to the tile position of the acting character and making it visible
+                this.highlightRing.transform.position = this.FindCharactersTile(this.actingCharacters[0]).transform.position;
+                this.highlightRing.enabled = true;
+
                 //If the selected character is a player
                 if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
                 {
                     //Hilighting the slider of the player character whose turn it is
                     int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
+                    //Setting the highlight ring's color to the player color
+                    this.highlightRing.color = this.actingCharacterColor;
                     //Displaying the action panel so players can decide what to do
                     this.showPlayerActions.Invoke();
                     //Default to showing the acting character's standard actions
@@ -155,6 +171,8 @@ public class CombatManager : MonoBehaviour
                 {
                     int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
+                    //Setting the highlight ring's color to the enemy color
+                    this.highlightRing.color = this.actingEnemyColor;
                     Debug.Log("Combat Manager.Update. Enemies need AI here");
                     //Resetting this enemy's initiative for now. Can't do much until I get AI in
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
@@ -292,6 +310,9 @@ public class CombatManager : MonoBehaviour
 
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
+
+        //Hiding the highlight ring
+        this.highlightRing.enabled = false;
 
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, combatState.IncreaseInitiative);
@@ -993,6 +1014,9 @@ public class CombatManager : MonoBehaviour
         {
             e.EffectOnEndOfTurn();
         }
+
+        //Making the highlight ring invisible again
+        this.highlightRing.enabled = false;
 
         //Resets the acting character's initiative and removes them from the list of acting characters
         if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
