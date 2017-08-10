@@ -147,9 +147,8 @@ public class CombatManager : MonoBehaviour
                     e.EffectOnStartOfTurn();
                 }
 
-                //Moving the highlight ring to the tile position of the acting character and making it visible
-                this.highlightRing.transform.position = this.FindCharactersTile(this.actingCharacters[0]).transform.position;
-                this.highlightRing.enabled = true;
+                //Refreshing the action list for the acting character
+                this.actingCharacters[0].charActionList.RefreshActionLists();
 
                 //If the selected character is a player
                 if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
@@ -157,8 +156,11 @@ public class CombatManager : MonoBehaviour
                     //Hilighting the slider of the player character whose turn it is
                     int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
-                    //Setting the highlight ring's color to the player color
+
+                    //Setting the highlight ring's color to the player color and making it visible
                     this.highlightRing.color = this.actingCharacterColor;
+                    this.highlightRing.enabled = true;
+
                     //Displaying the action panel so players can decide what to do
                     this.showPlayerActions.Invoke();
                     //Default to showing the acting character's standard actions
@@ -171,8 +173,11 @@ public class CombatManager : MonoBehaviour
                 {
                     int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
-                    //Setting the highlight ring's color to the enemy color
+
+                    //Setting the highlight ring's color to the enemy color and making it visible
                     this.highlightRing.color = this.actingEnemyColor;
+                    this.highlightRing.enabled = true;
+
                     Debug.Log("Combat Manager.Update. Enemies need AI here");
                     //Resetting this enemy's initiative for now. Can't do much until I get AI in
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
