@@ -123,7 +123,8 @@ public class CreateTileGrid : MonoBehaviour
                 break;
 
             case GameData.gameDifficulty.Normal:
-                this.CreateMapNormal();
+                //this.CreateMapNormal();
+                this.ImprovedMapGeneration();
                 break;
 
             case GameData.gameDifficulty.Hard:
@@ -156,23 +157,305 @@ public class CreateTileGrid : MonoBehaviour
         this.GenerateSpokeRegion(showoffRow, showoffCol, new Vector2(4, 6), new Vector2(2, 4), this.volcanoRegions[0]);//volcano
 
 
-        //Instantiating the player group at the starting tile's location
-        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, this.tileGrid[startCol][startRow].tilePosition, new Quaternion());
-        playerParty1.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startCol][startRow]);
+        this.SetPlayerPartyPosition(this.tileGrid[startCol][startRow]);
+    }
 
-        //Instantiating the test character at the starting tile's location
-        GameObject startChar = GameObject.Instantiate(this.testCharacter, this.tileGrid[startCol][startRow].tilePosition, new Quaternion());
-        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, this.tileGrid[startCol][startRow].tilePosition, new Quaternion());
 
-        //Adding the starting characters to the party group
-        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar.GetComponent<Character>());
-        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
+    //Enum for the direction from the center that the zones are created from
+    private enum MapDirections { North, South, East, West };
+    //Function that creates a map for normal games
+    private void ImprovedMapGeneration()
+    {
+        //Finding out which edge of the map the player starting zone is created
+        MapDirections startZoneDirection = MapDirections.North;
+        int startEdge = Random.Range(1, 4);
+        switch(startEdge)
+        {
+            case 1:
+                startZoneDirection = MapDirections.North;
+                break;
+            case 2:
+                startZoneDirection = MapDirections.South;
+                break;
+            case 3:
+                startZoneDirection = MapDirections.West;
+                break;
+            case 4:
+                startZoneDirection = MapDirections.East;
+                break;
+        }
+        //Finding which fifth of the map the start zone will be along
+        int startZoneSection = Random.Range(0, 4);
+        
+        //Setting the end zone along the opposite edge of the map that the start zone is
+        MapDirections endZoneDirection = MapDirections.South;
+        switch(startZoneDirection)
+        {
+            case MapDirections.North:
+                endZoneDirection = MapDirections.South;
+                break;
+            case MapDirections.South:
+                endZoneDirection = MapDirections.North;
+                break;
+            case MapDirections.West:
+                endZoneDirection = MapDirections.East;
+                break;
+            case MapDirections.East:
+                endZoneDirection = MapDirections.West;
+                break;
+        }
+        //Finding which fifth of the map the end zone will be along. It's within a fifth of the start zone section
+        int endZoneSection = 0;
+        if(startZoneSection == 0)
+        {
+            endZoneSection = Random.Range(0, 1);
+        }
+        else if(startZoneSection == 4)
+        {
+            endZoneSection = Random.Range(0, 1);
+        }
+        else
+        {
+            endZoneSection = startZoneSection + Random.Range(-1, 1);
+        }
 
-        //Setting the character manager to be selecting the player party 1
-        CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
+        //Finding the Starting tile based on the starting edge and fifth of the map
+        TileInfo startTile = null;
+        Vector2 startRowRanges = new Vector2();
+        Vector2 startColRanges = new Vector2();
+        int startRow = 0;
+        int startCol = 0;
+        switch (startZoneDirection)
+        {
+            //Along the top of the map
+            case MapDirections.North:
+                //Finding the rows that it can be between
+                startRowRanges.x = 0;
+                startRowRanges.y = this.tileGrid[0].Count / 5;
+                //Finding the columns that it can be between
+                startColRanges.x = (this.tileGrid.Count / 5) * startZoneSection;
+                startColRanges.y = (this.tileGrid.Count / 5) * (startZoneSection + 1);
 
-        GameObject enemy = GameObject.Instantiate(this.testEnemyEncounter, this.tileGrid[startCol][startRow + 1].tilePosition, new Quaternion());
-        enemy.GetComponent<Movement>().SetCurrentTile(this.tileGrid[startCol][startRow + 1]);
+                //Finding a random row and column based on the ranges
+                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
+                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
+
+                //Setting the start tile using the row and column
+                startTile = this.tileGrid[startCol][startRow];
+                break;
+
+            //Along the bottom of the map
+            case MapDirections.South:
+                //Finding the rows that it can be between
+                startRowRanges.x = (this.tileGrid[0].Count / 5) * 4;
+                startRowRanges.y = this.tileGrid[0].Count;
+                //Finding the columns that it can be between
+                startColRanges.x = (this.tileGrid.Count / 5) * startZoneSection;
+                startColRanges.y = (this.tileGrid.Count / 5) * (startZoneSection + 1);
+
+                //Finding a random row and column based on the ranges
+                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
+                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
+
+                //Setting the start tile using the row and column
+                startTile = this.tileGrid[startCol][startRow];
+                break;
+
+            //Along the left side of the map
+            case MapDirections.West:
+                //Finding the rows that it can be between
+                startRowRanges.x = (this.tileGrid[0].Count / 5) * startZoneSection;
+                startRowRanges.y = (this.tileGrid[0].Count / 5) * (startZoneSection + 1);
+                //Finding the columns that it can be between
+                startColRanges.x = 0;
+                startColRanges.y = this.tileGrid.Count / 5;
+
+                //Finding a random row and column based on the ranges
+                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
+                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
+
+                //Setting the start tile using the row and column
+                startTile = this.tileGrid[startCol][startRow];
+                break;
+
+            //Along the right side of the map
+            case MapDirections.East:
+                //Finding the rows that it can be between
+                startRowRanges.x = (this.tileGrid[0].Count / 5) * startZoneSection;
+                startRowRanges.y = (this.tileGrid[0].Count / 5) * (startZoneSection + 1);
+                //Finding the columns that it can be between
+                startColRanges.x = (this.tileGrid.Count / 5) * 4;
+                startColRanges.y = this.tileGrid.Count;
+
+                //Finding a random row and column based on the ranges
+                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
+                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
+
+                //Setting the start tile using the row and column
+                startTile = this.tileGrid[startCol][startRow];
+                break;
+        }
+        
+        //Finding the Starting tile based on the starting edge and fifth of the map
+        TileInfo endTile = null;
+        Vector2 endRowRanges = new Vector2();
+        Vector2 endColRanges = new Vector2();
+        int endRow = 0;
+        int endCol = 0;
+        switch (endZoneDirection)
+        {
+            //Along the top of the map
+            case MapDirections.North:
+                //Finding the rows that it can be between
+                endRowRanges.x = 0;
+                endRowRanges.y = this.tileGrid[0].Count / 5;
+                //Finding the columns that it can be between
+                endColRanges.x = (this.tileGrid.Count / 5) * endZoneSection;
+                endColRanges.y = (this.tileGrid.Count / 5) * (endZoneSection + 1);
+
+                //Finding a random row and column based on the ranges
+                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
+                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
+
+                //Setting the start tile using the row and column
+                endTile = this.tileGrid[endCol][endRow];
+                break;
+
+            //Along the bottom of the map
+            case MapDirections.South:
+                //Finding the rows that it can be between
+                endRowRanges.x = (this.tileGrid[0].Count / 5) * 4;
+                endRowRanges.y = this.tileGrid[0].Count;
+                //Finding the columns that it can be between
+                endColRanges.x = (this.tileGrid.Count / 5) * endZoneSection;
+                endColRanges.y = (this.tileGrid.Count / 5) * (endZoneSection + 1);
+
+                //Finding a random row and column based on the ranges
+                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
+                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
+
+                //Setting the start tile using the row and column
+                endTile = this.tileGrid[endCol][endRow];
+                break;
+
+            //Along the left side of the map
+            case MapDirections.West:
+                //Finding the rows that it can be between
+                endRowRanges.x = (this.tileGrid[0].Count / 5) * endZoneSection;
+                endRowRanges.y = (this.tileGrid[0].Count / 5) * (endZoneSection + 1);
+                //Finding the columns that it can be between
+                endColRanges.x = 0;
+                endColRanges.y = this.tileGrid.Count / 5;
+
+                //Finding a random row and column based on the ranges
+                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
+                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
+
+                //Setting the start tile using the row and column
+                endTile = this.tileGrid[endCol][endRow];
+                break;
+
+            //Along the right side of the map
+            case MapDirections.East:
+                //Finding the rows that it can be between
+                endRowRanges.x = (this.tileGrid[0].Count / 5) * endZoneSection;
+                endRowRanges.y = (this.tileGrid[0].Count / 5) * (endZoneSection + 1);
+                //Finding the columns that it can be between
+                endColRanges.x = (this.tileGrid.Count / 5) * 4;
+                endColRanges.y = this.tileGrid.Count;
+
+                //Finding a random row and column based on the ranges
+                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
+                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
+
+                //Setting the start tile using the row and column
+                endTile = this.tileGrid[endCol][endRow];
+                break;
+        }
+
+        //Creating list for all of the tile difficulty bands
+        List<TileInfo> veryEasyBand = new List<TileInfo>();
+        List<TileInfo> easyBand = new List<TileInfo>();
+        List<TileInfo> mediumBand = new List<TileInfo>();
+        List<TileInfo> hardBand = new List<TileInfo>();
+        List<TileInfo> veryHardBand = new List<TileInfo>();
+        List<TileInfo> finalBand = new List<TileInfo>();
+
+        //Finding the distance from the end zone to the start zone
+        float totalDistStartToEnd = Vector3.Distance(startTile.tilePosition, endTile.tilePosition);
+
+        //Creating a radius for each band outward from the end zone
+        float veryEasyRadius = totalDistStartToEnd;
+        float easyRadius = (totalDistStartToEnd / 5) * 4;
+        float mediumRadius = (totalDistStartToEnd / 5) * 3;
+        float hardRadius = (totalDistStartToEnd / 5) * 3;
+        float veryHardRadius = (totalDistStartToEnd / 5) * 2;
+        float finalRadius = totalDistStartToEnd / 5;
+
+        //Looping through every tile in the grid to find out what difficulty band they belong in
+        for(int c = 0; c < this.tileGrid.Count; ++c)
+        {
+            for(int r = 0; r < this.tileGrid[0].Count; ++r)
+            {
+                //Finding the distance the current tile is from the end zone
+                float currentTileDist = Vector3.Distance(this.tileGrid[c][r].tilePosition, endTile.tilePosition);
+
+                //Determining which radius the tile is within and adding it to that list of tiles
+                if(currentTileDist < finalRadius)
+                {
+                    finalBand.Add(this.tileGrid[c][r]);
+                }
+                else if(currentTileDist < veryHardRadius)
+                {
+                    veryHardBand.Add(this.tileGrid[c][r]);
+                }
+                else if(currentTileDist < hardRadius)
+                {
+                    hardBand.Add(this.tileGrid[c][r]);
+                }
+                else if(currentTileDist < mediumRadius)
+                {
+                    mediumBand.Add(this.tileGrid[c][r]);
+                }
+                else if(currentTileDist < easyRadius)
+                {
+                    easyBand.Add(this.tileGrid[c][r]);
+                }
+                else
+                {
+                    veryEasyBand.Add(this.tileGrid[c][r]);
+                }
+            }
+        }
+
+        //For testing purposes, we're going to set each band as the same region type
+        foreach(TileInfo veryEasyTile in veryEasyBand)
+        {
+            veryEasyTile.SetTileBasedOnRegion(this.grasslandRegions[0]);
+        }
+        foreach(TileInfo easyTile in easyBand)
+        {
+            easyTile.SetTileBasedOnRegion(this.forrestRegions[0]);
+        }
+        foreach(TileInfo mediumTile in mediumBand)
+        {
+            mediumTile.SetTileBasedOnRegion(this.swampRegions[0]);
+        }
+        foreach(TileInfo hardTile in hardBand)
+        {
+            hardTile.SetTileBasedOnRegion(this.desertRegions[0]);
+        }
+        foreach(TileInfo veryHardTile in veryHardBand)
+        {
+            veryHardTile.SetTileBasedOnRegion(this.mountainRegions[0]);
+        }
+        foreach(TileInfo finalTile in finalBand)
+        {
+            finalTile.SetTileBasedOnRegion(this.volcanoRegions[0]);
+        }
+
+        //Once the map is created, we set the player on the starting tile
+        this.SetPlayerPartyPosition(startTile);
     }
 
 
@@ -315,6 +598,31 @@ public class CreateTileGrid : MonoBehaviour
             //Changes the offset after every loop
             offsetCol = !offsetCol;
         }
+    }
+
+
+    //Function called from ImprovedMapGeneration and CreateMapNormal to put the test player party on the start tile
+    private void SetPlayerPartyPosition(TileInfo startTile_)
+    {
+        //Instantiating the player group at the starting tile's location
+        GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
+        playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
+
+        //Instantiating the test characters at the starting tile's location
+        GameObject startChar1 = GameObject.Instantiate(this.testCharacter, startTile_.tilePosition, new Quaternion());
+        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, startTile_.tilePosition, new Quaternion());
+
+        //Adding the starting characters to the party group
+        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar1.GetComponent<Character>());
+        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
+
+        //Setting the character manager to be selecting the player party 1
+        CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
+
+        //Creating the test enemy and adding them to a tile next to the start tile
+        int connectedTileIndex = Mathf.RoundToInt(Random.Range(0, startTile_.connectedTiles.Count - 1));
+        GameObject testEnemy = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex].tilePosition, new Quaternion());
+        testEnemy.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex]);
     }
 
 
@@ -526,7 +834,7 @@ public class CreateTileGrid : MonoBehaviour
     //Function called externally and from StartMapCreation. Only spawns the nearest tiles around the player party
     public void GenerateVisibleLand(Movement visiblePlayerParty_)
     {
-        //THe list of each group of tiles in every range incriment. The index is the range
+        //The list of each group of tiles in every range incriment. The index is the range
         List<List<TileInfo>> tilesInEachIncriment = new List<List<TileInfo>>();
         //Creating the first range incriment which always includes only the player party's tile
         List<TileInfo> range0 = new List<TileInfo>() { visiblePlayerParty_.currentTile };
@@ -560,11 +868,10 @@ public class CreateTileGrid : MonoBehaviour
 
         //Clearing the current list of visible tile objects and destroying them
         for (int o = 0; o < this.visibleTileObjects.Count; ++o)
-        {
+        {.
             Destroy(this.visibleTileObjects[o]);
             this.visibleTileObjects[o] = null;
         }
-        this.visibleTileObjects.Clear();
         
         //Grouping all of the tiles into the list that are visible
         foreach (List<TileInfo> rangeList in tilesInEachIncriment)
