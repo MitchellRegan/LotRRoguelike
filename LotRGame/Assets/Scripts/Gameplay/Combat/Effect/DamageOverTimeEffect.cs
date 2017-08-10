@@ -113,25 +113,25 @@ public class DamageOverTimeEffect : Effect
                 damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
                 break;
             case CombatManager.DamageType.Fire:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+                damageDealt -= this.characterToEffect.charInventory.totalFireResist;
                 break;
             case CombatManager.DamageType.Water:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+                damageDealt -= this.characterToEffect.charInventory.totalWaterResist;
                 break;
             case CombatManager.DamageType.Electric:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+                damageDealt -= this.characterToEffect.charInventory.totalElectricResist;
                 break;
             case CombatManager.DamageType.Wind:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+                damageDealt -= this.characterToEffect.charInventory.totalWindResist;
                 break;
             case CombatManager.DamageType.Rock:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+                damageDealt -= this.characterToEffect.charInventory.totalRockResist;
                 break;
-            case CombatManager.DamageType.Light:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+            case CombatManager.DamageType.Holy:
+                damageDealt -= this.characterToEffect.charInventory.totalHolyResist;
                 break;
             case CombatManager.DamageType.Dark:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+                damageDealt -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
         }
 

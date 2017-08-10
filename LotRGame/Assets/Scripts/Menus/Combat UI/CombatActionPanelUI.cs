@@ -333,8 +333,8 @@ public class CombatActionPanelUI : MonoBehaviour
                         case AttackDamage.DamageType.Rock:
                             this.selectedPanelDetails.damageText.text += " Rock";
                             break;
-                        case AttackDamage.DamageType.Light:
-                            this.selectedPanelDetails.damageText.text += " Light";
+                        case AttackDamage.DamageType.Holy:
+                            this.selectedPanelDetails.damageText.text += " Holy";
                             break;
                         case AttackDamage.DamageType.Dark:
                             this.selectedPanelDetails.damageText.text += " Dark";

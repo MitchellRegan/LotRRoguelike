@@ -57,7 +57,11 @@ public class AttackAction : Action
         //If there isn't a character on the tile, nothing happens because it misses anything it could hit
         else
         {
-            CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+            //If there are no attack damage rolls (like if the attack was just to inflict an effect) the "Miss" text isn't shown
+            if (this.damageDealt.Count > 0)
+            {
+                CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+            }
 
             //Looping through each effect that this attack can apply to see if any don't require the attack to land
             foreach(AttackEffect efc in this.effectsOnHit)
@@ -129,8 +133,23 @@ public class AttackAction : Action
         //If the hit roll is still above 66%, they hit. If not, the attack misses
         if(hitRoll <= 66)
         {
-            //Miss
-            CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+            //If there are no attack damage rolls (like if the attack was just to inflict an effect) the "Miss" text isn't shown
+            if (this.damageDealt.Count > 0)
+            {
+                //Miss
+                CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+            }
+
+            //Looping through each effect that this attack can apply to see if any don't require the attack to land
+            foreach (AttackEffect efc in this.effectsOnHit)
+            {
+                //If the effect doesn't require the attack to land, it's triggered
+                if (!efc.requireHit)
+                {
+                    this.TriggerEffect(efc, targetTile_, actingChar);
+                }
+            }
+
             return;
         }
 
@@ -153,7 +172,7 @@ public class AttackAction : Action
         int electricDamage = 0;
         int windDamage = 0;
         int rockDamage = 0;
-        int lightDamage = 0;
+        int holyDamage = 0;
         int darkDamage = 0;
 
         //Looping through each damage type for this attack
@@ -181,8 +200,8 @@ public class AttackAction : Action
                 case AttackDamage.DamageType.Magic:
                     magicDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Light:
-                    lightDamage += atkDamage * critMultiplier;
+                case AttackDamage.DamageType.Holy:
+                    holyDamage += atkDamage * critMultiplier;
                     break;
                 case AttackDamage.DamageType.Dark:
                     darkDamage += atkDamage * critMultiplier;
@@ -230,9 +249,9 @@ public class AttackAction : Action
         {
             rockDamage -= defendingChar.charInventory.totalRockResist;
         }
-        if (lightDamage > 0)
+        if (holyDamage > 0)
         {
-            lightDamage -= defendingChar.charInventory.totalHolyResist;
+            holyDamage -= defendingChar.charInventory.totalHolyResist;
         }
         if (darkDamage > 0)
         {
@@ -261,8 +280,8 @@ public class AttackAction : Action
         defendingChar.charPhysState.DamageCharacter(rockDamage);
         CombatManager.globalReference.DisplayDamageDealt(rockDamage, CombatManager.DamageType.Rock, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(lightDamage);
-        CombatManager.globalReference.DisplayDamageDealt(lightDamage, CombatManager.DamageType.Light, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(holyDamage);
+        CombatManager.globalReference.DisplayDamageDealt(holyDamage, CombatManager.DamageType.Holy, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(darkDamage);
         CombatManager.globalReference.DisplayDamageDealt(darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
@@ -272,7 +291,7 @@ public class AttackAction : Action
         int totalDamage = 0;
         totalDamage += physDamage + magicDamage;//Adding physical and magical damage
         totalDamage += fireDamage + waterDamage + windDamage + electricDamage + rockDamage;//Adding elemental damage
-        totalDamage += lightDamage + darkDamage;//Adding light/dark damage
+        totalDamage += holyDamage + darkDamage;//Adding light/dark damage
 
         //If the attack crit, ALL enemies have their threat increased for 25% of the damage
         if(isCrit)
@@ -604,7 +623,7 @@ public class AttackAction : Action
 public class AttackDamage
 {
     //The type of damage that's inflicted
-    public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Light, Dark };
+    public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Holy, Dark };
     public DamageType type = DamageType.Physical;
 
     //The amount of damage inflicted before dice rolls

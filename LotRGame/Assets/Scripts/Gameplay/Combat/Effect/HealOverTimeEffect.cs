@@ -113,25 +113,25 @@ public class HealOverTimeEffect : Effect
                 damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
                 break;
             case CombatManager.DamageType.Fire:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+                damagehealed -= this.characterToEffect.charInventory.totalFireResist;
                 break;
             case CombatManager.DamageType.Water:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+                damagehealed -= this.characterToEffect.charInventory.totalWaterResist;
                 break;
             case CombatManager.DamageType.Electric:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+                damagehealed -= this.characterToEffect.charInventory.totalElectricResist;
                 break;
             case CombatManager.DamageType.Wind:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+                damagehealed -= this.characterToEffect.charInventory.totalWindResist;
                 break;
             case CombatManager.DamageType.Rock:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+                damagehealed -= this.characterToEffect.charInventory.totalRockResist;
                 break;
-            case CombatManager.DamageType.Light:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+            case CombatManager.DamageType.Holy:
+                damagehealed -= this.characterToEffect.charInventory.totalHolyResist;
                 break;
             case CombatManager.DamageType.Dark:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+                damagehealed -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
         }
 

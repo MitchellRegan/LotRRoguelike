@@ -81,7 +81,7 @@ public class DamageText : MonoBehaviour
             case CombatManager.DamageType.Rock:
                 this.background.color = this.rockDamageColor;
                 break;
-            case CombatManager.DamageType.Light:
+            case CombatManager.DamageType.Holy:
                 this.background.color = this.lightDamageColor;
                 break;
             case CombatManager.DamageType.Dark:

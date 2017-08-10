@@ -752,7 +752,7 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from AttackAction.PerformAction to show damage dealt to a character at the given tile
-    public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Light, Dark };
+    public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Holy, Dark };
     public void DisplayDamageDealt(int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
     {
         //If the damage dealt was 0, nothing happens
