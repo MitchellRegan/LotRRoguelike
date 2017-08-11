@@ -868,7 +868,7 @@ public class CreateTileGrid : MonoBehaviour
 
         //Clearing the current list of visible tile objects and destroying them
         for (int o = 0; o < this.visibleTileObjects.Count; ++o)
-        {.
+        {
             Destroy(this.visibleTileObjects[o]);
             this.visibleTileObjects[o] = null;
         }

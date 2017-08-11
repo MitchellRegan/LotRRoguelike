@@ -28,8 +28,33 @@ public class ActionList : MonoBehaviour
 
     //Dictionary for all spells that are recharging and how many hours are remaining for until they're ready
     [HideInInspector]
-    public Dictionary<SpellAction, int> rechargingSpells;
+    public List<SpellRecharge> rechargingSpells;
 
+    //Delegate void that's tied to the time advance event so we can recharge spells
+    private DelegateEvent<EVTData> rechargeSpellsEVT;
+
+
+
+    //Function called when this object is created
+    private void Awake()
+    {
+        //Initializes the Delegate Event for the Event manager
+        this.rechargeSpellsEVT = new DelegateEvent<EVTData>(this.RechargeSpells);
+    }
+
+
+    //Function called when this component is enabled to tell the event manager to listen for this delegate event's trigger
+    private void OnEnable()
+    {
+        EventManager.StartListening("Advance Time", this.rechargeSpellsEVT);
+    }
+
+
+    //Function called when this component is disabled to tell the event manager to stop listenening for this delegate event's trigger
+    private void OnDisable()
+    {
+        EventManager.StopListening("Advance Time", this.rechargeSpellsEVT);
+    }
 
 
     //Function called on the first frame this character exists
@@ -42,7 +67,7 @@ public class ActionList : MonoBehaviour
         this.fullRoundActions = new List<Action>();
         this.allSpellActions = new List<SpellAction>();
 
-        this.rechargingSpells = new Dictionary<SpellAction, int>();
+        this.rechargingSpells = new List<SpellRecharge>();
 
         //Finding all available actions
         this.RefreshActionLists();
@@ -374,10 +399,10 @@ public class ActionList : MonoBehaviour
         //Int to track how many charges of this spell are currently recharging
         int spellsRecharging = 0;
         //Looping through all of the recharging spells to see if any match the one we're sorting
-        foreach (SpellAction spell in this.rechargingSpells.Keys)
+        foreach (SpellRecharge spell in this.rechargingSpells)
         {
             //If this current spell is the same as the one we're sorting, we add it to the total
-            if (spell.actionName == spellToCheck_.actionName)
+            if (spell.spellThatsCharging.actionName == spellToCheck_.actionName)
             {
                 spellsRecharging += 1;
             }
@@ -399,8 +424,49 @@ public class ActionList : MonoBehaviour
     //Function called from SpellAction.cs when a spell is used
     public void StartSpellRecharge(SpellAction spellUsed_)
     {
-        this.rechargingSpells.Add(spellUsed_, spellUsed_.hoursUntilRecharged);
+        this.rechargingSpells.Add(new SpellRecharge(spellUsed_, spellUsed_.hoursUntilRecharged));
+    }
+
+
+    //Function called from the time advance delegate
+    private void RechargeSpells(EVTData data_)
+    {
+        //Creating a list of spells that need to be removed when their recharge time is over
+        List<SpellRecharge> spellsToRemove = new List<SpellRecharge>();
+
+        //Looping through all spells that are recharging
+        foreach(SpellRecharge spell in this.rechargingSpells)
+        {
+            //Subtracting the amount of time that's passed from the spell's remaining recharge time
+            spell.hoursRemaining -= TimePanelUI.globalReference.hoursAdvancedPerUpdate;
+
+            //If the spell is finished recharging, it's added to the list to remove
+            if(spell.hoursRemaining <= 0)
+            {
+                spellsToRemove.Add(spell);
+            }
+        }
+
+        //Now we loop through all of the spells we need to remove and taking them out of the recharging spell list
+        foreach(SpellRecharge finishedSpell in spellsToRemove)
+        {
+            this.rechargingSpells.Remove(finishedSpell);
+        }
     }
 }
 
+//Class used in ActionList.cs to handle recharging spells
+public class SpellRecharge
+{
+    //The reference to the spell that's recharging
+    public SpellAction spellThatsCharging;
+    //The amount of time remaining for this spell to finish recharging
+    public int hoursRemaining = 0;
 
+    //Constructor for this class
+    public SpellRecharge(SpellAction spell_, int hours_)
+    {
+        this.spellThatsCharging = spell_;
+        this.hoursRemaining = hours_;
+    }
+}
