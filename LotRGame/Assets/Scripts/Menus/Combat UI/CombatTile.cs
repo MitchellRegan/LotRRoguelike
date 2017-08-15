@@ -74,6 +74,9 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         this.HighlightTile(true);
 
         mouseOverTile = this;
+
+        //Highlighting any effect radius if there's a selected attack ability
+        this.HighlightEffectRadius(true);
     }
 
 
@@ -93,6 +96,9 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             //Stops hilighting this tile's image
             this.HighlightTile(false);
+
+            //Stops highlighting any effect radius if there's a selected attack ability
+            this.HighlightEffectRadius(false);
         }
 
         mouseOverTile = null;
@@ -115,7 +121,6 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void ResetTile()
     {
         this.objectOnThisTile = null;
-        //this.GetComponent<Image>().color = this.inactiveColor;
         this.SetTileColor(this.inactiveColor);
         this.HighlightTile(false);
     }
@@ -134,19 +139,16 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         else if(type_ == ObjectType.Player)
         {
             this.objectOnThisTile = objOnTile_;
-            //this.GetComponent<Image>().color = this.playerOccupiedColor;
             this.SetTileColor(this.playerOccupiedColor);
         }
         else if(type_ == ObjectType.Enemy)
         {
             this.objectOnThisTile = objOnTile_;
-            //this.GetComponent<Image>().color = this.enemyOccupiedColor;
             this.SetTileColor(this.enemyOccupiedColor);
         }
         else if(type_ == ObjectType.Object)
         {
             this.objectOnThisTile = objOnTile_;
-            //this.GetComponent<Image>().color = this.inactiveColor;
             this.SetTileColor(this.inactiveColor);
         }
         
@@ -188,5 +190,52 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void SetTileColor(Color newTileColor_)
     {
         this.GetComponent<Image>().color = new Color(newTileColor_.r, newTileColor_.g, newTileColor_.b, this.GetComponent<Image>().color.a);
+    }
+
+
+    //Function called internally to highlight or stop highlighting tiles inside an area of effect spell
+    private void HighlightEffectRadius(bool highlightOn_)
+    {
+        //Only works if this tile is in the action range
+        if(!this.inActionRange)
+        {
+            return;
+        }
+
+        //If the selected action has a combat effect with a radius greater than 0, we need to highlight those tiles
+        if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<AttackAction>())
+        {
+            //Getting the reference to the attack action
+            AttackAction selectedAttack = CombatActionPanelUI.globalReference.selectedAction.GetComponent<AttackAction>();
+
+            int highestRadius = 0;
+            //Looping through all effects
+            foreach (AttackEffect efc in selectedAttack.effectsOnHit)
+            {
+                if (efc.effectRadius > highestRadius)
+                {
+                    highestRadius = efc.effectRadius;
+                }
+            }
+
+            //If the radius is greater than 0, we need to highlight all tiles in the effect zone
+            if (highestRadius > 0)
+            {
+                List<CombatTile> tilesInEffect = PathfindingAlgorithms.FindTilesInActionRange(this, highestRadius);
+                foreach (CombatTile tile in tilesInEffect)
+                {
+                    //If we turn on the highlight
+                    if(highlightOn_)
+                    {
+                        tile.HighlightTile(true);
+                    }
+                    //If we turn off the highlight
+                    else
+                    {
+                        tile.HighlightTile(false);
+                    }
+                }
+            }
+        }
     }
 }

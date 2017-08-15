@@ -125,5 +125,8 @@ public class InstantDamageEffect : Effect
         {
             CombatManager.globalReference.ApplyActionThreat(targetCharacter_, totalDamage, false);
         }
+
+        //Destroying this effect once everything is finished up
+        Destroy(this.gameObject);
     }
 }

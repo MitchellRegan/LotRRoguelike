@@ -411,7 +411,7 @@ public class CombatActionPanelUI : MonoBehaviour
         //Destroying the object for the selected action as long as it's not a movement action (they destroy themselves)
         if(this.selectedAction != null && !this.selectedAction.GetComponent<MoveAction>())
         {
-            Destroy(this.selectedAction);
+            Destroy(this.selectedAction.gameObject);
         }
         this.selectedAction = null;
 
