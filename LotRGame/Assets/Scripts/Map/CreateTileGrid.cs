@@ -374,12 +374,12 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Creating list for all of the tile difficulty bands
-        List<TileInfo> veryEasyBand = new List<TileInfo>();
-        List<TileInfo> easyBand = new List<TileInfo>();
-        List<TileInfo> mediumBand = new List<TileInfo>();
-        List<TileInfo> hardBand = new List<TileInfo>();
-        List<TileInfo> veryHardBand = new List<TileInfo>();
-        List<TileInfo> finalBand = new List<TileInfo>();
+        List<List<TileInfo>> veryEasyBand = new List<List<TileInfo>>() { new List<TileInfo>() };
+        List<List<TileInfo>> easyBand = new List<List<TileInfo>>() { new List<TileInfo>() };
+        List<List<TileInfo>> mediumBand = new List<List<TileInfo>>() { new List<TileInfo>() };
+        List<List<TileInfo>> hardBand = new List<List<TileInfo>>() { new List<TileInfo>() };
+        List<List<TileInfo>> veryHardBand = new List<List<TileInfo>>() { new List<TileInfo>() };
+        List<List<TileInfo>> finalBand = new List<List<TileInfo>>() { new List<TileInfo>() };
 
         //Finding the distance from the end zone to the start zone
         float totalDistStartToEnd = Vector3.Distance(startTile.tilePosition, endTile.tilePosition);
@@ -403,53 +403,53 @@ public class CreateTileGrid : MonoBehaviour
                 //Determining which radius the tile is within and adding it to that list of tiles
                 if(currentTileDist < finalRadius)
                 {
-                    finalBand.Add(this.tileGrid[c][r]);
+                    finalBand[0].Add(this.tileGrid[c][r]);
                 }
                 else if(currentTileDist < veryHardRadius)
                 {
-                    veryHardBand.Add(this.tileGrid[c][r]);
+                    veryHardBand[0].Add(this.tileGrid[c][r]);
                 }
                 else if(currentTileDist < hardRadius)
                 {
-                    hardBand.Add(this.tileGrid[c][r]);
+                    hardBand[0].Add(this.tileGrid[c][r]);
                 }
                 else if(currentTileDist < mediumRadius)
                 {
-                    mediumBand.Add(this.tileGrid[c][r]);
+                    mediumBand[0].Add(this.tileGrid[c][r]);
                 }
                 else if(currentTileDist < easyRadius)
                 {
-                    easyBand.Add(this.tileGrid[c][r]);
+                    easyBand[0].Add(this.tileGrid[c][r]);
                 }
                 else
                 {
-                    veryEasyBand.Add(this.tileGrid[c][r]);
+                    veryEasyBand[0].Add(this.tileGrid[c][r]);
                 }
             }
         }
 
         //For testing purposes, we're going to set each band as the same region type
-        foreach(TileInfo veryEasyTile in veryEasyBand)
+        foreach(TileInfo veryEasyTile in veryEasyBand[0])
         {
             veryEasyTile.SetTileBasedOnRegion(this.grasslandRegions[0]);
         }
-        foreach(TileInfo easyTile in easyBand)
+        foreach(TileInfo easyTile in easyBand[0])
         {
             easyTile.SetTileBasedOnRegion(this.forrestRegions[0]);
         }
-        foreach(TileInfo mediumTile in mediumBand)
+        foreach(TileInfo mediumTile in mediumBand[0])
         {
             mediumTile.SetTileBasedOnRegion(this.swampRegions[0]);
         }
-        foreach(TileInfo hardTile in hardBand)
+        foreach(TileInfo hardTile in hardBand[0])
         {
             hardTile.SetTileBasedOnRegion(this.desertRegions[0]);
         }
-        foreach(TileInfo veryHardTile in veryHardBand)
+        foreach(TileInfo veryHardTile in veryHardBand[0])
         {
             veryHardTile.SetTileBasedOnRegion(this.mountainRegions[0]);
         }
-        foreach(TileInfo finalTile in finalBand)
+        foreach(TileInfo finalTile in finalBand[0])
         {
             finalTile.SetTileBasedOnRegion(this.volcanoRegions[0]);
         }
