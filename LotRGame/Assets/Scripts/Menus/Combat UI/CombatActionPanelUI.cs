@@ -162,6 +162,12 @@ public class CombatActionPanelUI : MonoBehaviour
         //Finding out which tile the acting character is on
         CombatTile actingCharsTile = CombatManager.globalReference.FindCharactersTile(actingCharacter);
 
+        //If the currently selected action is a move action, we need to clear tile highlights along its movement path
+        if(this.selectedAction != null && this.selectedAction.GetComponent<MoveAction>())
+        {
+            this.selectedAction.GetComponent<MoveAction>().ClearMovePathHighlights();
+        }
+
         //Destroying the game object that holds the currently selected action
         if(this.selectedAction != null)
         {

@@ -59,9 +59,6 @@ public class MoveAction : Action
             //Finding the number of tiles that have been moved after this time progression
             int newTileMoved = Mathf.RoundToInt(this.currentTimePassed / (this.timeToCompleteAction / this.movementPath.Count));
 
-            //Moving the character sprite along the movement path
-            //this.UpdateCharacterSpritePosition(this.movementPath[tilesMoved], this.movementPath[tilesMoved + 1], this.currentTimePassed, tilesMoved);
-
             //If enough time has passed that we've moved one more tile further. We progress the acting character one more tile along the movement path
             if (tilesMoved < newTileMoved)
             {
@@ -228,47 +225,13 @@ public class MoveAction : Action
     }
 
 
-    //Function called from Update when the character is moving. Interpolates the moving character's combat sprite to follow the path
-    private void UpdateCharacterSpritePosition(CombatTile currentTile_, CombatTile nextTile_, float timeSpentMoving_, int tilesAlreadyMoved_)
+    //Function called from CombatManager.EndActingCharactersTurn so we can clear tile highlights if no move action is selected
+    public void ClearMovePathHighlights()
     {
-        //The percent for how far along we are along the path between the two tiles
-        float movePercent = timeSpentMoving_ - ((this.timeToCompleteAction / this.movementPath.Count) * tilesAlreadyMoved_);
-        movePercent = movePercent / (this.timeToCompleteAction / this.movementPath.Count);
-
-        //Getting the reference for the moving character's combat sprite
-        CombatCharacterSprite charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
-
-        //Finding the difference between the tiles given
-        Vector3 distDiff = nextTile_.transform.position - currentTile_.transform.position;
-        //Multiplying the move percent with the difference in distance
-        distDiff = distDiff * movePercent;
-        //Offsetting the distance from the character's current tile
-        distDiff += currentTile_.transform.position;
-
-        //Setting the character sprite's position to the updated offset
-        charSprite.transform.position = distDiff;
-
-        //If the next tile is to the right of the current one, we make the character sprite look right
-        if(nextTile_.transform.position.x > currentTile_.transform.position.x)
+        foreach(CombatTile tile in this.movementPath)
         {
-            //If the current image's X scale is facing left, we face right
-            if (charSprite.spriteImage.transform.localScale.x < 0)
-            {
-                charSprite.spriteImage.transform.localScale = new Vector3(-1 * charSprite.spriteImage.transform.localScale.x,
-                                                                          charSprite.spriteImage.transform.localScale.y,
-                                                                          charSprite.spriteImage.transform.localScale.z);
-            }
-        }
-        //If the next tile is to the left of the current one, we make the character sprite look left
-        else if(nextTile_.transform.position.x < currentTile_.transform.position.x)
-        {
-            //If the current image's X scale is facing right, we face left
-            if (charSprite.spriteImage.transform.localScale.x > 0)
-            {
-                charSprite.spriteImage.transform.localScale = new Vector3(-1 * charSprite.spriteImage.transform.localScale.x,
-                                                                          charSprite.spriteImage.transform.localScale.y,
-                                                                          charSprite.spriteImage.transform.localScale.z);
-            }
+            tile.HighlightTile(false);
+            tile.SetTileColor(Color.white);
         }
     }
 }

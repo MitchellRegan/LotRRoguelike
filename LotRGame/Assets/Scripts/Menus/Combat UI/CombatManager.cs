@@ -1014,6 +1014,18 @@ public class CombatManager : MonoBehaviour
         //Perform the unity event after the action so we can hide some UI elements
         this.eventAfterActionPerformed.Invoke();
 
+        //If there's a selected action in the CombatActionPanelUI, we need to destroy it
+        if(CombatActionPanelUI.globalReference.selectedAction != null)
+        {
+            //If the selected action is a move action, we need to clear all highlighted tiles in the movement path first
+            if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
+            {
+                CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().ClearMovePathHighlights();
+            }
+
+            Destroy(CombatActionPanelUI.globalReference.selectedAction.gameObject);
+        }
+
         //Looping through and triggering all effects on the acting character for when their turn ends
         foreach(Effect e in this.actingCharacters[0].charCombatStats.combatEffects)
         {
