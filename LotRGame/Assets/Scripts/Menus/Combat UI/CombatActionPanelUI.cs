@@ -203,11 +203,21 @@ public class CombatActionPanelUI : MonoBehaviour
         //Getting the action component reference from the created action object
         this.selectedAction = actionObj.GetComponent<Action>();
 
-        //Finding out which tiles need to be hilighted
-        List<CombatTile> tilesToHilight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
+        //Finding out which tiles need to be hilighted if this action isn't a move action
+        List<CombatTile> tilesToHighlight;
+        if (!this.selectedAction.GetComponent<MoveAction>())
+        {
+            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
+        }
+        //If this action is a move action, we have to find the selected tiles based on environment obstacles
+        else
+        {
+            MoveAction ourMoveAct = this.selectedAction.GetComponent<MoveAction>();
+            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange, ourMoveAct.ignoreObstacles);
+        }
 
         //Looping through all tiles in range and hilighting them
-        foreach(CombatTile tile in tilesToHilight)
+        foreach(CombatTile tile in tilesToHighlight)
         {
             tile.inActionRange = true;
             tile.HighlightTile(false);

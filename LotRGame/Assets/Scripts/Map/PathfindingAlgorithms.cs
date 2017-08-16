@@ -617,7 +617,7 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Function called from CombatActionPanelUI.cs. Returns all combat tiles within the given range of the starting tile
-    public static List<CombatTile> FindTilesInActionRange(CombatTile startingTile_, int actionRange_)
+    public static List<CombatTile> FindTilesInActionRange(CombatTile startingTile_, int actionRange_, bool ignoreObstacles_ = true)
     {
         //The list of combat tiles that are returned
         List<CombatTile> allTilesInRange = new List<CombatTile>();
@@ -643,9 +643,13 @@ public class PathfindingAlgorithms : MonoBehaviour
                     //If the connected tile hasn't already been checked
                     if(!connection.hasBeenChecked)
                     {
-                        //Adding the connected tile to this new range and marking it as checked
-                        newRange.Add(connection.GetComponent<CombatTile>());
-                        connection.hasBeenChecked = true;
+                        //If we ignore obstacles OR if the the tile doesn't have obstacles on it
+                        if (ignoreObstacles_ || connection.GetComponent<CombatTile>().objectOnThisTile == null)
+                        {
+                            //Adding the connected tile to this new range and marking it as checked
+                            newRange.Add(connection.GetComponent<CombatTile>());
+                            connection.hasBeenChecked = true;
+                        }
                     }
                 }
             }
