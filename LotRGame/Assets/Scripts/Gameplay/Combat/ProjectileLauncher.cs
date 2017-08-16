@@ -129,7 +129,7 @@ public class ProjectileLauncher : MonoBehaviour
                     //Finding the difference in height from the caster tile to the midpoint
                     yDiff = yMidpoint - this.castersTilePos.y;
                     //Finding the percent of the height difference that we've interpolated
-                    yDiff *= this.yVelocityInterp.GetPercent();
+                    yDiff *= this.yVelocityInterp.GetProgress();
                     //Adding the y position from the caster tile (start)
                     yDiff += this.castersTilePos.y;
                 }
@@ -144,7 +144,7 @@ public class ProjectileLauncher : MonoBehaviour
                     //Finding the difference in height from the midpoint to the target tile
                     yDiff = this.targetTilePos.y - yMidpoint;
                     //Finding the percent of the height difference that we've interpolated
-                    yDiff *= this.yVelocityInterp.GetPercent();
+                    yDiff *= this.yVelocityInterp.GetProgress();
                     //Adding the y position from the midpoint
                     yDiff += yMidpoint;
                 }
