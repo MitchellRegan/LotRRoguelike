@@ -620,9 +620,17 @@ public class CreateTileGrid : MonoBehaviour
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
 
         //Creating the test enemy and adding them to a tile next to the start tile
-        int connectedTileIndex = Mathf.RoundToInt(Random.Range(0, startTile_.connectedTiles.Count - 1));
+        int connectedTileIndex = 0;
         GameObject testEnemy = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex].tilePosition, new Quaternion());
         testEnemy.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex]);
+
+        int connectedTileIndex2 = 1;
+        GameObject testEnemy2 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex2].tilePosition, new Quaternion());
+        testEnemy2.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex2]);
+
+        int connectedTileIndex3 = 2;
+        GameObject testEnemy3 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex3].tilePosition, new Quaternion());
+        testEnemy3.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex3]);
     }
 
 

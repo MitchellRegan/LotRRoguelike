@@ -642,7 +642,7 @@ public class CombatManager : MonoBehaviour
 
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
-
+            
             //Setting the info for the character sprite
             charSpriteRef.SetSpriteOnTile(playerChar, playerTile.transform.position);
 
