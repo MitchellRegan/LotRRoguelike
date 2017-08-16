@@ -15,6 +15,10 @@ public class ProjectileLauncher : MonoBehaviour
     //Float that tracks the total time the interpolation has been happening
     private float currentTime = 0;
 
+    //Offsets from where this projectile starts and ends
+    public Vector3 startTileOffset = new Vector3(0, 50, 0);
+    public Vector3 endTileOffset = new Vector3(0, 50, 0);
+
     //If we arc this projectile, this is the amount of distance up above the midpoint it travels
     public float arcHeightOffset = 0;
 
@@ -48,6 +52,10 @@ public class ProjectileLauncher : MonoBehaviour
             this.castersTilePos = targetTilePos_;
             this.targetTilePos = casterTilePos_;
         }
+
+        //Adding the offsets to the start and end
+        this.castersTilePos += this.startTileOffset;
+        this.targetTilePos += this.endTileOffset;
 
         //If we need to arc this projectile, we create a new interpolator
         if(this.pathType == ProjectilePath.Arc || this.pathType == ProjectilePath.ReversedArc)
