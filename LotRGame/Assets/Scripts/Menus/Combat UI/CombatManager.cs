@@ -69,6 +69,9 @@ public class CombatManager : MonoBehaviour
     //The object that hilights the acting character
     public Image highlightRing;
 
+    //Image that blocks the player from performing actions before the current action is finished
+    public Image actionBlocker;
+
 
 
 	// Function called when this object is created
@@ -129,7 +132,17 @@ public class CombatManager : MonoBehaviour
                 //If the timer is up, the state changes to the one that was previously designated
                 if(this.waitTime <= 0)
                 {
+                    //If the current state is player input or action selecting and the state we're switching to is increasing initiative, we hide the character highlight
+                    if(this.stateAfterWait == combatState.IncreaseInitiative)
+                    {
+                        //Making the highlight ring invisible again
+                        this.highlightRing.enabled = false;
+                    }
+
                     this.currentState = this.stateAfterWait;
+
+                    //Disabling the action blocker so the player can pick actions again
+                    this.actionBlocker.enabled = false;
                 }
                 break;
 
@@ -190,7 +203,7 @@ public class CombatManager : MonoBehaviour
                     {
                         this.actingCharacters.RemoveAt(0);
                     }
-                    this.currentState = combatState.IncreaseInitiative;
+                    this.SetWaitTime(1, combatState.IncreaseInitiative);
                 }
                 break;
 
@@ -720,6 +733,9 @@ public class CombatManager : MonoBehaviour
         this.waitTime = timeToWait_;
         this.currentState = combatState.Wait;
         this.stateAfterWait = stateAfterWait_;
+
+        //Turns on the action blocker so the player can't perform another action until the wait time is over
+        this.actionBlocker.enabled = true;
     }
 
 
@@ -1032,9 +1048,6 @@ public class CombatManager : MonoBehaviour
         {
             e.EffectOnEndOfTurn();
         }
-
-        //Making the highlight ring invisible again
-        this.highlightRing.enabled = false;
 
         //Resets the acting character's initiative and removes them from the list of acting characters
         if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
