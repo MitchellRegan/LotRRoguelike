@@ -47,7 +47,7 @@ public class HealOverTimeEffect : Effect
 
 
     //Function inherited from Effect.cs to trigger this effect. Sets the target as the healed character
-    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_)
+    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
         //Checking the targeted character to make sure this effect isn't already applied to them
         foreach (Effect e in targetCharacter_.charCombatStats.combatEffects)
@@ -145,7 +145,7 @@ public class HealOverTimeEffect : Effect
 
         //Telling the combat manager to display the damage healed
         CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
-        CombatManager.globalReference.DisplayDamageDealt(damagehealed, this.healType, healedCharTile, didThisCrit, true);
+        CombatManager.globalReference.DisplayDamageDealt(0, damagehealed, this.healType, healedCharTile, didThisCrit, true);
 
         //If this effect isn't unlimited, we need to reduce the ticks remaining
         if (!this.unlimitedTicks)

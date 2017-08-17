@@ -274,32 +274,31 @@ public class AttackAction : Action
 
         //Dealing damage to the defending character and telling the combat manager to display how much was dealt
         defendingChar.charPhysState.DamageCharacter(physDamage);
-        CombatManager.globalReference.DisplayDamageDealt(physDamage, CombatManager.DamageType.Physical, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, physDamage, CombatManager.DamageType.Physical, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(magicDamage);
-        CombatManager.globalReference.DisplayDamageDealt(magicDamage, CombatManager.DamageType.Magic, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, magicDamage, CombatManager.DamageType.Magic, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(fireDamage);
-        CombatManager.globalReference.DisplayDamageDealt(fireDamage, CombatManager.DamageType.Fire, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, fireDamage, CombatManager.DamageType.Fire, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(waterDamage);
-        CombatManager.globalReference.DisplayDamageDealt(waterDamage, CombatManager.DamageType.Water, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, waterDamage, CombatManager.DamageType.Water, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(windDamage);
-        CombatManager.globalReference.DisplayDamageDealt(windDamage, CombatManager.DamageType.Wind, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, windDamage, CombatManager.DamageType.Wind, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(electricDamage);
-        CombatManager.globalReference.DisplayDamageDealt(electricDamage, CombatManager.DamageType.Electric, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, electricDamage, CombatManager.DamageType.Electric, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(rockDamage);
-        CombatManager.globalReference.DisplayDamageDealt(rockDamage, CombatManager.DamageType.Rock, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, rockDamage, CombatManager.DamageType.Rock, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(holyDamage);
-        CombatManager.globalReference.DisplayDamageDealt(holyDamage, CombatManager.DamageType.Holy, targetTile_, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, holyDamage, CombatManager.DamageType.Holy, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(darkDamage);
-        CombatManager.globalReference.DisplayDamageDealt(darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
-
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
 
         //Increasing the threat to the target based on damage dealt
         int totalDamage = 0;
@@ -626,7 +625,7 @@ public class AttackAction : Action
             {
                 //Creating an instance of the effect object prefab and triggering it's effect
                 GameObject effectObj = Instantiate(effectToTrigger_.effectToApply.gameObject, new Vector3(), new Quaternion());
-                effectObj.GetComponent<Effect>().TriggerEffect(actingChar_, targetChar);
+                effectObj.GetComponent<Effect>().TriggerEffect(actingChar_, targetChar, this.timeToCompleteAction);
             }
         }
     }

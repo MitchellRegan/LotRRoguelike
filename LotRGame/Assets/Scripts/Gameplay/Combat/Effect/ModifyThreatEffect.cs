@@ -31,7 +31,7 @@ public class ModifyThreatEffect : Effect
 
 
     //Function inherited from Effect.cs to trigger this effect
-    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_)
+    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
         //If this effect threatens all enemies
         if(this.threatenAllEnemies)

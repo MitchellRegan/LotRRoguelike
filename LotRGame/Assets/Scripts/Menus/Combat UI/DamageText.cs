@@ -10,6 +10,9 @@ public class DamageText : MonoBehaviour
     //Reference to the background image component
     public Image background;
 
+    //The amount of time before this text appears
+    private float timeBeforeTextShows = 1;
+
     //The amount of time in seconds that this object is displayed before it disappears
     public float timeBeforeDestroyed = 1;
 
@@ -36,8 +39,11 @@ public class DamageText : MonoBehaviour
 
     
     //Function called from the combat manager to set our damage text, color, and position
-    public void SetDamageToDisplay(int damageDealt_, CombatManager.DamageType type_, Vector3 position_, bool isCrit_, bool isHeal_ = false)
+    public void SetDamageToDisplay(float timeDelay_, int damageDealt_, CombatManager.DamageType type_, Vector3 position_, bool isCrit_, bool isHeal_ = false)
     {
+        //Setting the amount of time before this text appears
+        this.timeBeforeTextShows = timeDelay_;
+
         //Moving this object to the given position
         this.transform.position = position_;
 
@@ -98,6 +104,13 @@ public class DamageText : MonoBehaviour
         {
             this.ourText.fontSize = this.normalDamageFontSize;
         }
+
+        //Setting the text and background color to be transparent if our time before text shows is greater than 0
+        if (this.timeBeforeTextShows > 0)
+        {
+            this.ourText.color = new Color(this.ourText.color.r, this.ourText.color.g, this.ourText.color.b, 0);
+            this.background.color = new Color(this.background.color.r, this.background.color.g, this.background.color.b, 0);
+        }
     }
 
 
@@ -123,13 +136,29 @@ public class DamageText : MonoBehaviour
     //Function called every frame
     private void Update()
     {
-        //Subtracting the time that's passed from the time we have left
-        this.timeBeforeDestroyed -= Time.deltaTime;
-
-        //If our time is up, this object is destroyed
-        if(this.timeBeforeDestroyed <= 0)
+        //If this text isn't showing yet
+        if (this.timeBeforeTextShows > 0)
         {
-            Destroy(this.gameObject);
+            this.timeBeforeTextShows -= Time.deltaTime;
+
+            //If the time is up, we make the text visible
+            if(this.timeBeforeTextShows <= 0)
+            {
+                this.ourText.color = new Color(this.ourText.color.r, this.ourText.color.g, this.ourText.color.b, 1);
+                this.background.color = new Color(this.background.color.r, this.background.color.g, this.background.color.b, 1);
+            }
+        }
+        //If the text is showing
+        else
+        {
+            //Subtracting the time that's passed from the time we have left
+            this.timeBeforeDestroyed -= Time.deltaTime;
+
+            //If our time is up, this object is destroyed
+            if (this.timeBeforeDestroyed <= 0)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 }

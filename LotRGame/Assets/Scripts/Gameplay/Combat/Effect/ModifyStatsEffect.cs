@@ -33,7 +33,7 @@ public class ModifyStatsEffect : Effect
 
 
     //Function inherited from Effect.cs to trigger this effect. Sets the target that has their stats modified
-    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_)
+    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
         //Checking the targeted character to make sure this character isn't already applied to them
         foreach(Effect e in targetCharacter_.charCombatStats.combatEffects)

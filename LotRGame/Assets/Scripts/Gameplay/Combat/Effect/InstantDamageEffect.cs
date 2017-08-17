@@ -26,7 +26,7 @@ public class InstantDamageEffect : Effect
 
 
     //Overrided function from Effect.cs to trigger this damage effect
-    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_)
+    public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
         //Int to hold all of the damage for the attack
         int totalDamage = 0;
@@ -107,7 +107,7 @@ public class InstantDamageEffect : Effect
 
         //Dealing damage to the target character and telling the combat manager to display how much was dealt
         targetCharacter_.charPhysState.DamageCharacter(totalDamage);
-        CombatManager.globalReference.DisplayDamageDealt(totalDamage, type, targetCharTile, isCrit);
+        CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
 
         //Increasing the threat to the target based on damage dealt
         //If the attack is a crit, ALL enemies have their threat increased for 25% of the damage

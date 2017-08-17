@@ -758,7 +758,7 @@ public class CombatManager : MonoBehaviour
 
     //Function called from AttackAction.PerformAction to show damage dealt to a character at the given tile
     public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Holy, Dark };
-    public void DisplayDamageDealt(int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
+    public void DisplayDamageDealt(float timeDelay_, int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
     {
         //If the damage dealt was 0, nothing happens
         if(damage_ <= 0)
@@ -772,8 +772,9 @@ public class CombatManager : MonoBehaviour
         newDamageDisplay.transform.SetParent(this.transform);
         //Getting the DamageText component reference
         DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
+
         //Setting the info for the text
-        newDamageText.SetDamageToDisplay(damage_, type_, damagedCharTile_.transform.position, isCrit_, isHeal_);
+        newDamageText.SetDamageToDisplay(timeDelay_, damage_, type_, damagedCharTile_.transform.position, isCrit_, isHeal_);
 
         //Checking to see if the attacked character is dead
         if(damagedCharTile_.objectOnThisTile.GetComponent<Character>().charPhysState.currentHealth == 0)

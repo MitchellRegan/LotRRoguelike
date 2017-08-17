@@ -17,7 +17,7 @@ public class Effect : MonoBehaviour
 
 
     //Function called externally to trigger this effect
-    public virtual void TriggerEffect(Character usingCharacter_, Character targetCharacter_)
+    public virtual void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
         //Nothing happens
     }
