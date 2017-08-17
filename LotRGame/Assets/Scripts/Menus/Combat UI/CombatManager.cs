@@ -889,7 +889,7 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from AttackAction.PerformAction to show that an attack missed
-    public void DisplayMissedAttack(CombatTile attackedCharTile_)
+    public void DisplayMissedAttack(float timeDelay_, CombatTile attackedCharTile_)
     {
         //Creating an instance of the damage text object prefab
         GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
@@ -898,7 +898,7 @@ public class CombatManager : MonoBehaviour
         //Getting the DamageText component reference
         DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
         //Setting the info for the text
-        newDamageText.DisplayMiss(attackedCharTile_.transform.position);
+        newDamageText.DisplayMiss(timeDelay_, attackedCharTile_.transform.position);
     }
 
 

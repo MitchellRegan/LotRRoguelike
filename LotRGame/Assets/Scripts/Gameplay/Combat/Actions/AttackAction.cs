@@ -74,7 +74,7 @@ public class AttackAction : Action
             //If there are no attack damage rolls (like if the attack was just to inflict an effect) the "Miss" text isn't shown
             if (this.damageDealt.Count > 0)
             {
-                CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+                CombatManager.globalReference.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
             }
 
             //Looping through each effect that this attack can apply to see if any don't require the attack to land
@@ -151,7 +151,7 @@ public class AttackAction : Action
             if (this.damageDealt.Count > 0)
             {
                 //Miss
-                CombatManager.globalReference.DisplayMissedAttack(targetTile_);
+                CombatManager.globalReference.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
             }
 
             //Looping through each effect that this attack can apply to see if any don't require the attack to land
