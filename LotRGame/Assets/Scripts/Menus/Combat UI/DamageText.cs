@@ -33,6 +33,9 @@ public class DamageText : MonoBehaviour
     //The offset that this moves to before fading out
     public Vector3 endOffset = new Vector3(0, 10, 0);
 
+    //The curve that scales this text over the course of this lifetime
+    public AnimationCurve scaleCurve;
+
     //The size of the text when displaying normal damage
     public int normalDamageFontSize = 14;
     //The size of the text when displaying crit damage
@@ -206,6 +209,10 @@ public class DamageText : MonoBehaviour
                 Vector3 offsetPercent = (this.endOffset - this.startingOffset) * lifetimePercent;
                 offsetPercent += this.startingOffset + this.spawnPosition;
                 this.transform.position = offsetPercent;
+
+                //Finding the scale multiplier using the lifetime percent and our animation curve
+                float scaleMultiplier = this.scaleCurve.Evaluate(lifetimePercent);
+                this.transform.localScale = new Vector3(scaleMultiplier, scaleMultiplier, 1);
 
                 //If the destroy timer is above the fade time, we need to start fading out
                 if (this.destroyTimer > this.timeBeforeFade)
