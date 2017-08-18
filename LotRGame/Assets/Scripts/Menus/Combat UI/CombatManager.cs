@@ -72,6 +72,9 @@ public class CombatManager : MonoBehaviour
     //Image that blocks the player from performing actions before the current action is finished
     public Image actionBlocker;
 
+    //The reference to the Info Display object so we can show what actions are being used
+    public InfoDisplay ourInfoDisplay;
+
 
 
 	// Function called when this object is created
@@ -724,6 +727,9 @@ public class CombatManager : MonoBehaviour
                 }
             }
         }
+
+        //Setting the info display above all of the other sprites
+        this.ourInfoDisplay.transform.SetAsLastSibling();
     }
 
 
@@ -1006,6 +1012,12 @@ public class CombatManager : MonoBehaviour
         if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && tileClicked_.objectOnThisTile != null)
         {
             return;
+        }
+
+        //Tells our info display object to show the name of the action used if it isn't a move action
+        if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
+        {
+            this.ourInfoDisplay.StartInfoDisplay(CombatActionPanelUI.globalReference.selectedAction.actionName, CombatActionPanelUI.globalReference.selectedAction.timeToCompleteAction);
         }
 
         //Tells the action to be performed at the tile clicked and stops highlighting it
