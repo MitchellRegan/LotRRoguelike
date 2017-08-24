@@ -400,6 +400,14 @@ public class ModifyStatsEffect : Effect
                     break;
             }
         }
+
+        //If we're adding the effect, we need to create this effect's visual
+        if(addingChanges_)
+        {
+            //Creating the visual effect for this effect
+            CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+            this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+        }
     }
 
 
@@ -476,7 +484,26 @@ public class ModifyStatsEffect : Effect
     {
         //Reversing all of the stat changes first
         this.ApplyStatChanges(false);
+        //Destroying our visual effect object reference if it exists
+        if(this.visualEffect != null)
+        {
+            Destroy(this.visualEffect);
+        }
+
         base.RemoveEffect();
+    }
+
+
+    //Function inherited from Effect.cs to display the visual for this effect
+    public override void SpawnVisualAtLocation(Vector3 posToSpawn_, Transform parentTransform_)
+    {
+        //Creating a new instance of our visual effect at the given location relative to the parent transform (if it isn't null)
+        if (this.visualEffect != null)
+        {
+            GameObject visual = GameObject.Instantiate(this.visualEffect, posToSpawn_, new Quaternion(), parentTransform_);
+            //Setting our visualEffect object reference as the created instance so we can destroy it later
+            this.visualEffect = visual;
+        }
     }
 }
 
