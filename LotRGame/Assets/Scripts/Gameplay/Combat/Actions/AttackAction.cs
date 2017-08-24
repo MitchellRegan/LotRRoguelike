@@ -30,6 +30,11 @@ public class AttackAction : Action
     //The list of projectiles that are spawned when this attack is used
     public List<ProjectileLauncher> projectilesToLaunch;
 
+    //The object that's spawned with a timed activator component for our visual effect at the hit target
+    public TimedActivator visualEffectOnHit;
+    //Bool that determines if we spawn the visual effect on missed attacks or not
+    public bool spawnVisualOnMiss = true;
+
 
 
     //Function inherited from Action.cs and called from CombatManager.cs so we can attack a target
@@ -75,6 +80,12 @@ public class AttackAction : Action
             if (this.damageDealt.Count > 0)
             {
                 CombatManager.globalReference.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
+            }
+
+            //If the visual effect doesn't require a hit to be spawned, we create it at the target tile
+            if(this.spawnVisualOnMiss && this.visualEffectOnHit != null)
+            {
+                GameObject visual = GameObject.Instantiate(this.visualEffectOnHit.gameObject, targetTile_.transform.position, new Quaternion(), CombatManager.globalReference.transform);
             }
 
             //Looping through each effect that this attack can apply to see if any don't require the attack to land
@@ -152,6 +163,12 @@ public class AttackAction : Action
             {
                 //Miss
                 CombatManager.globalReference.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
+            }
+
+            //If the visual effect doesn't require a hit to be spawned, we create it at the target tile
+            if (this.spawnVisualOnMiss && this.visualEffectOnHit != null)
+            {
+                GameObject visual = GameObject.Instantiate(this.visualEffectOnHit.gameObject, targetTile_.transform.position, new Quaternion(), CombatManager.globalReference.transform);
             }
 
             //Looping through each effect that this attack can apply to see if any don't require the attack to land
@@ -322,9 +339,14 @@ public class AttackAction : Action
             CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage, false);
         }
 
+        //Creating the visual effect at the target tile if it isn't null
+        if (this.visualEffectOnHit != null)
+        {
+            GameObject visual = GameObject.Instantiate(this.visualEffectOnHit.gameObject, targetTile_.transform.position, new Quaternion(), CombatManager.globalReference.transform);
+        }
 
         //Looping through each effect that this attack can cause and triggering them
-        foreach(AttackEffect effect in this.effectsOnHit)
+        foreach (AttackEffect effect in this.effectsOnHit)
         {
             this.TriggerEffect(effect, targetTile_, actingChar);
         }

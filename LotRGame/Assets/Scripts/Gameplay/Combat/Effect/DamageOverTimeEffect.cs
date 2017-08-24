@@ -144,6 +144,10 @@ public class DamageOverTimeEffect : Effect
             this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt);
         }
 
+        //Creating the visual effect for this effect
+        CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+        this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+
         //Telling the combat manager to display the damage dealt
         CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
         CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);

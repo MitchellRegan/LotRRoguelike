@@ -11,6 +11,7 @@ public class EVTData
     public SoundCutoutEVT soundCutout = null;
     public SceneTransitionEVT sceneTransition = null;
     public CombatTransitionEVT combatTransition = null;
+    public ScreenShakeEVT screenShake = null;
 }
 
 
@@ -118,5 +119,29 @@ public class CombatTransitionEVT
         this.stayOnBlackTime = stayOnBlackTime_;
         this.fadeInTime = fadeInTime_;
         this.eventOnBlack = eventOnBlack_;
+    }
+}
+
+
+//Event data when we start a screen shake
+public class ScreenShakeEVT
+{
+    //The name used to call this event from the event manager
+    public static string eventName = "Screen Shake";
+
+    //The amount of time that the screen will shake once triggered
+    public float screenShakeDuration = 1;
+    //The percent of the maximum amount the screen can shake
+    [Range(0, 1)]
+    public float screenShakePower = 0.5f;
+    //The curve that determines how fast the shake returns to normal
+    public EaseType screenShakeCurve = EaseType.SineIn;
+
+    //Public constructor for this class
+    public ScreenShakeEVT(float screenShakeDuration_, float screenShakePower_, EaseType screenShakeCurve_)
+    {
+        this.screenShakeDuration = screenShakeDuration_;
+        this.screenShakePower = screenShakePower_;
+        this.screenShakeCurve = screenShakeCurve_;
     }
 }
