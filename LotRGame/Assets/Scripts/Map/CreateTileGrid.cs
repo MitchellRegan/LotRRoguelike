@@ -47,6 +47,45 @@ public class CreateTileGrid : MonoBehaviour
     //List of prefabs for the different types of volcano RegionInfo classes
     public List<RegionInfo> volcanoRegions;
 
+    [Space(8)]
+
+    //List of prefabs for different very easy regions
+    public List<RegionInfo> veryEasyRegions;
+    //The maximum number of splits for the very easy band
+    public int maxVeryEasySplits = 2;
+
+    //List of prefabs for different easy regions
+    public List<RegionInfo> easyRegions;
+    //The maximum number of splits for the easy band
+    public int maxEasySplits = 2;
+
+    //List of prefabs for different medium regions
+    public List<RegionInfo> mediumRegions;
+    //The maximum number of splits for the medium band
+    public int maxMediumSplits = 2;
+
+    //List of prefabs for different hard regions
+    public List<RegionInfo> hardRegions;
+    //The maximum number of splits for the hard band
+    public int maxHardSplits = 2;
+
+    //List of prefabs for different very hard regions
+    public List<RegionInfo> veryHardRegions;
+    //The maximum number of splits for the very hard band
+    public int maxVeryHardSplits = 2;
+
+    //List of prefabs for different final regions
+    public List<RegionInfo> finalRegions;
+    //The maximum number of splits for the final band
+    private int maxFinalSplits = 1;
+
+    [Space(8)]
+
+    //The maximum spread for the region bands
+    public float maxBandAngleSpread = 90;
+
+    [Space(8)]
+
     //Prefab for the group that the player characters are added to
     public GameObject partyGroup1Prefab;
 
@@ -460,12 +499,31 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Function called from ImprovedMapGeneration to split all of the difficulty bands into different regions
-    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, Vector2 numberOfSplitsMinMax_)
+    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
     {
         //Finding the number of splits we need in the band
         int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
 
-        .
+        //Finding the angle from the end tile to the start tile
+        float endStartAngle = Mathf.Atan2(endTile_.tilePosition.y - startTile_.tilePosition.y, endTile_.tilePosition.x - startTile_.tilePosition.y);
+        endStartAngle *= Mathf.Rad2Deg;
+
+        //Creating a list of all the angles where each split angle is
+        List<float> splitAngles = new List<float>();
+        for(int s = 0; s < splits; ++s)
+        {
+            //Finding the cut of the max angle spread that this split will be at
+            float baseAngle = this.maxBandAngleSpread / splits;
+            baseAngle *= s + 1;
+
+            //Offsetting the split based on the angle between the start and end tiles
+            baseAngle += endStartAngle - (this.maxBandAngleSpread / 2);
+
+            //Setting the current split to the split angle list
+            splitAngles.Add(baseAngle);
+        }
+
+
     }
 
 
