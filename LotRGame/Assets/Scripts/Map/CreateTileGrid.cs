@@ -459,6 +459,16 @@ public class CreateTileGrid : MonoBehaviour
     }
 
 
+    //Function called from ImprovedMapGeneration to split all of the difficulty bands into different regions
+    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, Vector2 numberOfSplitsMinMax_)
+    {
+        //Finding the number of splits we need in the band
+        int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
+
+        .
+    }
+
+
     //Loops through and generates all tiles in the grid
     private void GenerateGrid(int rows_, int cols_)
     {

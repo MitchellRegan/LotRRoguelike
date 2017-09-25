@@ -46,6 +46,11 @@ public class TileInfo
     //The list of all game objects on this tile
     public List<GameObject> objectsOnThisTile;
 
+    //The encounter chance for this tile
+    private float randomEncounterChance = 0;
+    //The list of encounters that can happen on this tile
+    private List<EncounterBlock> randomEncounterList;
+
 
 
     //Empty constructor for this class
@@ -98,6 +103,10 @@ public class TileInfo
 
         //Initializing the (now empty) list of objects on this tile
         this.objectsOnThisTile = new List<GameObject>();
+
+        //Setting the random encounter chance and encounters
+        this.randomEncounterChance = thisTilesRegion_.randomEncounterChance;
+        this.randomEncounterList = thisTilesRegion_.randomEncounterList;
     }
 
 
@@ -165,6 +174,9 @@ public class TileInfo
                         return;
                     }
                 }
+
+                //If we made it this far, there wasn't an enemy encounter on the tile, so we need to check for an encounter
+                this.RollForRandomEncounter();
             }
         }
     }
@@ -177,6 +189,55 @@ public class TileInfo
         if (this.objectsOnThisTile.Contains(objectToRemove_))
         {
             this.objectsOnThisTile.Remove(objectToRemove_);
+        }
+    }
+
+
+    //Function called from AddObjectToThisTile to see if we should start a random encounter
+    public void RollForRandomEncounter()
+    {
+        //If we have no random encounters, this function does nothing
+        if(this.randomEncounterList.Count < 1)
+        {
+            return;
+        }
+
+        //Rolling to see if we meet the encounter chance
+        float encounterRoll = Random.Range(0, 1);
+        if (encounterRoll < this.randomEncounterChance)
+        {
+            //Rolling to see which encounter is spawned
+            float whichEncounter = Random.Range(0, 1);
+
+            //Looping through each encounter
+            for(int e = 0; e < this.randomEncounterList.Count; ++e)
+            {
+                //If we find one that has a greater spawn chance than our roll
+                if (this.randomEncounterList[e].encounterChance >= whichEncounter)
+                {
+                    //Looping through and finding the object on this tile that has the player party
+                    PartyGroup playerParty = null;
+                    foreach(GameObject o in this.objectsOnThisTile)
+                    {
+                        if(o.GetComponent<PartyGroup>())
+                        {
+                            playerParty = o.GetComponent<PartyGroup>();
+                            break;
+                        }
+                    }
+
+                    //If we couldn't find the player party object for some reason, we stop the combat from happening
+                    if(playerParty == null)
+                    {
+                        return;
+                    }
+
+                    //We tell the combat manager to initiate combat with this encounter
+                    CombatManager.globalReference.InitiateCombat(this.type, playerParty, this.randomEncounterList[e].encounterEnemies);
+                    //Now we exit out of this function so we don't try to keep spawning more encounters
+                    return;
+                }
+            }
         }
     }
 }
