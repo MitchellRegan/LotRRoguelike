@@ -84,6 +84,10 @@ public class CreateTileGrid : MonoBehaviour
     //The maximum spread for the region bands
     public float maxBandAngleSpread = 90;
 
+    //The maximum percent of variance for the band regions
+    [Range(0, 0.5f)]
+    public float bandRegionPercentVariance = 0.2f;
+
     [Space(8)]
 
     //Prefab for the group that the player characters are added to
@@ -470,7 +474,7 @@ public class CreateTileGrid : MonoBehaviour
         //For testing purposes, we're going to set each band as the same region type
         foreach(TileInfo veryEasyTile in veryEasyBand[0])
         {
-            veryEasyTile.SetTileBasedOnRegion(this.grasslandRegions[0]);
+            //veryEasyTile.SetTileBasedOnRegion(this.grasslandRegions[0]);
         }
         foreach(TileInfo easyTile in easyBand[0])
         {
@@ -493,20 +497,29 @@ public class CreateTileGrid : MonoBehaviour
             finalTile.SetTileBasedOnRegion(this.volcanoRegions[0]);
         }
 
+        //Splitting the very easy difficulty band
+        this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.maxVeryEasySplits, startTile, endTile);
+
         //Once the map is created, we set the player on the starting tile
         this.SetPlayerPartyPosition(startTile);
     }
 
 
     //Function called from ImprovedMapGeneration to split all of the difficulty bands into different regions
-    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
+    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, int numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
     {
         //Finding the number of splits we need in the band
-        int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
+        int splits = Mathf.RoundToInt(Random.Range(0, numberOfSplitsMinMax_));
 
         //Finding the angle from the end tile to the start tile
         float endStartAngle = Mathf.Atan2(endTile_.tilePosition.y - startTile_.tilePosition.y, endTile_.tilePosition.x - startTile_.tilePosition.y);
         endStartAngle *= Mathf.Rad2Deg;
+
+        //Normalizing the endStartAngle so that it's between 0-360, not -180 and 180
+        if(endStartAngle < 0)
+        {
+            endStartAngle += 360;
+        }
 
         //Creating a list of all the angles where each split angle is
         List<float> splitAngles = new List<float>();
@@ -519,11 +532,75 @@ public class CreateTileGrid : MonoBehaviour
             //Offsetting the split based on the angle between the start and end tiles
             baseAngle += endStartAngle - (this.maxBandAngleSpread / 2);
 
+            //Adding variance to the angle based on a percent of the base angle
+            float variance = Random.Range((this.maxBandAngleSpread / splits) * -(this.bandRegionPercentVariance / 2), (this.maxBandAngleSpread / splits) * (this.bandRegionPercentVariance / 2));
+
+            baseAngle += variance;
+
+            //Normalizing the base angle so that it's within 0-360
+            if(baseAngle < 0)
+            {
+                baseAngle += 360;
+            }
+
             //Setting the current split to the split angle list
             splitAngles.Add(baseAngle);
         }
 
+        //Duplicating the list of regions in the difficulty band so we can modify it
+        List<RegionInfo> regionDup = difficultyRegions_;
 
+        //Creating a list of each region in this difficulty band
+        List<RegionInfo> bandRegions = new List<RegionInfo>();
+        for(int r = 0; r < splits + 1; ++r)
+        {
+            //Getting a random region from the list of difficulty regions
+            int regionIndex = Random.Range(0, regionDup.Count - 1);
+
+            //Adding the region to the band region list
+            bandRegions.Add(regionDup[regionIndex]);
+
+            //Removing the current region from the list of difficulty regions so it doesn't show up multiple times
+            if (regionDup.Count > 1)
+            {
+                regionDup.RemoveAt(regionIndex);
+            }
+        }
+        
+
+        //Looping through each tile in the given difficulty band
+        foreach(TileInfo tile in difficultyBand_[0])
+        {
+            //Finding the angle that the current tile is from the end point
+            float angleDiff = Mathf.Atan2(endTile_.tilePosition.y - tile.tilePosition.y, endTile_.tilePosition.x - tile.tilePosition.x);
+            angleDiff *= Mathf.Rad2Deg;
+
+            //Normalizing the angleDiff so that it's between 0-360, not -180 and 180
+            if (angleDiff < 0)
+            {
+                angleDiff += 360;
+            }
+
+            //Finding which split the tile is within
+            for (int t = 0; t < splits; ++t)
+            {
+                //Checking if the current tile's angle is within the current split
+                if(angleDiff < splitAngles[t])
+                {
+                    //We set the tile's info using the region with the same index
+                    tile.SetTileBasedOnRegion(bandRegions[t]);
+                    t = splits;
+                }
+                //If the tile isn't within the current split and this is the last split
+                else if(t + 1 == splits)
+                {
+                    //We set the tile's info using the region with the index of the last region
+                    tile.SetTileBasedOnRegion(bandRegions[t+1]);
+                }
+            }
+
+            Debug.Log(tile.regionName);
+        }
     }
 
 
