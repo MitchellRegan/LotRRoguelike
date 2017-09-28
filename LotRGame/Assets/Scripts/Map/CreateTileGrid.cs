@@ -52,32 +52,32 @@ public class CreateTileGrid : MonoBehaviour
     //List of prefabs for different very easy regions
     public List<RegionInfo> veryEasyRegions;
     //The maximum number of splits for the very easy band
-    public int maxVeryEasySplits = 2;
+    public Vector2 minMaxVeryEasySplits = new Vector2(1, 2);
 
     //List of prefabs for different easy regions
     public List<RegionInfo> easyRegions;
     //The maximum number of splits for the easy band
-    public int maxEasySplits = 2;
+    public Vector2 minMaxEasySplits = new Vector2(1, 3);
 
     //List of prefabs for different medium regions
     public List<RegionInfo> mediumRegions;
     //The maximum number of splits for the medium band
-    public int maxMediumSplits = 2;
+    public Vector2 minMaxMediumSplits = new Vector2(3, 5);
 
     //List of prefabs for different hard regions
     public List<RegionInfo> hardRegions;
     //The maximum number of splits for the hard band
-    public int maxHardSplits = 2;
+    public Vector2 minMaxHardSplits = new Vector2(2, 5);
 
     //List of prefabs for different very hard regions
     public List<RegionInfo> veryHardRegions;
     //The maximum number of splits for the very hard band
-    public int maxVeryHardSplits = 2;
+    public Vector2 minMaxVeryHardSplits = new Vector2(1,2);
 
     //List of prefabs for different final regions
     public List<RegionInfo> finalRegions;
     //The maximum number of splits for the final band
-    private int maxFinalSplits = 1;
+    private Vector2 minMaxFinalSplits = new Vector2(1,1);
 
     [Space(8)]
 
@@ -471,6 +471,51 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
 
+        //Finding the tile in the corner opposite of the end tile
+        TileInfo oppositeEnd;
+        int oppositeRow = 0;
+        int oppositeCol = 0;
+        //If the end tile is in the first 5th of the map rows
+        if(endRow <= this.tileGrid[0].Count / 5)
+        {
+            //The opposite row is the last one
+            oppositeRow = this.tileGrid[0].Count - 1;
+        }
+        //If the end tile is in the last 5th of the map rows
+        else if(endRow >= this.tileGrid[0].Count - (this.tileGrid[0].Count / 5))
+        {
+            //The opposite row is the first one
+            oppositeRow = 0;
+        }
+        //If the end tile is in the middle of the map rows
+        else
+        {
+            //The opposite row is the middle one
+            oppositeRow = this.tileGrid[0].Count / 2;
+        }
+
+        //If the end tile is in the first 5th of the map cols
+        if(endCol <= this.tileGrid.Count / 5)
+        {
+            //The opposite col is the last one
+            oppositeCol = this.tileGrid.Count - 1;
+        }
+        //If the end tile is in the last 5th of the map cols
+        else if(endCol >= this.tileGrid.Count - (this.tileGrid.Count/ 5))
+        {
+            //The opposite col is the first one
+            oppositeCol = 0;
+        }
+        //If the end tile is in the middle of the map cols
+        else
+        {
+            //The opposite col is the middle one
+            oppositeCol = this.tileGrid.Count / 2;
+        }
+
+        //Getting the tile that's at the opposite end of the end tile map
+        oppositeEnd = this.tileGrid[oppositeCol][oppositeRow];
+
         //For testing purposes, we're going to set each band as the same region type
         foreach(TileInfo veryEasyTile in veryEasyBand[0])
         {
@@ -498,7 +543,7 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Splitting the very easy difficulty band
-        this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.maxVeryEasySplits, startTile, endTile);
+        this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, oppositeEnd, endTile);
 
         //Once the map is created, we set the player on the starting tile
         this.SetPlayerPartyPosition(startTile);
@@ -506,13 +551,13 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Function called from ImprovedMapGeneration to split all of the difficulty bands into different regions
-    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, int numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
+    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
     {
         //Finding the number of splits we need in the band
-        int splits = Mathf.RoundToInt(Random.Range(0, numberOfSplitsMinMax_));
+        int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
 
         //Finding the angle from the end tile to the start tile
-        float endStartAngle = Mathf.Atan2(endTile_.tilePosition.y - startTile_.tilePosition.y, endTile_.tilePosition.x - startTile_.tilePosition.y);
+        float endStartAngle = Mathf.Atan2(startTile_.tilePosition.z - endTile_.tilePosition.z, startTile_.tilePosition.x - endTile_.tilePosition.x);
         endStartAngle *= Mathf.Rad2Deg;
 
         //Normalizing the endStartAngle so that it's between 0-360, not -180 and 180
@@ -520,25 +565,25 @@ public class CreateTileGrid : MonoBehaviour
         {
             endStartAngle += 360;
         }
-
+        
         //Creating a list of all the angles where each split angle is
         List<float> splitAngles = new List<float>();
         for(int s = 0; s < splits; ++s)
         {
             //Finding the cut of the max angle spread that this split will be at
-            float baseAngle = this.maxBandAngleSpread / splits;
+            float baseAngle = this.maxBandAngleSpread / (splits + 1);
             baseAngle *= s + 1;
-
+            
             //Offsetting the split based on the angle between the start and end tiles
             baseAngle += endStartAngle - (this.maxBandAngleSpread / 2);
-
+            
             //Adding variance to the angle based on a percent of the base angle
             float variance = Random.Range((this.maxBandAngleSpread / splits) * -(this.bandRegionPercentVariance / 2), (this.maxBandAngleSpread / splits) * (this.bandRegionPercentVariance / 2));
 
             baseAngle += variance;
 
             //Normalizing the base angle so that it's within 0-360
-            if(baseAngle < 0)
+            if (baseAngle < 0)
             {
                 baseAngle += 360;
             }
@@ -572,7 +617,7 @@ public class CreateTileGrid : MonoBehaviour
         foreach(TileInfo tile in difficultyBand_[0])
         {
             //Finding the angle that the current tile is from the end point
-            float angleDiff = Mathf.Atan2(endTile_.tilePosition.y - tile.tilePosition.y, endTile_.tilePosition.x - tile.tilePosition.x);
+            float angleDiff = Mathf.Atan2(tile.tilePosition.z - endTile_.tilePosition.z, tile.tilePosition.x - endTile_.tilePosition.x);
             angleDiff *= Mathf.Rad2Deg;
 
             //Normalizing the angleDiff so that it's between 0-360, not -180 and 180
@@ -600,6 +645,26 @@ public class CreateTileGrid : MonoBehaviour
             }
 
             Debug.Log(tile.regionName);
+        }
+
+
+        float angle0 = Mathf.Atan2(startTile_.tilePosition.z - difficultyBand_[0][0].tilePosition.z, startTile_.tilePosition.x - difficultyBand_[0][0].tilePosition.x);
+        angle0 *= Mathf.Rad2Deg;
+        if(angle0 < 0)
+        {
+            angle0 += 360;
+        }
+        float angle1 = Mathf.Atan2(startTile_.tilePosition.z - difficultyBand_[0][difficultyBand_[0].Count - 1].tilePosition.z, startTile_.tilePosition.x - difficultyBand_[0][difficultyBand_[0].Count - 1].tilePosition.x);
+        angle1 *= Mathf.Rad2Deg;
+        if (angle1 < 0)
+        {
+            angle1 += 360;
+        }
+        float angle2 = Mathf.Atan2(startTile_.tilePosition.z - difficultyBand_[0][difficultyBand_[0].Count /2].tilePosition.z, startTile_.tilePosition.x - difficultyBand_[0][difficultyBand_[0].Count /2].tilePosition.x);
+        angle2 *= Mathf.Rad2Deg;
+        if (angle2 < 0)
+        {
+            angle2 += 360;
         }
     }
 
@@ -752,30 +817,60 @@ public class CreateTileGrid : MonoBehaviour
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
         playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
-
+        
         //Instantiating the test characters at the starting tile's location
         GameObject startChar1 = GameObject.Instantiate(this.testCharacter, startTile_.tilePosition, new Quaternion());
         GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, startTile_.tilePosition, new Quaternion());
 
+
         //Adding the starting characters to the party group
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar1.GetComponent<Character>());
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
-
+        
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
+        
 
         //Creating the test enemy and adding them to a tile next to the start tile
         int connectedTileIndex = 0;
+        for(int c = 0; c < startTile_.connectedTiles.Count; ++c)
+        {
+            if(startTile_.connectedTiles[c] != null)
+            {
+                connectedTileIndex = c;
+                break;
+            }
+        }
+        
+
         GameObject testEnemy = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex].tilePosition, new Quaternion());
         testEnemy.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex]);
 
-        int connectedTileIndex2 = 1;
+
+        int connectedTileIndex2 = connectedTileIndex;
+        for(int c2 = connectedTileIndex + 1; c2 < startTile_.connectedTiles.Count; ++ c2)
+        {
+            if(startTile_.connectedTiles[c2] != null)
+            {
+                connectedTileIndex2 = c2;
+            }
+        }
+
         GameObject testEnemy2 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex2].tilePosition, new Quaternion());
         testEnemy2.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex2]);
 
-        int connectedTileIndex3 = 2;
+
+        int connectedTileIndex3 = connectedTileIndex2;
+        for(int c3 = connectedTileIndex2 + 1; c3 < startTile_.connectedTiles.Count; ++c3)
+        {
+            if(startTile_.connectedTiles[c3] != null)
+            {
+                connectedTileIndex3 = c3;
+            }
+        }
         GameObject testEnemy3 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex3].tilePosition, new Quaternion());
         testEnemy3.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex3]);
+
     }
 
 
