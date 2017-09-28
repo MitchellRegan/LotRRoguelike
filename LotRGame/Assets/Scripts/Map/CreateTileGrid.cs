@@ -34,19 +34,6 @@ public class CreateTileGrid : MonoBehaviour
     //Prefab for the RegionInfo of the ocean
     public RegionInfo oceanRegion;
 
-    //List of prefabs for the different types of forrest RegionInfo classes
-    public List<RegionInfo> forrestRegions;
-    //List of prefabs for the different types of swamp RegionInfo classes
-    public List<RegionInfo> swampRegions;
-    //List of prefabs for the different types of grassland RegionInfo classes
-    public List<RegionInfo> grasslandRegions;
-    //List of prefabs for the different types of desert RegionInfo classes
-    public List<RegionInfo> desertRegions;
-    //List of prefabs for the different types of mountain RegionInfo classes
-    public List<RegionInfo> mountainRegions;
-    //List of prefabs for the different types of volcano RegionInfo classes
-    public List<RegionInfo> volcanoRegions;
-
     [Space(8)]
 
     //List of prefabs for different very easy regions
@@ -166,7 +153,6 @@ public class CreateTileGrid : MonoBehaviour
                 break;
 
             case GameData.gameDifficulty.Normal:
-                //this.CreateMapNormal();
                 this.ImprovedMapGeneration();
                 break;
 
@@ -174,33 +160,6 @@ public class CreateTileGrid : MonoBehaviour
                 Debug.LogError("Create Map Hard function is missing!");
                 break;
         }
-    }
-
-
-    //Creates a map for normal games
-    private void CreateMapNormal()
-    {
-        //Creating a test spoke forrest region in the center of the map
-        int centerRow = (this.tileGrid.Count / 2) + 1;
-        int centerCol = (this.tileGrid[0].Count / 2) + 1;
-        this.GenerateSpokeRegion(centerRow, centerCol, new Vector2(16, 24), new Vector2(25, 40), this.forrestRegions[0]);
-
-        //Setting the starting point at a random location in the first third of the map
-        int startCol = Random.Range(2, (this.tileGrid.Count / 3) + 1);
-        int startRow = Random.Range(2, (this.tileGrid[0].Count / 3) + 1);
-
-        //Creating a test spoke grassland region at the starting point
-        this.GenerateSpokeRegion(startRow, startCol, new Vector2(6, 12), new Vector2(3,10), this.grasslandRegions[0]);
-
-
-        //Creating a small region to show off for the website
-        int showoffCol = startCol + 10;
-        int showoffRow = startRow + 8;
-        this.GenerateSpokeRegion(showoffRow, showoffCol, new Vector2(6, 12), new Vector2(2, 6), this.mountainRegions[0]);//Mountain
-        this.GenerateSpokeRegion(showoffRow, showoffCol, new Vector2(4, 6), new Vector2(2, 4), this.volcanoRegions[0]);//volcano
-
-
-        this.SetPlayerPartyPosition(this.tileGrid[startCol][startRow]);
     }
 
 
@@ -229,7 +188,7 @@ public class CreateTileGrid : MonoBehaviour
         }
         //Finding which fifth of the map the start zone will be along
         int startZoneSection = Random.Range(0, 4);
-        
+
         //Setting the end zone along the opposite edge of the map that the start zone is
         MapDirections endZoneDirection = MapDirections.South;
         switch(startZoneDirection)
@@ -247,6 +206,7 @@ public class CreateTileGrid : MonoBehaviour
                 endZoneDirection = MapDirections.West;
                 break;
         }
+
         //Finding which fifth of the map the end zone will be along. It's within a fifth of the start zone section
         int endZoneSection = 0;
         if(startZoneSection == 0)
@@ -261,7 +221,7 @@ public class CreateTileGrid : MonoBehaviour
         {
             endZoneSection = startZoneSection + Random.Range(-1, 1);
         }
-
+        
         //Finding the Starting tile based on the starting edge and fifth of the map
         TileInfo startTile = null;
         Vector2 startRowRanges = new Vector2();
@@ -360,6 +320,24 @@ public class CreateTileGrid : MonoBehaviour
                 endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
                 endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
 
+                //Making sure the endcol and endrow are within the bounds of the tile grid
+                if (endCol < 0)
+                {
+                    endCol = 0;
+                }
+                else if (endCol >= this.tileGrid.Count)
+                {
+                    endCol = this.tileGrid.Count - 1;
+                }
+                if (endRow < 0)
+                {
+                    endRow = 0;
+                }
+                else if (endRow >= this.tileGrid[0].Count)
+                {
+                    endRow = this.tileGrid[0].Count - 1;
+                }
+
                 //Setting the start tile using the row and column
                 endTile = this.tileGrid[endCol][endRow];
                 break;
@@ -376,6 +354,24 @@ public class CreateTileGrid : MonoBehaviour
                 //Finding a random row and column based on the ranges
                 endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
                 endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
+
+                //Making sure the endcol and endrow are within the bounds of the tile grid
+                if(endCol < 0)
+                {
+                    endCol = 0;
+                }
+                else if(endCol >= this.tileGrid.Count)
+                {
+                    endCol = this.tileGrid.Count - 1;
+                }
+                if(endRow < 0)
+                {
+                    endRow = 0;
+                }
+                else if(endRow >= this.tileGrid[0].Count)
+                {
+                    endRow = this.tileGrid[0].Count - 1;
+                }
 
                 //Setting the start tile using the row and column
                 endTile = this.tileGrid[endCol][endRow];
@@ -394,6 +390,24 @@ public class CreateTileGrid : MonoBehaviour
                 endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
                 endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
 
+                //Making sure the endcol and endrow are within the bounds of the tile grid
+                if (endCol < 0)
+                {
+                    endCol = 0;
+                }
+                else if (endCol >= this.tileGrid.Count)
+                {
+                    endCol = this.tileGrid.Count - 1;
+                }
+                if (endRow < 0)
+                {
+                    endRow = 0;
+                }
+                else if (endRow >= this.tileGrid[0].Count)
+                {
+                    endRow = this.tileGrid[0].Count - 1;
+                }
+
                 //Setting the start tile using the row and column
                 endTile = this.tileGrid[endCol][endRow];
                 break;
@@ -410,6 +424,24 @@ public class CreateTileGrid : MonoBehaviour
                 //Finding a random row and column based on the ranges
                 endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
                 endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
+
+                //Making sure the endcol and endrow are within the bounds of the tile grid
+                if (endCol < 0)
+                {
+                    endCol = 0;
+                }
+                else if (endCol >= this.tileGrid.Count)
+                {
+                    endCol = this.tileGrid.Count - 1;
+                }
+                if (endRow < 0)
+                {
+                    endRow = 0;
+                }
+                else if (endRow >= this.tileGrid[0].Count)
+                {
+                    endRow = this.tileGrid[0].Count - 1;
+                }
 
                 //Setting the start tile using the row and column
                 endTile = this.tileGrid[endCol][endRow];
@@ -516,34 +548,18 @@ public class CreateTileGrid : MonoBehaviour
         //Getting the tile that's at the opposite end of the end tile map
         oppositeEnd = this.tileGrid[oppositeCol][oppositeRow];
 
-        //For testing purposes, we're going to set each band as the same region type
-        foreach(TileInfo veryEasyTile in veryEasyBand[0])
-        {
-            //veryEasyTile.SetTileBasedOnRegion(this.grasslandRegions[0]);
-        }
-        foreach(TileInfo easyTile in easyBand[0])
-        {
-            easyTile.SetTileBasedOnRegion(this.forrestRegions[0]);
-        }
-        foreach(TileInfo mediumTile in mediumBand[0])
-        {
-            mediumTile.SetTileBasedOnRegion(this.swampRegions[0]);
-        }
-        foreach(TileInfo hardTile in hardBand[0])
-        {
-            hardTile.SetTileBasedOnRegion(this.desertRegions[0]);
-        }
-        foreach(TileInfo veryHardTile in veryHardBand[0])
-        {
-            veryHardTile.SetTileBasedOnRegion(this.mountainRegions[0]);
-        }
-        foreach(TileInfo finalTile in finalBand[0])
-        {
-            finalTile.SetTileBasedOnRegion(this.volcanoRegions[0]);
-        }
-
         //Splitting the very easy difficulty band
         this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, oppositeEnd, endTile);
+        //Splitting the easy difficulty band
+        this.SplitDifficultyBands(easyBand, this.easyRegions, this.minMaxEasySplits, oppositeEnd, endTile);
+        //Splitting the medium difficulty band
+        this.SplitDifficultyBands(mediumBand, this.mediumRegions, this.minMaxMediumSplits, oppositeEnd, endTile);
+        //Splitting the hard difficulty band
+        this.SplitDifficultyBands(hardBand, this.hardRegions, this.minMaxHardSplits, oppositeEnd, endTile);
+        //Splitting the very hard difficulty band
+        this.SplitDifficultyBands(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, oppositeEnd, endTile);
+        //Splitting the final difficulty band
+        this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, oppositeEnd, endTile);
 
         //Once the map is created, we set the player on the starting tile
         this.SetPlayerPartyPosition(startTile);
@@ -591,7 +607,7 @@ public class CreateTileGrid : MonoBehaviour
             //Setting the current split to the split angle list
             splitAngles.Add(baseAngle);
         }
-
+        
         //Duplicating the list of regions in the difficulty band so we can modify it
         List<RegionInfo> regionDup = difficultyRegions_;
 
@@ -611,10 +627,10 @@ public class CreateTileGrid : MonoBehaviour
                 regionDup.RemoveAt(regionIndex);
             }
         }
-        
 
+        
         //Looping through each tile in the given difficulty band
-        foreach(TileInfo tile in difficultyBand_[0])
+        foreach (TileInfo tile in difficultyBand_[0])
         {
             //Finding the angle that the current tile is from the end point
             float angleDiff = Mathf.Atan2(tile.tilePosition.z - endTile_.tilePosition.z, tile.tilePosition.x - endTile_.tilePosition.x);
@@ -645,26 +661,6 @@ public class CreateTileGrid : MonoBehaviour
             }
 
             Debug.Log(tile.regionName);
-        }
-
-
-        float angle0 = Mathf.Atan2(startTile_.tilePosition.z - difficultyBand_[0][0].tilePosition.z, startTile_.tilePosition.x - difficultyBand_[0][0].tilePosition.x);
-        angle0 *= Mathf.Rad2Deg;
-        if(angle0 < 0)
-        {
-            angle0 += 360;
-        }
-        float angle1 = Mathf.Atan2(startTile_.tilePosition.z - difficultyBand_[0][difficultyBand_[0].Count - 1].tilePosition.z, startTile_.tilePosition.x - difficultyBand_[0][difficultyBand_[0].Count - 1].tilePosition.x);
-        angle1 *= Mathf.Rad2Deg;
-        if (angle1 < 0)
-        {
-            angle1 += 360;
-        }
-        float angle2 = Mathf.Atan2(startTile_.tilePosition.z - difficultyBand_[0][difficultyBand_[0].Count /2].tilePosition.z, startTile_.tilePosition.x - difficultyBand_[0][difficultyBand_[0].Count /2].tilePosition.x);
-        angle2 *= Mathf.Rad2Deg;
-        if (angle2 < 0)
-        {
-            angle2 += 360;
         }
     }
 
