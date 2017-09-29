@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PartyCreator : MonoBehaviour
 {
@@ -11,6 +12,38 @@ public class PartyCreator : MonoBehaviour
 
     //Dictionary to hold the number of points that track how many skill points are currently allocated to each skill
     private Dictionary<SkillList, int> allocatedSkillPoints;
+
+    [Space(8)]
+
+    //Reference to the text that shows the remaining points to allocate
+    public Text remainingPointsText;
+
+    [Space(8)]
+
+    //Reference to the text that shows the allocated points for each skill
+    public Text punchingPointText;
+    public Text daggersPointText;
+    public Text swordsPointText;
+    public Text axesPointText;
+    public Text spearsPointText;
+    public Text bowsPointText;
+    public Text improvisedPointText;
+
+    public Text holyMagicPointText;
+    public Text darkMagicPointText;
+    public Text natureMagicPointText;
+
+    public Text cookingPointText;
+    public Text healingPointText;
+    public Text craftingPointText;
+
+    public Text foragingPointText;
+    public Text trackingPointText;
+    public Text fishingPointText;
+
+    public Text climbingPointText;
+    public Text hidingPointText;
+    public Text swimmingPointText;
 
 
 
@@ -46,6 +79,9 @@ public class PartyCreator : MonoBehaviour
         this.allocatedSkillPoints.Add(SkillList.Climbing, 0);
         this.allocatedSkillPoints.Add(SkillList.Hiding, 0);
         this.allocatedSkillPoints.Add(SkillList.Swimming, 0);
+
+        //Updating all of our text to show the points
+        this.UpdateText();
     }
 	
 
@@ -63,6 +99,9 @@ public class PartyCreator : MonoBehaviour
 
         //Adding a point to the given skill
         this.allocatedSkillPoints[skillToIncrease_] += 1;
+
+        //Updating all of our text to show the points
+        this.UpdateText();
     }
 
 
@@ -80,6 +119,42 @@ public class PartyCreator : MonoBehaviour
 
         //Adding a point to the remaining pool
         this.currentPoints += 1;
+
+        //Updating all of our text to show the points
+        this.UpdateText();
+    }
+
+
+    //Function called internally to update the text for each allocated point
+    private void UpdateText()
+    {
+        //Displaying the current points
+        this.remainingPointsText.text = "" + this.currentPoints;
+
+        //Displaying all of the allocated skill points
+        this.punchingPointText.text = "" + this.allocatedSkillPoints[SkillList.Punching];
+        this.daggersPointText.text = "" + this.allocatedSkillPoints[SkillList.Daggers];
+        this.swordsPointText.text = "" + this.allocatedSkillPoints[SkillList.Swords];
+        this.axesPointText.text = "" + this.allocatedSkillPoints[SkillList.Axes];
+        this.spearsPointText.text = "" + this.allocatedSkillPoints[SkillList.Spears];
+        this.bowsPointText.text = "" + this.allocatedSkillPoints[SkillList.Bows];
+        this.improvisedPointText.text = "" + this.allocatedSkillPoints[SkillList.Improvised];
+
+        this.holyMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.HolyMagic];
+        this.darkMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.DarkMagic];
+        this.natureMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.NatureMagic];
+
+        this.cookingPointText.text = "" + this.allocatedSkillPoints[SkillList.Cooking];
+        this.healingPointText.text = "" + this.allocatedSkillPoints[SkillList.Healing];
+        this.craftingPointText.text = "" + this.allocatedSkillPoints[SkillList.Crafting];
+
+        this.foragingPointText.text = "" + this.allocatedSkillPoints[SkillList.Foraging];
+        this.trackingPointText.text = "" + this.allocatedSkillPoints[SkillList.Tracking];
+        this.fishingPointText.text = "" + this.allocatedSkillPoints[SkillList.Fishing];
+
+        this.climbingPointText.text = "" + this.allocatedSkillPoints[SkillList.Climbing];
+        this.hidingPointText.text = "" + this.allocatedSkillPoints[SkillList.Hiding];
+        this.swimmingPointText.text = "" + this.allocatedSkillPoints[SkillList.Swimming];
     }
 }
 
