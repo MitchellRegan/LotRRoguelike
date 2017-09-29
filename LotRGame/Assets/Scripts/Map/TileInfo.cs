@@ -146,7 +146,7 @@ public class TileInfo
                         return;
                     }
                 }
-
+                
                 //If there weren't any party groups on this tile, the enemy encounter is added
                 this.objectsOnThisTile.Add(objectToAdd_);
             }
@@ -155,7 +155,7 @@ public class TileInfo
             {
                 //The player group is added
                 this.objectsOnThisTile.Add(objectToAdd_);
-
+                
                 //Looping through all of the objects on this tile to see if an enemy encounter is on it
                 foreach (GameObject currentObj in this.objectsOnThisTile)
                 {
@@ -174,7 +174,7 @@ public class TileInfo
                         return;
                     }
                 }
-
+                
                 //If we made it this far, there wasn't an enemy encounter on the tile, so we need to check for an encounter
                 this.RollForRandomEncounter();
             }
@@ -228,6 +228,12 @@ public class TileInfo
 
                     //If we couldn't find the player party object for some reason, we stop the combat from happening
                     if(playerParty == null)
+                    {
+                        return;
+                    }
+                    
+                    //Making sure there's not an encounter before the game even begins
+                    if(TimePanelUI.globalReference == null || TimePanelUI.globalReference.daysTaken < 1)
                     {
                         return;
                     }

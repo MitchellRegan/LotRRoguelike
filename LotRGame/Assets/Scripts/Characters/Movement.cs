@@ -32,19 +32,20 @@ public class Movement : MonoBehaviour
         {
             this.currentTile.RemoveObjectFromThisTile(this.gameObject);
         }
+
         //Setting the current tile
         this.currentTile = currentTile_;
         this.currentTile.AddObjectToThisTile(this.gameObject);
-
+        
         //Resetting the travel times and clearing the tile to travel to
         this.currentTravelTime = 0;
         this.tileToTravelTo = null;
-
+        
         //Moving this character to the current tile's position
         this.transform.position = new Vector3(this.currentTile.tilePosition.x, this.currentTile.elevation, this.currentTile.tilePosition.z);
-
+        
         //If this movement script is attached to a player party group, the tile grid needs to update the visible tiles
-        if(this.GetComponent<PartyGroup>())
+        if (this.GetComponent<PartyGroup>())
         {
             CreateTileGrid.globalReference.GenerateVisibleLand(this);
         }

@@ -659,8 +659,6 @@ public class CreateTileGrid : MonoBehaviour
                     tile.SetTileBasedOnRegion(bandRegions[t+1]);
                 }
             }
-
-            Debug.Log(tile.regionName);
         }
     }
 
@@ -812,12 +810,12 @@ public class CreateTileGrid : MonoBehaviour
     {
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
+
         playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
-        
+
         //Instantiating the test characters at the starting tile's location
         GameObject startChar1 = GameObject.Instantiate(this.testCharacter, startTile_.tilePosition, new Quaternion());
         GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, startTile_.tilePosition, new Quaternion());
-
 
         //Adding the starting characters to the party group
         playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar1.GetComponent<Character>());
@@ -825,7 +823,6 @@ public class CreateTileGrid : MonoBehaviour
         
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
-        
 
         //Creating the test enemy and adding them to a tile next to the start tile
         int connectedTileIndex = 0;
@@ -838,7 +835,6 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
         
-
         GameObject testEnemy = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex].tilePosition, new Quaternion());
         testEnemy.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex]);
 
@@ -866,7 +862,6 @@ public class CreateTileGrid : MonoBehaviour
         }
         GameObject testEnemy3 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex3].tilePosition, new Quaternion());
         testEnemy3.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex3]);
-
     }
 
 
