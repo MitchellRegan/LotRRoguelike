@@ -86,7 +86,7 @@ public class PartyCreator : MonoBehaviour
 	
 
     //Function called externally to allocate a point to a skill
-    public void allocateSkillPoint(string skillToIncrease_)
+    public void AllocateSkillPoint(string skillToIncrease_)
     {
         //If we don't have any remaining points to allocate, nothing happens
         if(this.currentPoints < 1)
@@ -114,7 +114,7 @@ public class PartyCreator : MonoBehaviour
 
 
     //Function called externally to de-allocate a point from a skill
-    public void deallocateSkillPoint(string skillToDecrease_)
+    public void DeallocateSkillPoint(string skillToDecrease_)
     {
         //Converting the given string for the skill name to the enum so we can find it in our dictionary
         SkillList parsedEnum = (SkillList)System.Enum.Parse(typeof(SkillList), skillToDecrease_);
