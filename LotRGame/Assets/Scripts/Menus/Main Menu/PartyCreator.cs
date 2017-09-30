@@ -86,7 +86,7 @@ public class PartyCreator : MonoBehaviour
 	
 
     //Function called externally to allocate a point to a skill
-    public void allocateSkillPoint(SkillList skillToIncrease_)
+    public void allocateSkillPoint(string skillToIncrease_)
     {
         //If we don't have any remaining points to allocate, nothing happens
         if(this.currentPoints < 1)
@@ -94,34 +94,50 @@ public class PartyCreator : MonoBehaviour
             return;
         }
 
-        //Removing a point from the remaining pool
-        this.currentPoints -= 1;
+        //Converting the given string for the skill name to the enum so we can find it in our dictionary
+        SkillList parsedEnum = (SkillList) System.Enum.Parse(typeof(SkillList), skillToIncrease_);
 
-        //Adding a point to the given skill
-        this.allocatedSkillPoints[skillToIncrease_] += 1;
+        //Making sure we're able to convert the string to the enum
+        int s;
+        if(this.allocatedSkillPoints.TryGetValue(parsedEnum, out s))
+        {
+            //Removing a point from the remaining pool
+            this.currentPoints -= 1;
 
-        //Updating all of our text to show the points
-        this.UpdateText();
+            //Adding a point to the given skill
+            this.allocatedSkillPoints[parsedEnum] += 1;
+
+            //Updating all of our text to show the points
+            this.UpdateText();
+        }
     }
 
 
     //Function called externally to de-allocate a point from a skill
-    public void deallocateSkillPoint(SkillList skillToDecrease_)
+    public void deallocateSkillPoint(string skillToDecrease_)
     {
-        //Making sure the skill that we're removing a point from has points to remove
-        if(this.allocatedSkillPoints[skillToDecrease_] < 1)
+        //Converting the given string for the skill name to the enum so we can find it in our dictionary
+        SkillList parsedEnum = (SkillList)System.Enum.Parse(typeof(SkillList), skillToDecrease_);
+
+        //Making sure we're able to convert the string to the enum
+        int s;
+        if (this.allocatedSkillPoints.TryGetValue(parsedEnum, out s))
         {
-            return;
+            //Making sure the skill that we're removing a point from has points to remove
+            if (this.allocatedSkillPoints[parsedEnum] < 1)
+            {
+                return;
+            }
+
+            //Removing a point from the given skill
+            this.allocatedSkillPoints[parsedEnum] -= 1;
+
+            //Adding a point to the remaining pool
+            this.currentPoints += 1;
+
+            //Updating all of our text to show the points
+            this.UpdateText();
         }
-
-        //Removing a point from the given skill
-        this.allocatedSkillPoints[skillToDecrease_] -= 1;
-
-        //Adding a point to the remaining pool
-        this.currentPoints += 1;
-
-        //Updating all of our text to show the points
-        this.UpdateText();
     }
 
 
@@ -157,6 +173,7 @@ public class PartyCreator : MonoBehaviour
         this.swimmingPointText.text = "" + this.allocatedSkillPoints[SkillList.Swimming];
     }
 }
+
 
 public enum SkillList
 {
