@@ -14,6 +14,9 @@ public class PartyCreator : MonoBehaviour
     //The list of all party characters that are created and will be added to the starting party
     private List<Character> newPartyCharacters;
 
+    //Enum to track the chosen player race
+    private RaceTypes.Races chosenRace = RaceTypes.Races.None;
+
 
 
     //Function called when this object is created
@@ -26,8 +29,18 @@ public class PartyCreator : MonoBehaviour
     //Function called when this object is enabled
     private void OnEnable()
     {
+        //If the player has chosen a different starting race since the last time this menu was up
+        if (this.chosenRace == GameData.globalReference.startingRace)
+        {
+            //Nothing happens
+            return;
+        }
+
+        //Setting the chosen race to the new race
+        this.chosenRace = GameData.globalReference.startingRace;
+
         //Clearing all of the characters that are currently in the newParyCharacters list
-        for(int i = 0; i < this.newPartyCharacters.Count; ++i)
+        for (int i = 0; i < this.newPartyCharacters.Count; ++i)
         {
             Destroy(this.newPartyCharacters[i].gameObject);
             this.newPartyCharacters[i] = null;

@@ -117,8 +117,22 @@ public class CharacterCustomizer : MonoBehaviour
             
             //If this character is female, they're now genderless
             case Genders.Female:
-                this.sex = Genders.Genderless;
-                this.sexText.text = "Genderless";
+                //If the current player race is Amazon, nothing happens because Amazons are all women
+                if (GameData.globalReference.startingRace != RaceTypes.Races.Amazon)
+                {
+                    //If the current player race is Gill Folk, they can be genderless
+                    if (GameData.globalReference.startingRace == RaceTypes.Races.GillFolk || GameData.globalReference.startingRace == RaceTypes.Races.Elf)
+                    {
+                        this.sex = Genders.Genderless;
+                        this.sexText.text = "Genderless";
+                    }
+                    //Otherwise, they're now male
+                    else
+                    {
+                        this.sex = Genders.Male;
+                        this.sexText.text = "Male";
+                    }
+                }
                 break;
             
             //If this character is genderless, they're now male
@@ -137,14 +151,28 @@ public class CharacterCustomizer : MonoBehaviour
         {
             //If this character is male, they're now genderless
             case Genders.Male:
-                this.sex = Genders.Genderless;
-                this.sexText.text = "Genderless";
-                break;
+                //If the current player race is Gill Folk or Elf, they can be genderless
+                if (GameData.globalReference.startingRace == RaceTypes.Races.GillFolk || GameData.globalReference.startingRace == RaceTypes.Races.Elf)
+                {
+                    this.sex = Genders.Genderless;
+                    this.sexText.text = "Genderless";
+                }
+                //Otherwise, they're now female
+                else
+                {
+                    this.sex = Genders.Female;
+                    this.sexText.text = "Female";
+                }
+                    break;
 
             //If this character is female, they're now male
             case Genders.Female:
-                this.sex = Genders.Male;
-                this.sexText.text = "Male";
+                //If the current player race is Amazon, nothing happens because Amazons are all women
+                if (GameData.globalReference.startingRace != RaceTypes.Races.Amazon)
+                {
+                    this.sex = Genders.Male;
+                    this.sexText.text = "Male";
+                }
                 break;
 
             //If this character is genderless, they're now female
