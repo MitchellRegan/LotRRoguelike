@@ -30,7 +30,7 @@ public class CharacterCustomizer : MonoBehaviour
     private int currentPoints = 0;
 
     //Dictionary to hold the number of points that track how many skill points are currently allocated to each skill
-    private Dictionary<SkillList, int> allocatedSkillPoints;
+    public Dictionary<SkillList, int> allocatedSkillPoints;
 
     [Space(8)]
 

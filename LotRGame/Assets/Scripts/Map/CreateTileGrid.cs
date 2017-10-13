@@ -146,20 +146,7 @@ public class CreateTileGrid : MonoBehaviour
         this.ConnectTiles();
 
         //Creates the correct map for the game difficulty
-        switch(GameData.globalReference.currentDifficulty)
-        {
-            case GameData.gameDifficulty.Easy:
-                Debug.LogError("Create Map Easy function is missing!");
-                break;
-
-            case GameData.gameDifficulty.Normal:
-                this.ImprovedMapGeneration();
-                break;
-
-            case GameData.gameDifficulty.Hard:
-                Debug.LogError("Create Map Hard function is missing!");
-                break;
-        }
+        this.ImprovedMapGeneration();
     }
 
 
@@ -813,13 +800,28 @@ public class CreateTileGrid : MonoBehaviour
 
         playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
 
-        //Instantiating the test characters at the starting tile's location
-        GameObject startChar1 = GameObject.Instantiate(this.testCharacter, startTile_.tilePosition, new Quaternion());
-        GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, startTile_.tilePosition, new Quaternion());
+        //Looping through all of the children for the GameData object to get the created characters
+        for(int ch = 0; ch < GameData.globalReference.transform.childCount; ++ch)
+        {
+            //If the child at the current index has a character component
+            if(GameData.globalReference.transform.GetChild(ch).GetComponent<Character>())
+            {
+                //Adding the character to our party group
+                playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(GameData.globalReference.transform.GetChild(ch).GetComponent<Character>());
+            }
+        }
 
-        //Adding the starting characters to the party group
-        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar1.GetComponent<Character>());
-        playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
+        //If there are no characters that were added (either because of a glitch or just testing), we create the test characters
+        if (playerParty1.GetComponent<PartyGroup>().charactersInParty.Count == 0)
+        {
+            //Instantiating the test characters at the starting tile's location
+            GameObject startChar1 = GameObject.Instantiate(this.testCharacter, startTile_.tilePosition, new Quaternion());
+            GameObject startChar2 = GameObject.Instantiate(this.testCharacter2, startTile_.tilePosition, new Quaternion());
+
+            //Adding the starting characters to the party group
+            playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar1.GetComponent<Character>());
+            playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
+        }
         
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();

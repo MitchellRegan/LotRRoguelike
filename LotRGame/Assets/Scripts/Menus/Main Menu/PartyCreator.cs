@@ -90,6 +90,9 @@ public class PartyCreator : MonoBehaviour
                         //Setting all of the info for each Character Customizer
                         this.SetCharacterCustomizerInfo(this.allCharacterCustomizers[c], createdChar.GetComponent<Character>());
 
+                        //Parenting the character object to the global data object so we can transfer it over to the gameplay scene
+                        createdChar.transform.SetParent(GameData.globalReference.transform);
+
                         //Breaking out of the loop
                         break;
                     }
@@ -125,6 +128,47 @@ public class PartyCreator : MonoBehaviour
             case Genders.Genderless:
                 customizer_.sexText.text = "Genderless";
                 break;
+        }
+    }
+
+
+    //Function called when a new game is started to finalize each character
+    public void FinalizeCharactersForNewGame()
+    {
+        //Looping through each party character
+        for(int c = 0; c < this.newPartyCharacters.Count; ++c)
+        {
+            //Setting the character's first and last names
+            this.newPartyCharacters[c].firstName = this.allCharacterCustomizers[c].firstNameText.text;
+            this.newPartyCharacters[c].lastName = this.allCharacterCustomizers[c].lastNameText.text;
+
+            //Setting the character's sex
+            this.newPartyCharacters[c].sex = this.allCharacterCustomizers[c].sex;
+
+            //Adding all of the allocated skill points to the designated skills
+            this.newPartyCharacters[c].charCombatStats.punching += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Punching];
+            this.newPartyCharacters[c].charCombatStats.daggers += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Daggers];
+            this.newPartyCharacters[c].charCombatStats.swords += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swords];
+            this.newPartyCharacters[c].charCombatStats.axes += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Axes];
+            this.newPartyCharacters[c].charCombatStats.spears += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Spears];
+            this.newPartyCharacters[c].charCombatStats.bows += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Bows];
+            this.newPartyCharacters[c].charCombatStats.improvised += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Improvised];
+
+            this.newPartyCharacters[c].charCombatStats.holyMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.HolyMagic];
+            this.newPartyCharacters[c].charCombatStats.darkMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.DarkMagic];
+            this.newPartyCharacters[c].charCombatStats.natureMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.NatureMagic];
+
+            this.newPartyCharacters[c].charSkills.cooking += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Cooking];
+            this.newPartyCharacters[c].charSkills.healing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Healing];
+            this.newPartyCharacters[c].charSkills.crafting += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Crafting];
+
+            this.newPartyCharacters[c].charSkills.foraging += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Foraging];
+            this.newPartyCharacters[c].charSkills.tracking += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Tracking];
+            this.newPartyCharacters[c].charSkills.fishing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Fishing];
+
+            this.newPartyCharacters[c].charSkills.climbing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Climbing];
+            this.newPartyCharacters[c].charSkills.hiding += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Hiding];
+            this.newPartyCharacters[c].charSkills.swimming += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swimming];
         }
     }
 }
