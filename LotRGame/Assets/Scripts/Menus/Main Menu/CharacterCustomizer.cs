@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class CharacterCustomizer : MonoBehaviour
 {
     //The text for the first name of the character
-    public Text firstNameText;
+    public InputField firstNameText;
     //The text for the last name of the character
-    public Text lastNameText;
+    public InputField lastNameText;
 
     [Space(8)]
 

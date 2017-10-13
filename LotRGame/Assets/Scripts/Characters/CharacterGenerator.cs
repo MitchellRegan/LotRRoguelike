@@ -97,7 +97,6 @@ public class CharacterGenerator : MonoBehaviour
     {
         //Getting the reference to this object's Character component
         Character characterRef = this.GetComponent<Character>();
-
         characterRef.charRaceTypes.race = this.race;
         characterRef.sex = this.sex;
         characterRef.clanName = this.clanName;
