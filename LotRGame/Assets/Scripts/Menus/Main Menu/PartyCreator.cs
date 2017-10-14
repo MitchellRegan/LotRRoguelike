@@ -22,18 +22,32 @@ public class PartyCreator : MonoBehaviour
     //Function called when this object is created
     private void Awake()
     {
-        this.newPartyCharacters = new List<Character>();
+        //this.newPartyCharacters = new List<Character>();
     }
 
 
     //Function called when this object is enabled
     private void OnEnable()
     {
+        //Generating characters
+        this.GenerateStartingCharacters();
+    }
+
+
+    //Function called from OnEnable and externally to generate the starting characters
+    public void GenerateStartingCharacters()
+    {
         //If the player has chosen a different starting race since the last time this menu was up
         if (this.chosenRace == GameData.globalReference.startingRace)
         {
             //Nothing happens
             return;
+        }
+
+        //Making sure we have an initialized list of party characters
+        if(this.newPartyCharacters == null)
+        {
+            this.newPartyCharacters = new List<Character>();
         }
 
         //Setting the chosen race to the new race
@@ -49,10 +63,10 @@ public class PartyCreator : MonoBehaviour
 
         //Looping through our list of RacePartyMembers so we can find out how many characters we start with
         int numCharacters = 1;
-        foreach(RacePartyMembers r in this.raceStartingPartyNumbers)
+        foreach (RacePartyMembers r in this.raceStartingPartyNumbers)
         {
             //If we find the race that we're starting with
-            if(r.race == GameData.globalReference.startingRace)
+            if (r.race == GameData.globalReference.startingRace)
             {
                 //Getting the number of starting party members and breaking the loop
                 numCharacters = r.startingPartyMembers;
@@ -61,24 +75,24 @@ public class PartyCreator : MonoBehaviour
         }
 
         //Making sure there's not more starting party characters than the number of Character Customizers
-        if(numCharacters > this.allCharacterCustomizers.Count)
+        if (numCharacters > this.allCharacterCustomizers.Count)
         {
             numCharacters = this.allCharacterCustomizers.Count;
         }
 
         //Activating each of the character customizers for the number of starting characters
-        for(int c = 0; c < this.allCharacterCustomizers.Count; ++c)
+        for (int c = 0; c < this.allCharacterCustomizers.Count; ++c)
         {
             //If we're in the range of the number of starting characters, we make sure they're activated
-            if(c < numCharacters)
+            if (c < numCharacters)
             {
                 this.allCharacterCustomizers[c].gameObject.SetActive(true);
 
                 //Creating a new instance of a character of the selected race
-                foreach(RacePartyMembers r in this.raceStartingPartyNumbers)
+                foreach (RacePartyMembers r in this.raceStartingPartyNumbers)
                 {
                     //When we find the race that we're starting with
-                    if(r.race == GameData.globalReference.startingRace)
+                    if (r.race == GameData.globalReference.startingRace)
                     {
                         //Getting a random index for which gender is going to be created
                         int genderIndex = Random.Range(0, r.characterPrefabs.Count);

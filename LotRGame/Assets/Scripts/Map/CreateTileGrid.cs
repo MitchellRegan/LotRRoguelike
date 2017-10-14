@@ -801,14 +801,9 @@ public class CreateTileGrid : MonoBehaviour
         playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
 
         //Looping through all of the children for the GameData object to get the created characters
-        for(int ch = 0; ch < GameData.globalReference.transform.childCount; ++ch)
+        foreach(Character t in GameData.globalReference.transform.GetComponentsInChildren<Character>())
         {
-            //If the child at the current index has a character component
-            if(GameData.globalReference.transform.GetChild(ch).GetComponent<Character>())
-            {
-                //Adding the character to our party group
-                playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(GameData.globalReference.transform.GetChild(ch).GetComponent<Character>());
-            }
+            playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(t.GetComponent<Character>());
         }
 
         //If there are no characters that were added (either because of a glitch or just testing), we create the test characters
