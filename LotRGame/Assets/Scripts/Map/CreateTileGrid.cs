@@ -21,7 +21,7 @@ public class CreateTileGrid : MonoBehaviour
     //The hexagon model prefab that's used for every tile
     public MeshRenderer hexMesh;
 
-    //2 dimensional array of tiles that's generated
+    //2 dimensional array of tiles that's generated (cols, rows)
     public List<List<TileInfo>> tileGrid;
 
     //The number of tiles that are visible at a given time
@@ -147,6 +147,9 @@ public class CreateTileGrid : MonoBehaviour
 
         //Creates the correct map for the game difficulty
         this.ImprovedMapGeneration();
+
+        //Creating the map texture
+        this.CreateMapTexture();
     }
 
 
@@ -789,6 +792,95 @@ public class CreateTileGrid : MonoBehaviour
             //Changes the offset after every loop
             offsetCol = !offsetCol;
         }
+    }
+
+
+    //Function called at the end of StartMapCreation to make the map texture
+    private void CreateMapTexture()
+    {
+        //Getting the height and width of the texture based on the size of the map
+        int mapWidth = CreateTileGrid.globalReference.cols;
+        int mapHeight = CreateTileGrid.globalReference.rows;
+
+        //Creating a new map texture using the map width and height
+        Texture2D mapTexture = new Texture2D(mapWidth * 2, (mapHeight * 2) + 1, TextureFormat.ARGB32, false);
+
+        //Looping through each column
+        for (int c = 0; c < mapWidth; ++c)
+        {
+            //Looping through each row
+            for (int r = 0; r < mapHeight; ++r)
+            {
+                //Creating a color for the selected pixel
+                Color pixelColor;
+
+                //Setting the color based on the type of tile we're currently on
+                switch (CreateTileGrid.globalReference.tileGrid[c][r].type)
+                {
+                    case LandType.Ocean:
+                        pixelColor = Color.blue;
+                        break;
+
+                    case LandType.Grasslands:
+                        pixelColor = Color.yellow;
+                        break;
+
+                    case LandType.Forrest:
+                        pixelColor = Color.green;
+                        break;
+
+                    case LandType.Desert:
+                        pixelColor = new Color(1, 0.8f, 0.55f);
+                        break;
+
+                    case LandType.Swamp:
+                        pixelColor = new Color(0, 1, 0.58f);
+                        break;
+
+                    case LandType.Mountain:
+                        pixelColor = Color.grey;
+                        break;
+
+                    case LandType.Volcano:
+                        pixelColor = Color.red;
+                        break;
+
+                    default:
+                        pixelColor = Color.white;
+                        break;
+                }
+
+                //If we're on an even numbered column
+                if(c % 2 == 0)
+                {
+                    //Setting the tile color to the pixel
+                    mapTexture.SetPixel(c * 2, (r * 2) + 1, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 1, pixelColor);
+                    mapTexture.SetPixel(c * 2, (r * 2) + 2, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 2, pixelColor);
+                }
+                //If we're on an odd numbered column
+                else
+                {
+                    //Setting the tile color to the pixel
+                    mapTexture.SetPixel(c * 2, r * 2, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, r * 2, pixelColor);
+                    mapTexture.SetPixel(c * 2, (r * 2) + 1, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 1, pixelColor);
+                }
+            }
+        }
+
+        //Applying the pixels
+        mapTexture.Apply();
+
+        //Encoding the texture to a png
+        byte[] bytes = mapTexture.EncodeToPNG();
+
+        string seedName = GameData.globalReference.GetComponent<RandomSeedGenerator>().seed;
+
+        //Writing the file to the desktop
+        System.IO.File.WriteAllBytes("C:/Users/Mitch/Desktop/" + seedName + ".png", bytes);
     }
 
 
