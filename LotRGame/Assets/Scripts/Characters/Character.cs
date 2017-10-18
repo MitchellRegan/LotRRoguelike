@@ -12,6 +12,7 @@ public enum Genders { Male, Female, Genderless };
 [RequireComponent(typeof(PhysicalState))]
 [RequireComponent(typeof(CombatStats))]
 [RequireComponent(typeof(ActionList))]
+[RequireComponent(typeof(CharacterSprites))]
 public class Character : MonoBehaviour
 {
     //This character's first name
@@ -48,6 +49,8 @@ public class Character : MonoBehaviour
     public CombatStats charCombatStats;
     [HideInInspector]
     public ActionList charActionList;
+    [HideInInspector]
+    public CharacterSprites charSprites;
 
 
     //Function called when this character is created
@@ -60,5 +63,6 @@ public class Character : MonoBehaviour
         this.charPhysState = this.GetComponent<PhysicalState>();
         this.charCombatStats = this.GetComponent<CombatStats>();
         this.charActionList = this.GetComponent<ActionList>();
+        this.charSprites = this.GetComponent<CharacterSprites>();
     }
 }
