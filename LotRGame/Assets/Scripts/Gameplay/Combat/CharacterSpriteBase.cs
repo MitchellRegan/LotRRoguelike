@@ -92,8 +92,7 @@ public class CharacterSpriteBase : MonoBehaviour
         this.forwardHead.sprite = cSprites_.headSprites.front;
         this.forwardLeftEye.sprite = cSprites_.eyeSprite;
         this.forwardRightEye.sprite = cSprites_.eyeSprite;
-        this.forwardBody.sprite = cSprites_.bodySprites.front;.
-        Debug.Log(cSprites_.rightArmSprites);//Right and left arm sprites aren't customizable... Just make a public var for the hand image that doesn't change?
+        this.forwardBody.sprite = cSprites_.bodySprites.front;
         this.forwardRightArm.sprite = cSprites_.rightArmSprites.front;
         this.forwardLeftArm.sprite = cSprites_.leftArmSprites.front;
         this.forwardLegs.sprite = cSprites_.legSprites.front;

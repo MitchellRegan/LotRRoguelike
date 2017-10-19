@@ -19,6 +19,10 @@ public class SpriteCustomizer : MonoBehaviour
     public List<Sprite> eyeSprites;
     private int eyeIndex = 0;
 
+    //The list of different arm sprites
+    public List<SpriteViews> armSprites;
+    private int armIndex = 0;
+
     //The list of different body types
     public List<SpriteViews> bodySprites;
     private int bodyIndex = 0;
@@ -49,6 +53,9 @@ public class SpriteCustomizer : MonoBehaviour
         newSprites.headSprites = this.headSprites[this.headIndex];
         //Setting the character's eyes
         newSprites.eyeSprite = this.eyeSprites[this.eyeIndex];
+        //Setting the character's arms
+        newSprites.rightArmSprites = this.armSprites[this.armIndex];
+        newSprites.leftArmSprites = this.armSprites[this.armIndex];
         //Setting the character's body
         newSprites.bodySprites = this.bodySprites[this.bodyIndex];
         //Setting the character's legs
@@ -88,23 +95,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next hair style
         if(goToNext_)
         {
-            int nextIndex = this.hairIndex + 1;
+            this.hairIndex += 1;
 
             //If the next hair index is greater than the size of the list, we cycle back around to the beginning
-            if(nextIndex >= this.hairSprites.Count)
+            if(this.hairIndex >= this.hairSprites.Count)
             {
-                nextIndex = 0;
+                this.hairIndex = 0;
             }
         }
         //If we're cycling to the previous hair style
         else
         {
-            int prevIndex = this.hairIndex - 1;
+            this.hairIndex -= 1;
 
             //If the previous hair index is less than 0, we cycle back around to the end of the list
-            if(prevIndex < 0)
+            if(this.hairIndex < 0)
             {
-                prevIndex = this.hairSprites.Count - 1;
+                this.hairIndex = this.hairSprites.Count - 1;
             }
         }
 
@@ -119,23 +126,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next head style
         if (goToNext_)
         {
-            int nextIndex = headIndex + 1;
+            this.headIndex += 1;
 
             //If the next head index is greater than the size of the list, we cycle back around to the beginning
-            if (nextIndex >= this.headSprites.Count)
+            if (this.headIndex >= this.headSprites.Count)
             {
-                nextIndex = 0;
+                this.headIndex = 0;
             }
         }
         //If we're cycling to the previous head style
         else
         {
-            int prevIndex = headIndex - 1;
+            this.headIndex -= 1;
 
             //If the previous head index is less than 0, we cycle back around to the end of the list
-            if (prevIndex < 0)
+            if (this.headIndex < 0)
             {
-                prevIndex = this.headSprites.Count - 1;
+                this.headIndex = this.headSprites.Count - 1;
             }
         }
 
@@ -150,23 +157,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next eye style
         if (goToNext_)
         {
-            int nextIndex = eyeIndex + 1;
+            this.eyeIndex += 1;
 
             //If the next eye index is greater than the size of the list, we cycle back around to the beginning
-            if (nextIndex >= this.eyeSprites.Count)
+            if (this.eyeIndex >= this.eyeSprites.Count)
             {
-                nextIndex = 0;
+                this.eyeIndex = 0;
             }
         }
         //If we're cycling to the previous eye style
         else
         {
-            int prevIndex = eyeIndex - 1;
+            this.eyeIndex -= 1;
 
             //If the previous eye index is less than 0, we cycle back around to the end of the list
-            if (prevIndex < 0)
+            if (this.eyeIndex < 0)
             {
-                prevIndex = this.eyeSprites.Count - 1;
+                this.eyeIndex = this.eyeSprites.Count - 1;
             }
         }
 
@@ -174,6 +181,36 @@ public class SpriteCustomizer : MonoBehaviour
         this.UpdateSpriteBase();
     }
 
+    
+    //Function called to cycle through different arm styles
+    public void CycleArms(bool goToNext_)
+    {
+        //If we're cycling to the next arm style
+        if (goToNext_)
+        {
+            this.armIndex += 1;
+
+            //If the next arm index is greater than the size of the list, we cycle back around to the beginning
+            if (this.armIndex >= this.bodySprites.Count)
+            {
+                this.armIndex = 0;
+            }
+        }
+        //If we're cycling to the previous body style
+        else
+        {
+            this.armIndex -= 1;
+
+            //If the previous arm index is less than 0, we cycle back around to the end of the list
+            if (this.armIndex < 0)
+            {
+                this.armIndex = this.bodySprites.Count - 1;
+            }
+        }
+
+        //Updating the sprite bases
+        this.UpdateSpriteBase();
+    }
 
     //Function called to cycle through different body styles
     public void CycleBody(bool goToNext_)
@@ -181,23 +218,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next body style
         if (goToNext_)
         {
-            int nextIndex = bodyIndex + 1;
+            this.bodyIndex += 1;
 
             //If the next body index is greater than the size of the list, we cycle back around to the beginning
-            if (nextIndex >= this.bodySprites.Count)
+            if (this.bodyIndex >= this.bodySprites.Count)
             {
-                nextIndex = 0;
+                this.bodyIndex = 0;
             }
         }
         //If we're cycling to the previous body style
         else
         {
-            int prevIndex = bodyIndex - 1;
+            this.bodyIndex -= 1;
 
             //If the previous body index is less than 0, we cycle back around to the end of the list
-            if (prevIndex < 0)
+            if (this.bodyIndex < 0)
             {
-                prevIndex = this.bodySprites.Count - 1;
+                this.bodyIndex = this.bodySprites.Count - 1;
             }
         }
 
@@ -212,23 +249,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next leg style
         if (goToNext_)
         {
-            int nextIndex = legIndex + 1;
+            this.legIndex += 1;
 
             //If the next leg index is greater than the size of the list, we cycle back around to the beginning
-            if (nextIndex >= this.legSprites.Count)
+            if (this.legIndex >= this.legSprites.Count)
             {
-                nextIndex = 0;
+                this.legIndex = 0;
             }
         }
         //If we're cycling to the previous leg style
         else
         {
-            int prevIndex = legIndex - 1;
+            this.legIndex -= 1;
 
             //If the previous leg index is less than 0, we cycle back around to the end of the list
-            if (prevIndex < 0)
+            if (this.legIndex < 0)
             {
-                prevIndex = this.legSprites.Count - 1;
+                this.legIndex = this.legSprites.Count - 1;
             }
         }
 
@@ -243,23 +280,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next color
         if (goToNext_)
         {
-            int nextIndex = this.skinColorIndex + 1;
+            this.hairColorIndex += 1;
 
             //If the next color index is greater than the size of the list, we cycle back around to the beginning
-            if (nextIndex >= this.hairColors.Count)
+            if (this.hairColorIndex >= this.hairColors.Count)
             {
-                nextIndex = 0;
+                this.hairColorIndex = 0;
             }
         }
         //If we're cycling to the previous color
         else
         {
-            int prevIndex = this.skinColorIndex - 1;
+            this.hairColorIndex -= 1;
 
             //If the previous color index is less than 0, we cycle back around to the end of the list
-            if (prevIndex < 0)
+            if (this.hairColorIndex < 0)
             {
-                prevIndex = this.hairColors.Count - 1;
+                this.hairColorIndex = this.hairColors.Count - 1;
             }
         }
 
@@ -274,23 +311,23 @@ public class SpriteCustomizer : MonoBehaviour
         //If we're cycling to the next color
         if (goToNext_)
         {
-            int nextIndex = this.skinColorIndex + 1;
+            this.skinColorIndex += 1;
 
             //If the next color index is greater than the size of the list, we cycle back around to the beginning
-            if (nextIndex >= this.skinColors.Count)
+            if (this.skinColorIndex >= this.skinColors.Count)
             {
-                nextIndex = 0;
+                this.skinColorIndex = 0;
             }
         }
         //If we're cycling to the previous color
         else
         {
-            int prevIndex = this.skinColorIndex - 1;
+            this.skinColorIndex -= 1;
 
             //If the previous color index is less than 0, we cycle back around to the end of the list
-            if (prevIndex < 0)
+            if (this.skinColorIndex < 0)
             {
-                prevIndex = this.skinColors.Count - 1;
+                this.skinColorIndex = this.skinColors.Count - 1;
             }
         }
 
