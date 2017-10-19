@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class CharacterSprites : MonoBehaviour
 {
-    //The prefab for which CharacterSpriteBase this character uses
+    //The sprite package for all of this character's sprites
+    [HideInInspector]
+    public CharSpritePackage allSprites;
+
+    /*//The prefab for which CharacterSpriteBase this character uses
     public CharacterSpriteBase spriteBase;
 
     //The sprite views for this character's hair
@@ -21,17 +25,33 @@ public class CharacterSprites : MonoBehaviour
     //The color for this character's hair
     public Color hairColor;
     //The color for this character's skin
+    public Color skinColor;*/
+}
+
+//Class used by CharacterSprites.cs, CharacterSpriteBase.cs, and SpriteCustomizer.cs
+//Holds all of the character sprite info so it can be transferred
+public class CharSpritePackage
+{
+    //The prefab for which CharacterSpriteBase this character uses
+    public CharacterSpriteBase spriteBase;
+
+    //The sprite views for this character's hair
+    public SpriteViews hairSprites;
+    //The sprite views for this character's head
+    public SpriteViews headSprites;
+    //The sprite for this character's eyes
+    public Sprite eyeSprite;
+    //The sprite views for this character's body
+    public SpriteViews bodySprites;
+    //The sprite views for this character's right arm
+    public SpriteViews rightArmSprites;
+    //The sprite views for this character's left arm
+    public SpriteViews leftArmSprites;
+    //The sprite views for this character's legs
+    public SpriteViews legSprites;
+
+    //The color for this character's hair
+    public Color hairColor;
+    //The color for this character's skin
     public Color skinColor;
-
-
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }
