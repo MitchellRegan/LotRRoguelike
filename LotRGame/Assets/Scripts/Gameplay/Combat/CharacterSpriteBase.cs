@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterSpriteBase : MonoBehaviour
 {
@@ -8,20 +9,20 @@ public class CharacterSpriteBase : MonoBehaviour
     public GameObject forwardViewParent;
 
     //The location for the forward hair
-    public SpriteRenderer forwardHair;
+    public Image forwardHair;
     //The location for the forward head
-    public SpriteRenderer forwardHead;
+    public Image forwardHead;
     //The location for the forward eye
-    public SpriteRenderer forwardLeftEye;
-    public SpriteRenderer forwardRightEye;
+    public Image forwardLeftEye;
+    public Image forwardRightEye;
     //The location for the forward body
-    public SpriteRenderer forwardBody;
+    public Image forwardBody;
     //The location for the right arm
-    public SpriteRenderer forwardRightArm;
+    public Image forwardRightArm;
     //The location for the left arm
-    public SpriteRenderer forwardLeftArm;
+    public Image forwardLeftArm;
     //The location for the forward leg
-    public SpriteRenderer forwardLegs;
+    public Image forwardLegs;
 
     [Space(8)]
 
@@ -29,19 +30,19 @@ public class CharacterSpriteBase : MonoBehaviour
     public GameObject rightSideViewParent;
 
     //The location for the right side hair
-    public SpriteRenderer rightSideHair;
+    public Image rightSideHair;
     //The location for the right side head
-    public SpriteRenderer rightSideHead;
+    public Image rightSideHead;
     //The location for the right side eye
-    public SpriteRenderer rightSideEye;
+    public Image rightSideEye;
     //The location for the right side body
-    public SpriteRenderer rightSideBody;
+    public Image rightSideBody;
     //The location for the right arm
-    public SpriteRenderer rightSideRightArm;
+    public Image rightSideRightArm;
     //The location for the left arm
-    public SpriteRenderer rightSideLeftArm;
+    public Image rightSideLeftArm;
     //The location for the right side leg
-    public SpriteRenderer rightSideLegs;
+    public Image rightSideLegs;
 
     [Space(8)]
 
@@ -49,19 +50,19 @@ public class CharacterSpriteBase : MonoBehaviour
     public GameObject leftSideViewParent;
 
     //The location for the left side hair
-    public SpriteRenderer leftSideHair;
+    public Image leftSideHair;
     //The location for the left side head
-    public SpriteRenderer leftSideHead;
+    public Image leftSideHead;
     //The location for the left side eye
-    public SpriteRenderer leftSideEye;
+    public Image leftSideEye;
     //The location for the left side body
-    public SpriteRenderer leftSideBody;
+    public Image leftSideBody;
     //The location for the right arm
-    public SpriteRenderer leftSideRightArm;
+    public Image leftSideRightArm;
     //The location for the left arm
-    public SpriteRenderer leftSideLeftArm;
+    public Image leftSideLeftArm;
     //The location for the left side leg
-    public SpriteRenderer leftSideLegs;
+    public Image leftSideLegs;
 
     [Space(8)]
 
@@ -69,17 +70,17 @@ public class CharacterSpriteBase : MonoBehaviour
     public GameObject backViewParent;
 
     //The location for the back hair
-    public SpriteRenderer backHair;
+    public Image backHair;
     //The location for the back head
-    public SpriteRenderer backHead;
+    public Image backHead;
     //The location for the back body
-    public SpriteRenderer backBody;
+    public Image backBody;
     //The location for the right arm
-    public SpriteRenderer backRightArm;
+    public Image backRightArm;
     //The location for the left arm
-    public SpriteRenderer backLeftArm;
+    public Image backLeftArm;
     //The location for the back leg
-    public SpriteRenderer backLegs;
+    public Image backLegs;
 
 
 
@@ -91,7 +92,8 @@ public class CharacterSpriteBase : MonoBehaviour
         this.forwardHead.sprite = cSprites_.headSprites.front;
         this.forwardLeftEye.sprite = cSprites_.eyeSprite;
         this.forwardRightEye.sprite = cSprites_.eyeSprite;
-        this.forwardBody.sprite = cSprites_.bodySprites.front;
+        this.forwardBody.sprite = cSprites_.bodySprites.front;.
+        Debug.Log(cSprites_.rightArmSprites);//Right and left arm sprites aren't customizable... Just make a public var for the hand image that doesn't change?
         this.forwardRightArm.sprite = cSprites_.rightArmSprites.front;
         this.forwardLeftArm.sprite = cSprites_.leftArmSprites.front;
         this.forwardLegs.sprite = cSprites_.legSprites.front;

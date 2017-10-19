@@ -5,7 +5,6 @@ using UnityEngine;
 public class SpriteCustomizer : MonoBehaviour
 {
     //The character whose sprites we're setting
-    public CharacterSpriteBase charBaseToCustomizeFront;
     public CharacterSpriteBase charBaseToCustomizeSide;
 
     //The list of different hair styles 
@@ -61,8 +60,7 @@ public class SpriteCustomizer : MonoBehaviour
         newSprites.skinColor = this.skinColors[this.skinColorIndex];
 
         //Sending the new sprites to the base
-        this.charBaseToCustomizeFront.SetSpriteImages(newSprites, CharacterSpriteBase.DirectionFacing.Down);
-        this.charBaseToCustomizeFront.SetSpriteImages(newSprites, CharacterSpriteBase.DirectionFacing.Right);
+        this.charBaseToCustomizeSide.SetSpriteImages(newSprites, CharacterSpriteBase.DirectionFacing.Right);
     }
 
     
