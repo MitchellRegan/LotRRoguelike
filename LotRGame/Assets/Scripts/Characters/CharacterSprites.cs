@@ -37,6 +37,8 @@ public class CharSpritePackage
 
     //The sprite views for this character's hair
     public SpriteViews hairSprites;
+    //The sprite views for this character's facial hair
+    public SpriteViews facialHairSprites;
     //The sprite views for this character's head
     public SpriteViews headSprites;
     //The sprite for this character's eyes
@@ -52,6 +54,8 @@ public class CharSpritePackage
 
     //The color for this character's hair
     public Color hairColor;
+    //The color for this character's facial hair
+    public Color facialHairColor;
     //The color for this character's skin
     public Color skinColor;
 }

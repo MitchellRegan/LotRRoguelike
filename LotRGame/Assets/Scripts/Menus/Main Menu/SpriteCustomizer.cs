@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpriteCustomizer : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class SpriteCustomizer : MonoBehaviour
     //The list of different hair styles 
     public List<SpriteViews> hairSprites;
     private int hairIndex = 0;
+
+    //The list of different facial hair styles
+    public List<SpriteViews> facialHairSprites;
+    private int faceHairIndex = 0;
 
     //The list of different head shapes
     public List<SpriteViews> headSprites;
@@ -35,20 +40,38 @@ public class SpriteCustomizer : MonoBehaviour
     public List<Color> hairColors;
     private int hairColorIndex = 0;
 
+    //The gradient for hair color
+    public Gradient hairColorGradient;
+    public Slider hairColorSlider;
+    public Slider hairDarknessSlider;
+
+    //The list of different facial hair colors
+    public List<Color> facialHairColors;
+    private int facialHairColorIndex = 0;
+
     //The list of different skin colors
     public List<Color> skinColors;
     private int skinColorIndex = 0;
 
 
 
+    //Function called when this object is created
+    private void Awake()
+    {
+        this.GenerateRandomCharacter();
+    }
+
+
     //Function called internally to update the sprite bases using the current list indexes
-    private void UpdateSpriteBase()
+    public void UpdateSpriteBase()
     {
         //Creating a new sprite package to pass to the sprite base
         CharSpritePackage newSprites = new CharSpritePackage();
 
         //Setting the character's hair
         newSprites.hairSprites = this.hairSprites[this.hairIndex];
+        //Setting the character's facial hair
+        newSprites.facialHairSprites = this.facialHairSprites[this.faceHairIndex];
         //Setting the character's head
         newSprites.headSprites = this.headSprites[this.headIndex];
         //Setting the character's eyes
@@ -62,7 +85,15 @@ public class SpriteCustomizer : MonoBehaviour
         newSprites.legSprites = this.legSprites[this.legIndex];
 
         //Setting the character's hair color
-        newSprites.hairColor = this.hairColors[this.hairColorIndex];
+        //newSprites.hairColor = this.hairColors[this.hairColorIndex];
+        newSprites.hairColor = this.hairColorGradient.Evaluate(this.hairColorSlider.value);
+        newSprites.hairColor = new Color(newSprites.hairColor.r * this.hairDarknessSlider.value,
+                                            newSprites.hairColor.g * this.hairDarknessSlider.value,
+                                            newSprites.hairColor.b * this.hairDarknessSlider.value,
+                                            1);
+
+        //Setting the character's facial hair color
+        newSprites.facialHairColor = this.facialHairColors[this.facialHairColorIndex];
         //Setting the character's skin color
         newSprites.skinColor = this.skinColors[this.skinColorIndex];
 
@@ -76,12 +107,14 @@ public class SpriteCustomizer : MonoBehaviour
     {
         //Creating random indexes for each sprite
         this.hairIndex = Random.Range(0, this.hairSprites.Count);
+        this.faceHairIndex = Random.Range(0, this.facialHairSprites.Count);
         this.headIndex = Random.Range(0, this.headSprites.Count);
         this.eyeIndex = Random.Range(0, this.eyeSprites.Count);
         this.bodyIndex = Random.Range(0, this.bodySprites.Count);
         this.legIndex = Random.Range(0, legSprites.Count);
         //Creating random indexes for each hair and skin color
         this.hairColorIndex = Random.Range(0, this.hairColors.Count);
+        this.facialHairColorIndex = Random.Range(0, this.facialHairColors.Count);
         this.skinColorIndex = Random.Range(0, this.skinColors.Count);
 
         //Updating the sprite bases
@@ -112,6 +145,37 @@ public class SpriteCustomizer : MonoBehaviour
             if(this.hairIndex < 0)
             {
                 this.hairIndex = this.hairSprites.Count - 1;
+            }
+        }
+
+        //Updating the sprite bases
+        this.UpdateSpriteBase();
+    }
+
+
+    //Function called to cycle through different facial hair styles
+    public void CycleFacialHair(bool goToNext_)
+    {
+        //If we're cycling to the next facial hair style
+        if (goToNext_)
+        {
+            this.faceHairIndex += 1;
+
+            //If the next facial hair index is greater than the size of the list, we cycle back around to the beginning
+            if (this.faceHairIndex >= this.facialHairSprites.Count)
+            {
+                this.faceHairIndex = 0;
+            }
+        }
+        //If we're cycling to the previous facial hair style
+        else
+        {
+            this.faceHairIndex -= 1;
+
+            //If the previous facial hair index is less than 0, we cycle back around to the end of the list
+            if (this.faceHairIndex < 0)
+            {
+                this.faceHairIndex = this.facialHairSprites.Count - 1;
             }
         }
 
@@ -191,7 +255,7 @@ public class SpriteCustomizer : MonoBehaviour
             this.armIndex += 1;
 
             //If the next arm index is greater than the size of the list, we cycle back around to the beginning
-            if (this.armIndex >= this.bodySprites.Count)
+            if (this.armIndex >= this.armSprites.Count)
             {
                 this.armIndex = 0;
             }
@@ -204,13 +268,14 @@ public class SpriteCustomizer : MonoBehaviour
             //If the previous arm index is less than 0, we cycle back around to the end of the list
             if (this.armIndex < 0)
             {
-                this.armIndex = this.bodySprites.Count - 1;
+                this.armIndex = this.armSprites.Count - 1;
             }
         }
 
         //Updating the sprite bases
         this.UpdateSpriteBase();
     }
+
 
     //Function called to cycle through different body styles
     public void CycleBody(bool goToNext_)
@@ -297,6 +362,37 @@ public class SpriteCustomizer : MonoBehaviour
             if (this.hairColorIndex < 0)
             {
                 this.hairColorIndex = this.hairColors.Count - 1;
+            }
+        }
+
+        //Updating the sprite bases
+        this.UpdateSpriteBase();
+    }
+
+
+    //Function called to cycle through different facial hair colors
+    public void CycleFacialHairColor(bool goToNext_)
+    {
+        //If we're cycling to the next color
+        if (goToNext_)
+        {
+            this.facialHairColorIndex += 1;
+
+            //If the next color index is greater than the size of the list, we cycle back around to the beginning
+            if (this.facialHairColorIndex >= this.facialHairColors.Count)
+            {
+                this.facialHairColorIndex = 0;
+            }
+        }
+        //If we're cycling to the previous color
+        else
+        {
+            this.facialHairColorIndex -= 1;
+
+            //If the previous color index is less than 0, we cycle back around to the end of the list
+            if (this.facialHairColorIndex < 0)
+            {
+                this.facialHairColorIndex = this.facialHairColors.Count - 1;
             }
         }
 

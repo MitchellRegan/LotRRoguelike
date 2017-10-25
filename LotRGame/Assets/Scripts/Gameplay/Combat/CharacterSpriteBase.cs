@@ -10,6 +10,8 @@ public class CharacterSpriteBase : MonoBehaviour
 
     //The location for the forward hair
     public Image forwardHair;
+    //The location for the forward facial hair
+    public Image forwardFacialHair;
     //The location for the forward head
     public Image forwardHead;
     //The location for the forward eye
@@ -31,6 +33,8 @@ public class CharacterSpriteBase : MonoBehaviour
 
     //The location for the right side hair
     public Image rightSideHair;
+    //The location for the right side facial hair
+    public Image rightSideFacialHair;
     //The location for the right side head
     public Image rightSideHead;
     //The location for the right side eye
@@ -51,6 +55,8 @@ public class CharacterSpriteBase : MonoBehaviour
 
     //The location for the left side hair
     public Image leftSideHair;
+    //The location for the left side facial hair
+    public Image leftSideFacialHair;
     //The location for the left side head
     public Image leftSideHead;
     //The location for the left side eye
@@ -89,6 +95,7 @@ public class CharacterSpriteBase : MonoBehaviour
     {
         //Setting the forward sprites
         this.forwardHair.sprite = cSprites_.hairSprites.front;
+        this.forwardFacialHair.sprite = cSprites_.facialHairSprites.front;
         this.forwardHead.sprite = cSprites_.headSprites.front;
         this.forwardLeftEye.sprite = cSprites_.eyeSprite;
         this.forwardRightEye.sprite = cSprites_.eyeSprite;
@@ -99,6 +106,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
         //Setting the right side sprites
         this.rightSideHair.sprite = cSprites_.hairSprites.side;
+        this.rightSideFacialHair.sprite = cSprites_.facialHairSprites.side;
         this.rightSideHead.sprite = cSprites_.headSprites.side;
         this.rightSideEye.sprite = cSprites_.eyeSprite;
         this.rightSideBody.sprite = cSprites_.bodySprites.side;
@@ -108,6 +116,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
         //Setting the left side sprites
         this.leftSideHair.sprite = cSprites_.hairSprites.side;
+        this.leftSideFacialHair.sprite = cSprites_.facialHairSprites.side;
         this.leftSideHead.sprite = cSprites_.headSprites.side;
         this.leftSideEye.sprite = cSprites_.eyeSprite;
         this.leftSideBody.sprite = cSprites_.bodySprites.side;
@@ -128,6 +137,11 @@ public class CharacterSpriteBase : MonoBehaviour
         this.leftSideHair.color = cSprites_.hairColor;
         this.rightSideHair.color = cSprites_.hairColor;
         this.backHair.color = cSprites_.hairColor;
+
+        //Setting the facial hair color
+        this.forwardFacialHair.color = cSprites_.facialHairColor;
+        this.leftSideFacialHair.color = cSprites_.facialHairColor;
+        this.rightSideFacialHair.color = cSprites_.facialHairColor;
 
         //Setting the forward sprite color
         this.forwardHead.color = cSprites_.skinColor;
