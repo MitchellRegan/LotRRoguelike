@@ -5,7 +5,6 @@ using UnityEngine;
 public class CharacterSprites : MonoBehaviour
 {
     //The sprite package for all of this character's sprites
-    [HideInInspector]
     public CharSpritePackage allSprites;
 
     /*//The prefab for which CharacterSpriteBase this character uses
@@ -30,6 +29,7 @@ public class CharacterSprites : MonoBehaviour
 
 //Class used by CharacterSprites.cs, CharacterSpriteBase.cs, and SpriteCustomizer.cs
 //Holds all of the character sprite info so it can be transferred
+[System.Serializable]
 public class CharSpritePackage
 {
     //The prefab for which CharacterSpriteBase this character uses

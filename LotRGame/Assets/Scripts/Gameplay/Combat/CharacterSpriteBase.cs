@@ -130,7 +130,6 @@ public class CharacterSpriteBase : MonoBehaviour
         this.backHair.color = cSprites_.hairColor;
 
         //Setting the forward sprite color
-        this.forwardHair.color = cSprites_.skinColor;
         this.forwardHead.color = cSprites_.skinColor;
         this.forwardBody.color = cSprites_.skinColor;
         this.forwardRightArm.color = cSprites_.skinColor;
@@ -138,7 +137,6 @@ public class CharacterSpriteBase : MonoBehaviour
         this.forwardLegs.color = cSprites_.skinColor;
 
         //Setting the back sprite color
-        this.backHair.color = cSprites_.skinColor;
         this.backHead.color = cSprites_.skinColor;
         this.backBody.color = cSprites_.skinColor;
         this.backRightArm.color = cSprites_.skinColor;
@@ -146,7 +144,6 @@ public class CharacterSpriteBase : MonoBehaviour
         this.backLegs.color = cSprites_.skinColor;
 
         //Setting the left side sprite color
-        this.leftSideHair.color = cSprites_.skinColor;
         this.leftSideHead.color = cSprites_.skinColor;
         this.leftSideBody.color = cSprites_.skinColor;
         this.leftSideLeftArm.color = cSprites_.skinColor;
@@ -154,7 +151,6 @@ public class CharacterSpriteBase : MonoBehaviour
         this.leftSideLegs.color = cSprites_.skinColor;
 
         //Setting the right side sprite color
-        this.rightSideHair.color = cSprites_.skinColor;
         this.rightSideHead.color = cSprites_.skinColor;
         this.rightSideBody.color = cSprites_.skinColor;
         this.rightSideRightArm.color = cSprites_.skinColor;
@@ -163,7 +159,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
 
         //Setting the initial direction the character is facing
-        this.SetDirectionFacing(direction_);
+        //this.SetDirectionFacing(direction_);
     }
 
 
