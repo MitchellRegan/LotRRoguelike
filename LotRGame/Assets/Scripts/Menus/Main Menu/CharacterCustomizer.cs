@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 public class CharacterCustomizer : MonoBehaviour
 {
+    //The list of character customizers for each playable race
+    public List<CustomizerRaceSpriteBase> raceSpriteBases;
+
+    [Space(8)]
+
     //The text for the first name of the character
     public InputField firstNameText;
     //The text for the last name of the character
@@ -101,6 +106,26 @@ public class CharacterCustomizer : MonoBehaviour
 
         //Updating all of our text to show the points
         this.UpdateText();
+    }
+
+
+    //Function called when this game object is enabled
+    private void OnEnable()
+    {
+        //Looping through each customizer race sprite base
+        foreach(CustomizerRaceSpriteBase rsb in this.raceSpriteBases)
+        {
+            //If the currently selected race is the same as this race sprite base, we turn on its customizer
+            if(rsb.race == GameData.globalReference.startingRace)
+            {
+                rsb.customizer.gameObject.SetActive(true);
+            }
+            //If the customizer's race isn't the selected one, we disable its customizer
+            else
+            {
+                rsb.customizer.gameObject.SetActive(false);
+            }
+        }
     }
 
 
@@ -304,4 +329,14 @@ public enum SkillList
     Climbing,
     Hiding,
     Swimming
+}
+
+//Class used by CharacterCustomizer.cs so we can distinguish which sprite base to use
+[System.Serializable]
+public class CustomizerRaceSpriteBase
+{
+    //The race that this customizer uses
+    public RaceTypes.Races race;
+    //The customizer that is tied to the selected race
+    public SpriteCustomizer customizer;
 }
