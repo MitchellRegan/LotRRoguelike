@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class CharacterSpriteBase : MonoBehaviour
 {
+    //The character that this sprite base references
+    [HideInInspector]
+    public Character ourCharacter;
+
     //The parent object for the forward view sprites
     public GameObject forwardViewParent;
 

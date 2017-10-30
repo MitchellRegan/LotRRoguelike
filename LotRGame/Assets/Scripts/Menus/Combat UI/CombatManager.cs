@@ -64,7 +64,7 @@ public class CombatManager : MonoBehaviour
     //Object that's created when combat is initiated to hold each character's sprite
     public CombatCharacterSprite characterSpritePrefab;
     //The list of all CombatCharacterSprites for each character and enemy
-    public List<CombatCharacterSprite> characterSpriteList;
+    public List<CharacterSpriteBase> characterSpriteList;
 
     //The object that hilights the acting character
     public Image highlightRing;
@@ -109,7 +109,7 @@ public class CombatManager : MonoBehaviour
 
         this.playerCharactersInCombat = new List<Character>();
         this.enemyCharactersInCombat = new List<Character>();
-        this.characterSpriteList = new List<CombatCharacterSprite>();
+        this.characterSpriteList = new List<CharacterSpriteBase>();
     }
 
 
@@ -638,7 +638,7 @@ public class CombatManager : MonoBehaviour
     private void CreateCharacterSprites()
     {
         //Making sure there are no more character sprites from previous combats on the screen
-        foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+        foreach(CharacterSpriteBase cSprite in this.characterSpriteList)
         {
             Destroy(cSprite.gameObject);
         }
@@ -648,10 +648,10 @@ public class CombatManager : MonoBehaviour
         foreach(Character playerChar in this.playerCharactersInCombat)
         {
             //Creating a new instance of the character sprite prefab
-            GameObject newCharSprite = GameObject.Instantiate(this.characterSpritePrefab.gameObject);
+            GameObject newCharSprite = GameObject.Instantiate(playerChar.charSprites.allSprites.spriteBase.gameObject);
 
-            //Getting the CombatCharacterSprite component reference
-            CombatCharacterSprite charSpriteRef = newCharSprite.GetComponent<CombatCharacterSprite>();
+            //Getting the CharacterSpriteBase component reference
+            CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
 
             //Finding the combat tile that the current player character is on
             CombatTile playerTile = this.FindCharactersTile(playerChar);
@@ -659,21 +659,24 @@ public class CombatManager : MonoBehaviour
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
             
-            //Setting the info for the character sprite
-            charSpriteRef.SetSpriteOnTile(playerChar, playerTile.transform.position);
+            //Setting the position for the character sprite
+            newCharSprite.transform.position = playerTile.transform.position;
 
-            //Adding the character sprite to our list
-            this.characterSpriteList.Add(charSpriteRef);
+            //Setting the character that the sprite base represents
+            newCharSpriteBase.ourCharacter = playerChar;
+
+            //Adding the character sprite base to our list
+            this.characterSpriteList.Add(newCharSpriteBase);
         }
 
         //Looping through each enemy character in this combat
         foreach (Character enemyChar in this.enemyCharactersInCombat)
         {
             //Creating a new instance of the character sprite prefab
-            GameObject newCharSprite = GameObject.Instantiate(this.characterSpritePrefab.gameObject);
+            GameObject newCharSprite = GameObject.Instantiate(enemyChar.charSprites.allSprites.spriteBase.gameObject);
 
             //Getting the CombatCharacterSprite component reference
-            CombatCharacterSprite charSpriteRef = newCharSprite.GetComponent<CombatCharacterSprite>();
+            CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
 
             //Finding the combat tile that the current enemy character is on
             CombatTile enemyTile = this.FindCharactersTile(enemyChar);
@@ -681,11 +684,14 @@ public class CombatManager : MonoBehaviour
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
 
-            //Setting the info for the character sprite
-            charSpriteRef.SetSpriteOnTile(enemyChar, enemyTile.transform.position);
+            //Setting the position for the character sprite
+            newCharSprite.transform.position = enemyTile.transform.position;
 
-            //Adding the character sprite to our list
-            this.characterSpriteList.Add(charSpriteRef);
+            //Setting the character that the sprite base represents
+            newCharSpriteBase.ourCharacter = enemyChar;
+
+            //Adding the character sprite base to our list
+            this.characterSpriteList.Add(newCharSpriteBase);
         }
 
         //Sorting the sprites so that they appear in front of each other correctly
@@ -693,11 +699,11 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    //Function called externally to get the CombatCharacterSprite component for the given character
-    public CombatCharacterSprite GetCharacterSprite(Character charToLookFor_)
+    //Function called externally to get the CharacterSpriteBase component for the given character
+    public CharacterSpriteBase GetCharacterSprite(Character charToLookFor_)
     {
         //Looping through all of the Character Sprites
-        foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+        foreach(CharacterSpriteBase cSprite in this.characterSpriteList)
         {
             //If we find the character, their sprite is returned
             if(cSprite.ourCharacter == charToLookFor_)
@@ -718,7 +724,7 @@ public class CombatManager : MonoBehaviour
         for(int r = 0; r < this.combatTileGrid[0].Count; ++r)
         {
             //Looping through each character sprite in this combat encounter
-            foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+            foreach(CharacterSpriteBase cSprite in this.characterSpriteList)
             {
                 //If the character for the current combat sprite is positioned on the row we're checking, we move it to the front
                 if(cSprite.ourCharacter.charCombatStats.gridPositionRow == r)

@@ -405,7 +405,7 @@ public class ModifyStatsEffect : Effect
         if(addingChanges_)
         {
             //Creating the visual effect for this effect
-            CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+            CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
             this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
         }
     }

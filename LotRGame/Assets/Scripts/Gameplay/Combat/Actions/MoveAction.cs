@@ -63,7 +63,7 @@ public class MoveAction : Action
             if (tilesMoved < newTileMoved)
             {
                 //Moving the character sprite to the new tile position
-                CombatCharacterSprite charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
+                CharacterSpriteBase charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
                 charSprite.transform.position = this.movementPath[newTileMoved].transform.position;
 
                 //Making sure the sprites are positioned in front of each other correctly
@@ -72,24 +72,22 @@ public class MoveAction : Action
                 //If the new tile is to the left of the old tile, we face the character left
                 if(this.movementPath[newTileMoved].transform.position.x < this.movementPath[tilesMoved].transform.position.x)
                 {
-                    //If the current image's X scale is facing right, we face left
-                    if (charSprite.spriteImage.transform.localScale.x > 0)
-                    {
-                        charSprite.spriteImage.transform.localScale = new Vector3(-1 * charSprite.spriteImage.transform.localScale.x,
-                                                                                  charSprite.spriteImage.transform.localScale.y,
-                                                                                  charSprite.spriteImage.transform.localScale.z);
-                    }
+                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Left);
                 }
                 //If the new tile is to the right of the old tile, we face the character right
                 else if(this.movementPath[newTileMoved].transform.position.x > this.movementPath[tilesMoved].transform.position.x)
                 {
-                    //If the current image's X scale is facing left, we face right
-                    if (charSprite.spriteImage.transform.localScale.x < 0)
-                    {
-                        charSprite.spriteImage.transform.localScale = new Vector3(-1 * charSprite.spriteImage.transform.localScale.x,
-                                                                                  charSprite.spriteImage.transform.localScale.y,
-                                                                                  charSprite.spriteImage.transform.localScale.z);
-                    }
+                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
+                }
+                //If the new tile is above the old tile, we face the character up
+                else if(this.movementPath[newTileMoved].transform.position.y > this.movementPath[tilesMoved].transform.position.y)
+                {
+                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Up);
+                }
+                //If the new tile is below the old tile, we face the character down
+                else if (this.movementPath[newTileMoved].transform.position.y < this.movementPath[tilesMoved].transform.position.y)
+                {
+                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Down);
                 }
 
                 //Removing the acting character from the tile they're on

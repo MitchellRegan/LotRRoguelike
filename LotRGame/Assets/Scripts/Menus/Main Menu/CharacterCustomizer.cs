@@ -72,7 +72,7 @@ public class CharacterCustomizer : MonoBehaviour
 
 
     // Use this for initialization
-    public void Awake()
+    public void InitializeCustomizer()
     {
         //Resetting the current points for the main character
         this.currentPoints = this.pointsToAllocate;

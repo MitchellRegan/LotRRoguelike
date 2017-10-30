@@ -5,12 +5,15 @@ using UnityEngine.UI;
 
 public class SpriteCustomizer : MonoBehaviour
 {
+    //The prefab for the sprite base for this character
+    public CharacterSpriteBase spriteBasePrefab;
+
     //The character whose sprites we're setting
     public CharacterSpriteBase charBaseToCustomizeSide;
 
     //The character sprite package that this customizer can pass on to finalized characters
     [HideInInspector]
-    public CharSpritePackage spritePackage;
+    public CharSpritePackage spritePackage = null;
 
     //The list of different hair styles 
     public List<SpriteViews> hairSprites;
@@ -66,6 +69,7 @@ public class SpriteCustomizer : MonoBehaviour
     //Function called when this object is created
     private void Awake()
     {
+        //Starting off by generating a random character
         this.GenerateRandomCharacter();
     }
 
@@ -75,6 +79,9 @@ public class SpriteCustomizer : MonoBehaviour
     {
         //Creating a new sprite package to pass to the sprite base
         CharSpritePackage newSprites = new CharSpritePackage();
+
+        //Setting the character's sprite base
+        newSprites.spriteBase = this.spriteBasePrefab;
 
         //Setting the character's hair
         newSprites.hairSprites = this.hairSprites[this.hairIndex];

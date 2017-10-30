@@ -76,10 +76,19 @@ public class PartyCreator : MonoBehaviour
         //Activating each of the character customizers for the number of starting characters
         for (int c = 0; c < this.allCharacterCustomizers.Count; ++c)
         {
+            //Enabling each character customizer so it can be initialized
+            this.allCharacterCustomizers[c].InitializeCustomizer();
+
             //If we're in the range of the number of starting characters, we make sure they're activated
             if (c < numCharacters)
             {
                 this.allCharacterCustomizers[c].gameObject.SetActive(true);
+
+                //Looping through and creating a random character sprite for each race
+                for(int sb = 0; sb < this.allCharacterCustomizers[c].raceSpriteBases.Count; ++sb)
+                {
+                    this.allCharacterCustomizers[c].raceSpriteBases[sb].customizer.GenerateRandomCharacter();
+                }
 
                 //Creating a new instance of a character of the selected race
                 foreach (RacePartyMembers r in this.raceStartingPartyNumbers)
@@ -143,7 +152,7 @@ public class PartyCreator : MonoBehaviour
         for(int c = 0; c < this.newPartyCharacters.Count; ++c)
         {
             //Making sure the CharacterCustomizer isn't null
-            if (this.allCharacterCustomizers[c].allocatedSkillPoints != null)
+            if (this.allCharacterCustomizers[c] != null)
             {
                 //Looping through the selected CharacterCustomizer to get the sprite customizer for the selected race
                 foreach(CustomizerRaceSpriteBase rsb in this.allCharacterCustomizers[c].raceSpriteBases)
@@ -153,7 +162,6 @@ public class PartyCreator : MonoBehaviour
                     {
                         //Setting the new character's sprites
                         this.newPartyCharacters[c].charSprites.allSprites = rsb.customizer.spritePackage;
-
                         //Breaking out of the loop
                         break;
                     }

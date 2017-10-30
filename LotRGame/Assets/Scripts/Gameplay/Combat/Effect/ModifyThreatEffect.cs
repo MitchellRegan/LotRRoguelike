@@ -84,7 +84,7 @@ public class ModifyThreatEffect : Effect
                 foreach(Character enemy in CombatManager.globalReference.enemyCharactersInCombat)
                 {
                     //Creating the visual effect for this effect
-                    CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(enemy);
+                    CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(enemy);
                     this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
                 }
             }
@@ -98,7 +98,7 @@ public class ModifyThreatEffect : Effect
             if (this.visualEffect != null)
             {
                 //Creating the visual effect for this effect
-                CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+                CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
                 this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
             }
         }

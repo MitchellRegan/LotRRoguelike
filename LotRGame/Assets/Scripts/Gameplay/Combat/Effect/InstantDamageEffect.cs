@@ -110,7 +110,7 @@ public class InstantDamageEffect : Effect
         CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
 
         //Creating the visual effect for this effect
-        CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
+        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
 
 
