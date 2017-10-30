@@ -8,6 +8,10 @@ public class SpriteCustomizer : MonoBehaviour
     //The character whose sprites we're setting
     public CharacterSpriteBase charBaseToCustomizeSide;
 
+    //The character sprite package that this customizer can pass on to finalized characters
+    [HideInInspector]
+    public CharSpritePackage spritePackage;
+
     //The list of different hair styles 
     public List<SpriteViews> hairSprites;
     private int hairIndex = 0;
@@ -111,6 +115,9 @@ public class SpriteCustomizer : MonoBehaviour
                                             newSprites.skinColor.b * this.skinDarknessSlider.value,
                                             1);
         this.skinColorExampleImage.color = newSprites.skinColor;
+
+        //Setting our sprite package
+        this.spritePackage = newSprites;
 
         //Sending the new sprites to the base
         this.charBaseToCustomizeSide.SetSpriteImages(newSprites, CharacterSpriteBase.DirectionFacing.Right);

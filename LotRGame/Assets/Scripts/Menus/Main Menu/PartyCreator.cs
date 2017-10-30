@@ -145,6 +145,20 @@ public class PartyCreator : MonoBehaviour
             //Making sure the CharacterCustomizer isn't null
             if (this.allCharacterCustomizers[c].allocatedSkillPoints != null)
             {
+                //Looping through the selected CharacterCustomizer to get the sprite customizer for the selected race
+                foreach(CustomizerRaceSpriteBase rsb in this.allCharacterCustomizers[c].raceSpriteBases)
+                {
+                    //If the current race sprite base is the one for the starting race
+                    if(rsb.race == GameData.globalReference.startingRace)
+                    {
+                        //Setting the new character's sprites
+                        this.newPartyCharacters[c].charSprites.allSprites = rsb.customizer.spritePackage;
+
+                        //Breaking out of the loop
+                        break;
+                    }
+                }
+
                 //Setting the character's first and last names
                 this.newPartyCharacters[c].firstName = this.allCharacterCustomizers[c].firstNameText.text;
                 this.newPartyCharacters[c].lastName = this.allCharacterCustomizers[c].lastNameText.text;
