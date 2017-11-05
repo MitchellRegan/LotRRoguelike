@@ -86,7 +86,11 @@ public class CreateTileGrid : MonoBehaviour
 
     //Enemy encounter for testing
     public GameObject testEnemyEncounter;
-    
+
+    //The list of tiles where region cities are
+    [HideInInspector]
+    public List<TileInfo> cityTiles;
+
 
 
     //Called on initialization
@@ -147,6 +151,9 @@ public class CreateTileGrid : MonoBehaviour
 
         //Creates the correct map for the game difficulty
         this.ImprovedMapGeneration();
+
+        //Getting all of the tiles where cities will be
+        this.cityTiles = this.FindCityTiles();
 
         //Creating the map texture
         this.CreateMapTexture();
@@ -795,92 +802,65 @@ public class CreateTileGrid : MonoBehaviour
     }
 
 
-    //Function called at the end of StartMapCreation to make the map texture
-    private void CreateMapTexture()
+    //Function called from StartMapCreation to find all of the tile locations for cities
+    private List<TileInfo> FindCityTiles()
     {
-        //Getting the height and width of the texture based on the size of the map
-        int mapWidth = CreateTileGrid.globalReference.cols;
-        int mapHeight = CreateTileGrid.globalReference.rows;
+        //The list of tiles where cities will be spawned
+        List<TileInfo> cityTiles = new List<TileInfo>();
+        //The list of tiles that will be used as starting points for pathfinding
+        List<TileInfo> pathfindingStartingPoints = new List<TileInfo>();
+        //Adding the first tile to the starting points list
+        pathfindingStartingPoints.Add(this.tileGrid[0][0]);
 
-        //Creating a new map texture using the map width and height
-        Texture2D mapTexture = new Texture2D(mapWidth * 2, (mapHeight * 2) + 1, TextureFormat.ARGB32, false);
-
-        //Looping through each column
-        for (int c = 0; c < mapWidth; ++c)
+        //Looping through all of the tiles to get starting points
+        for(int c = 0; c < this.tileGrid.Count; ++c)
         {
-            //Looping through each row
-            for (int r = 0; r < mapHeight; ++r)
+            for(int r = 0; r < this.tileGrid[0].Count; ++r)
             {
-                //Creating a color for the selected pixel
-                Color pixelColor;
+                //Bool that determines if the current tile has a new region name
+                bool isTileNewRegion = true;
 
-                //Setting the color based on the type of tile we're currently on
-                switch (CreateTileGrid.globalReference.tileGrid[c][r].type)
+                //Looping through all of the tiles in the pathfinding starting points
+                foreach(TileInfo startPoint in pathfindingStartingPoints)
                 {
-                    case LandType.Ocean:
-                        pixelColor = Color.blue;
+                    //If the current tile has the same region name as any of the tiles in the pathfinding starting points, it's not a new tile to be added to the list
+                    if(this.tileGrid[c][r].regionName == startPoint.regionName)
+                    {
+                        isTileNewRegion = false;
                         break;
-
-                    case LandType.Grasslands:
-                        pixelColor = Color.yellow;
-                        break;
-
-                    case LandType.Forrest:
-                        pixelColor = Color.green;
-                        break;
-
-                    case LandType.Desert:
-                        pixelColor = new Color(1, 0.8f, 0.55f);
-                        break;
-
-                    case LandType.Swamp:
-                        pixelColor = new Color(0, 1, 0.58f);
-                        break;
-
-                    case LandType.Mountain:
-                        pixelColor = Color.grey;
-                        break;
-
-                    case LandType.Volcano:
-                        pixelColor = Color.red;
-                        break;
-
-                    default:
-                        pixelColor = Color.white;
-                        break;
+                    }
                 }
 
-                //If we're on an even numbered column
-                if(c % 2 == 0)
+                //If the tile is a new region, we add it to the region starting points
+                if(isTileNewRegion)
                 {
-                    //Setting the tile color to the pixel
-                    mapTexture.SetPixel(c * 2, (r * 2) + 1, pixelColor);
-                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 1, pixelColor);
-                    mapTexture.SetPixel(c * 2, (r * 2) + 2, pixelColor);
-                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 2, pixelColor);
-                }
-                //If we're on an odd numbered column
-                else
-                {
-                    //Setting the tile color to the pixel
-                    mapTexture.SetPixel(c * 2, r * 2, pixelColor);
-                    mapTexture.SetPixel((c * 2) + 1, r * 2, pixelColor);
-                    mapTexture.SetPixel(c * 2, (r * 2) + 1, pixelColor);
-                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 1, pixelColor);
+                    pathfindingStartingPoints.Add(this.tileGrid[c][r]);
                 }
             }
         }
 
-        //Applying the pixels
-        mapTexture.Apply();
+        //Once we find all of the starting points, we use pathfinding to get the center tile in each region
+        foreach(TileInfo startingPoint in pathfindingStartingPoints)
+        {
+            //Finding the edge tiles for the region that the tile is in
+            List<TileInfo> edgeTiles = PathfindingAlgorithms.FindRegionEdgeTiles(startingPoint);
 
-        //Encoding the texture to a png
-        byte[] bytes = mapTexture.EncodeToPNG();
+            //Finding the center tile using the edge tiles
+            TileInfo regionCenterTile = PathfindingAlgorithms.FindRegionCenterTile(edgeTiles);
 
-        string seedName = GameData.globalReference.GetComponent<RandomSeedGenerator>().seed;
+            //Finding all of the tiles within a certain radius of the center
+            List<TileInfo> centerRadiusTiles = PathfindingAlgorithms.FindLandTilesInRange(regionCenterTile, 1, true);
 
-        //Writing the file to the desktop
-        System.IO.File.WriteAllBytes("C:/Users/Mitch/Desktop/" + seedName + ".png", bytes);
+            //Finding a random tile in the radius around the center to place the city on
+            int randomTile = Random.Range(0, centerRadiusTiles.Count - 1);
+            TileInfo cityTile = centerRadiusTiles[randomTile];
+
+            //Adding the region center tile to the list of city tiles
+            cityTiles.Add(cityTile);
+        }
+
+        //Returning the list of city tiles
+        return cityTiles;
     }
 
 
@@ -1229,5 +1209,102 @@ public class CreateTileGrid : MonoBehaviour
                 }
             }
         }
+    }
+
+    
+    //Function called at the end of StartMapCreation to make the map texture
+    private void CreateMapTexture()
+    {
+        //Getting the height and width of the texture based on the size of the map
+        int mapWidth = CreateTileGrid.globalReference.cols;
+        int mapHeight = CreateTileGrid.globalReference.rows;
+
+        //Creating a new map texture using the map width and height
+        Texture2D mapTexture = new Texture2D(mapWidth * 2, (mapHeight * 2) + 1, TextureFormat.ARGB32, false);
+
+        //Looping through each column
+        for (int c = 0; c < mapWidth; ++c)
+        {
+            //Looping through each row
+            for (int r = 0; r < mapHeight; ++r)
+            {
+                //Creating a color for the selected pixel
+                Color pixelColor;
+
+                //If this tile is one of the city tiles
+                if (this.cityTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
+                {
+                    pixelColor = Color.black;
+                }
+                //If this tile isn't a city tile
+                else
+                {
+                    //Setting the color based on the type of tile we're currently on
+                    switch (CreateTileGrid.globalReference.tileGrid[c][r].type)
+                    {
+                        case LandType.Ocean:
+                            pixelColor = Color.blue;
+                            break;
+
+                        case LandType.Grasslands:
+                            pixelColor = Color.yellow;
+                            break;
+
+                        case LandType.Forest:
+                            pixelColor = Color.green;
+                            break;
+
+                        case LandType.Desert:
+                            pixelColor = new Color(1, 0.8f, 0.55f);
+                            break;
+
+                        case LandType.Swamp:
+                            pixelColor = new Color(0, 1, 0.58f);
+                            break;
+
+                        case LandType.Mountain:
+                            pixelColor = Color.grey;
+                            break;
+
+                        case LandType.Volcano:
+                            pixelColor = Color.red;
+                            break;
+
+                        default:
+                            pixelColor = Color.white;
+                            break;
+                    }
+                }
+                //If we're on an even numbered column
+                if (c % 2 == 0)
+                {
+                    //Setting the tile color to the pixel
+                    mapTexture.SetPixel(c * 2, (r * 2) + 1, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 1, pixelColor);
+                    mapTexture.SetPixel(c * 2, (r * 2) + 2, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 2, pixelColor);
+                }
+                //If we're on an odd numbered column
+                else
+                {
+                    //Setting the tile color to the pixel
+                    mapTexture.SetPixel(c * 2, r * 2, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, r * 2, pixelColor);
+                    mapTexture.SetPixel(c * 2, (r * 2) + 1, pixelColor);
+                    mapTexture.SetPixel((c * 2) + 1, (r * 2) + 1, pixelColor);
+                }
+            }
+        }
+
+        //Applying the pixels
+        mapTexture.Apply();
+
+        //Encoding the texture to a png
+        byte[] bytes = mapTexture.EncodeToPNG();
+
+        string seedName = GameData.globalReference.GetComponent<RandomSeedGenerator>().seed;
+
+        //Writing the file to the desktop
+        System.IO.File.WriteAllBytes("C:/Users/Mitch/Desktop/" + seedName + ".png", bytes);
     }
 }

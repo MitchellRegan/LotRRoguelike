@@ -633,7 +633,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             for(int p = 0; p < currentPoint.connectedTiles.Count; ++p)
             {
                 //Checking the connected tile to see if it's already in the frontier or the edge tile lists
-                if(!currentPoint.connectedTiles[p].hasBeenChecked)
+                if(currentPoint.connectedTiles[p] != null && !currentPoint.connectedTiles[p].hasBeenChecked)
                 {
                     //If the connected tile has a different land type from the starting tile
                     if (currentPoint.connectedTiles[p].type != startingPoint_.type)
@@ -651,6 +651,11 @@ public class PathfindingAlgorithms : MonoBehaviour
                     //Adding the connected tile to the list of visited points and marking it as being checked so we don't check it again
                     currentPoint.connectedTiles[p].hasBeenChecked = true;
                     visitedPoints.Add(currentPoint.connectedTiles[p]);
+                }
+                //If the connected tile is null, then this tile is along the edge of the map
+                else if(currentPoint.connectedTiles[p] == null)
+                {
+                    isEdge = true;
                 }
             }
 
@@ -706,7 +711,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             foreach(TileInfo connectedTile in currentPoint.connectedTiles)
             {
                 //If the connected tile hasn't already been checked
-                if(!connectedTile.hasBeenChecked)
+                if(connectedTile != null && !connectedTile.hasBeenChecked)
                 {
                     //Making sure the connected tile is the same land type
                     if(connectedTile.type == currentPoint.type)
@@ -714,13 +719,91 @@ public class PathfindingAlgorithms : MonoBehaviour
                         //If we made it this far, the tile is now added to the frontier and list of visited tiles
                         frontier.Add(connectedTile);
                         visitedPoints.Add(connectedTile);
+                        connectedTile.hasBeenChecked = true;
                     }
                 }
             }
+
+            //Removing the current point from the frontier
+            frontier.RemoveAt(0);
+        }
+
+        //Looping through all of the visited tiles and clearing their pathfinding
+        foreach(TileInfo tile in visitedPoints)
+        {
+            tile.ClearPathfinding();
         }
 
         //Once the frontier is reduced to only 1 tile, that tile should be the center, so we return in
         return frontier[0];
+    }
+
+
+    //Pathfinding algorithm for land tiles that returns all of the land tiles within a given range of the starting tile
+    public static List<TileInfo> FindLandTilesInRange(TileInfo startingTile_, int tileRange_, bool keepSameTileType_ = false)
+    {
+        //The list of combat tiles that are returned
+        List<TileInfo> allTilesInRange = new List<TileInfo>();
+
+        //The list of each group of tiles in every range incriment. The index is the range
+        List<List<TileInfo>> tilesInEachIncriment = new List<List<TileInfo>>();
+        //Creating the first range incriment which always includes the starting tile
+        List<TileInfo> range0 = new List<TileInfo>() { startingTile_ };
+        range0[0].hasBeenChecked = true;
+        tilesInEachIncriment.Add(range0);
+
+        //Looping through each range incriment
+        for (int r = 1; r <= tileRange_; ++r)
+        {
+            //Creating a new list of tiles for this range incriment
+            List<TileInfo> newRange = new List<TileInfo>();
+
+            //Looping through each tile in the previous range
+            foreach (TileInfo tile in tilesInEachIncriment[r - 1])
+            {
+                //Looping through each tile connected to the one we're checking
+                foreach (TileInfo connection in tile.connectedTiles)
+                {
+                    //If the connected tile hasn't already been checked
+                    if (connection != null && !connection.hasBeenChecked)
+                    {
+                        //If we need to keep the same tile type and the connected tile is different
+                        if (!keepSameTileType_)
+                        {
+                            if (connection.type == startingTile_.type)
+                            {
+                                //Adding the connected tile to this new range and marking it as checked
+                                newRange.Add(connection);
+                                connection.hasBeenChecked = true;
+                            }
+                        }
+                        //If we don't need to worry about the tile type
+                        else
+                        {
+                            //Adding the connected tile to this new range and marking it as checked
+                            newRange.Add(connection);
+                            connection.hasBeenChecked = true;
+                        }
+                    }
+                }
+            }
+
+            //Adding this range incriment to the list
+            tilesInEachIncriment.Add(newRange);
+        }
+
+        //Grouping all of the tiles into the list that is returned
+        foreach (List<TileInfo> rangeList in tilesInEachIncriment)
+        {
+            foreach (TileInfo tile in rangeList)
+            {
+                allTilesInRange.Add(tile);
+                //Resetting the tile to say it hasn't been checked
+                tile.hasBeenChecked = false;
+            }
+        }
+
+        return allTilesInRange;
     }
 
 

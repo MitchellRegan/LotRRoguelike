@@ -257,7 +257,7 @@ public enum LandType
     River,
     Swamp,
     Grasslands,
-    Forrest,
+    Forest,
     Desert,
     Mountain,
     Volcano
