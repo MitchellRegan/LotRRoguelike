@@ -503,7 +503,7 @@ public class PathfindingAlgorithms : MonoBehaviour
     //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
     public static List<TileInfo> GreedyBestFirstSearchLandTile(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
     {
-        //Creating the 2D list of game objects (tiles) that will be returned
+        //Creating the list of game objects (tiles) that will be returned
         List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier (definition) and their distance from the target (key)
@@ -599,6 +599,128 @@ public class PathfindingAlgorithms : MonoBehaviour
 
         //Returning the completed list of tiles
         return tilePath;
+    }
+
+
+    //Pathfinding algorithm for land tiles that returns the list of tiles along the outside edge of a region
+    public static List<TileInfo> FindRegionEdgeTiles(TileInfo startingPoint_)
+    {
+        //The list of tiles along the region edge that will be returned. 
+        List<TileInfo> edgeTiles = new List<TileInfo>();
+
+        //The list of path points that make up the frontier
+        List<TileInfo> frontier = new List<TileInfo>();
+        //Adding the starting tile to the fronteir and making sure its previous point is cleared
+        frontier.Add(startingPoint_);
+
+        //The list of path points that have already been visited
+        List<TileInfo> visitedPoints = new List<TileInfo>();
+        visitedPoints.Add(startingPoint_);
+        
+        startingPoint_.hasBeenChecked = true;
+
+
+        //Loop through each path point until the frontier is empty
+        while (frontier.Count != 0)
+        {
+            //Getting the reference to the next path point to check
+            TileInfo currentPoint = frontier[0];
+
+            //Bool that's true if the current tile has no remaining connected tiles to add to the frontier
+            bool isEdge = false;
+
+            //Looping through all of the connected tiles for the current tile
+            for(int p = 0; p < currentPoint.connectedTiles.Count; ++p)
+            {
+                //Checking the connected tile to see if it's already in the frontier or the edge tile lists
+                if(!currentPoint.connectedTiles[p].hasBeenChecked)
+                {
+                    //If the connected tile has a different land type from the starting tile
+                    if (currentPoint.connectedTiles[p].type != startingPoint_.type)
+                    {
+                        //Since this tile has a connection that has a different land type, it's an edge tile
+                        isEdge = true;
+                    }
+                    //If the connected tile has the same land type and hasn't been checked yet
+                    else
+                    {
+                        //This connected tile is added to the frontier for later
+                        frontier.Add(currentPoint.connectedTiles[p]);
+                    }
+
+                    //Adding the connected tile to the list of visited points and marking it as being checked so we don't check it again
+                    currentPoint.connectedTiles[p].hasBeenChecked = true;
+                    visitedPoints.Add(currentPoint.connectedTiles[p]);
+                }
+            }
+
+            //If the current point is marked as an edge
+            if(isEdge)
+            {
+                //The current point is added to the list of edge tiles
+                edgeTiles.Add(currentPoint);
+            }
+
+            //After we're done checking the current point, we remove it from the frontier
+            frontier.Remove(currentPoint);
+        }
+
+
+        //Looping through all path points in the list of visited points to clear their data
+        foreach (TileInfo point in visitedPoints)
+        {
+            point.ClearPathfinding();
+        }
+
+
+        //Returning the completed list of edge tiles
+        return edgeTiles;
+    }
+
+
+    //Pathfinding algorithm for land tiles that returns the tile in the center of a region given the edge tiles
+    public static TileInfo FindRegionCenterTile(List<TileInfo> edgeTiles_)
+    {
+        //The list of path points that make up the frontier
+        List<TileInfo> frontier = new List<TileInfo>();
+        //The list of path points that have already been visited
+        List<TileInfo> visitedPoints = new List<TileInfo>();
+
+        //Looping through all of the given edge tiles
+        foreach(TileInfo eT in edgeTiles_)
+        {
+            //Adding the edge tile to the frontier and visited points list
+            frontier.Add(eT);
+            visitedPoints.Add(eT);
+            //Marking the edge tile as already been checked
+            eT.hasBeenChecked = true;
+        }
+
+        //Looping through the frontier until there's only 1 tile left
+        while(frontier.Count != 1)
+        {
+            //Getting the reference to the next path point to check
+            TileInfo currentPoint = frontier[0];
+
+            //Looping through all of the tiles connected to the current point
+            foreach(TileInfo connectedTile in currentPoint.connectedTiles)
+            {
+                //If the connected tile hasn't already been checked
+                if(!connectedTile.hasBeenChecked)
+                {
+                    //Making sure the connected tile is the same land type
+                    if(connectedTile.type == currentPoint.type)
+                    {
+                        //If we made it this far, the tile is now added to the frontier and list of visited tiles
+                        frontier.Add(connectedTile);
+                        visitedPoints.Add(connectedTile);
+                    }
+                }
+            }
+        }
+
+        //Once the frontier is reduced to only 1 tile, that tile should be the center, so we return in
+        return frontier[0];
     }
 
 
