@@ -636,7 +636,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 if(currentPoint.connectedTiles[p] != null && !currentPoint.connectedTiles[p].hasBeenChecked)
                 {
                     //If the connected tile has a different land type from the starting tile
-                    if (currentPoint.connectedTiles[p].type != startingPoint_.type)
+                    if (currentPoint.connectedTiles[p].regionName != startingPoint_.regionName)
                     {
                         //Since this tile has a connection that has a different land type, it's an edge tile
                         isEdge = true;
@@ -772,7 +772,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 if(connectedTile != null && !connectedTile.hasBeenChecked)
                 {
                     //Making sure the connected tile is the same land type
-                    if(connectedTile.type == currentPoint.type)
+                    if(connectedTile.regionName == currentPoint.regionName)
                     {
                         //If we made it this far, the tile is now added to the frontier and list of visited tiles
                         frontier.Add(connectedTile);

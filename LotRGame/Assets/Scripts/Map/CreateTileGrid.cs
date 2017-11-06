@@ -92,7 +92,6 @@ public class CreateTileGrid : MonoBehaviour
     public List<TileInfo> cityTiles;
 
 
-
     //Called on initialization
     private void Awake()
     {
@@ -156,7 +155,7 @@ public class CreateTileGrid : MonoBehaviour
         this.cityTiles = this.FindCityTiles();
 
         //Randomizes the regions so that they grow in different directions
-        this.ExpandRegionBoarders();
+        //this.ExpandRegionBoarders();
 
         //Creating the map texture
         this.CreateMapTexture();
@@ -455,44 +454,135 @@ public class CreateTileGrid : MonoBehaviour
         List<List<TileInfo>> hardBand = new List<List<TileInfo>>() { new List<TileInfo>() };
         List<List<TileInfo>> veryHardBand = new List<List<TileInfo>>() { new List<TileInfo>() };
         List<List<TileInfo>> finalBand = new List<List<TileInfo>>() { new List<TileInfo>() };
+        
+        
+        //Finding the tile in the corner opposite of the end tile
+        TileInfo startCorner;
+        int startRowCorner = 0;
+        int startColCorner = 0;
+        //If the end tile is in the first 5th of the map rows
+        if(endRow <= this.tileGrid[0].Count / 5)
+        {
+            //The opposite row is the last one
+            startRowCorner = this.tileGrid[0].Count - 1;
+        }
+        //If the end tile is in the last 5th of the map rows
+        else if(endRow >= this.tileGrid[0].Count - (this.tileGrid[0].Count / 5))
+        {
+            //The opposite row is the first one
+            startRowCorner = 0;
+        }
+        //If the end tile is in the middle of the map rows
+        else
+        {
+            //The opposite row is the middle one
+            startRowCorner = this.tileGrid[0].Count / 2;
+        }
 
-        //Finding the distance from the end zone to the start zone
-        float totalDistStartToEnd = Vector3.Distance(startTile.tilePosition, endTile.tilePosition);
+        //If the end tile is in the first 5th of the map cols
+        if(endCol <= this.tileGrid.Count / 5)
+        {
+            //The opposite col is the last one
+            startColCorner = this.tileGrid.Count - 1;
+        }
+        //If the end tile is in the last 5th of the map cols
+        else if(endCol >= this.tileGrid.Count - (this.tileGrid.Count/ 5))
+        {
+            //The opposite col is the first one
+            startColCorner = 0;
+        }
+        //If the end tile is in the middle of the map cols
+        else
+        {
+            //The opposite col is the middle one
+            startColCorner = this.tileGrid.Count / 2;
+        }
+
+        //Getting the tile that's at the opposite end of the end tile map
+        startCorner = this.tileGrid[startColCorner][startRowCorner];
+
+        //Finding the tile in the corner opposite of the start tile
+        TileInfo endCorner;
+        int endRowCorner = 0;
+        int endColCorner = 0;
+        //If the end tile is in the first 5th of the map rows
+        if (endRow <= this.tileGrid[0].Count / 5)
+        {
+            //The row is the first one
+            endRowCorner = 0;
+        }
+        //If the end tile is in the last 5th of the map rows
+        else if (endRow >= this.tileGrid[0].Count - (this.tileGrid[0].Count / 5))
+        {
+            //The row is the first one
+            endRowCorner = this.tileGrid[0].Count - 1;
+        }
+        //If the end tile is in the middle of the map rows
+        else
+        {
+            //The row is the middle one
+            endRowCorner = this.tileGrid[0].Count / 2;
+        }
+
+        //If the end tile is in the first 5th of the map cols
+        if (endCol <= this.tileGrid.Count / 5)
+        {
+            //The col is the first one
+            endColCorner = 0;
+        }
+        //If the end tile is in the last 5th of the map cols
+        else if (startCol >= this.tileGrid.Count - (this.tileGrid.Count / 5))
+        {
+            //The col is the first one
+            endColCorner = this.tileGrid.Count - 1;
+        }
+        //If the end tile is in the middle of the map cols
+        else
+        {
+            //The col is the middle one
+            endColCorner = this.tileGrid.Count / 2;
+        }
+
+        //Getting the tile that's at the opposite end of the start tile map
+        endCorner = this.tileGrid[endColCorner][endRowCorner];
+
+        //Finding the distance from the end zone corner to the start zone corner of the map
+        float totalDistStartToEnd = Vector3.Distance(startCorner.tilePosition, endCorner.tilePosition);
 
         //Creating a radius for each band outward from the end zone
         float veryEasyRadius = totalDistStartToEnd;
-        float easyRadius = (totalDistStartToEnd / 5) * 4;
-        float mediumRadius = (totalDistStartToEnd / 5) * 3;
-        float hardRadius = (totalDistStartToEnd / 5) * 3;
-        float veryHardRadius = (totalDistStartToEnd / 5) * 2;
+        float easyRadius = (totalDistStartToEnd / 5) + (totalDistStartToEnd / 7) * 4;
+        float mediumRadius = (totalDistStartToEnd / 5) + (totalDistStartToEnd / 7) * 3;//4/5
+        float hardRadius = (totalDistStartToEnd / 5) + (totalDistStartToEnd / 7) * 2;//3/5
+        float veryHardRadius = (totalDistStartToEnd / 5) + (totalDistStartToEnd / 7);//(2/5)
         float finalRadius = totalDistStartToEnd / 5;
 
         //Looping through every tile in the grid to find out what difficulty band they belong in
-        for(int c = 0; c < this.tileGrid.Count; ++c)
+        for (int c = 0; c < this.tileGrid.Count; ++c)
         {
-            for(int r = 0; r < this.tileGrid[0].Count; ++r)
+            for (int r = 0; r < this.tileGrid[0].Count; ++r)
             {
                 //Finding the distance the current tile is from the end zone
-                float currentTileDist = Vector3.Distance(this.tileGrid[c][r].tilePosition, endTile.tilePosition);
+                float currentTileDist = Vector3.Distance(this.tileGrid[c][r].tilePosition, endCorner.tilePosition);
 
                 //Determining which radius the tile is within and adding it to that list of tiles
-                if(currentTileDist < finalRadius)
+                if (currentTileDist < finalRadius)
                 {
                     finalBand[0].Add(this.tileGrid[c][r]);
                 }
-                else if(currentTileDist < veryHardRadius)
+                else if (currentTileDist < veryHardRadius)
                 {
                     veryHardBand[0].Add(this.tileGrid[c][r]);
                 }
-                else if(currentTileDist < hardRadius)
+                else if (currentTileDist < hardRadius)
                 {
                     hardBand[0].Add(this.tileGrid[c][r]);
                 }
-                else if(currentTileDist < mediumRadius)
+                else if (currentTileDist < mediumRadius)
                 {
                     mediumBand[0].Add(this.tileGrid[c][r]);
                 }
-                else if(currentTileDist < easyRadius)
+                else if (currentTileDist < easyRadius)
                 {
                     easyBand[0].Add(this.tileGrid[c][r]);
                 }
@@ -502,64 +592,20 @@ public class CreateTileGrid : MonoBehaviour
                 }
             }
         }
-
-        //Finding the tile in the corner opposite of the end tile
-        TileInfo oppositeEnd;
-        int oppositeRow = 0;
-        int oppositeCol = 0;
-        //If the end tile is in the first 5th of the map rows
-        if(endRow <= this.tileGrid[0].Count / 5)
-        {
-            //The opposite row is the last one
-            oppositeRow = this.tileGrid[0].Count - 1;
-        }
-        //If the end tile is in the last 5th of the map rows
-        else if(endRow >= this.tileGrid[0].Count - (this.tileGrid[0].Count / 5))
-        {
-            //The opposite row is the first one
-            oppositeRow = 0;
-        }
-        //If the end tile is in the middle of the map rows
-        else
-        {
-            //The opposite row is the middle one
-            oppositeRow = this.tileGrid[0].Count / 2;
-        }
-
-        //If the end tile is in the first 5th of the map cols
-        if(endCol <= this.tileGrid.Count / 5)
-        {
-            //The opposite col is the last one
-            oppositeCol = this.tileGrid.Count - 1;
-        }
-        //If the end tile is in the last 5th of the map cols
-        else if(endCol >= this.tileGrid.Count - (this.tileGrid.Count/ 5))
-        {
-            //The opposite col is the first one
-            oppositeCol = 0;
-        }
-        //If the end tile is in the middle of the map cols
-        else
-        {
-            //The opposite col is the middle one
-            oppositeCol = this.tileGrid.Count / 2;
-        }
-
-        //Getting the tile that's at the opposite end of the end tile map
-        oppositeEnd = this.tileGrid[oppositeCol][oppositeRow];
+        
 
         //Splitting the very easy difficulty band
-        this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, oppositeEnd, endTile);
+        this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, startCorner, endCorner);
         //Splitting the easy difficulty band
-        this.SplitDifficultyBands(easyBand, this.easyRegions, this.minMaxEasySplits, oppositeEnd, endTile);
+        this.SplitDifficultyBands(easyBand, this.easyRegions, this.minMaxEasySplits, startCorner, endCorner);
         //Splitting the medium difficulty band
-        this.SplitDifficultyBands(mediumBand, this.mediumRegions, this.minMaxMediumSplits, oppositeEnd, endTile);
+        this.SplitDifficultyBands(mediumBand, this.mediumRegions, this.minMaxMediumSplits, startCorner, endCorner);
         //Splitting the hard difficulty band
-        this.SplitDifficultyBands(hardBand, this.hardRegions, this.minMaxHardSplits, oppositeEnd, endTile);
+        this.SplitDifficultyBands(hardBand, this.hardRegions, this.minMaxHardSplits, startCorner, endCorner);
         //Splitting the very hard difficulty band
-        this.SplitDifficultyBands(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, oppositeEnd, endTile);
+        this.SplitDifficultyBands(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, startCorner, endCorner);
         //Splitting the final difficulty band
-        this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, oppositeEnd, endTile);
+        this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, startCorner, endCorner);
 
         //Once the map is created, we set the player on the starting tile
         this.SetPlayerPartyPosition(startTile);
@@ -842,6 +888,7 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
 
+
         //Once we find all of the starting points, we use pathfinding to get the center tile in each region
         foreach(TileInfo startingPoint in pathfindingStartingPoints)
         {
@@ -852,7 +899,7 @@ public class CreateTileGrid : MonoBehaviour
             TileInfo regionCenterTile = PathfindingAlgorithms.FindRegionCenterTile(edgeTiles);
 
             //Finding all of the tiles within a certain radius of the center
-            List<TileInfo> centerRadiusTiles = PathfindingAlgorithms.FindLandTilesInRange(regionCenterTile, 1, true);
+            List<TileInfo> centerRadiusTiles = PathfindingAlgorithms.FindLandTilesInRange(regionCenterTile, 0, true);
 
             //Finding a random tile in the radius around the center to place the city on
             int randomTile = Random.Range(0, centerRadiusTiles.Count - 1);
@@ -862,6 +909,7 @@ public class CreateTileGrid : MonoBehaviour
             cityTiles.Add(cityTile);
         }
 
+        
         //Returning the list of city tiles
         return cityTiles;
     }
@@ -899,7 +947,7 @@ public class CreateTileGrid : MonoBehaviour
             //And then we have the region step outward based on the size of the region's boarders
             Vector2 minMaxSteps = new Vector2();
             minMaxSteps.x = edgeTiles.Count * 0.1f;
-            minMaxSteps.y = edgeTiles.Count * 0.5f;
+            minMaxSteps.y = edgeTiles.Count * 0.3f;
             PathfindingAlgorithms.StepOutRegionEdge(edgeTiles, minMaxSteps);
         }
     }
@@ -1272,6 +1320,7 @@ public class CreateTileGrid : MonoBehaviour
                 //Creating a color for the selected pixel
                 Color pixelColor;
 
+                
                 //If this tile is one of the city tiles
                 if (this.cityTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
                 {
@@ -1316,6 +1365,7 @@ public class CreateTileGrid : MonoBehaviour
                             break;
                     }
                 }
+
                 //If we're on an even numbered column
                 if (c % 2 == 0)
                 {
