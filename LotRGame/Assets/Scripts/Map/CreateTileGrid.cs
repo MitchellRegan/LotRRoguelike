@@ -29,7 +29,7 @@ public class CreateTileGrid : MonoBehaviour
     public int visibilityRange = 7;
 
     //The list of all tiles that are currently visible
-    public List<GameObject> visibleTileObjects;
+    public Dictionary<TileInfo, GameObject> visibleTileObjects;
 
     //Prefab for the RegionInfo of the ocean
     public RegionInfo oceanRegion;
@@ -87,9 +87,18 @@ public class CreateTileGrid : MonoBehaviour
     //Enemy encounter for testing
     public GameObject testEnemyEncounter;
 
+    [Space(8)]
+
     //The list of tiles where region cities are
     [HideInInspector]
     public List<TileInfo> cityTiles;
+
+    //The radius around the region center that the city tiles can be within
+    public int cityRadiusFromCenter = 8;
+
+    //The min and max percent that a region can step based on the number of tiles along its edge
+    public Vector2 minMaxStepPercent = new Vector2(0.1f, 0.3f);
+
 
 
     //Called on initialization
@@ -110,7 +119,7 @@ public class CreateTileGrid : MonoBehaviour
         this.tileWidth -= (this.tileWidth - this.tileHeight) * 1.9f;
 
         //Initializing our list of visible tile objects
-        this.visibleTileObjects = new List<GameObject>();
+        this.visibleTileObjects = new Dictionary<TileInfo, GameObject>();
 
         //If we're starting a new game, we need to generate the map first
         if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
@@ -899,7 +908,7 @@ public class CreateTileGrid : MonoBehaviour
             TileInfo regionCenterTile = PathfindingAlgorithms.FindRegionCenterTile(edgeTiles);
 
             //Finding all of the tiles within a certain radius of the center
-            List<TileInfo> centerRadiusTiles = PathfindingAlgorithms.FindLandTilesInRange(regionCenterTile, 0, true);
+            List<TileInfo> centerRadiusTiles = PathfindingAlgorithms.FindLandTilesInRange(regionCenterTile, this.cityRadiusFromCenter, true);
 
             //Finding a random tile in the radius around the center to place the city on
             int randomTile = Random.Range(0, centerRadiusTiles.Count - 1);
@@ -946,8 +955,8 @@ public class CreateTileGrid : MonoBehaviour
 
             //And then we have the region step outward based on the size of the region's boarders
             Vector2 minMaxSteps = new Vector2();
-            minMaxSteps.x = edgeTiles.Count * 0.1f;
-            minMaxSteps.y = edgeTiles.Count * 0.3f;
+            minMaxSteps.x = edgeTiles.Count * this.minMaxStepPercent.x;
+            minMaxSteps.y = edgeTiles.Count * this.minMaxStepPercent.y;
             PathfindingAlgorithms.StepOutRegionEdge(edgeTiles, minMaxSteps);
         }
     }
@@ -1264,11 +1273,12 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Clearing the current list of visible tile objects and destroying them
-        for (int o = 0; o < this.visibleTileObjects.Count; ++o)
+        foreach(TileInfo tile in this.visibleTileObjects.Keys)
         {
-            Destroy(this.visibleTileObjects[o]);
-            this.visibleTileObjects[o] = null;
+            Destroy(this.visibleTileObjects[tile]);
+            this.visibleTileObjects[tile] = null;
         }
+        this.visibleTileObjects.Clear();
         
         //Grouping all of the tiles into the list that are visible
         foreach (List<TileInfo> rangeList in tilesInEachIncriment)
@@ -1288,19 +1298,88 @@ public class CreateTileGrid : MonoBehaviour
                 tileMesh.GetComponent<LandTile>().tileReference = tile;
 
                 //Adding the hex mesh to our list of visible tile objects
-                this.visibleTileObjects.Add(tileMesh);
+                this.visibleTileObjects.Add(tile, tileMesh);
 
-                //If this tile has a decoration model, an instance of it is created and added to the visible objects list
+                //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
                 if(tile.decorationModel != null)
                 {
                     GameObject decor = Instantiate(tile.decorationModel, tile.tilePosition, new Quaternion());
-                    this.visibleTileObjects.Add(decor);
+                    decor.transform.SetParent(tileMesh.transform);
                 }
             }
         }
     }
 
-    
+
+    //Function called externally from Movement.cs and from StartMapCreation. Spawns the nearest tiles around the player party
+    public void GenerateVisibleLand2(TileInfo currentTile_)
+    {
+        //Getting all of the tiles within view range of the current tile
+        List<TileInfo> tilesInRange = PathfindingAlgorithms.FindLandTilesInRange(currentTile_, this.visibilityRange);
+
+        //Creating a list to hold all of the tiles that are just coming into view
+        List<TileInfo> newTiles = new List<TileInfo>();
+        //Creating a list to hold all of the tiles that are now outside our view
+        List<TileInfo> oldTiles = new List<TileInfo>();
+
+        //Looping through all of the tiles that are currently in view
+        foreach(TileInfo inRangeTile in tilesInRange)
+        {
+            //If the tile in range isn't in the current dictionary of visible objects
+            if(!this.visibleTileObjects.ContainsKey(inRangeTile))
+            {
+                //The tile is new
+                newTiles.Add(inRangeTile);
+            }
+        }
+
+        //Looping through all of the tiles that are currently visible
+        foreach(TileInfo visibleTile in this.visibleTileObjects.Keys)
+        {
+            //If the visible tile isn't in range of the new tile
+            if(!tilesInRange.Contains(visibleTile))
+            {
+                oldTiles.Add(visibleTile);
+            }
+        }
+        
+        //Looping through and removing each tile in the list of old tiles
+        foreach(TileInfo oldTile in oldTiles)
+        {
+            //Deleting the game object for this tile in the visible tile objects dictionary
+            Destroy(this.visibleTileObjects[oldTile]);
+            //Removing this tile from the list
+            this.visibleTileObjects.Remove(oldTile);
+        }
+
+        //Looping through all of the new tiles and creating an instance of its game object
+        foreach(TileInfo newTile in newTiles)
+        {
+            //Resetting the tile to say it hasn't been checked
+            newTile.hasBeenChecked = false;
+
+            //Creating an instance of the hex mesh for this tile
+            GameObject tileMesh = Instantiate(this.hexMesh.gameObject, new Vector3(newTile.tilePosition.x, newTile.elevation, newTile.tilePosition.z), new Quaternion());
+            //Setting the mesh's material to the correct one for the tile
+            Material[] tileMat = tileMesh.GetComponent<MeshRenderer>().materials;
+            tileMat[0] = newTile.tileMaterial;
+            tileMesh.GetComponent<MeshRenderer>().materials = tileMat;
+            //Setting the tile's reference in the LandTile component
+            tileMesh.GetComponent<LandTile>().tileReference = newTile;
+
+            //Adding the hex mesh to our list of visible tile objects
+            this.visibleTileObjects.Add(newTile, tileMesh);
+
+            //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
+            if (newTile.decorationModel != null)
+            {
+                GameObject decor = Instantiate(newTile.decorationModel, newTile.tilePosition, new Quaternion());
+                decor.transform.SetParent(tileMesh.transform);
+            }
+        }
+    }
+
+
     //Function called at the end of StartMapCreation to make the map texture
     private void CreateMapTexture()
     {
