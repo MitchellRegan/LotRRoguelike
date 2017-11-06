@@ -110,6 +110,21 @@ public class TileInfo
     }
 
 
+    //Function called externally through PathfindingAlgorithms.cs in StepOutRegionEdge. Sets this tile's info based on another tile
+    public void SetTileBasedOnAnotherTile(TileInfo otherTile_)
+    {
+        //Setting the tile's name, type, and texture to be the same as the other tile
+        this.regionName = otherTile_.regionName;
+        this.type = otherTile_.type;
+        this.tileMaterial = otherTile_.tileMaterial;
+
+        //Setting this tile's elevation between the its current height and the other tile's height
+        this.elevation = (Random.value * (this.elevation - otherTile_.elevation)) + otherTile_.elevation;
+        //Setting the tile's movement cost between its current cost and the other tile's cost
+        this.movementCost = Mathf.RoundToInt(Random.value * (this.movementCost - otherTile_.movementCost)) + otherTile_.movementCost;
+    }
+
+
     //Function called in the pathfinding algorithms in CreateTileGrid.cs. Clears this tile's previous point and the fact that it's been checked
     public void ClearPathfinding()
     {

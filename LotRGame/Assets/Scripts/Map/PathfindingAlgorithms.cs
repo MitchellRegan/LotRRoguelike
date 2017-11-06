@@ -683,6 +683,64 @@ public class PathfindingAlgorithms : MonoBehaviour
     }
 
 
+    //Algorithm called to grow a tile region by spreading out from random tiles along the given region edge
+    public static void StepOutRegionEdge(List<TileInfo> regionEdgeTiles_, Vector2 minMaxNumberOfSteps_)
+    {
+        //Finding the number of steps this region will spread
+        int numSteps = Mathf.RoundToInt(Random.Range(minMaxNumberOfSteps_.x, minMaxNumberOfSteps_.y));
+
+        //Creating a frontier of tiles that we can step outwards from using the edge tiles given
+        List<TileInfo> frontier = regionEdgeTiles_;
+
+        //Looping a number of times equal to our steps
+        for(int s = 0; s < numSteps; ++s)
+        {
+            //If for some reason we can still step out but there are no more tiles left in the frontier, we break the loop
+            if(frontier.Count == 0)
+            {
+                break;
+            }
+
+            //Finding a random tile along the region edge to step from
+            int randomTileIndex = Mathf.RoundToInt(Random.Range(0, regionEdgeTiles_.Count));
+            TileInfo edgeTile = regionEdgeTiles_[randomTileIndex];
+
+            //Bool to track if we were able to step out from this edge tile
+            bool canStep = false;
+
+            //Looping through each connection in the edge tile
+            foreach(TileInfo connection in edgeTile.connectedTiles)
+            {
+                //Making sure the current connection isn't null
+                if(connection != null)
+                {
+                    //If the connected tile is from a different region from this edge tile
+                    if(connection.regionName != edgeTile.regionName)
+                    {
+                        //We change the connected tile to be in this edge tile's region
+                        connection.SetTileBasedOnAnotherTile(edgeTile);
+
+                        //Adding the connection to the frontier
+                        frontier.Add(connection);
+
+                        //We also indicate that this tile was able to step outward
+                        canStep = true;
+                    }
+                }
+            }
+
+            //If we weren't able to step outward from this tile, we subtract from the current step count so we don't waste one
+            if(!canStep)
+            {
+                s -= 1;
+            }
+
+            //Once we're done stepping out from this tile, we remove it from the frontier
+            frontier.Remove(edgeTile);
+        }
+    }
+
+
     //Pathfinding algorithm for land tiles that returns the tile in the center of a region given the edge tiles
     public static TileInfo FindRegionCenterTile(List<TileInfo> edgeTiles_)
     {

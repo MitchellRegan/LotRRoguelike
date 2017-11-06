@@ -155,6 +155,9 @@ public class CreateTileGrid : MonoBehaviour
         //Getting all of the tiles where cities will be
         this.cityTiles = this.FindCityTiles();
 
+        //Randomizes the regions so that they grow in different directions
+        this.ExpandRegionBoarders();
+
         //Creating the map texture
         this.CreateMapTexture();
     }
@@ -861,6 +864,44 @@ public class CreateTileGrid : MonoBehaviour
 
         //Returning the list of city tiles
         return cityTiles;
+    }
+
+
+    //Function called from StartMapCreation to expand the boarders of each region
+    private void ExpandRegionBoarders()
+    {
+        //Making a list of each index for the number of total regions
+        List<int> numRegions = new List<int>();
+        for(int r = 0; r < this.cityTiles.Count; ++r)
+        {
+            numRegions.Add(r);
+        }
+
+        //Creating a separate list to randomize the order of the region indexes
+        List<int> randRegionOrder = new List<int>();
+        for(int c = 0; c < this.cityTiles.Count; ++c)
+        {
+            //Getting a random index from the numRegions list
+            int randIndex = Random.Range(0, this.cityTiles.Count - 1);
+            //Adding the region index to our list of random region orders
+            randRegionOrder.Add(numRegions[randIndex]);
+        }
+
+        //Looping through each region in our randomized order
+        foreach(int index in randRegionOrder)
+        {
+            //We get the tile reference for the given index's city
+            TileInfo cityTile = this.cityTiles[index];
+
+            //We find the list of tiles along the edge of the city tile's region
+            List<TileInfo> edgeTiles = PathfindingAlgorithms.FindRegionEdgeTiles(cityTile);
+
+            //And then we have the region step outward based on the size of the region's boarders
+            Vector2 minMaxSteps = new Vector2();
+            minMaxSteps.x = edgeTiles.Count * 0.1f;
+            minMaxSteps.y = edgeTiles.Count * 0.5f;
+            PathfindingAlgorithms.StepOutRegionEdge(edgeTiles, minMaxSteps);
+        }
     }
 
 
