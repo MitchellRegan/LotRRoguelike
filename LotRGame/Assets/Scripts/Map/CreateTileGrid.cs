@@ -163,6 +163,9 @@ public class CreateTileGrid : MonoBehaviour
         //Getting all of the tiles where cities will be
         this.cityTiles = this.FindCityTiles();
 
+        //Setting all of the map locations for each region, like cities and dungeons
+        this.CreateMapLocations();
+
         //Randomizes the regions so that they grow in different directions
         //this.ExpandRegionBoarders();
 
@@ -921,6 +924,124 @@ public class CreateTileGrid : MonoBehaviour
         
         //Returning the list of city tiles
         return cityTiles;
+    }
+
+
+    //Function called from StartMapCreation to set all of the map locations in each region
+    private void CreateMapLocations()
+    {
+        //Looping through each city tile
+        foreach(TileInfo cityTile in this.cityTiles)
+        {
+            //Reference for the region info that the city tile is in
+            RegionInfo cityRegion = null;
+
+            //Checking if the city is in a very easy region
+            foreach(RegionInfo veRegion in this.veryEasyRegions)
+            {
+                //If this region has the same name as the current city tile
+                if(veRegion.regionName == cityTile.regionName)
+                {
+                    //We save the region reference and break the loop
+                    cityRegion = veRegion;
+                    break;
+                }
+            }
+
+            //Checking if the city is in an easy region
+            if(cityRegion == null)
+            {
+                foreach(RegionInfo eRegion in this.easyRegions)
+                {
+                    //If this region has the same name as the current city tile
+                    if(eRegion.regionName == cityTile.regionName)
+                    {
+                        //We save the region reference and break the loop
+                        cityRegion = eRegion;
+                        break;
+                    }
+                }
+            }
+
+            //Checking if the city is in a medium region
+            if (cityRegion == null)
+            {
+                foreach (RegionInfo nRegion in this.mediumRegions)
+                {
+                    //If this region has the same name as the current city tile
+                    if (nRegion.regionName == cityTile.regionName)
+                    {
+                        //We save the region reference and break the loop
+                        cityRegion = nRegion;
+                        break;
+                    }
+                }
+            }
+
+            //Checking if the city is in an hard region
+            if (cityRegion == null)
+            {
+                foreach (RegionInfo hRegion in this.hardRegions)
+                {
+                    //If this region has the same name as the current city tile
+                    if (hRegion.regionName == cityTile.regionName)
+                    {
+                        //We save the region reference and break the loop
+                        cityRegion = hRegion;
+                        break;
+                    }
+                }
+            }
+
+            //Checking if the city is in a very hard region
+            if (cityRegion == null)
+            {
+                foreach (RegionInfo vhRegion in this.veryHardRegions)
+                {
+                    //If this region has the same name as the current city tile
+                    if (vhRegion.regionName == cityTile.regionName)
+                    {
+                        //We save the region reference and break the loop
+                        cityRegion = vhRegion;
+                        break;
+                    }
+                }
+            }
+
+            //Checking if the city is in the final region
+            if (cityRegion == null)
+            {
+                foreach (RegionInfo fRegion in this.finalRegions)
+                {
+                    //If this region has the same name as the current city tile
+                    if (fRegion.regionName == cityTile.regionName)
+                    {
+                        //We save the region reference and break the loop
+                        cityRegion = fRegion;
+                        break;
+                    }
+                }
+            }
+
+
+            //If we've found the city tile's region
+            if(cityRegion != null)
+            {
+                //If the region has a city prefab
+                if(cityRegion.regionCity != null)
+                {
+                    //Adding the city object to this city tile's list of objects
+                    cityTile.AddObjectToThisTile(cityRegion.regionCity.gameObject);
+                    Debug.Log("Here's where cities are being added");
+                }
+
+                //If the region has a dungeon prefab
+                if(cityRegion.regionDungeon != null)
+                {
+
+                }
+            }
+        }
     }
 
 

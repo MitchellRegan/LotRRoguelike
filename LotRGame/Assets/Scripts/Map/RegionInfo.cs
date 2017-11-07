@@ -40,6 +40,13 @@ public class RegionInfo : MonoBehaviour
     //The chance that an encounter will happen when time passes
     [Range(0, 1)]
     public float randomEncounterChance = 0.1f;
+
+    [Space(8)]
+
+    //The main city for this region
+    public CityLocation regionCity;
+    //The dungeon for this region
+    public DungeonLocation regionDungeon;
 }
 
 
