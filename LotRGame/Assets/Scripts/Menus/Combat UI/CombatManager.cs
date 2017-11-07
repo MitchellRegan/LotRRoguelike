@@ -192,7 +192,7 @@ public class CombatManager : MonoBehaviour
                     this.highlightRing.color = this.actingEnemyColor;
                     this.highlightRing.enabled = true;
 
-                    Debug.Log("Combat Manager.Update. Enemies need AI here");
+                    Debug.Log("Combat Manager.Update. Enemies need AI here: " + this.actingCharacters[0].firstName);
                     //Resetting this enemy's initiative for now. Can't do much until I get AI in
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
                     this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
@@ -653,6 +653,7 @@ public class CombatManager : MonoBehaviour
 
             //Telling the sprite base to use the given character's sprites
             newCharSpriteBase.SetSpriteImages(playerChar.charSprites.allSprites);
+            newCharSpriteBase.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
 
             //Finding the combat tile that the current player character is on
             CombatTile playerTile = this.FindCharactersTile(playerChar);
@@ -679,8 +680,19 @@ public class CombatManager : MonoBehaviour
             //Getting the CombatCharacterSprite component reference
             CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
 
+            //Telling the sprite base to use the given character's sprites
+            newCharSpriteBase.SetSpriteImages(enemyChar.charSprites.allSprites);
+
             //Finding the combat tile that the current enemy character is on
             CombatTile enemyTile = this.FindCharactersTile(enemyChar);
+
+            //Getting the direction that this enemy initially faces
+            CharacterSpriteBase.DirectionFacing direction = CharacterSpriteBase.DirectionFacing.Left;
+            if (enemyTile.col < (this.combatTileGrid.Count / 2))
+            {
+                direction = CharacterSpriteBase.DirectionFacing.Right;
+            }
+            newCharSpriteBase.SetDirectionFacing(direction);
 
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
@@ -982,7 +994,11 @@ public class CombatManager : MonoBehaviour
                 //If the slider is filled, this character is added to the acting character list
                 if (this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
                 {
-                    this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+                    //Making sure this character isn't already in the list of acting characters
+                    if (!this.actingCharacters.Contains(this.enemyCharactersInCombat[e]))
+                    {
+                        this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+                    }
                 }
             }
         }
