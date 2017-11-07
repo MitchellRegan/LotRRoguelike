@@ -53,9 +53,9 @@ public class CharSpritePackage
     public SpriteViews legSprites;
 
     //The color for this character's hair
-    public Color hairColor;
+    public Color hairColor = Color.white;
     //The color for this character's facial hair
-    public Color facialHairColor;
+    public Color facialHairColor = Color.white;
     //The color for this character's skin
-    public Color skinColor;
+    public Color skinColor = Color.white;
 }

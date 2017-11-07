@@ -60,9 +60,7 @@ public class CombatManager : MonoBehaviour
 
     //Object that's created to display damage on an attacked character's tile
     public DamageText damageTextPrefab;
-
-    //Object that's created when combat is initiated to hold each character's sprite
-    public CombatCharacterSprite characterSpritePrefab;
+    
     //The list of all CombatCharacterSprites for each character and enemy
     public List<CharacterSpriteBase> characterSpriteList;
 
@@ -649,9 +647,12 @@ public class CombatManager : MonoBehaviour
         {
             //Creating a new instance of the character sprite prefab
             GameObject newCharSprite = GameObject.Instantiate(playerChar.charSprites.allSprites.spriteBase.gameObject);
-
+            
             //Getting the CharacterSpriteBase component reference
             CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
+
+            //Telling the sprite base to use the given character's sprites
+            newCharSpriteBase.SetSpriteImages(playerChar.charSprites.allSprites);
 
             //Finding the combat tile that the current player character is on
             CombatTile playerTile = this.FindCharactersTile(playerChar);

@@ -144,12 +144,6 @@ public class CharacterInventoryUI : MonoBehaviour
     //Function called to update the inventory images and weight
     public void UpdateImages()
     {
-        //Sets the character combat image
-        if(this.combatSprite != null)
-        {
-            this.combatSprite.sprite = this.selectedCharacterInventory.GetComponent<Character>().combatSprite;
-        }
-
         //Sets the character name
         if(this.selectedCharacterName != null)
         {

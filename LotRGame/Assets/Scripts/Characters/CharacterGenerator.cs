@@ -11,14 +11,11 @@ public class CharacterGenerator : MonoBehaviour
     /* ~~~~~~ NAMES ~~~~~~*/
     public List<string> firstNames;
     public List<string> lastNames;
-    public string clanName;
 
     /* ~~~~~~ SEX ~~~~~~*/
     public Genders sex = Genders.Male;
 
     /* ~~~~~~ PHYSICAL ~~~~~~*/
-    public Vector2 height = new Vector2(150, 190);
-    public Vector2 weight = new Vector2(58, 105);
     public Vector2 health = new Vector2(85, 115);
 
     public bool requiresFood = true;
@@ -99,19 +96,12 @@ public class CharacterGenerator : MonoBehaviour
         Character characterRef = this.GetComponent<Character>();
         characterRef.charRaceTypes.race = this.race;
         characterRef.sex = this.sex;
-        characterRef.clanName = this.clanName;
 
         //Gets a random first name from the list of names
         characterRef.firstName = this.firstNames[Random.Range(0, this.firstNames.Count - 1)];
 
         //Gets a random first name from the list of names
         characterRef.lastName = this.lastNames[Random.Range(0, this.lastNames.Count - 1)];
-
-        //Gets a random height value using the min and max
-        characterRef.height = Mathf.RoundToInt(Random.Range(this.height.x, this.height.y));
-
-        //Gets a random weight value using the min and max
-        characterRef.weight = Mathf.RoundToInt(Random.Range(this.weight.x, this.weight.y));
     }
 
 

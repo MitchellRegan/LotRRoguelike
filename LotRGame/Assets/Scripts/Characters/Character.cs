@@ -20,20 +20,8 @@ public class Character : MonoBehaviour
     //This character's last name
     public string lastName = "McPersonface";
 
-    //The name of the clan this character is from
-    public string clanName = "Killjoy";
-
     //This character's gender
     public Genders sex = Genders.Male;
-
-    //This character's height (in centimeters)
-    public int height = 178;
-
-    //This character's weight (in kilograms)
-    public int weight = 80;
-
-    //The sprite that represents this character in combat
-    public Sprite combatSprite;
 
 
     //References to each of the required components
