@@ -708,23 +708,44 @@ public class PathfindingAlgorithms : MonoBehaviour
             //Bool to track if we were able to step out from this edge tile
             bool canStep = false;
 
-            //Looping through each connection in the edge tile
-            foreach(TileInfo connection in edgeTile.connectedTiles)
+            //Bool to track if this tile is next to a city tile
+            bool isNearCity = false;
+            //Looping through each connection in the edge tile once to check for city tiles
+            foreach(TileInfo connectedTile in edgeTile.connectedTiles)
             {
-                //Making sure the current connection isn't null
-                if(connection != null)
+                //If the current connection isn't null and is a city tile
+                if(connectedTile != null && CreateTileGrid.globalReference.cityTiles.Contains(connectedTile))
                 {
-                    //If the connected tile is from a different region from this edge tile
-                    if(connection.regionName != edgeTile.regionName)
+                    //If the city tile that this edge tile is near has a different region name
+                    if(edgeTile.regionName != connectedTile.regionName)
                     {
-                        //We change the connected tile to be in this edge tile's region
-                        connection.SetTileBasedOnAnotherTile(edgeTile);
+                        //We indicate that we can't step near this tile
+                        isNearCity = true;
+                    }
+                }
+            }
 
-                        //Adding the connection to the frontier
-                        frontier.Add(connection);
+            //If this tile isn't near a city
+            if (!isNearCity)
+            {
+                //Looping through each connection in the edge tile
+                foreach (TileInfo connection in edgeTile.connectedTiles)
+                {
+                    //Making sure the current connection isn't null
+                    if (connection != null)
+                    {
+                        //If the connected tile is from a different region from this edge tile
+                        if (connection.regionName != edgeTile.regionName)
+                        {
+                            //We change the connected tile to be in this edge tile's region
+                            connection.SetTileBasedOnAnotherTile(edgeTile);
 
-                        //We also indicate that this tile was able to step outward
-                        canStep = true;
+                            //Adding the connection to the frontier
+                            frontier.Add(connection);
+
+                            //We also indicate that this tile was able to step outward
+                            canStep = true;
+                        }
                     }
                 }
             }

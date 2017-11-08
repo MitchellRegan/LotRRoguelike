@@ -167,7 +167,10 @@ public class CreateTileGrid : MonoBehaviour
         this.CreateMapLocations();
 
         //Randomizes the regions so that they grow in different directions
-        //this.ExpandRegionBoarders();
+        for (int e = 0; e < 20; ++e)
+        {
+            this.ExpandRegionBoarders();
+        }
 
         //Creating the map texture
         this.CreateMapTexture();
