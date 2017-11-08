@@ -167,7 +167,7 @@ public class CreateTileGrid : MonoBehaviour
         this.CreateMapLocations();
 
         //Randomizes the regions so that they grow in different directions
-        this.ExpandRegionBoarders();
+        //this.ExpandRegionBoarders();
 
         //Creating the map texture
         this.CreateMapTexture();
@@ -604,20 +604,20 @@ public class CreateTileGrid : MonoBehaviour
                 }
             }
         }
-        
+
 
         //Splitting the very easy difficulty band
-        this.SplitDifficultyBands2(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, startCorner, endCorner);
+        this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, startCorner, endCorner);
         //Splitting the easy difficulty band
-        this.SplitDifficultyBands2(easyBand, this.easyRegions, this.minMaxEasySplits, startCorner, endCorner);
+        this.SplitDifficultyBands(easyBand, this.easyRegions, this.minMaxEasySplits, startCorner, endCorner);
         //Splitting the medium difficulty band
-        this.SplitDifficultyBands2(mediumBand, this.mediumRegions, this.minMaxMediumSplits, startCorner, endCorner);
+        this.SplitDifficultyBands(mediumBand, this.mediumRegions, this.minMaxMediumSplits, startCorner, endCorner);
         //Splitting the hard difficulty band
-        this.SplitDifficultyBands2(hardBand, this.hardRegions, this.minMaxHardSplits, startCorner, endCorner);
+        this.SplitDifficultyBands(hardBand, this.hardRegions, this.minMaxHardSplits, startCorner, endCorner);
         //Splitting the very hard difficulty band
-        this.SplitDifficultyBands2(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, startCorner, endCorner);
+        this.SplitDifficultyBands(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, startCorner, endCorner);
         //Splitting the final difficulty band
-        this.SplitDifficultyBands2(finalBand, this.finalRegions, this.minMaxFinalSplits, startCorner, endCorner);
+        this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, startCorner, endCorner);
 
         //Once the map is created, we set the player on the starting tile
         this.SetPlayerPartyPosition(startTile);
@@ -625,7 +625,7 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Function called from ImprovedMapGeneration to split all of the difficulty bands into different regions
-    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
+    /*private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
     {
         //Finding the number of splits we need in the band
         int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
@@ -719,10 +719,10 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
     }
-
+    */
 
     //Function called from ImprovedMapGeneration to split all of the difficulty bands into separate regions
-    private void SplitDifficultyBands2(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
+    private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
     {
         //Finding the number of splits we need in the band
         int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
@@ -778,20 +778,36 @@ public class CreateTileGrid : MonoBehaviour
 
         //Creating a list of each region in this difficulty band
         List<RegionInfo> bandRegions = new List<RegionInfo>();
-        for (int r = 0; r < splits + 1; ++r)
+
+        //If we have more than 1 region
+        if (splits > 0)
+        {
+            //We loop through and get multiple regions for this difficulty band
+            for (int r = 0; r < splits + 1; ++r)
+            {
+                //Getting a random region from the list of difficulty regions
+                int regionIndex = Random.Range(0, regionDup.Count - 1);
+
+                //Adding the region to the band region list
+                bandRegions.Add(regionDup[regionIndex]);
+                
+                //Removing the current region from the list of difficulty regions so it doesn't show up multiple times
+                if (regionDup.Count > 1)
+                {
+                    regionDup.RemoveAt(regionIndex);
+                }
+            }
+        }
+        //If this band only has 1 region, we only get 1 random region for this difficulty band
+        else
         {
             //Getting a random region from the list of difficulty regions
             int regionIndex = Random.Range(0, regionDup.Count - 1);
 
             //Adding the region to the band region list
             bandRegions.Add(regionDup[regionIndex]);
-
-            //Removing the current region from the list of difficulty regions so it doesn't show up multiple times
-            if (regionDup.Count > 1)
-            {
-                regionDup.RemoveAt(regionIndex);
-            }
         }
+
 
         //Looping through each tile in the given difficulty band
         foreach (TileInfo tile in difficultyBand_[0])
@@ -806,22 +822,32 @@ public class CreateTileGrid : MonoBehaviour
                 angleDiff += 360;
             }
 
-            //Finding which split the tile is within
-            for (int t = 0; t < splits; ++t)
+            //If we have multiple splits in this difficulty band
+            if (splits > 0)
             {
-                //Checking if the current tile's angle is within the current split
-                if (angleDiff < splitAngles[t])
+                //Finding which split the tile is within
+                for (int t = 0; t < splits; ++t)
                 {
-                    //We set the tile's info using the region with the same index
-                    tile.SetTileBasedOnRegion(bandRegions[t]);
-                    t = splits;
+                    //Checking if the current tile's angle is within the current split
+                    if (angleDiff < splitAngles[t])
+                    {
+                        //We set the tile's info using the region with the same index
+                        tile.SetTileBasedOnRegion(bandRegions[t]);
+                        t = splits;
+                    }
+                    //If the tile isn't within the current split and this is the last split
+                    else if (t + 1 == splits)
+                    {
+                        //We set the tile's info using the region with the index of the last region
+                        tile.SetTileBasedOnRegion(bandRegions[t + 1]);
+                    }
                 }
-                //If the tile isn't within the current split and this is the last split
-                else if (t + 1 == splits)
-                {
-                    //We set the tile's info using the region with the index of the last region
-                    tile.SetTileBasedOnRegion(bandRegions[t + 1]);
-                }
+            }
+            //If there's only 1 region in this difficulty band
+            else
+            {
+                //We set the tile's info using the only region we have
+                tile.SetTileBasedOnRegion(bandRegions[0]);
             }
         }
     }
@@ -1639,7 +1665,7 @@ public class CreateTileGrid : MonoBehaviour
                     switch (CreateTileGrid.globalReference.tileGrid[c][r].type)
                     {
                         case LandType.Ocean:
-                            pixelColor = Color.blue;
+                            pixelColor = Color.black;
                             break;
 
                         case LandType.Grasslands:
