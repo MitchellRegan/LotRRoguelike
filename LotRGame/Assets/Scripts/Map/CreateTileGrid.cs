@@ -99,6 +99,13 @@ public class CreateTileGrid : MonoBehaviour
     //The min and max percent that a region can step based on the number of tiles along its edge
     public Vector2 minMaxStepPercent = new Vector2(0.1f, 0.3f);
 
+    //The bare bones minimum steps that a region has to step
+    public int absoluteMinimumSteps = 40;
+
+    //The number of times we loop through the stepping process
+    [Range(0, 25)]
+    public int numberOfStepLoops = 10;
+
 
 
     //Called on initialization
@@ -166,14 +173,29 @@ public class CreateTileGrid : MonoBehaviour
         //Setting all of the map locations for each region, like cities and dungeons
         this.CreateMapLocations();
 
-        //Randomizes the regions so that they grow in different directions
-        for (int e = 0; e < 20; ++e)
+        //Looping through to each region in the very easy regions
+        foreach (RegionInfo ver in this.veryEasyRegions)
         {
-            this.ExpandRegionBoarders();
+            //Looping through each city tile until we find one that matches this region
+            foreach (TileInfo city in this.cityTiles)
+            {
+                //If we find a city that's in this very easy region
+                if (city.regionName == ver.regionName)
+                {
+                    //We set the players to this region and break out of these loops
+                    this.SetPlayerPartyPosition(city);
+                }
+            }
         }
 
-        //Creating the map texture
         this.CreateMapTexture();
+
+        //Looping though to randomize the regions so that they grow in different directions
+        for (int e = 0; e < this.numberOfStepLoops; ++e)
+        {
+            this.ExpandRegionBoarders();
+            this.CreateMapTexture("" + e);
+        }
     }
 
 
@@ -462,6 +484,7 @@ public class CreateTileGrid : MonoBehaviour
                 break;
         }
 
+        
         //Creating list for all of the tile difficulty bands
         List<List<TileInfo>> veryEasyBand = new List<List<TileInfo>>() { new List<TileInfo>() };
         List<List<TileInfo>> easyBand = new List<List<TileInfo>>() { new List<TileInfo>() };
@@ -608,22 +631,28 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
 
+        Debug.Log("Start direction: " + startZoneDirection + ", End direction: " + endZoneDirection);
+        Debug.Log("Start Col/Row: " + startCol + ", " + startRow + ", End Col/Row: " + endCol + ", " + endRow);
+        Debug.Log("Start corner: " + startCorner.tilePosition + ", End Corner: " + endCorner.tilePosition);
 
         //Splitting the very easy difficulty band
+        Debug.Log("__________________________________________________________ VE");
         this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, startCorner, endCorner);
         //Splitting the easy difficulty band
+        Debug.Log("__________________________________________________________ E");
         this.SplitDifficultyBands(easyBand, this.easyRegions, this.minMaxEasySplits, startCorner, endCorner);
         //Splitting the medium difficulty band
+        Debug.Log("__________________________________________________________ M");
         this.SplitDifficultyBands(mediumBand, this.mediumRegions, this.minMaxMediumSplits, startCorner, endCorner);
         //Splitting the hard difficulty band
+        Debug.Log("__________________________________________________________ H");
         this.SplitDifficultyBands(hardBand, this.hardRegions, this.minMaxHardSplits, startCorner, endCorner);
         //Splitting the very hard difficulty band
+        Debug.Log("__________________________________________________________ VH");
         this.SplitDifficultyBands(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, startCorner, endCorner);
         //Splitting the final difficulty band
+        Debug.Log("__________________________________________________________ F");
         this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, startCorner, endCorner);
-
-        //Once the map is created, we set the player on the starting tile
-        this.SetPlayerPartyPosition(startTile);
     }
 
 
@@ -772,8 +801,14 @@ public class CreateTileGrid : MonoBehaviour
             newSplit += angleOffset;
             //Adding the offset between the start tile and end tile
             newSplit += endStartAngle;
+            //If the angle is below 0, we add 180 to it (Unity goes from -180 to 180 instead of 0 to 360)
+            if(newSplit < 0)
+            {
+                newSplit += 180;
+            }
             //Adding this split to our list
             splitAngles.Add(newSplit);
+            Debug.Log("Split: " + newSplit + ", angle offset: " + angleOffset);
         }
 
         //Duplicating the list of regions in the difficulty band so we can modify it
@@ -1213,7 +1248,7 @@ public class CreateTileGrid : MonoBehaviour
             Vector2 minMaxSteps = new Vector2();
             minMaxSteps.x = edgeTiles.Count * this.minMaxStepPercent.x;
             minMaxSteps.y = edgeTiles.Count * this.minMaxStepPercent.y;
-            PathfindingAlgorithms.StepOutRegionEdge(edgeTiles, minMaxSteps);
+            PathfindingAlgorithms.StepOutRegionEdge(edgeTiles, minMaxSteps, this.absoluteMinimumSteps);
         }
     }
 
@@ -1637,7 +1672,7 @@ public class CreateTileGrid : MonoBehaviour
 
 
     //Function called at the end of StartMapCreation to make the map texture
-    private void CreateMapTexture()
+    private void CreateMapTexture(string mapNameExtras_ = "")
     {
         //Getting the height and width of the texture based on the size of the map
         int mapWidth = CreateTileGrid.globalReference.cols;
@@ -1728,8 +1763,8 @@ public class CreateTileGrid : MonoBehaviour
         //Encoding the texture to a png
         byte[] bytes = mapTexture.EncodeToPNG();
 
-        string seedName = GameData.globalReference.GetComponent<RandomSeedGenerator>().seed;
-
+        string seedName = GameData.globalReference.GetComponent<RandomSeedGenerator>().seed + mapNameExtras_;
+        
         //Writing the file to the desktop
         System.IO.File.WriteAllBytes("C:/Users/Mitch/Desktop/" + seedName + ".png", bytes);
     }

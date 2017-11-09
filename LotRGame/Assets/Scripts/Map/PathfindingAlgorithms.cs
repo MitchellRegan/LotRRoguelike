@@ -684,10 +684,16 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Algorithm called to grow a tile region by spreading out from random tiles along the given region edge
-    public static void StepOutRegionEdge(List<TileInfo> regionEdgeTiles_, Vector2 minMaxNumberOfSteps_)
+    public static void StepOutRegionEdge(List<TileInfo> regionEdgeTiles_, Vector2 minMaxNumberOfSteps_, int minimumStepsAllowed_)
     {
         //Finding the number of steps this region will spread
         int numSteps = Mathf.RoundToInt(Random.Range(minMaxNumberOfSteps_.x, minMaxNumberOfSteps_.y));
+
+        //If the number of steps is below the absolute minimum, we set it to the minimum
+        if(numSteps < minimumStepsAllowed_)
+        {
+            numSteps = minimumStepsAllowed_;
+        }
 
         //Creating a frontier of tiles that we can step outwards from using the edge tiles given
         List<TileInfo> frontier = regionEdgeTiles_;
@@ -714,13 +720,35 @@ public class PathfindingAlgorithms : MonoBehaviour
             foreach(TileInfo connectedTile in edgeTile.connectedTiles)
             {
                 //If the current connection isn't null and is a city tile
-                if(connectedTile != null && CreateTileGrid.globalReference.cityTiles.Contains(connectedTile))
+                if(connectedTile != null)
                 {
-                    //If the city tile that this edge tile is near has a different region name
-                    if(edgeTile.regionName != connectedTile.regionName)
+                    //If the connected tile is a city tile
+                    if (CreateTileGrid.globalReference.cityTiles.Contains(connectedTile))
                     {
-                        //We indicate that we can't step near this tile
-                        isNearCity = true;
+                        //If the city tile that this edge tile is near has a different region name
+                        if (edgeTile.regionName != connectedTile.regionName)
+                        {
+                            //We indicate that we can't step near this tile
+                            isNearCity = true;
+                        }
+                    }
+                    //If it isn't a city tile, we check to see if any of THIS tile's connection's are a city tile
+                    else
+                    {
+                        //Looping through the connected tile's connections to see if any of them are a city tile
+                        foreach(TileInfo c in connectedTile.connectedTiles)
+                        {
+                            //If this second connected tile is a city tile
+                            if (CreateTileGrid.globalReference.cityTiles.Contains(c))
+                            {
+                                //If the city tile that this edge tile is near has a different region name
+                                if (edgeTile.regionName != c.regionName)
+                                {
+                                    //We indicate that we can't step near this tile
+                                    isNearCity = true;
+                                }
+                            }
+                        }
                     }
                 }
             }
