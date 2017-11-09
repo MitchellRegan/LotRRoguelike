@@ -194,8 +194,10 @@ public class CreateTileGrid : MonoBehaviour
         for (int e = 0; e < this.numberOfStepLoops; ++e)
         {
             this.ExpandRegionBoarders();
-            this.CreateMapTexture("" + e);
+            //this.CreateMapTexture("" + e);
         }
+
+        this.CreateMapTexture("" + this.numberOfStepLoops);
     }
 
 
@@ -204,286 +206,42 @@ public class CreateTileGrid : MonoBehaviour
     //Function that creates a map for normal games
     private void ImprovedMapGeneration()
     {
-        //Finding out which edge of the map the player starting zone is created
-        MapDirections startZoneDirection = MapDirections.North;
-        int startEdge = Random.Range(1, 4);
-        switch(startEdge)
+        //Creating variables to hold the tiles that determine which corner the starting zone and final zone are in
+        TileInfo startCorner = this.tileGrid[0][0];
+        TileInfo endCorner = this.tileGrid[this.tileGrid.Count - 1][this.tileGrid[0].Count - 1]; ;
+
+        //Creating a random int from 0-3 to determine which corner the end zone is in
+        int cornerIndex = Random.Range(0, 4);
+        switch(cornerIndex)
         {
-            case 1:
-                startZoneDirection = MapDirections.North;
+            case 0://North East corner
+                //Setting the starting tile as the NE corner
+                startCorner = this.tileGrid[this.tileGrid.Count - 1][this.tileGrid[0].Count - 1];
+                //Setting the end tile as the SW corner
+                endCorner = this.tileGrid[0][0];
                 break;
-            case 2:
-                startZoneDirection = MapDirections.South;
+
+            case 1://North West corner
+                //Setting the starting tile as the NW corner
+                startCorner = this.tileGrid[0][this.tileGrid[0].Count - 1];
+                //Setting the end tile as the SE corner
+                endCorner = this.tileGrid[this.tileGrid.Count - 1][0];
                 break;
-            case 3:
-                startZoneDirection = MapDirections.West;
+
+            case 2://South West corner
+                //Setting the starting tile as the SW corner
+                startCorner = this.tileGrid[0][0];
+                //Setting the end tile as the NE corner
+                endCorner = this.tileGrid[this.tileGrid.Count - 1][this.tileGrid[0].Count - 1];
                 break;
-            case 4:
-                startZoneDirection = MapDirections.East;
+
+            case 3://South East corner
+                //Setting the starting tile as the SE corner
+                startCorner = this.tileGrid[this.tileGrid.Count - 1][0];
+                //Setting the end tile as the NW corner
+                endCorner = this.tileGrid[0][this.tileGrid[0].Count - 1];
                 break;
         }
-        //Finding which fifth of the map the start zone will be along
-        int startZoneSection = Random.Range(0, 4);
-
-        //Setting the end zone along the opposite edge of the map that the start zone is
-        MapDirections endZoneDirection = MapDirections.South;
-        switch(startZoneDirection)
-        {
-            case MapDirections.North:
-                endZoneDirection = MapDirections.South;
-                break;
-            case MapDirections.South:
-                endZoneDirection = MapDirections.North;
-                break;
-            case MapDirections.West:
-                endZoneDirection = MapDirections.East;
-                break;
-            case MapDirections.East:
-                endZoneDirection = MapDirections.West;
-                break;
-        }
-
-        //Finding which fifth of the map the end zone will be along. It's within a fifth of the start zone section
-        int endZoneSection = 0;
-        if(startZoneSection == 0)
-        {
-            endZoneSection = Random.Range(0, 1);
-        }
-        else if(startZoneSection == 4)
-        {
-            endZoneSection = Random.Range(0, 1);
-        }
-        else
-        {
-            endZoneSection = startZoneSection + Random.Range(-1, 1);
-        }
-        
-        //Finding the Starting tile based on the starting edge and fifth of the map
-        TileInfo startTile = null;
-        Vector2 startRowRanges = new Vector2();
-        Vector2 startColRanges = new Vector2();
-        int startRow = 0;
-        int startCol = 0;
-        switch (startZoneDirection)
-        {
-            //Along the top of the map
-            case MapDirections.North:
-                //Finding the rows that it can be between
-                startRowRanges.x = 0;
-                startRowRanges.y = this.tileGrid[0].Count / 5;
-                //Finding the columns that it can be between
-                startColRanges.x = (this.tileGrid.Count / 5) * startZoneSection;
-                startColRanges.y = (this.tileGrid.Count / 5) * (startZoneSection + 1);
-
-                //Finding a random row and column based on the ranges
-                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
-                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
-
-                //Setting the start tile using the row and column
-                startTile = this.tileGrid[startCol][startRow];
-                break;
-
-            //Along the bottom of the map
-            case MapDirections.South:
-                //Finding the rows that it can be between
-                startRowRanges.x = (this.tileGrid[0].Count / 5) * 4;
-                startRowRanges.y = this.tileGrid[0].Count;
-                //Finding the columns that it can be between
-                startColRanges.x = (this.tileGrid.Count / 5) * startZoneSection;
-                startColRanges.y = (this.tileGrid.Count / 5) * (startZoneSection + 1);
-
-                //Finding a random row and column based on the ranges
-                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
-                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
-
-                //Setting the start tile using the row and column
-                startTile = this.tileGrid[startCol][startRow];
-                break;
-
-            //Along the left side of the map
-            case MapDirections.West:
-                //Finding the rows that it can be between
-                startRowRanges.x = (this.tileGrid[0].Count / 5) * startZoneSection;
-                startRowRanges.y = (this.tileGrid[0].Count / 5) * (startZoneSection + 1);
-                //Finding the columns that it can be between
-                startColRanges.x = 0;
-                startColRanges.y = this.tileGrid.Count / 5;
-
-                //Finding a random row and column based on the ranges
-                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
-                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
-
-                //Setting the start tile using the row and column
-                startTile = this.tileGrid[startCol][startRow];
-                break;
-
-            //Along the right side of the map
-            case MapDirections.East:
-                //Finding the rows that it can be between
-                startRowRanges.x = (this.tileGrid[0].Count / 5) * startZoneSection;
-                startRowRanges.y = (this.tileGrid[0].Count / 5) * (startZoneSection + 1);
-                //Finding the columns that it can be between
-                startColRanges.x = (this.tileGrid.Count / 5) * 4;
-                startColRanges.y = this.tileGrid.Count;
-
-                //Finding a random row and column based on the ranges
-                startCol = Mathf.RoundToInt(Random.Range(startColRanges.x, startColRanges.y));
-                startRow = Mathf.RoundToInt(Random.Range(startRowRanges.x, startRowRanges.y));
-
-                //Setting the start tile using the row and column
-                startTile = this.tileGrid[startCol][startRow];
-                break;
-        }
-        
-        //Finding the Starting tile based on the starting edge and fifth of the map
-        TileInfo endTile = null;
-        Vector2 endRowRanges = new Vector2();
-        Vector2 endColRanges = new Vector2();
-        int endRow = 0;
-        int endCol = 0;
-        switch (endZoneDirection)
-        {
-            //Along the top of the map
-            case MapDirections.North:
-                //Finding the rows that it can be between
-                endRowRanges.x = 0;
-                endRowRanges.y = this.tileGrid[0].Count / 5;
-                //Finding the columns that it can be between
-                endColRanges.x = (this.tileGrid.Count / 5) * endZoneSection;
-                endColRanges.y = (this.tileGrid.Count / 5) * (endZoneSection + 1);
-
-                //Finding a random row and column based on the ranges
-                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
-                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
-
-                //Making sure the endcol and endrow are within the bounds of the tile grid
-                if (endCol < 0)
-                {
-                    endCol = 0;
-                }
-                else if (endCol >= this.tileGrid.Count)
-                {
-                    endCol = this.tileGrid.Count - 1;
-                }
-                if (endRow < 0)
-                {
-                    endRow = 0;
-                }
-                else if (endRow >= this.tileGrid[0].Count)
-                {
-                    endRow = this.tileGrid[0].Count - 1;
-                }
-
-                //Setting the start tile using the row and column
-                endTile = this.tileGrid[endCol][endRow];
-                break;
-
-            //Along the bottom of the map
-            case MapDirections.South:
-                //Finding the rows that it can be between
-                endRowRanges.x = (this.tileGrid[0].Count / 5) * 4;
-                endRowRanges.y = this.tileGrid[0].Count;
-                //Finding the columns that it can be between
-                endColRanges.x = (this.tileGrid.Count / 5) * endZoneSection;
-                endColRanges.y = (this.tileGrid.Count / 5) * (endZoneSection + 1);
-
-                //Finding a random row and column based on the ranges
-                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
-                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
-
-                //Making sure the endcol and endrow are within the bounds of the tile grid
-                if(endCol < 0)
-                {
-                    endCol = 0;
-                }
-                else if(endCol >= this.tileGrid.Count)
-                {
-                    endCol = this.tileGrid.Count - 1;
-                }
-                if(endRow < 0)
-                {
-                    endRow = 0;
-                }
-                else if(endRow >= this.tileGrid[0].Count)
-                {
-                    endRow = this.tileGrid[0].Count - 1;
-                }
-
-                //Setting the start tile using the row and column
-                endTile = this.tileGrid[endCol][endRow];
-                break;
-
-            //Along the left side of the map
-            case MapDirections.West:
-                //Finding the rows that it can be between
-                endRowRanges.x = (this.tileGrid[0].Count / 5) * endZoneSection;
-                endRowRanges.y = (this.tileGrid[0].Count / 5) * (endZoneSection + 1);
-                //Finding the columns that it can be between
-                endColRanges.x = 0;
-                endColRanges.y = this.tileGrid.Count / 5;
-
-                //Finding a random row and column based on the ranges
-                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
-                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
-
-                //Making sure the endcol and endrow are within the bounds of the tile grid
-                if (endCol < 0)
-                {
-                    endCol = 0;
-                }
-                else if (endCol >= this.tileGrid.Count)
-                {
-                    endCol = this.tileGrid.Count - 1;
-                }
-                if (endRow < 0)
-                {
-                    endRow = 0;
-                }
-                else if (endRow >= this.tileGrid[0].Count)
-                {
-                    endRow = this.tileGrid[0].Count - 1;
-                }
-
-                //Setting the start tile using the row and column
-                endTile = this.tileGrid[endCol][endRow];
-                break;
-
-            //Along the right side of the map
-            case MapDirections.East:
-                //Finding the rows that it can be between
-                endRowRanges.x = (this.tileGrid[0].Count / 5) * endZoneSection;
-                endRowRanges.y = (this.tileGrid[0].Count / 5) * (endZoneSection + 1);
-                //Finding the columns that it can be between
-                endColRanges.x = (this.tileGrid.Count / 5) * 4;
-                endColRanges.y = this.tileGrid.Count;
-
-                //Finding a random row and column based on the ranges
-                endCol = Mathf.RoundToInt(Random.Range(endColRanges.x, endColRanges.y));
-                endRow = Mathf.RoundToInt(Random.Range(endRowRanges.x, endRowRanges.y));
-
-                //Making sure the endcol and endrow are within the bounds of the tile grid
-                if (endCol < 0)
-                {
-                    endCol = 0;
-                }
-                else if (endCol >= this.tileGrid.Count)
-                {
-                    endCol = this.tileGrid.Count - 1;
-                }
-                if (endRow < 0)
-                {
-                    endRow = 0;
-                }
-                else if (endRow >= this.tileGrid[0].Count)
-                {
-                    endRow = this.tileGrid[0].Count - 1;
-                }
-
-                //Setting the start tile using the row and column
-                endTile = this.tileGrid[endCol][endRow];
-                break;
-        }
-
         
         //Creating list for all of the tile difficulty bands
         List<List<TileInfo>> veryEasyBand = new List<List<TileInfo>>() { new List<TileInfo>() };
@@ -494,96 +252,6 @@ public class CreateTileGrid : MonoBehaviour
         List<List<TileInfo>> finalBand = new List<List<TileInfo>>() { new List<TileInfo>() };
         
         
-        //Finding the tile in the corner opposite of the end tile
-        TileInfo startCorner;
-        int startRowCorner = 0;
-        int startColCorner = 0;
-        //If the end tile is in the first 5th of the map rows
-        if(endRow <= this.tileGrid[0].Count / 5)
-        {
-            //The opposite row is the last one
-            startRowCorner = this.tileGrid[0].Count - 1;
-        }
-        //If the end tile is in the last 5th of the map rows
-        else if(endRow >= this.tileGrid[0].Count - (this.tileGrid[0].Count / 5))
-        {
-            //The opposite row is the first one
-            startRowCorner = 0;
-        }
-        //If the end tile is in the middle of the map rows
-        else
-        {
-            //The opposite row is the middle one
-            startRowCorner = this.tileGrid[0].Count / 2;
-        }
-
-        //If the end tile is in the first 5th of the map cols
-        if(endCol <= this.tileGrid.Count / 5)
-        {
-            //The opposite col is the last one
-            startColCorner = this.tileGrid.Count - 1;
-        }
-        //If the end tile is in the last 5th of the map cols
-        else if(endCol >= this.tileGrid.Count - (this.tileGrid.Count/ 5))
-        {
-            //The opposite col is the first one
-            startColCorner = 0;
-        }
-        //If the end tile is in the middle of the map cols
-        else
-        {
-            //The opposite col is the middle one
-            startColCorner = this.tileGrid.Count / 2;
-        }
-
-        //Getting the tile that's at the opposite end of the end tile map
-        startCorner = this.tileGrid[startColCorner][startRowCorner];
-
-        //Finding the tile in the corner opposite of the start tile
-        TileInfo endCorner;
-        int endRowCorner = 0;
-        int endColCorner = 0;
-        //If the end tile is in the first 5th of the map rows
-        if (endRow <= this.tileGrid[0].Count / 5)
-        {
-            //The row is the first one
-            endRowCorner = 0;
-        }
-        //If the end tile is in the last 5th of the map rows
-        else if (endRow >= this.tileGrid[0].Count - (this.tileGrid[0].Count / 5))
-        {
-            //The row is the first one
-            endRowCorner = this.tileGrid[0].Count - 1;
-        }
-        //If the end tile is in the middle of the map rows
-        else
-        {
-            //The row is the middle one
-            endRowCorner = this.tileGrid[0].Count / 2;
-        }
-
-        //If the end tile is in the first 5th of the map cols
-        if (endCol <= this.tileGrid.Count / 5)
-        {
-            //The col is the first one
-            endColCorner = 0;
-        }
-        //If the end tile is in the last 5th of the map cols
-        else if (startCol >= this.tileGrid.Count - (this.tileGrid.Count / 5))
-        {
-            //The col is the first one
-            endColCorner = this.tileGrid.Count - 1;
-        }
-        //If the end tile is in the middle of the map cols
-        else
-        {
-            //The col is the middle one
-            endColCorner = this.tileGrid.Count / 2;
-        }
-
-        //Getting the tile that's at the opposite end of the start tile map
-        endCorner = this.tileGrid[endColCorner][endRowCorner];
-
         //Finding the distance from the end zone corner to the start zone corner of the map
         float totalDistStartToEnd = Vector3.Distance(startCorner.tilePosition, endCorner.tilePosition);
 
@@ -630,28 +298,19 @@ public class CreateTileGrid : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log("Start direction: " + startZoneDirection + ", End direction: " + endZoneDirection);
-        Debug.Log("Start Col/Row: " + startCol + ", " + startRow + ", End Col/Row: " + endCol + ", " + endRow);
-        Debug.Log("Start corner: " + startCorner.tilePosition + ", End Corner: " + endCorner.tilePosition);
+        
 
         //Splitting the very easy difficulty band
-        Debug.Log("__________________________________________________________ VE");
         this.SplitDifficultyBands(veryEasyBand, this.veryEasyRegions, this.minMaxVeryEasySplits, startCorner, endCorner);
         //Splitting the easy difficulty band
-        Debug.Log("__________________________________________________________ E");
         this.SplitDifficultyBands(easyBand, this.easyRegions, this.minMaxEasySplits, startCorner, endCorner);
         //Splitting the medium difficulty band
-        Debug.Log("__________________________________________________________ M");
         this.SplitDifficultyBands(mediumBand, this.mediumRegions, this.minMaxMediumSplits, startCorner, endCorner);
         //Splitting the hard difficulty band
-        Debug.Log("__________________________________________________________ H");
         this.SplitDifficultyBands(hardBand, this.hardRegions, this.minMaxHardSplits, startCorner, endCorner);
         //Splitting the very hard difficulty band
-        Debug.Log("__________________________________________________________ VH");
         this.SplitDifficultyBands(veryHardBand, this.veryHardRegions, this.minMaxVeryHardSplits, startCorner, endCorner);
         //Splitting the final difficulty band
-        Debug.Log("__________________________________________________________ F");
         this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, startCorner, endCorner);
     }
 
@@ -763,32 +422,27 @@ public class CreateTileGrid : MonoBehaviour
         * Once we find the direction that the corner is in, we can find the offset for each split by thinking of the start tile position as the origin
         * in an XY plane and the rest of the map as a quadrant*/
 
-        //Creating a float to hold the offset angle. The default assumption is that the start tile is in the South West corner (quadrant 1)
+        //Creating a float to hold the offset angle. The default assumption is that the end tile is in the South West corner (quadrant 1)
         float angleOffset = 0;
 
-        //If the start tile is in the South East corner (quadrant 2)
-        if(startTile_.tilePosition.x > endTile_.tilePosition.x && startTile_.tilePosition.y < endTile_.tilePosition.y)
+        //If the end tile is in the South East corner (quadrant 2)
+        if(startTile_.tilePosition.x < endTile_.tilePosition.x && startTile_.tilePosition.z > endTile_.tilePosition.z)
         {
             //The offset starts at 90 degrees
             angleOffset = 90;
         }
-        //If the start tile is in the North East corner (quadrant 3)
-        else if(startTile_.tilePosition.x > endTile_.tilePosition.x && startTile_.tilePosition.y > endTile_.tilePosition.y)
+        //If the end tile is in the North East corner (quadrant 3)
+        else if(startTile_.tilePosition.x < endTile_.tilePosition.x && startTile_.tilePosition.z < endTile_.tilePosition.z)
         {
             //The offset starts at 180 degrees
             angleOffset = 180;
         }
-        //If the start tile is in the North West corner (quadrant 4)
-        else if(startTile_.tilePosition.x < endTile_.tilePosition.x && startTile_.tilePosition.y > endTile_.tilePosition.y)
+        //If the end tile is in the North West corner (quadrant 4)
+        else if(startTile_.tilePosition.x > endTile_.tilePosition.x && startTile_.tilePosition.z < endTile_.tilePosition.z)
         {
             //The offset starts at 270 degrees
             angleOffset = 270;
         }
-
-        //Finding the angle between the start tile and end tile to offset a bit more
-        float endStartAngle = Mathf.Atan2(startTile_.tilePosition.z - endTile_.tilePosition.z, startTile_.tilePosition.x - endTile_.tilePosition.x);
-        endStartAngle *= Mathf.Rad2Deg;
-        endStartAngle = endStartAngle - 45;
 
         //Now we create a list to hold each angle that a split happens at
         List<float> splitAngles = new List<float>();
@@ -799,16 +453,8 @@ public class CreateTileGrid : MonoBehaviour
             newSplit = (90 / (splits + 1)) * (s + 1);
             //Adding the angle offset so this split is in the correct quadrant
             newSplit += angleOffset;
-            //Adding the offset between the start tile and end tile
-            newSplit += endStartAngle;
-            //If the angle is below 0, we add 180 to it (Unity goes from -180 to 180 instead of 0 to 360)
-            if(newSplit < 0)
-            {
-                newSplit += 180;
-            }
             //Adding this split to our list
             splitAngles.Add(newSplit);
-            Debug.Log("Split: " + newSplit + ", angle offset: " + angleOffset);
         }
 
         //Duplicating the list of regions in the difficulty band so we can modify it
@@ -824,7 +470,7 @@ public class CreateTileGrid : MonoBehaviour
             for (int r = 0; r < splits + 1; ++r)
             {
                 //Getting a random region from the list of difficulty regions
-                int regionIndex = Random.Range(0, regionDup.Count - 1);
+                int regionIndex = Random.Range(0, regionDup.Count);
 
                 //Adding the region to the band region list
                 bandRegions.Add(regionDup[regionIndex]);
@@ -840,7 +486,7 @@ public class CreateTileGrid : MonoBehaviour
         else
         {
             //Getting a random region from the list of difficulty regions
-            int regionIndex = Random.Range(0, regionDup.Count - 1);
+            int regionIndex = Random.Range(0, regionDup.Count);
 
             //Adding the region to the band region list
             bandRegions.Add(regionDup[regionIndex]);
@@ -859,10 +505,16 @@ public class CreateTileGrid : MonoBehaviour
             {
                 angleDiff += 360;
             }
-
+            
             //If we have multiple splits in this difficulty band
             if (splits > 0)
             {
+                //If the angle is below 10 degrees but the lowest split is above 180, this angle is probably a loop around just over 360 back to 0
+                if(angleDiff < 10 && splitAngles[0] > 180)
+                {
+                    angleDiff += 360;
+                }
+
                 //Finding which split the tile is within
                 for (int t = 0; t < splits; ++t)
                 {
@@ -903,9 +555,9 @@ public class CreateTileGrid : MonoBehaviour
         //Vector to hold the starting position for grid generation in the top-left quadrant
         Vector3 startPos = new Vector3();
         //Finding the starting x coordinate using width and number of columns
-        startPos.x = -(this.cols * this.tileWidth) / 2;
+        startPos.x = 0;
         //Finding the starting y coordinate using height and number of rows
-        startPos.z = (this.rows * this.tileHeight) / 2;
+        startPos.z = 0;
 
         //Vector to hold the offset of the current tile when finding its correct location
         Vector3 offsetPos = new Vector3();
@@ -922,8 +574,8 @@ public class CreateTileGrid : MonoBehaviour
             //Looping through each row in the current column
             for (int r = 0; r < this.rows; ++r)
             {
-                offsetPos.x = c * this.tileWidth; //Positive so that the grid is generated from left to right
-                offsetPos.z = r * this.tileHeight * -1; //Negative so that the grid is generated downward
+                offsetPos.x = c * this.tileWidth; //The grid is generated from left to right
+                offsetPos.z = r * this.tileHeight; //The grid is generated from bottom to top
                 
                 //If the current column is offset, we add half the height of a tile
                 if (offsetCol)
@@ -1052,10 +704,29 @@ public class CreateTileGrid : MonoBehaviour
                 bool isTileNewRegion = true;
 
                 //Looping through all of the tiles in the pathfinding starting points
-                foreach(TileInfo startPoint in pathfindingStartingPoints)
+                foreach (TileInfo startPoint in pathfindingStartingPoints)
                 {
                     //If the current tile has the same region name as any of the tiles in the pathfinding starting points, it's not a new tile to be added to the list
-                    if(this.tileGrid[c][r].regionName == startPoint.regionName)
+                    if (this.tileGrid[c][r].regionName == startPoint.regionName)
+                    {
+                        isTileNewRegion = false;
+                        break;
+                    }
+
+                    //Bool for if all of the tile's surrounding tiles have the same region name
+                    bool allConnectedSameRegion = true;
+                    //Looping through each of this tile's connections. We'll only add it to the list of starting points if we find a group of tiles that are the same
+                    foreach (TileInfo connection in tileGrid[c][r].connectedTiles)
+                    {
+                        //If the current connection is null or a tile with a different region name
+                        if (connection == null || connection.regionName != tileGrid[c][r].regionName)
+                        {
+                            allConnectedSameRegion = false;
+                        }
+                    }
+
+                    //If all of this tile's connected points aren't in the same region, we don't add it to the list
+                    if (!allConnectedSameRegion)
                     {
                         isTileNewRegion = false;
                         break;
