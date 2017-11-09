@@ -92,6 +92,9 @@ public class CreateTileGrid : MonoBehaviour
     //The list of tiles where region cities are
     [HideInInspector]
     public List<TileInfo> cityTiles;
+    //The list of tiles where region dungeons are
+    [HideInInspector]
+    public List<TileInfo> dungeonTiles;
 
     //The radius around the region center that the city tiles can be within
     public int cityRadiusFromCenter = 8;
@@ -314,104 +317,7 @@ public class CreateTileGrid : MonoBehaviour
         this.SplitDifficultyBands(finalBand, this.finalRegions, this.minMaxFinalSplits, startCorner, endCorner);
     }
 
-
-    //Function called from ImprovedMapGeneration to split all of the difficulty bands into different regions
-    /*private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
-    {
-        //Finding the number of splits we need in the band
-        int splits = Mathf.RoundToInt(Random.Range(numberOfSplitsMinMax_.x, numberOfSplitsMinMax_.y));
-
-        //Finding the angle from the end tile to the start tile
-        float endStartAngle = Mathf.Atan2(startTile_.tilePosition.z - endTile_.tilePosition.z, startTile_.tilePosition.x - endTile_.tilePosition.x);
-        endStartAngle *= Mathf.Rad2Deg;
-
-        //Normalizing the endStartAngle so that it's between 0-360, not -180 and 180
-        if(endStartAngle < 0)
-        {
-            endStartAngle += 360;
-        }
-        
-        //Creating a list of all the angles where each split angle is
-        List<float> splitAngles = new List<float>();
-        for(int s = 0; s < splits; ++s)
-        {
-            //Finding the cut of the max angle spread that this split will be at
-            float baseAngle = this.maxBandAngleSpread / (splits + 1);
-            baseAngle *= s + 1;
-            
-            //Offsetting the split based on the angle between the start and end tiles
-            baseAngle += endStartAngle - (this.maxBandAngleSpread / 2);
-            
-            //Adding variance to the angle based on a percent of the base angle
-            float variance = Random.Range((this.maxBandAngleSpread / splits) * -(this.bandRegionPercentVariance / 2), (this.maxBandAngleSpread / splits) * (this.bandRegionPercentVariance / 2));
-
-            baseAngle += variance;
-
-            //Normalizing the base angle so that it's within 0-360
-            if (baseAngle < 0)
-            {
-                baseAngle += 360;
-            }
-
-            //Setting the current split to the split angle list
-            splitAngles.Add(baseAngle);
-        }
-        
-        //Duplicating the list of regions in the difficulty band so we can modify it
-        List<RegionInfo> regionDup = difficultyRegions_;
-
-        //Creating a list of each region in this difficulty band
-        List<RegionInfo> bandRegions = new List<RegionInfo>();
-        for(int r = 0; r < splits + 1; ++r)
-        {
-            //Getting a random region from the list of difficulty regions
-            int regionIndex = Random.Range(0, regionDup.Count - 1);
-
-            //Adding the region to the band region list
-            bandRegions.Add(regionDup[regionIndex]);
-
-            //Removing the current region from the list of difficulty regions so it doesn't show up multiple times
-            if (regionDup.Count > 1)
-            {
-                regionDup.RemoveAt(regionIndex);
-            }
-        }
-
-        
-        //Looping through each tile in the given difficulty band
-        foreach (TileInfo tile in difficultyBand_[0])
-        {
-            //Finding the angle that the current tile is from the end point
-            float angleDiff = Mathf.Atan2(tile.tilePosition.z - endTile_.tilePosition.z, tile.tilePosition.x - endTile_.tilePosition.x);
-            angleDiff *= Mathf.Rad2Deg;
-
-            //Normalizing the angleDiff so that it's between 0-360, not -180 and 180
-            if (angleDiff < 0)
-            {
-                angleDiff += 360;
-            }
-
-            //Finding which split the tile is within
-            for (int t = 0; t < splits; ++t)
-            {
-                //Checking if the current tile's angle is within the current split
-                if(angleDiff < splitAngles[t])
-                {
-                    //We set the tile's info using the region with the same index
-                    tile.SetTileBasedOnRegion(bandRegions[t]);
-                    t = splits;
-                }
-                //If the tile isn't within the current split and this is the last split
-                else if(t + 1 == splits)
-                {
-                    //We set the tile's info using the region with the index of the last region
-                    tile.SetTileBasedOnRegion(bandRegions[t+1]);
-                }
-            }
-        }
-    }
-    */
-
+    
     //Function called from ImprovedMapGeneration to split all of the difficulty bands into separate regions
     private void SplitDifficultyBands(List<List<TileInfo>> difficultyBand_, List<RegionInfo> difficultyRegions_, Vector2 numberOfSplitsMinMax_, TileInfo startTile_, TileInfo endTile_)
     {
@@ -771,6 +677,9 @@ public class CreateTileGrid : MonoBehaviour
     //Function called from StartMapCreation to set all of the map locations in each region
     private void CreateMapLocations()
     {
+        //Initializing the list of dungeon tiles
+        this.dungeonTiles = new List<TileInfo>();
+
         //Looping through each city tile
         foreach(TileInfo cityTile in this.cityTiles)
         {
@@ -872,14 +781,64 @@ public class CreateTileGrid : MonoBehaviour
                 if(cityRegion.regionCity != null)
                 {
                     //Adding the city object to this city tile's list of objects
-                    cityTile.AddObjectToThisTile(cityRegion.regionCity.gameObject);
-                    Debug.Log("Here's where cities are being added");
+                    cityTile.decorationModel = cityRegion.regionCity.gameObject;
                 }
 
                 //If the region has a dungeon prefab
                 if(cityRegion.regionDungeon != null)
                 {
+                    //Getting all tiles in this city tile's region
+                    List<TileInfo> allRegionTiles = PathfindingAlgorithms.FindLandTilesInRange(cityTile, this.tileGrid.Count, true);
 
+                    //Getting all tiles within a range of the city tile based on how big the map is. These tiles are blacklisted from having dungeons
+                    List<TileInfo> noDungeonAllowedTiles = PathfindingAlgorithms.FindLandTilesInRange(cityTile, Mathf.RoundToInt((this.tileGrid.Count * 1f) * 0.05f), true);
+
+                    //Getting all edge tiles for this region so the dungeon isn't on the outskirts
+                    List<TileInfo> regionEdgeTiles = PathfindingAlgorithms.FindRegionEdgeTiles(cityTile);
+
+                    //Looping through all of the tiles where dungeons aren't allowed
+                    foreach(TileInfo blacklistedTile in noDungeonAllowedTiles)
+                    {
+                        //Removing this blacklisted tile from the list of region tiles
+                        allRegionTiles.Remove(blacklistedTile);
+                    }
+
+                    //Looping through all of the tiles along the region's edge
+                    foreach(TileInfo edgeTile in regionEdgeTiles)
+                    {
+                        //Removing this edge tile from the list of region tiles
+                        allRegionTiles.Remove(edgeTile);
+                    }
+
+                    //Finding a random tile in the remaining region to set as the dungeon tile
+                    if(allRegionTiles.Count > 0)
+                    {
+                        //Looping through all of the available region tiles until we find a suitable one for the dungeon
+                        while (allRegionTiles.Count > 0)
+                        {
+                            //Getting a random index
+                            int randTile = Random.Range(0, allRegionTiles.Count);
+
+                            //If the tile at the index doesn't match the same region as our city tile
+                            if (allRegionTiles[randTile].regionName != cityRegion.regionName)
+                            {
+                                //We remove this tile from the list of available region tiles
+                                allRegionTiles.RemoveAt(randTile);
+                            }
+                            //If the tile does have the same region as our city tile
+                            else
+                            {
+                                //We add this tile to the list of dungeon tiles
+                                this.dungeonTiles.Add(allRegionTiles[randTile]);
+
+                                //Adding the dungeon object to this tile's list of objects
+                                allRegionTiles[randTile].decorationModel = cityRegion.regionDungeon.gameObject;
+
+                                //Breaking out of this while loop
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -889,31 +848,64 @@ public class CreateTileGrid : MonoBehaviour
     //Function called from StartMapCreation to expand the boarders of each region
     private void ExpandRegionBoarders()
     {
-        //Making a list of each index for the number of total regions
-        List<int> numRegions = new List<int>();
+        //Making a list of each index for the number of total cities
+        List<int> numCities = new List<int>();
         for(int r = 0; r < this.cityTiles.Count; ++r)
         {
-            numRegions.Add(r);
+            numCities.Add(r);
         }
 
-        //Creating a separate list to randomize the order of the region indexes
-        List<int> randRegionOrder = new List<int>();
+        //Creating a separate list to randomize the order of the city indexes
+        List<int> randCityOrder = new List<int>();
         for(int c = 0; c < this.cityTiles.Count; ++c)
         {
-            //Getting a random index from the numRegions list
-            int randIndex = Random.Range(0, this.cityTiles.Count - 1);
-            //Adding the region index to our list of random region orders
-            randRegionOrder.Add(numRegions[randIndex]);
+            //Getting a random index from the numCities list
+            int randIndex = Random.Range(0, this.cityTiles.Count);
+            //Adding the city index to our list of random city orders
+            randCityOrder.Add(numCities[randIndex]);
         }
 
-        //Looping through each region in our randomized order
-        foreach(int index in randRegionOrder)
+        //Looping through each city in our randomized order
+        foreach(int index in randCityOrder)
         {
             //We get the tile reference for the given index's city
             TileInfo cityTile = this.cityTiles[index];
 
             //We find the list of tiles along the edge of the city tile's region
             List<TileInfo> edgeTiles = PathfindingAlgorithms.FindRegionEdgeTiles(cityTile);
+
+            //And then we have the region step outward based on the size of the region's boarders
+            Vector2 minMaxSteps = new Vector2();
+            minMaxSteps.x = edgeTiles.Count * this.minMaxStepPercent.x;
+            minMaxSteps.y = edgeTiles.Count * this.minMaxStepPercent.y;
+            PathfindingAlgorithms.StepOutRegionEdge(edgeTiles, minMaxSteps, this.absoluteMinimumSteps);
+        }
+
+        //Making a list of each index for the number of total dungeons
+        List<int> numDungeons = new List<int>();
+        for (int d = 0; d < this.dungeonTiles.Count; ++d)
+        {
+            numDungeons.Add(d);
+        }
+
+        //Creating a separate list to randomize the order of the dungeon indexes
+        List<int> randDungeonOrder = new List<int>();
+        for (int c = 0; c < this.dungeonTiles.Count; ++c)
+        {
+            //Getting a random index from the numDungeons list
+            int randIndex = Random.Range(0, this.dungeonTiles.Count);
+            //Adding the dungeon index to our list of random dungeon orders
+            randDungeonOrder.Add(numDungeons[randIndex]);
+        }
+
+        //Looping through each dungeon in our randomized order
+        foreach (int index in randDungeonOrder)
+        {
+            //We get the tile reference for the given index's dungeon
+            TileInfo dungeonTile = this.dungeonTiles[index];
+
+            //We find the list of tiles along the edge of the dungeon tile's region
+            List<TileInfo> edgeTiles = PathfindingAlgorithms.FindRegionEdgeTiles(dungeonTile);
 
             //And then we have the region step outward based on the size of the region's boarders
             Vector2 minMaxSteps = new Vector2();
@@ -1335,7 +1327,7 @@ public class CreateTileGrid : MonoBehaviour
             //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
             if (newTile.decorationModel != null)
             {
-                GameObject decor = Instantiate(newTile.decorationModel, newTile.tilePosition, new Quaternion());
+                GameObject decor = Instantiate(newTile.decorationModel, tileMesh.transform.position, new Quaternion());
                 decor.transform.SetParent(tileMesh.transform);
             }
         }
@@ -1365,16 +1357,22 @@ public class CreateTileGrid : MonoBehaviour
                 //If this tile is one of the city tiles
                 if (this.cityTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
                 {
-                    pixelColor = Color.black;
+                    pixelColor = Color.white;
                 }
-                //If this tile isn't a city tile
+                //If this tile is one of the dungeon tiles
+                else if(this.dungeonTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
+                {
+                    pixelColor = Color.black;
+                    Debug.Log(CreateTileGrid.globalReference.tileGrid[c][r].regionName + " at loc " + c + "," + r);
+                }
+                //If this tile isn't a city or dungeon tile
                 else
                 {
                     //Setting the color based on the type of tile we're currently on
                     switch (CreateTileGrid.globalReference.tileGrid[c][r].type)
                     {
                         case LandType.Ocean:
-                            pixelColor = Color.black;
+                            pixelColor = Color.blue;
                             break;
 
                         case LandType.Grasslands:

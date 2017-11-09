@@ -716,16 +716,16 @@ public class PathfindingAlgorithms : MonoBehaviour
 
             //Bool to track if this tile is next to a city tile
             bool isNearCity = false;
-            //Looping through each connection in the edge tile once to check for city tiles
+            //Looping through each connection in the edge tile once to check for city and dungeon tiles
             foreach(TileInfo connectedTile in edgeTile.connectedTiles)
             {
-                //If the current connection isn't null and is a city tile
+                //If the current connection isn't null
                 if(connectedTile != null)
                 {
-                    //If the connected tile is a city tile
-                    if (CreateTileGrid.globalReference.cityTiles.Contains(connectedTile))
+                    //If the connected tile is a city tile or dungeon tile
+                    if (CreateTileGrid.globalReference.cityTiles.Contains(connectedTile) || CreateTileGrid.globalReference.dungeonTiles.Contains(connectedTile))
                     {
-                        //If the city tile that this edge tile is near has a different region name
+                        //If the city/dungeon tile that this edge tile is near has a different region name
                         if (edgeTile.regionName != connectedTile.regionName)
                         {
                             //We indicate that we can't step near this tile
@@ -739,7 +739,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                         foreach(TileInfo c in connectedTile.connectedTiles)
                         {
                             //If this second connected tile is a city tile
-                            if (CreateTileGrid.globalReference.cityTiles.Contains(c))
+                            if (CreateTileGrid.globalReference.cityTiles.Contains(c) || CreateTileGrid.globalReference.dungeonTiles.Contains(c))
                             {
                                 //If the city tile that this edge tile is near has a different region name
                                 if (edgeTile.regionName != c.regionName)
