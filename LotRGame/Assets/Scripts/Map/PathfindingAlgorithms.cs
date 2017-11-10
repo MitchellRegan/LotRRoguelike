@@ -875,7 +875,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                     if (connection != null && !connection.hasBeenChecked)
                     {
                         //If we need to keep the same tile type and the connected tile is different
-                        if (!keepSameTileType_)
+                        if (keepSameTileType_)
                         {
                             if (connection.type == startingTile_.type)
                             {

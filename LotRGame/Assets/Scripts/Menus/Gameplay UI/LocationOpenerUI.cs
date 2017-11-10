@@ -22,8 +22,19 @@ public class LocationOpenerUI : MonoBehaviour
         //Getting the reference to the current player party
         TileInfo partyTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile;
 
+        //If the player party tile's decoration object is a map location
+        if(partyTile.decorationModel != null && partyTile.decorationModel.GetComponent<MapLocation>())
+        {
+            //We enable the goToLocationButton so that the player can travel there
+            this.goToLocationButton.interactable = true;
+            //Setting the playerTileLocation reference
+            this.playerTileLocation = partyTile.decorationModel.GetComponent<MapLocation>();
+            //We also end this function so we don't keep looping for no reason
+            return;
+        }
+
         //Checking to see if any of the objects on this tile are map locations
-        foreach(GameObject obj in partyTile.objectsOnThisTile)
+        /*foreach(GameObject obj in partyTile.objectsOnThisTile)
         {
             //If we find an object that is a map location
             if(obj.GetComponent<MapLocation>())
@@ -35,7 +46,7 @@ public class LocationOpenerUI : MonoBehaviour
                 //We also end this function so we don't keep looping for no reason
                 return;
             }
-        }
+        }*/
 
         //If we made it past the loop, there were no map locations on the current tile, so we disable the goToLocationButton
         this.goToLocationButton.interactable = false;

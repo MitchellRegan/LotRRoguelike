@@ -197,10 +197,10 @@ public class CreateTileGrid : MonoBehaviour
         for (int e = 0; e < this.numberOfStepLoops; ++e)
         {
             this.ExpandRegionBoarders();
-            //this.CreateMapTexture("" + e);
+            this.CreateMapTexture("" + e);
         }
 
-        this.CreateMapTexture("" + this.numberOfStepLoops);
+        //this.CreateMapTexture("" + this.numberOfStepLoops);
     }
 
 
@@ -364,7 +364,11 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Duplicating the list of regions in the difficulty band so we can modify it
-        List<RegionInfo> regionDup = difficultyRegions_;
+        List<RegionInfo> regionDup = new List<RegionInfo>();
+        foreach(RegionInfo duplicate in difficultyRegions_)
+        {
+            regionDup.Add(duplicate);
+        }
 
         //Creating a list of each region in this difficulty band
         List<RegionInfo> bandRegions = new List<RegionInfo>();
@@ -772,7 +776,7 @@ public class CreateTileGrid : MonoBehaviour
                     }
                 }
             }
-
+            
 
             //If we've found the city tile's region
             if(cityRegion != null)
@@ -1363,7 +1367,6 @@ public class CreateTileGrid : MonoBehaviour
                 else if(this.dungeonTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
                 {
                     pixelColor = Color.black;
-                    Debug.Log(CreateTileGrid.globalReference.tileGrid[c][r].regionName + " at loc " + c + "," + r);
                 }
                 //If this tile isn't a city or dungeon tile
                 else
