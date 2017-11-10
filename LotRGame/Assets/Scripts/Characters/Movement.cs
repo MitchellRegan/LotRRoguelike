@@ -89,7 +89,7 @@ public class Movement : MonoBehaviour
         {
             return;
         }
-        
+
         //Finds the difference between the the current tile and the tile to travel to
         Vector3 distDiff = new Vector3(this.tileToTravelTo.tilePosition.x - this.currentTile.tilePosition.x,
                                         this.tileToTravelTo.elevation - this.currentTile.elevation,

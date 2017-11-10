@@ -927,6 +927,7 @@ public class CreateTileGrid : MonoBehaviour
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
 
         playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
+        playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_);
 
         //Looping through all of the children for the GameData object to get the created characters
         foreach(Character t in GameData.globalReference.transform.GetComponentsInChildren<Character>())
