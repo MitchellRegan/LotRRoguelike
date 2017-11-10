@@ -20,7 +20,7 @@ public class LocationOpenerUI : MonoBehaviour
     private void Update()
     {
         //Getting the reference to the current player party
-        TileInfo partyTile = CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile;
+        TileInfo partyTile = CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile;
 
         //If the player party tile's decoration object is a map location
         if(partyTile.decorationModel != null && partyTile.decorationModel.GetComponent<MapLocation>())

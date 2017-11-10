@@ -91,11 +91,11 @@ public class WASDOverworldMovement : MonoBehaviour
         else
         {
             //We find the angle that the player camera is facing and adding 360 so it's easier to deal with angle wrap-around
-            float cameraAngle = OrbitCamera.directionFacing + 360;
+            float cameraAngle = OrbitCamera.directionFacing + 450;
 
             //Creating a dictionary of tiles that we could potentially move toward and their direction
             Dictionary<TileDirection, TileInfo> potentialTravelTiles = new Dictionary<TileDirection, TileInfo>();
-
+            Debug.Log("Camera angle: " + (cameraAngle - 360));
             //Looping through all of the tiles connected to our current tile
             foreach(TileInfo connectedTile in this.currentTile.connectedTiles)
             {
@@ -109,12 +109,18 @@ public class WASDOverworldMovement : MonoBehaviour
                     //Converting the tile angle to degrees because they're easier for me to work with than radians
                     tileAngle = tileAngle * Mathf.Rad2Deg;
 
+                    //If the connected tile is below the current tile, we invert the angle (this is a fix for how Mathf.Atan2 works)
+                    if(connectedTile.tilePosition.z < this.currentTile.tilePosition.z)
+                    {
+                        tileAngle *= -1;
+                    }
+
                     //Making sure the angle is between 0 and 360 instead of -180 and 180
                     if (tileAngle < 0)
                     {
                         tileAngle += 180;
                     }
-
+                    Debug.Log(tileAngle);
                     //Adding 360 so it's easier to deal with angle wrap-around
                     tileAngle += 360;
 

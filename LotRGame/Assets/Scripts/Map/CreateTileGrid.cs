@@ -548,12 +548,12 @@ public class CreateTileGrid : MonoBehaviour
 
 
                             //Making sure the row down exists
-                            if(r + 1 < this.rows)
+                            if(r - 1 > -1)
                             {
-                                if(this.tileGrid[c+1][r+1] != null)
+                                if(this.tileGrid[c+1][r-1] != null)
                                 {
                                     //The southeast tile is 1 row down, next column
-                                    TileInfo southEastTile = this.tileGrid[c + 1][r + 1];
+                                    TileInfo southEastTile = this.tileGrid[c + 1][r - 1];
                                     //Connecting the current tile's southeast point to the northwest point to the next tile, and vice versa
                                     currentTile.connectedTiles[2] = southEastTile;
                                     southEastTile.connectedTiles[5] = currentTile;
@@ -564,7 +564,6 @@ public class CreateTileGrid : MonoBehaviour
                     //If the current column isn't offset
                     else
                     {
-
                         //Making sure the next column exists
                         if (c + 1 < this.cols)
                         {
@@ -576,10 +575,10 @@ public class CreateTileGrid : MonoBehaviour
 
 
                             //Making sure the row up exists
-                            if (r - 1 > -1)
+                            if (r + 1 < this.rows)
                             {
                                 //The northeast tile is 1 row up, next column
-                                TileInfo northEastTile = this.tileGrid[c + 1][r - 1];
+                                TileInfo northEastTile = this.tileGrid[c + 1][r + 1];
                                 //Connecting the current tile's northeast point to the southwest point of the next tile, and vice versa
                                 currentTile.connectedTiles[1] = northEastTile;
                                 northEastTile.connectedTiles[4] = currentTile;
@@ -926,7 +925,7 @@ public class CreateTileGrid : MonoBehaviour
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
 
-        playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
+        //playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
         playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_);
 
         //Looping through all of the children for the GameData object to get the created characters
