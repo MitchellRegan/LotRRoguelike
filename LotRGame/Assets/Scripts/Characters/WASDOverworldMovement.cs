@@ -91,11 +91,11 @@ public class WASDOverworldMovement : MonoBehaviour
         else
         {
             //We find the angle that the player camera is facing and adding 360 so it's easier to deal with angle wrap-around
-            float cameraAngle = OrbitCamera.directionFacing + 450;
+            float cameraAngle = OrbitCamera.directionFacing + 360;
 
             //Creating a dictionary of tiles that we could potentially move toward and their direction
             Dictionary<TileDirection, TileInfo> potentialTravelTiles = new Dictionary<TileDirection, TileInfo>();
-            Debug.Log("Camera angle: " + (cameraAngle - 360));
+
             //Looping through all of the tiles connected to our current tile
             foreach(TileInfo connectedTile in this.currentTile.connectedTiles)
             {
@@ -108,42 +108,43 @@ public class WASDOverworldMovement : MonoBehaviour
 
                     //Converting the tile angle to degrees because they're easier for me to work with than radians
                     tileAngle = tileAngle * Mathf.Rad2Deg;
-
-                    //If the connected tile is below the current tile, we invert the angle (this is a fix for how Mathf.Atan2 works)
-                    if(connectedTile.tilePosition.z < this.currentTile.tilePosition.z)
-                    {
-                        tileAngle *= -1;
-                    }
+                    
 
                     //Making sure the angle is between 0 and 360 instead of -180 and 180
                     if (tileAngle < 0)
                     {
-                        tileAngle += 180;
+                        tileAngle += 360;
                     }
-                    Debug.Log(tileAngle);
-                    //Adding 360 so it's easier to deal with angle wrap-around
+
                     tileAngle += 360;
 
+                    //Adding 360 so it's easier to deal with angle wrap-around
+                    if ((tileAngle - cameraAngle) < -180)
+                    {
+                        tileAngle += 360;
+                    }
+
+                    Debug.Log("Cam: " + (cameraAngle - 360) + ", Tile: " + (tileAngle - 360) + "Diff: " + (tileAngle - cameraAngle));
                     //If this current tile is within 60 degrees of the camera angle
-                    if (tileAngle - cameraAngle >= -20 && tileAngle - cameraAngle <= 20)
+                    if (tileAngle - cameraAngle >= -30 && tileAngle - cameraAngle <= 30)
                     {
                         //This tile is in the forward direction
-                        if (!potentialTravelTiles.ContainsKey(TileDirection.Forward))
-                            potentialTravelTiles.Add(TileDirection.Forward, connectedTile);
+                        potentialTravelTiles.Add(TileDirection.Forward, connectedTile);
+                        //Debug.Log("Forward: " + (connectedTile.tilePosition - this.currentTile.tilePosition) + ", angle: " + (tileAngle - 360));
                     }
                     //If this current tile is 60 degrees to the right
-                    else if (tileAngle - cameraAngle > -80 && tileAngle - cameraAngle < -40)
+                    else if (tileAngle - cameraAngle > -90 && tileAngle - cameraAngle < -30)
                     {
                         //This tile is in the right direction
-                        if (!potentialTravelTiles.ContainsKey(TileDirection.Right))
-                            potentialTravelTiles.Add(TileDirection.Right, connectedTile);
+                        potentialTravelTiles.Add(TileDirection.Right, connectedTile);
+                        //Debug.Log("Right: " + (connectedTile.tilePosition - this.currentTile.tilePosition) + ", angle: " + (tileAngle - 360));
                     }
                     //If this current tile is 60 degrees to the left
-                    else if (tileAngle - cameraAngle > 40 && tileAngle - cameraAngle < 80)
+                    else if (tileAngle - cameraAngle > 30 && tileAngle - cameraAngle < 90)
                     {
                         //This tile is in the left direction
-                        if(!potentialTravelTiles.ContainsKey(TileDirection.Left))
-                            potentialTravelTiles.Add(TileDirection.Left, connectedTile);
+                        potentialTravelTiles.Add(TileDirection.Left, connectedTile);
+                        //Debug.Log("Left: " + (connectedTile.tilePosition - this.currentTile.tilePosition) + ", angle: " + (tileAngle - 360));
                     }
                 }
             }

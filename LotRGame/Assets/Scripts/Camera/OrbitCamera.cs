@@ -33,7 +33,11 @@ public class OrbitCamera : MonoBehaviour
     private void Update()
     {
         //Setting the static rotation variable to this camera's Y rotation
-        directionFacing = this.transform.eulerAngles.y;
+        directionFacing = (-1 * this.transform.eulerAngles.y) + 90;
+        if(directionFacing < 0)
+        {
+            directionFacing += 360;
+        }
 
         //Only rotates when the activate button is down and the correct mouse buttons are down
         if (Input.GetKey(this.activateButton) && this.leftMouseActivate == Input.GetMouseButton(0) && this.rightMouseActivate == Input.GetMouseButton(1))
