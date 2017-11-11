@@ -19,7 +19,7 @@ public class CharacterInventoryUI : MonoBehaviour
     public static CharacterInventoryUI tradeInventory;
 
     //The image that displays this character's combat appearance
-    public Image combatSprite;
+    public GameObject playerSpriteLoc;
 
     //Selected Character Name
     public Text selectedCharacterName;
@@ -144,6 +144,37 @@ public class CharacterInventoryUI : MonoBehaviour
     //Function called to update the inventory images and weight
     public void UpdateImages()
     {
+        //Sets the character image
+        if(this.playerSpriteLoc != null)
+        {
+            //Finding any child objects on this object to remove a previous player image
+            List<GameObject> allChildren = new List<GameObject>();
+            for(int c = 0; c < this.playerSpriteLoc.transform.childCount; ++c)
+            {
+                allChildren.Add(this.playerSpriteLoc.transform.GetChild(c).gameObject);
+            }
+            //Deleting each child object
+            for(int d = 0; d < allChildren.Count; ++d)
+            {
+                Destroy(allChildren[d].gameObject);
+            }
+
+            //Creating a new sprite base for the selected character
+            GameObject newSpriteBase = GameObject.Instantiate(this.selectedCharacterInventory.GetComponent<Character>().charSprites.allSprites.spriteBase.gameObject);
+
+            //Parenting the sprite base to our sprite location object
+            newSpriteBase.transform.SetParent(this.playerSpriteLoc.transform);
+            newSpriteBase.transform.localPosition = new Vector3();
+            newSpriteBase.transform.localScale = new Vector3(newSpriteBase.transform.localScale.x * this.playerSpriteLoc.transform.localScale.x,
+                                                            newSpriteBase.transform.localScale.y * this.playerSpriteLoc.transform.localScale.y,
+                                                            newSpriteBase.transform.localScale.z * this.playerSpriteLoc.transform.localScale.z);
+
+            //Getting the reference to the sprite base component
+            CharacterSpriteBase charSprite = newSpriteBase.GetComponent<CharacterSpriteBase>();
+            //Setting the character sprite base's sprites
+            charSprite.SetSpriteImages(this.selectedCharacterInventory.GetComponent<Character>().charSprites.allSprites);
+        }
+
         //Sets the character name
         if(this.selectedCharacterName != null)
         {
@@ -160,7 +191,7 @@ public class CharacterInventoryUI : MonoBehaviour
         //Sets the armor text
         if (this.selectedCharacterArmorPhysical != null)
         {
-            this.selectedCharacterArmorPhysical.text = "Armor: " + this.selectedCharacterInventory.totalPhysicalArmor;
+            this.selectedCharacterArmorPhysical.text = "" + this.selectedCharacterInventory.totalPhysicalArmor;
         }
         //Sets magic resist texts
         if (this.selectedCharacterResistMagic != null)

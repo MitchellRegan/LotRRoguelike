@@ -58,6 +58,12 @@ public class WASDOverworldMovement : MonoBehaviour
     private enum TileDirection { Forward, Left, Right };
     private void Update()
     {
+        //If the combat canvas is open, we don't move
+        if(CombatManager.globalReference.GetComponent<Canvas>().enabled)
+        {
+            return;
+        }
+
         //If this party is currently traveling
         if(isTraveling)
         {
