@@ -32,6 +32,10 @@ public class GameData : MonoBehaviour
     [HideInInspector]
     public bool allowNewUnlockables = true;
 
+    //The name of the current game folder where our save directory is
+    [HideInInspector]
+    public string saveFolder = "";
+
 
 
     //Function called when this object is initialized
@@ -143,6 +147,9 @@ public class GameData : MonoBehaviour
         {
             this.allowNewUnlockables = false;
         }
+
+        //Making sure our save folder name is valid
+        this.saveFolder = SaveLoadManager.globalReference.CheckFolderName(this.saveFolder);
 
         //Telling the map generator to create a new level instead of loading one from a save
         this.loadType = levelLoadType.GenerateNewLevel;

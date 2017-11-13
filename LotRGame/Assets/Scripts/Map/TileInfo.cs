@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Class used in CreateTileGrid.cs to hold info for each tile in the map's tile grid
+[System.Serializable]
 public class TileInfo
 {
     //A list of all of the tiles that are connected to this point
@@ -10,10 +11,12 @@ public class TileInfo
 
     //Reference in pathfinding algorithms to the tile that lead to this one. Used in CreateTileGrid algorithms
     [HideInInspector]
+    [System.NonSerialized]
     public TileInfo previousTile;
 
     //Bool used in the pathfinding algorithms in CreateTileGrid.cs. If true, it will be ignored during the search.
     [HideInInspector]
+    [System.NonSerialized]
     public bool hasBeenChecked = false;
 
     //Bool used in the pathfinding algorithms in CreateTileGrid.cs. Represents the number of turns it takes to traverse this point
@@ -21,6 +24,7 @@ public class TileInfo
     public int movementCost = 1;
     //The current number of cycles in the pathfinding algorithms that have been spent on this point.
     [HideInInspector]
+    [System.NonSerialized]
     public int currentMovement = 0;
 
     //The name of the region that this tile is in
@@ -44,6 +48,7 @@ public class TileInfo
     public float decorationRotation = 0;
 
     //The list of all game objects on this tile
+    [System.NonSerialized]
     public List<GameObject> objectsOnThisTile;
 
     //The encounter chance for this tile

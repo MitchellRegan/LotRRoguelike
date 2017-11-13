@@ -201,6 +201,8 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //this.CreateMapTexture("" + this.numberOfStepLoops);
+        //Saving this tile grid using the folder name in GameData.cs
+        SaveLoadManager.globalReference.SaveTileGrid(GameData.globalReference.saveFolder);
     }
 
 
@@ -1193,81 +1195,7 @@ public class CreateTileGrid : MonoBehaviour
             regionTile.ClearPathfinding();
         }
     }
-
-
-    //Function called externally and from StartMapCreation. Only spawns the nearest tiles around the player party
-    public void GenerateVisibleLand(Movement visiblePlayerParty_)
-    {
-        //The list of each group of tiles in every range incriment. The index is the range
-        List<List<TileInfo>> tilesInEachIncriment = new List<List<TileInfo>>();
-        //Creating the first range incriment which always includes only the player party's tile
-        List<TileInfo> range0 = new List<TileInfo>() { visiblePlayerParty_.currentTile };
-        range0[0].hasBeenChecked = true;
-        tilesInEachIncriment.Add(range0);
-        
-        //Looping through each radius of tiles in the visibility range
-        for (int r = 1; r <= this.visibilityRange; ++r)
-        {
-            //Creating a new list of tiles for this range incriment
-            List<TileInfo> newRange = new List<TileInfo>();
-
-            //Looping through each tile in the previous range
-            foreach(TileInfo tile in tilesInEachIncriment[r-1])
-            {
-                //Looping through each tile connected to the one we're checking
-                foreach(TileInfo connection in tile.connectedTiles)
-                {
-                    //If the connected tile hasn't already been checked
-                    if(connection != null && !connection.hasBeenChecked)
-                    {
-                        //Adding the connected tile to this new range and marking it as checked
-                        newRange.Add(connection);
-                        connection.hasBeenChecked = true;
-                    }
-                }
-            }
-            //Adding this range incriment to the list
-            tilesInEachIncriment.Add(newRange);
-        }
-
-        //Clearing the current list of visible tile objects and destroying them
-        foreach(TileInfo tile in this.visibleTileObjects.Keys)
-        {
-            Destroy(this.visibleTileObjects[tile]);
-            this.visibleTileObjects[tile] = null;
-        }
-        this.visibleTileObjects.Clear();
-        
-        //Grouping all of the tiles into the list that are visible
-        foreach (List<TileInfo> rangeList in tilesInEachIncriment)
-        {
-            foreach(TileInfo tile in rangeList)
-            {
-                //Resetting the tile to say it hasn't been checked
-                tile.hasBeenChecked = false;
-
-                //Creating an instance of the hex mesh for this tile
-                GameObject tileMesh = Instantiate(this.hexMesh.gameObject, new Vector3(tile.tilePosition.x, tile.elevation, tile.tilePosition.z), new Quaternion());
-                //Setting the mesh's material to the correct one for the tile
-                Material[] tileMat = tileMesh.GetComponent<MeshRenderer>().materials;
-                tileMat[0] = tile.tileMaterial;
-                tileMesh.GetComponent<MeshRenderer>().materials = tileMat;
-                //Setting the tile's reference in the LandTile component
-                tileMesh.GetComponent<LandTile>().tileReference = tile;
-
-                //Adding the hex mesh to our list of visible tile objects
-                this.visibleTileObjects.Add(tile, tileMesh);
-
-                //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
-                if(tile.decorationModel != null)
-                {
-                    GameObject decor = Instantiate(tile.decorationModel, tile.tilePosition, new Quaternion());
-                    decor.transform.SetParent(tileMesh.transform);
-                }
-            }
-        }
-    }
-
+    
 
     //Function called externally from Movement.cs and from StartMapCreation. Spawns the nearest tiles around the player party
     public void GenerateVisibleLand2(TileInfo currentTile_)
@@ -1439,5 +1367,25 @@ public class CreateTileGrid : MonoBehaviour
         
         //Writing the file to the desktop
         System.IO.File.WriteAllBytes("C:/Users/Mitch/Desktop/" + seedName + ".png", bytes);
+    }
+}
+
+//Class used in SaveLoadManager.cs to store info from CreateTileGrid.cs to be serialized
+[System.Serializable]
+public class TileGridSaveInfo
+{
+    //The entire tile grid
+    List<List<TileInfo>> tileGrid;
+    //The tiles there cities are on
+    List<TileInfo> cityTiles;
+    //The tiles where dungeons are on
+    List<TileInfo> dungeonTiles;
+
+    //Public constructor for this class
+    public TileGridSaveInfo(List<List<TileInfo>> tileGrid_, List<TileInfo> cityTiles_, List<TileInfo> dungeonTiles_)
+    {
+        this.tileGrid = tileGrid_;
+        this.cityTiles = cityTiles_;
+        this.dungeonTiles = dungeonTiles_;
     }
 }
