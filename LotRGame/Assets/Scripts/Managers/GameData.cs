@@ -163,6 +163,5 @@ public class GameData : MonoBehaviour
 
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
-        Debug.Log("End of StartNewGame");
     }
 }

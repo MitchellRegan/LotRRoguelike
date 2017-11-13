@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Newtonsoft.Json;
 
 public class SaveLoadManager : MonoBehaviour
 {
@@ -35,7 +36,6 @@ public class SaveLoadManager : MonoBehaviour
     //Function called from SaveGameData to check for illegal characters in the save folder name
     public string CheckFolderName(string folderName_)
     {
-        Debug.Log("CheckFolderName. Initial name: " + folderName_);
         //String to hold the folder name while we check it
         string checkedName = folderName_;
 
@@ -58,8 +58,7 @@ public class SaveLoadManager : MonoBehaviour
             checkedName = this.defaultFolderName;
         }
 
-
-        Debug.Log("CheckFolderName. Returned name: " + checkedName);
+        
         return checkedName;
     }
 
@@ -68,15 +67,10 @@ public class SaveLoadManager : MonoBehaviour
     private void CheckSaveDirectory(string folderName_)
     {
         //If the directory doesn't exist
-        if(!Directory.Exists(Application.dataPath + folderName_))
+        if(!Directory.Exists(Application.dataPath + "/" + folderName_))
         {
-            Debug.Log("SaveLoadManager.CheckSaveDirectory. Directory DOES exist");
             //We create the folder at the application directory with the given folder name
-            Directory.CreateDirectory(Application.dataPath + folderName_);
-        }
-        else
-        {
-            Debug.Log("SaveLoadManager.CheckSaveDirectory. Directory does NOT exist");
+            Directory.CreateDirectory(Application.dataPath + "/" + folderName_);
         }
     }
 
@@ -84,9 +78,6 @@ public class SaveLoadManager : MonoBehaviour
     //Function called from CreateTileGrid.StartMapCreation to save the map info when a new game is started
     public void SaveTileGrid(string folderName_)
     {
-        Debug.Log("Made it to save tile grid. Folder name: " + folderName_);
-        return;
-
         //Making sure the save folder exists
         this.CheckSaveDirectory(folderName_);
 
@@ -96,9 +87,13 @@ public class SaveLoadManager : MonoBehaviour
                                                            CreateTileGrid.globalReference.dungeonTiles);
 
         //Creating a string to store the serialized JSON information for the new map save
-        string jsonMapData = JsonUtility.ToJson(newMapSave);
+        string jsonMapData = "";
+        jsonMapData = JsonConvert.SerializeObject(newMapSave, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+        //jsonMapData = JsonUtility.ToJson(CreateTileGrid.globalReference.cityTiles[0]);
+        //Debug.Log(jsonMapData);
 
         //Writing the JSON map data to a new text file in the given folder's directory
-        File.WriteAllText(Application.dataPath + folderName_ + "/TileGrid.txt", jsonMapData);
+        File.WriteAllText(Application.dataPath + "/" + folderName_ + "/TileGrid.txt", jsonMapData);
+        Debug.Log(Application.dataPath + "/" + folderName_ + "/TileGrid.txt");
     }
 }

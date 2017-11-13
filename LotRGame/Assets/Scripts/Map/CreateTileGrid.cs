@@ -1387,11 +1387,11 @@ public class CreateTileGrid : MonoBehaviour
 public class TileGridSaveInfo
 {
     //The entire tile grid
-    List<List<TileInfo>> tileGrid;
+    public List<List<TileInfo>> tileGrid;
     //The tiles there cities are on
-    List<TileInfo> cityTiles;
+    public List<TileInfo> cityTiles;
     //The tiles where dungeons are on
-    List<TileInfo> dungeonTiles;
+    public List<TileInfo> dungeonTiles;
 
     //Public constructor for this class
     public TileGridSaveInfo(List<List<TileInfo>> tileGrid_, List<TileInfo> cityTiles_, List<TileInfo> dungeonTiles_)
