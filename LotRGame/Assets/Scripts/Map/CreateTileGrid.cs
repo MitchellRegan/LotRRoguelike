@@ -160,22 +160,22 @@ public class CreateTileGrid : MonoBehaviour
                 this.cols = Mathf.RoundToInt(GameData.globalReference.hardMapSize.x);
                 break;
         }
-
+        
         //Generates the grid of tiles
         this.GenerateGrid(this.rows, this.cols);
-
+        
         //Connects the path points between tiles
         this.ConnectTiles();
-
+        
         //Creates the correct map for the game difficulty
         this.ImprovedMapGeneration();
-
+        
         //Getting all of the tiles where cities will be
         this.cityTiles = this.FindCityTiles();
-
+        
         //Setting all of the map locations for each region, like cities and dungeons
         this.CreateMapLocations();
-
+        
         //Looping through to each region in the very easy regions
         foreach (RegionInfo ver in this.veryEasyRegions)
         {
@@ -187,10 +187,11 @@ public class CreateTileGrid : MonoBehaviour
                 {
                     //We set the players to this region and break out of these loops
                     this.SetPlayerPartyPosition(city);
+                    break;
                 }
             }
         }
-
+        
         this.CreateMapTexture();
 
         //Looping though to randomize the regions so that they grow in different directions
@@ -200,8 +201,9 @@ public class CreateTileGrid : MonoBehaviour
             this.CreateMapTexture("" + e);
         }
 
-        //this.CreateMapTexture("" + this.numberOfStepLoops);
+        this.CreateMapTexture("" + this.numberOfStepLoops);
         //Saving this tile grid using the folder name in GameData.cs
+        Debug.Log("Save tile grid");
         SaveLoadManager.globalReference.SaveTileGrid(GameData.globalReference.saveFolder);
     }
 
@@ -531,7 +533,9 @@ public class CreateTileGrid : MonoBehaviour
                             TileInfo bottomTile = this.tileGrid[c][r + 1];
                             //Connecting the current tile's south (bottom) point to the north (top) point of the tile below, and vice versa
                             currentTile.connectedTiles[0] = bottomTile;
+                            currentTile.connectedTileCoordinates[0] = new GridCoordinates(c, r + 1);
                             bottomTile.connectedTiles[3] = currentTile;
+                            bottomTile.connectedTileCoordinates[3] = new GridCoordinates(c, r);
                         }
                     }
 
@@ -546,7 +550,9 @@ public class CreateTileGrid : MonoBehaviour
                             TileInfo northEastTile = this.tileGrid[c + 1][r];
                             //Connecting the current tile's northeast point to the southwest point in the next tile, and vice versa
                             currentTile.connectedTiles[1] = northEastTile;
+                            currentTile.connectedTileCoordinates[1] = new GridCoordinates(c + 1, r);
                             northEastTile.connectedTiles[4] = currentTile;
+                            northEastTile.connectedTileCoordinates[4] = new GridCoordinates(c, r);
 
 
                             //Making sure the row down exists
@@ -558,7 +564,9 @@ public class CreateTileGrid : MonoBehaviour
                                     TileInfo southEastTile = this.tileGrid[c + 1][r - 1];
                                     //Connecting the current tile's southeast point to the northwest point to the next tile, and vice versa
                                     currentTile.connectedTiles[2] = southEastTile;
+                                    currentTile.connectedTileCoordinates[2] = new GridCoordinates(c + 1, r - 1);
                                     southEastTile.connectedTiles[5] = currentTile;
+                                    southEastTile.connectedTileCoordinates[5] = new GridCoordinates(c, r);
                                 }
                             }
                         }
@@ -573,7 +581,9 @@ public class CreateTileGrid : MonoBehaviour
                             TileInfo southEastTile = this.tileGrid[c + 1][r];
                             //Connecting the current tile's southeast point to the northwest point in the next tile, and vice versa
                             currentTile.connectedTiles[2] = southEastTile;
+                            currentTile.connectedTileCoordinates[2] = new GridCoordinates(c + 1, r);
                             southEastTile.connectedTiles[5] = currentTile;
+                            southEastTile.connectedTileCoordinates[5] = new GridCoordinates(c, r);
 
 
                             //Making sure the row up exists
@@ -583,7 +593,9 @@ public class CreateTileGrid : MonoBehaviour
                                 TileInfo northEastTile = this.tileGrid[c + 1][r + 1];
                                 //Connecting the current tile's northeast point to the southwest point of the next tile, and vice versa
                                 currentTile.connectedTiles[1] = northEastTile;
+                                currentTile.connectedTileCoordinates[1] = new GridCoordinates(c + 1, r + 1);
                                 northEastTile.connectedTiles[4] = currentTile;
+                                northEastTile.connectedTileCoordinates[4] = new GridCoordinates(c, r);
                             }
                         }
                     }

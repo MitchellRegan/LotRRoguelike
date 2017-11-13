@@ -7,7 +7,11 @@ using UnityEngine;
 public class TileInfo
 {
     //A list of all of the tiles that are connected to this point
+    [System.NonSerialized]
     public List<TileInfo> connectedTiles = new List<TileInfo>(6);
+
+    //A list of all of the coordinates of the connected tiles since the connectedTiles list can't be serialized
+    public List<GridCoordinates> connectedTileCoordinates = new List<GridCoordinates>(6);
 
     //Reference in pathfinding algorithms to the tile that lead to this one. Used in CreateTileGrid algorithms
     [HideInInspector]
@@ -70,6 +74,12 @@ public class TileInfo
         {
             this.connectedTiles.Add(null);
         }
+        //Initializing the list of tile coordinates for connected tiles
+        this.connectedTileCoordinates = new List<GridCoordinates>();
+        for(int t = 0; t < 6; ++t)
+        {
+            this.connectedTileCoordinates.Add(null);
+        }
     }
 
 
@@ -81,6 +91,12 @@ public class TileInfo
         for(int c = 0; c < 6; ++c)
         {
             this.connectedTiles.Add(null);
+        }
+        //Initializing the list of tile coordinates for connected tiles
+        this.connectedTileCoordinates = new List<GridCoordinates>();
+        for (int t = 0; t < 6; ++t)
+        {
+            this.connectedTileCoordinates.Add(null);
         }
     }
 
@@ -281,4 +297,19 @@ public enum LandType
     Desert,
     Mountain,
     Volcano
+}
+
+//Struct used in TileInfo.cs and CreateTileGrid.cs to save which col/row a tile is in
+[System.Serializable]
+public class GridCoordinates
+{
+    public int col;
+    public int row;
+
+    //Constructor for this struct
+    public GridCoordinates(int col_, int row_)
+    {
+        this.col = col_;
+        this.row = row_;
+    }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Movement))]
 [RequireComponent(typeof(ReceiveEvent))]
 public class PartyGroup : MonoBehaviour
 {

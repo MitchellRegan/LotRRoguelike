@@ -135,6 +135,13 @@ public class GameData : MonoBehaviour
     }
 
 
+    //Function called externally to set the name of the save folder
+    public void SetSaveFolderName(string saveFolder_)
+    {
+        this.saveFolder = saveFolder_;
+    }
+
+
     //Function called from the New Game screen in the main menu. Starts the process of creating a new map
     public void StartNewGame()
     {
@@ -156,5 +163,6 @@ public class GameData : MonoBehaviour
 
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        Debug.Log("End of StartNewGame");
     }
 }

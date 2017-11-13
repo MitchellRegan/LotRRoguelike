@@ -29,14 +29,13 @@ public class SaveLoadManager : MonoBehaviour
             //We remove this component so there aren't multiple conflicting SaveLoadManagers
             Destroy(this);
         }
-
-        Debug.Log(Application.dataPath);
     }
 
 
     //Function called from SaveGameData to check for illegal characters in the save folder name
     public string CheckFolderName(string folderName_)
     {
+        Debug.Log("CheckFolderName. Initial name: " + folderName_);
         //String to hold the folder name while we check it
         string checkedName = folderName_;
 
@@ -47,18 +46,20 @@ public class SaveLoadManager : MonoBehaviour
             checkedName.Contains("|") || checkedName.Contains("?") ||
             checkedName.Contains("*"))
         {
+            Debug.Log("CheckFolderName. Given name is illegal");
             //If the player-given name contains any of the illegal characters, we set the folder name to the default
             checkedName = this.defaultFolderName;
         }
         //Checking if the folder name is empty
         else if(checkedName == "")
         {
+            Debug.Log("CheckFolderName. Given name is empty");
             //If the folder has no name, we give it the default
             checkedName = this.defaultFolderName;
         }
 
 
-
+        Debug.Log("CheckFolderName. Returned name: " + checkedName);
         return checkedName;
     }
 
@@ -83,6 +84,9 @@ public class SaveLoadManager : MonoBehaviour
     //Function called from CreateTileGrid.StartMapCreation to save the map info when a new game is started
     public void SaveTileGrid(string folderName_)
     {
+        Debug.Log("Made it to save tile grid. Folder name: " + folderName_);
+        return;
+
         //Making sure the save folder exists
         this.CheckSaveDirectory(folderName_);
 
