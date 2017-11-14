@@ -58,7 +58,9 @@ public class SaveLoadManager : MonoBehaviour
             checkedName = this.defaultFolderName;
         }
 
-        
+        //adding a save folder path to the beginning of the given folder name
+        checkedName = "/Zein/SaveFiles/" + checkedName;
+
         return checkedName;
     }
 
@@ -67,10 +69,10 @@ public class SaveLoadManager : MonoBehaviour
     private void CheckSaveDirectory(string folderName_)
     {
         //If the directory doesn't exist
-        if(!Directory.Exists(Application.dataPath + "/" + folderName_))
+        if(!Directory.Exists(Application.persistentDataPath + folderName_))
         {
             //We create the folder at the application directory with the given folder name
-            Directory.CreateDirectory(Application.dataPath + "/" + folderName_);
+            Directory.CreateDirectory(Application.persistentDataPath + folderName_);
         }
     }
 
@@ -81,19 +83,59 @@ public class SaveLoadManager : MonoBehaviour
         //Making sure the save folder exists
         this.CheckSaveDirectory(folderName_);
 
-        //Creating a new TileGridSaveInfo class to store all of the data that will be written
-        TileGridSaveInfo newMapSave = new TileGridSaveInfo(CreateTileGrid.globalReference.tileGrid,
-                                                           CreateTileGrid.globalReference.cityTiles,
-                                                           CreateTileGrid.globalReference.dungeonTiles);
+        //Creating a 2D list of strings to hold all of the serialized TileInfo classes in the tile grid
+        List<List<string>> serializedTileGrid = new List<List<string>>();
+        for(int col = 0; col < CreateTileGrid.globalReference.tileGrid.Count; ++col)
+        {
+            //Creating a new column (list of tile strings)
+            List<string> newCol = new List<string>();
 
+            for(int row = 0; row < CreateTileGrid.globalReference.tileGrid[0].Count; ++row)
+            {
+                //Serializing the current tile using JsonUtility
+                string jsonTile = JsonUtility.ToJson(CreateTileGrid.globalReference.tileGrid[col][row]);
+                //Adding the tile string to the list of serialized tiles
+                newCol.Add(jsonTile);
+            }
+
+            //Adding the new column to our 2D list of tile strings
+            serializedTileGrid.Add(newCol);
+        }
+
+        //Creating a list of strings to hold serialized TileInfo classes for city tiles
+        List<string> serializedCities = new List<string>();
+        for(int c = 0; c < CreateTileGrid.globalReference.cityTiles.Count; ++c)
+        {
+            //Serializing the current city tile using JsonUtility
+            string jsonCityTile = JsonUtility.ToJson(CreateTileGrid.globalReference.cityTiles[c]);
+            //Adding the city tile to the list of serialized cities
+            serializedCities.Add(jsonCityTile);
+        }
+
+        //Creating a list of strings to hold serialized TileInfo classes for dungeon tiles
+        List<string> serializedDungeons = new List<string>();
+        for(int d = 0; d < CreateTileGrid.globalReference.dungeonTiles.Count; ++d)
+        {
+            //Serializing the current dungeon tile using JsonUtility
+            string jsonDungeonTile = JsonUtility.ToJson(CreateTileGrid.globalReference.dungeonTiles[d]);
+            //Adding the city tile to the list of serialized dungeons
+            serializedDungeons.Add(jsonDungeonTile);
+        }
+
+        //Creating a new TileGridSaveInfo class to store all of the data that will be written
+        TileGridSaveInfo newMapSave = new TileGridSaveInfo(serializedTileGrid, serializedCities, serializedDungeons);
+
+
+        Debug.Log("Before save");
+        //string jsonMapData = JsonUtility.ToJson(testTile, true);
+        string jsonMapData = JsonConvert.SerializeObject(newMapSave, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+        Debug.Log("After save");
         //Creating a string to store the serialized JSON information for the new map save
-        string jsonMapData = "";
-        jsonMapData = JsonConvert.SerializeObject(newMapSave, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+        //string jsonMapData = JsonConvert.SerializeObject(CreateTileGrid.globalReference.cityTiles, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
         //jsonMapData = JsonUtility.ToJson(CreateTileGrid.globalReference.cityTiles[0]);
-        //Debug.Log(jsonMapData);
 
         //Writing the JSON map data to a new text file in the given folder's directory
-        File.WriteAllText(Application.dataPath + "/" + folderName_ + "/TileGrid.txt", jsonMapData);
-        Debug.Log(Application.dataPath + "/" + folderName_ + "/TileGrid.txt");
+        File.WriteAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt", jsonMapData);
+        Debug.Log(Application.persistentDataPath + folderName_ + "/TileGrid.txt");
     }
 }

@@ -47,7 +47,7 @@ public class TileInfo
     public float elevation = 0;
 
     //The game object that's used to decorate the top of this tile
-    public GameObject decorationModel;
+    public GameObject decorationModel = null;
     //The rotation of the decoration model (for variation)
     public float decorationRotation = 0;
 
