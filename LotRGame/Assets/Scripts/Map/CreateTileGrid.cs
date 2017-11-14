@@ -198,13 +198,15 @@ public class CreateTileGrid : MonoBehaviour
         for (int e = 0; e < this.numberOfStepLoops; ++e)
         {
             this.ExpandRegionBoarders();
-            this.CreateMapTexture("" + e);
+            //this.CreateMapTexture("" + e);
         }
 
         this.CreateMapTexture("" + this.numberOfStepLoops);
         //Saving this tile grid using the folder name in GameData.cs
         Debug.Log("Save tile grid");
         SaveLoadManager.globalReference.SaveTileGrid(GameData.globalReference.saveFolder);
+        Debug.Log("Load tile grid");
+        SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
     }
 
 
@@ -1375,10 +1377,10 @@ public class CreateTileGrid : MonoBehaviour
         //Encoding the texture to a png
         byte[] bytes = mapTexture.EncodeToPNG();
 
-        string seedName = GameData.globalReference.GetComponent<RandomSeedGenerator>().seed + mapNameExtras_;
+        string saveFolder = GameData.globalReference.saveFolder + mapNameExtras_;
         
         //Writing the file to the desktop
-        System.IO.File.WriteAllBytes("C:/Users/Mitch/Desktop/" + seedName + ".png", bytes);
+        System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "Map.png", bytes);
     }
 }
 

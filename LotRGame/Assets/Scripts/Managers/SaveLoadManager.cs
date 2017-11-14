@@ -125,17 +125,79 @@ public class SaveLoadManager : MonoBehaviour
         //Creating a new TileGridSaveInfo class to store all of the data that will be written
         TileGridSaveInfo newMapSave = new TileGridSaveInfo(serializedTileGrid, serializedCities, serializedDungeons);
 
-
-        Debug.Log("Before save");
-        //string jsonMapData = JsonUtility.ToJson(testTile, true);
+        //Serializing the newMapSave class that holds all of our tile info
         string jsonMapData = JsonConvert.SerializeObject(newMapSave, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        Debug.Log("After save");
-        //Creating a string to store the serialized JSON information for the new map save
-        //string jsonMapData = JsonConvert.SerializeObject(CreateTileGrid.globalReference.cityTiles, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-        //jsonMapData = JsonUtility.ToJson(CreateTileGrid.globalReference.cityTiles[0]);
 
         //Writing the JSON map data to a new text file in the given folder's directory
         File.WriteAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt", jsonMapData);
         Debug.Log(Application.persistentDataPath + folderName_ + "/TileGrid.txt");
+    }
+
+
+    //Function called from CreateTileGrid to load map info from a save directory
+    public void LoadTileGrid(string folderName_)
+    {
+        //If the folder directory doesn't exist
+        if(!Directory.Exists(Application.persistentDataPath + folderName_))
+        {
+            //We throw an exception because the folder that's supposed to hold the TileGrid.txt file doesn't exist
+            throw new System.ArgumentException("SaveLoadManager.LoadTileGrid, The folder directory given does not exist!");
+        }
+        //If the folder exists but the file doesn't
+        else if(!File.Exists(Application.persistentDataPath + folderName_ + "/TileGrid.txt"))
+        {
+            //We throw an exception because the file that we're supposed to load doesn't exist
+            throw new System.ArgumentException("SaveLoadManager.LoadTileGrid, The TileGrid.txt file for this save does not exist!");
+        }
+
+
+        //Getting all of the string data from the TileGrid.txt file
+        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt");
+
+        //Getting the de-serialized TileGridSaveInfo class from the file using the JSON.net converter
+        TileGridSaveInfo tileSaveInfo = JsonConvert.DeserializeObject(fileData, typeof(TileGridSaveInfo)) as TileGridSaveInfo;
+
+        //Getting the de-serialized 2D list of TileInfo classes for the TileGrid
+        List<List<TileInfo>> loadedTileGrid = new List<List<TileInfo>>();
+        //Looping through every column of tiles in the tile grid
+        for(int c = 0; c < tileSaveInfo.serializedTileGrid.Count; ++c)
+        {
+            //Creating a new list of tiles to store the tiles in this column
+            List<TileInfo> newTileColumn = new List<TileInfo>();
+
+            //Looping through every row of the current column of tiles
+            for(int r = 0; r < tileSaveInfo.serializedTileGrid[0].Count; ++r)
+            {
+                //De-serializing the current tile from the string info using the JsonUtility
+                TileInfo newTile = JsonUtility.FromJson(tileSaveInfo.serializedTileGrid[c][r], typeof(TileInfo)) as TileInfo;
+                newTileColumn.Add(newTile);
+            }
+
+            //Adding the new column of tiles to the tile grid
+            loadedTileGrid.Add(newTileColumn);
+        }
+
+        //Getting the de-serialized list of TileInfo classes for the city tiles
+        List<TileInfo> loadedCityTiles = new List<TileInfo>();
+        for(int ct = 0; ct < tileSaveInfo.serializedCityTiles.Count; ++ct)
+        {
+            //De-serializing the current tile from the string info using JsonUtility
+            TileInfo cityTile = JsonUtility.FromJson(tileSaveInfo.serializedCityTiles[ct], typeof(TileInfo)) as TileInfo;
+            loadedCityTiles.Add(cityTile);
+        }
+
+        //Getting the de-serialized list of TileInfo classes for the dungeon tiles
+        List<TileInfo> loadedDungeonTiles = new List<TileInfo>();
+        for(int dt = 0; dt < tileSaveInfo.serializedDungeonTiles.Count; ++dt)
+        {
+            //De-serializing the current tile from the string info using JsonUtility
+            TileInfo dungeonTile = JsonUtility.FromJson(tileSaveInfo.serializedDungeonTiles[dt], typeof(TileInfo)) as TileInfo;
+            loadedDungeonTiles.Add(dungeonTile);
+        }
+
+        //Setting the CreateTileGrid references to the loaded lists of tiles
+        CreateTileGrid.globalReference.tileGrid = loadedTileGrid;
+        CreateTileGrid.globalReference.cityTiles = loadedCityTiles;
+        CreateTileGrid.globalReference.dungeonTiles = loadedDungeonTiles;
     }
 }
