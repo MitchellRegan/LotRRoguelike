@@ -46,14 +46,12 @@ public class SaveLoadManager : MonoBehaviour
             checkedName.Contains("|") || checkedName.Contains("?") ||
             checkedName.Contains("*"))
         {
-            Debug.Log("CheckFolderName. Given name is illegal");
             //If the player-given name contains any of the illegal characters, we set the folder name to the default
             checkedName = this.defaultFolderName;
         }
         //Checking if the folder name is empty
         else if(checkedName == "")
         {
-            Debug.Log("CheckFolderName. Given name is empty");
             //If the folder has no name, we give it the default
             checkedName = this.defaultFolderName;
         }
@@ -73,6 +71,142 @@ public class SaveLoadManager : MonoBehaviour
         {
             //We create the folder at the application directory with the given folder name
             Directory.CreateDirectory(Application.persistentDataPath + folderName_);
+        }
+    }
+
+
+    //Function called externally to save player preferences
+    public void SavePlayerPreferences()
+    {
+        //Saving the current save folder name so we know which game was played last. Used for "Continuing"
+        PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
+
+        //Saving audio settings from SoundManager.cs
+        PlayerPrefs.SetFloat("MusicVolume", SoundManager.globalReference.musicVolume);
+        PlayerPrefs.SetFloat("SoundEffectVolume", SoundManager.globalReference.soundEffectVolume);
+        PlayerPrefs.SetFloat("DialogueVolume", SoundManager.globalReference.dialogueVolume);
+        PlayerPrefs.SetFloat("GlobalVolume", SoundManager.globalReference.globalVolume);
+
+        if (SoundManager.globalReference.muteMusic)
+        {
+            PlayerPrefs.SetInt("MusicMuted", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("MusicMuted", 0);
+        }
+
+        if (SoundManager.globalReference.muteSoundEffects)
+        {
+            PlayerPrefs.SetInt("SoundEffectMuted", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("SoundEffectMuted", 0);
+        }
+
+        if (SoundManager.globalReference.muteDialogue)
+        {
+            PlayerPrefs.SetInt("DialogueMuted", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("DialogueMuted", 0);
+        }
+
+        if (SoundManager.globalReference.muteAll)
+        {
+            PlayerPrefs.SetInt("MuteAll", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("MuteAll", 0);
+        }
+
+        int soundProfileInt = 0;
+        switch(SoundManager.globalReference.currentSoundProfile)
+        {
+            case SoundProfile.ComputerSpeakers:
+                soundProfileInt = 0;
+                break;
+            case SoundProfile.Headphones:
+                soundProfileInt = 1;
+                break;
+            case SoundProfile.RoomSpeakers:
+                soundProfileInt = 2;
+                break;
+        }
+        PlayerPrefs.SetInt("CurrentSoundProfile", soundProfileInt);
+
+        //Saving video settings (NOT IMPLEMENTED YET)
+    }
+
+
+    //Function called externally to load player preferences
+    public void LoadPlayerPreferences()
+    {
+        //If the most recent save doesn't exist, we're trying to load settings that don't exist
+        if(!PlayerPrefs.HasKey("MostRecentSave"))
+        {
+            return;
+        }
+
+        //NOT loading the most recent save folder name just in case the player starts a new game. If they continue,
+        //the MostRecentSave preference is loaded in GameData.ContinueGame
+
+        //Loading audio settings and setting them in SoundManager.cs
+        SoundManager.globalReference.musicVolume = PlayerPrefs.GetFloat("MusicVolume");
+        SoundManager.globalReference.soundEffectVolume = PlayerPrefs.GetFloat("SoundEffectVolume");
+        SoundManager.globalReference.dialogueVolume = PlayerPrefs.GetFloat("DialogueVolume");
+        SoundManager.globalReference.globalVolume = PlayerPrefs.GetFloat("GlobalVolume");
+
+        if(PlayerPrefs.GetInt("MusicMuted") == 1)
+        {
+            SoundManager.globalReference.muteMusic = true;
+        }
+        else
+        {
+            SoundManager.globalReference.muteMusic = false;
+        }
+
+        if(PlayerPrefs.GetInt("SoundEffectMuted") == 1)
+        {
+            SoundManager.globalReference.muteSoundEffects = true;
+        }
+        else
+        {
+            SoundManager.globalReference.muteSoundEffects = false;
+        }
+
+        if(PlayerPrefs.GetInt("DialogueMuted") == 1)
+        {
+            SoundManager.globalReference.muteDialogue = true;
+        }
+        else
+        {
+            SoundManager.globalReference.muteDialogue = false;
+        }
+
+        if(PlayerPrefs.GetInt("MuteAll") == 1)
+        {
+            SoundManager.globalReference.muteAll = true;
+        }
+        else
+        {
+            SoundManager.globalReference.muteAll = false;
+        }
+
+        switch(PlayerPrefs.GetInt("CurrentSoundProfile"))
+        {
+            case 0:
+                SoundManager.globalReference.currentSoundProfile = SoundProfile.ComputerSpeakers;
+                break;
+            case 1:
+                SoundManager.globalReference.currentSoundProfile = SoundProfile.Headphones;
+                break;
+            case 2:
+                SoundManager.globalReference.currentSoundProfile = SoundProfile.RoomSpeakers;
+                break;
         }
     }
 
@@ -200,4 +334,26 @@ public class SaveLoadManager : MonoBehaviour
         CreateTileGrid.globalReference.cityTiles = loadedCityTiles;
         CreateTileGrid.globalReference.dungeonTiles = loadedDungeonTiles;
     }
+    
+
+    //Function called externally to save player progress
+    public void SavePlayerProgress()
+    {
+
+    }
+}
+
+//Class used in SaveLoadManager.SavePlayerProgress and LoadPlayerProgress
+[System.Serializable]
+public class PlayerProgress
+{
+    //Variables from GameData.cs
+    public GameData.gameDifficulty difficulty = GameData.gameDifficulty.Normal;
+    public bool allowNewUnlockables = true;
+    public string saveFolder = "";
+    public string seed = "";
+
+    //Variables from TimePanelUI.cs
+    public int daysTaken = 0;
+    public int timeOfDay = 0;
 }

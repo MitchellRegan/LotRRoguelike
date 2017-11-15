@@ -9,6 +9,7 @@ public class GameData : MonoBehaviour
     public static GameData globalReference;
 
     //Public enum that lets us know what difficulty the player has set the game to
+    [System.Serializable]
     public enum gameDifficulty { Easy, Normal, Hard };
     public gameDifficulty currentDifficulty = gameDifficulty.Normal;
 
@@ -53,6 +54,14 @@ public class GameData : MonoBehaviour
         {
             globalReference = this;
         }
+    }
+
+
+    //Function called the first frame that this object is alive
+    private void Start()
+    {
+        //Loading in the player preferences
+        SaveLoadManager.globalReference.LoadPlayerPreferences();
     }
 
 
@@ -160,6 +169,26 @@ public class GameData : MonoBehaviour
 
         //Telling the map generator to create a new level instead of loading one from a save
         this.loadType = levelLoadType.GenerateNewLevel;
+
+        //Transitioning to the gameplay level
+        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+    }
+
+
+    //Function called from the MainMenu scene to continue the most recent save
+    public void ContinueGame()
+    {
+        //If the most recent save doesn't exist, we're trying to load settings that don't exist
+        if (!PlayerPrefs.HasKey("MostRecentSave") || !System.IO.Directory.Exists(Application.persistentDataPath + PlayerPrefs.GetString("MostRecentSave")))
+        {
+            return;
+        }
+
+        //Loading the folder name for the most recent save so we can "Continue"
+        this.saveFolder = PlayerPrefs.GetString("MostRecentSave");
+
+        //Telling the map generator to load our existing level
+        this.loadType = levelLoadType.LoadLevel;
 
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
