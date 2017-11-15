@@ -78,9 +78,6 @@ public class SaveLoadManager : MonoBehaviour
     //Function called externally to save player preferences
     public void SavePlayerPreferences()
     {
-        //Saving the current save folder name so we know which game was played last. Used for "Continuing"
-        PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
-
         //Saving audio settings from SoundManager.cs
         PlayerPrefs.SetFloat("MusicVolume", SoundManager.globalReference.musicVolume);
         PlayerPrefs.SetFloat("SoundEffectVolume", SoundManager.globalReference.soundEffectVolume);
@@ -145,15 +142,6 @@ public class SaveLoadManager : MonoBehaviour
     //Function called externally to load player preferences
     public void LoadPlayerPreferences()
     {
-        //If the most recent save doesn't exist, we're trying to load settings that don't exist
-        if(!PlayerPrefs.HasKey("MostRecentSave"))
-        {
-            return;
-        }
-
-        //NOT loading the most recent save folder name just in case the player starts a new game. If they continue,
-        //the MostRecentSave preference is loaded in GameData.ContinueGame
-
         //Loading audio settings and setting them in SoundManager.cs
         SoundManager.globalReference.musicVolume = PlayerPrefs.GetFloat("MusicVolume");
         SoundManager.globalReference.soundEffectVolume = PlayerPrefs.GetFloat("SoundEffectVolume");

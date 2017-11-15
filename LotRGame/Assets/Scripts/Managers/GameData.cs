@@ -170,6 +170,10 @@ public class GameData : MonoBehaviour
         //Telling the map generator to create a new level instead of loading one from a save
         this.loadType = levelLoadType.GenerateNewLevel;
 
+        //Saving the current save folder name so we know which game was played last. Used for "Continuing"
+        PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
+
+
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
     }
@@ -179,7 +183,7 @@ public class GameData : MonoBehaviour
     public void ContinueGame()
     {
         //If the most recent save doesn't exist, we're trying to load settings that don't exist
-        if (!PlayerPrefs.HasKey("MostRecentSave") || !System.IO.Directory.Exists(Application.persistentDataPath + PlayerPrefs.GetString("MostRecentSave")))
+        if (!PlayerPrefs.HasKey("MostRecentSave") || PlayerPrefs.GetString("MostRecentSave") == "" || !System.IO.Directory.Exists(Application.persistentDataPath + PlayerPrefs.GetString("MostRecentSave")))
         {
             return;
         }
