@@ -362,20 +362,172 @@ public class SaveLoadManager : MonoBehaviour
     }
     
 
-    //Function called externally to save player progress
-    public void SavePlayerProgress(string folderName_)
+    //Function called externally to save player progress. Called from the pause menu in GamePlay scene, and CreateTileGrid.cs in Start
+    public void SavePlayerProgress()
     {
         //Making sure the save folder exists
-        this.CheckSaveDirectory(folderName_);
-
+        this.CheckSaveDirectory(GameData.globalReference.saveFolder);
+        
         //Creating a new PlayerProgress class that we'll save
         PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, CharacterManager.globalReference);
-
         //Serializing the current progress
-        string jsonPlayerProgress = JsonConvert.SerializeObject(currentProgress, Formatting.None, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-
+        string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
-        File.WriteAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt", jsonPlayerProgress);
+        File.WriteAllText(Application.persistentDataPath + GameData.globalReference.saveFolder + "/PlayerProgress.txt", jsonPlayerProgress);
+    }
+
+
+    //Function called externally to load player progress. Called from CreateTileGrid.cs on Start
+    public void LoadPlayerProgress(string folderName_)
+    {
+        //If the folder directory doesn't exist
+        if (!Directory.Exists(Application.persistentDataPath + folderName_))
+        {
+            //We throw an exception because the folder that's supposed to hold the TileGrid.txt file doesn't exist
+            throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The folder directory given does not exist!");
+        }
+        //If the folder exists but the file doesn't
+        else if (!File.Exists(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt"))
+        {
+            //We throw an exception because the file that we're supposed to load doesn't exist
+            throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The PlayerProgress.txt file for this save does not exist!");
+        }
+
+
+        //Getting all of the string data from the TileGrid.txt file
+        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt");
+
+        //De-serializing the player progress from the text file
+        PlayerProgress loadedProgress = JsonUtility.FromJson(fileData, typeof(PlayerProgress)) as PlayerProgress;
+
+        //Setting the GameData.cs variables
+        GameData.globalReference.currentDifficulty = loadedProgress.difficulty;
+        GameData.globalReference.allowNewUnlockables = loadedProgress.allowNewUnlockables;
+        GameData.globalReference.saveFolder = loadedProgress.folderName;
+        GameData.globalReference.GetComponent<RandomSeedGenerator>().seed = loadedProgress.seed;
+
+        //Setting the TimePanelUI.cs variables
+        TimePanelUI.globalReference.daysTaken = loadedProgress.daysTaken;
+        TimePanelUI.globalReference.timeOfDay = loadedProgress.timeOfDay;
+
+        //Setting the PartyGroup.cs static references
+        if (loadedProgress.partyGroup1 != null)
+        {
+            //Creating a new PartyGroup instance
+            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
+            PartyGroup partyGroup1 = newPartyObj.GetComponent<PartyGroup>();
+
+            //Setting the party variables
+            partyGroup1.groupIndex = loadedProgress.partyGroup1.groupIndex;
+            partyGroup1.combatDistance = loadedProgress.partyGroup1.combatDist;
+            partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(loadedProgress.partyGroup1.tileLocation);
+
+            //Looping through all of the character save data for this party group
+            partyGroup1.charactersInParty = new List<Character>();
+            for(int c = 0; c < loadedProgress.partyGroup1.partyCharacters.Count; ++c)
+            {
+                //If the current character index isn't null, we make a new character instance
+                if(loadedProgress.partyGroup1.partyCharacters[c] != null)
+                {
+                    //Creating a new character instance
+                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
+                    Character newCharacter = newCharacterObj.GetComponent<Character>();
+
+                    //Passing the character save data to the character instance to set all of the component variables
+                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup1.partyCharacters[c]);
+
+                    //Adding the new character to our new party group
+                    partyGroup1.AddCharacterToGroup(newCharacter);
+                }
+                //If the current character index is null, we leave the gap in the list
+                else
+                {
+                    partyGroup1.charactersInParty.Add(null);
+                }
+            }
+
+            //Setting the static party group reference
+            PartyGroup.group1 = partyGroup1;
+        }
+        if (loadedProgress.partyGroup2 != null)
+        {
+            //Creating a new PartyGroup instance
+            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
+            PartyGroup partyGroup2 = newPartyObj.GetComponent<PartyGroup>();
+
+            //Setting the party variables
+            partyGroup2.groupIndex = loadedProgress.partyGroup2.groupIndex;
+            partyGroup2.combatDistance = loadedProgress.partyGroup2.combatDist;
+            partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(loadedProgress.partyGroup2.tileLocation);
+
+            //Looping through all of the character save data for this party group
+            partyGroup2.charactersInParty = new List<Character>();
+            for (int c = 0; c < loadedProgress.partyGroup2.partyCharacters.Count; ++c)
+            {
+                //If the current character index isn't null, we make a new character instance
+                if (loadedProgress.partyGroup2.partyCharacters[c] != null)
+                {
+                    //Creating a new character instance
+                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
+                    Character newCharacter = newCharacterObj.GetComponent<Character>();
+
+                    //Passing the character save data to the character instance to set all of the component variables
+                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup2.partyCharacters[c]);
+
+                    //Adding the new character to our new party group
+                    partyGroup2.AddCharacterToGroup(newCharacter);
+                }
+                //If the current character index is null, we leave the gap in the list
+                else
+                {
+                    partyGroup2.charactersInParty.Add(null);
+                }
+            }
+
+            //Setting the static party group reference
+            PartyGroup.group2 = partyGroup2;
+        }
+        if (loadedProgress.partyGroup3 != null)
+        {
+            //Creating a new PartyGroup instance
+            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
+            PartyGroup partyGroup3 = newPartyObj.GetComponent<PartyGroup>();
+
+            //Setting the party variables
+            partyGroup3.groupIndex = loadedProgress.partyGroup3.groupIndex;
+            partyGroup3.combatDistance = loadedProgress.partyGroup3.combatDist;
+            partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(loadedProgress.partyGroup3.tileLocation);
+
+            //Looping through all of the character save data for this party group
+            partyGroup3.charactersInParty = new List<Character>();
+            for (int c = 0; c < loadedProgress.partyGroup3.partyCharacters.Count; ++c)
+            {
+                //If the current character index isn't null, we make a new character instance
+                if (loadedProgress.partyGroup3.partyCharacters[c] != null)
+                {
+                    //Creating a new character instance
+                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
+                    Character newCharacter = newCharacterObj.GetComponent<Character>();
+
+                    //Passing the character save data to the character instance to set all of the component variables
+                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup3.partyCharacters[c]);
+
+                    //Adding the new character to our new party group
+                    partyGroup3.AddCharacterToGroup(newCharacter);
+                }
+                //If the current character index is null, we leave the gap in the list
+                else
+                {
+                    partyGroup3.charactersInParty.Add(null);
+                }
+            }
+
+            //Setting the static party group reference
+            PartyGroup.group3 = partyGroup3;
+        }
+
+        //Setting the dead characters from CharacterManager.cs
+        CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
     }
 }
 

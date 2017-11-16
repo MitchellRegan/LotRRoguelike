@@ -61,6 +61,14 @@ public class Character : MonoBehaviour
         this.charActionList = this.GetComponent<ActionList>();
         this.charSprites = this.GetComponent<CharacterSprites>();
     }
+
+
+    //Function called externally from SaveLoadManager.cs to load this character's component data
+    public void LoadCharacterFromSave(CharacterSaveData saveData_)
+    {
+        .//Need to go through all of the CharacterSaveData and set component variables
+        //Since the CharacterSaveData probably didn't serialize completely, we'll probably need a function in Character.cs to handle all of it
+    }
 }
 
 //Class used in Character.cs and SaveLoadManager.cs to store all serialized character data
@@ -74,17 +82,17 @@ public class CharacterSaveData
     public RaceTypes ourRaceTypes;
 
     //Variables in Inventory.cs
-    public GameObject helmObj;
-    public GameObject chestObj;
-    public GameObject legObj;
-    public GameObject gloveObj;
-    public GameObject shoeObj;
-    public GameObject cloakObj;
-    public GameObject necklaceObj;
-    public GameObject ringObj;
+    public GameObject helmObj = null;
+    public GameObject chestObj = null;
+    public GameObject legObj = null;
+    public GameObject gloveObj = null;
+    public GameObject shoeObj = null;
+    public GameObject cloakObj = null;
+    public GameObject necklaceObj = null;
+    public GameObject ringObj = null;
 
-    public GameObject leftHandObj;
-    public GameObject rightHandObj;
+    public GameObject leftHandObj = null;
+    public GameObject rightHandObj = null;
 
     public List<GameObject> inventorySlots;
 
@@ -118,17 +126,47 @@ public class CharacterSaveData
         this.ourSprites = characterToSave_.charSprites.allSprites;
 
         //Setting all of the equipped object references
-        this.helmObj = characterToSave_.charInventory.helm.gameObject;
-        this.chestObj = characterToSave_.charInventory.chestPiece.gameObject;
-        this.legObj = characterToSave_.charInventory.leggings.gameObject;
-        this.gloveObj = characterToSave_.charInventory.gloves.gameObject;
-        this.shoeObj = characterToSave_.charInventory.shoes.gameObject;
-        this.cloakObj = characterToSave_.charInventory.cloak.gameObject;
-        this.necklaceObj = characterToSave_.charInventory.necklace.gameObject;
-        this.ringObj = characterToSave_.charInventory.ring.gameObject;
+        if (characterToSave_.charInventory.helm != null)
+        {
+            this.helmObj = characterToSave_.charInventory.helm.gameObject;
+        }
+        if (characterToSave_.charInventory.chestPiece != null)
+        {
+            this.chestObj = characterToSave_.charInventory.chestPiece.gameObject;
+        }
+        if (characterToSave_.charInventory.leggings != null)
+        {
+            this.legObj = characterToSave_.charInventory.leggings.gameObject;
+        }
+        if (characterToSave_.charInventory.gloves != null)
+        {
+            this.gloveObj = characterToSave_.charInventory.gloves.gameObject;
+        }
+        if (characterToSave_.charInventory.shoes != null)
+        {
+            this.shoeObj = characterToSave_.charInventory.shoes.gameObject;
+        }
+        if (characterToSave_.charInventory.cloak != null)
+        {
+            this.cloakObj = characterToSave_.charInventory.cloak.gameObject;
+        }
+        if (characterToSave_.charInventory.necklace != null)
+        {
+            this.necklaceObj = characterToSave_.charInventory.necklace.gameObject;
+        }
+        if (characterToSave_.charInventory.ring != null)
+        {
+            this.ringObj = characterToSave_.charInventory.ring.gameObject;
+        }
 
-        this.leftHandObj = characterToSave_.charInventory.leftHand.gameObject;
-        this.rightHandObj = characterToSave_.charInventory.rightHand.gameObject;
+        if (characterToSave_.charInventory.leftHand != null)
+        {
+            this.leftHandObj = characterToSave_.charInventory.leftHand.gameObject;
+        }
+        if (characterToSave_.charInventory.rightHand != null)
+        {
+            this.rightHandObj = characterToSave_.charInventory.rightHand.gameObject;
+        }
 
         //Looping through all of the character inventory items to save their object references
         this.inventorySlots = new List<GameObject>();

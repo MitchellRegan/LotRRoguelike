@@ -147,6 +147,25 @@ public class CreateTileGrid : MonoBehaviour
     }
 
 
+    //Function called the first frame this object is alive
+    private void Start()
+    {
+        //If we just created a new game, we need to save player progress immediately
+        if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
+        {
+            //Saving the current party progress
+            SaveLoadManager.globalReference.SavePlayerProgress();
+            Debug.Log("Made it after player progress");
+        }
+        //If we just loaded a game save, we load our player progress
+        else if(GameData.globalReference.loadType == GameData.levelLoadType.LoadLevel)
+        {
+            //Loading the party progress
+            SaveLoadManager.globalReference.LoadPlayerProgress(GameData.globalReference.saveFolder);
+        }
+    }
+
+
     //Public function called from awake. Creates the correct map based on the game difficulty
     public void StartMapCreation()
     {
