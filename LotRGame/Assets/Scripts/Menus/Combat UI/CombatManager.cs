@@ -252,6 +252,7 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called externally from LandTile.cs to initiate combat
+    [System.Serializable]
     public enum GroupCombatDistance { Far, Medium, Close };
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ActionList : MonoBehaviour
 {
     //The list of combat actions that this character has by default
@@ -9,21 +10,27 @@ public class ActionList : MonoBehaviour
 
     //The full list of standard actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> standardActions;
 
     //The full list of secondary actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> secondaryActions;
 
     //The full list of quick actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> quickActions;
 
     //The full list of full-round actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> fullRoundActions;
 
     //The list of all spell actions this character can cast
+    [HideInInspector]
+    [System.NonSerialized]
     public List<SpellAction> allSpellActions;
 
     //Dictionary for all spells that are recharging and how many hours are remaining for until they're ready

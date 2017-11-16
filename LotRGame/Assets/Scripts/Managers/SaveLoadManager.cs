@@ -363,9 +363,19 @@ public class SaveLoadManager : MonoBehaviour
     
 
     //Function called externally to save player progress
-    public void SavePlayerProgress()
+    public void SavePlayerProgress(string folderName_)
     {
+        //Making sure the save folder exists
+        this.CheckSaveDirectory(folderName_);
 
+        //Creating a new PlayerProgress class that we'll save
+        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, CharacterManager.globalReference);
+
+        //Serializing the current progress
+        string jsonPlayerProgress = JsonConvert.SerializeObject(currentProgress, Formatting.None, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+
+        //Writing the JSON progress data to a new text file in the given folder's directory
+        File.WriteAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt", jsonPlayerProgress);
     }
 }
 
@@ -376,10 +386,54 @@ public class PlayerProgress
     //Variables from GameData.cs
     public GameData.gameDifficulty difficulty = GameData.gameDifficulty.Normal;
     public bool allowNewUnlockables = true;
-    public string saveFolder = "";
+    public string folderName = "";
     public string seed = "";
 
     //Variables from TimePanelUI.cs
     public int daysTaken = 0;
     public int timeOfDay = 0;
+
+    //Variables for the PartyGroup.cs
+    public PartySaveData partyGroup1 = null;
+    public PartySaveData partyGroup2 = null;
+    public PartySaveData partyGroup3 = null;
+
+    //Variable from CharacterManager.cs
+    public List<DeadCharacterInfo> deadCharacters;
+
+
+    //Constructor function for this class
+    public PlayerProgress(GameData gameData_, TimePanelUI timePanel_, CharacterManager charManager_)
+    {
+        //Setting the GameData.cs variables
+        this.difficulty = gameData_.currentDifficulty;
+        this.allowNewUnlockables = gameData_.allowNewUnlockables;
+        this.folderName = gameData_.saveFolder;
+        this.seed = gameData_.GetComponent<RandomSeedGenerator>().seed;
+
+        //Setting the TimePanelUI.cs variables
+        this.daysTaken = timePanel_.daysTaken;
+        this.timeOfDay = timePanel_.timeOfDay;
+
+        //Setting the PartyGroup.cs variables
+        if (PartyGroup.group1 != null)
+        {
+            this.partyGroup1 = new PartySaveData(PartyGroup.group1);
+        }
+        if(PartyGroup.group2 != null)
+        {
+            this.partyGroup2 = new PartySaveData(PartyGroup.group2);
+        }
+        if(PartyGroup.group3 != null)
+        {
+            this.partyGroup3 = new PartySaveData(PartyGroup.group3);
+        }
+
+        //Looping through all of the dead character info in CharacterManager.cs
+        this.deadCharacters = new List<DeadCharacterInfo>();
+        for(int d = 0; d < charManager_.deadCharacters.Count; ++d)
+        {
+            this.deadCharacters.Add(charManager_.deadCharacters[d]);
+        }
+    }
 }

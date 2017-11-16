@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
 public class MoveAction : Action
 {
     //Determines if this type of movement allows the player to move through/over obstacles

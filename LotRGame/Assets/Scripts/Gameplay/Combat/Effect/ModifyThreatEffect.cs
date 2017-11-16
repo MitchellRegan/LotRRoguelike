@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ModifyThreatEffect : Effect
 {
     //The amount of threat that's passed to the target enemy when triggered

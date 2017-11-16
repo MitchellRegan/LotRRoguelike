@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class AttackAction : Action
 {
     //The skill used for determining accuracy

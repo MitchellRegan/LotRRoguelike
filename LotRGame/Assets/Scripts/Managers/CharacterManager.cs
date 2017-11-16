@@ -24,7 +24,7 @@ public class CharacterManager : MonoBehaviour
 
     //The list of characters that have died in the current game
     [HideInInspector]
-    public List<Character> deadCharacters;
+    public List<DeadCharacterInfo> deadCharacters;
 
     //The list of all character object definitions that can be spawned based on sex and race
     public List<CharacterDefinition> listOfCharacterObjects;
@@ -50,6 +50,9 @@ public class CharacterManager : MonoBehaviour
         {
             this.playerParty.Add(null);
         }
+
+        //Initializing the list of dead characters
+        this.deadCharacters = new List<DeadCharacterInfo>();
     }
 
 
@@ -247,4 +250,14 @@ public class CharacterDefinition
     public Genders gender = Genders.Male;
     //The game object for the character that's spawned
     public GameObject characterObject;
+}
+
+
+//Class used in CharacterManager.cs to store information about a dead character
+[System.Serializable]
+public class DeadCharacterInfo
+{
+    public string firstName;
+    public string lastName;
+    public CharSpritePackage characterSprites;
 }

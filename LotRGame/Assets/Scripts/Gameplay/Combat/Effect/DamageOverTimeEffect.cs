@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class DamageOverTimeEffect : Effect
 {
     //What type of damage this damage counts as

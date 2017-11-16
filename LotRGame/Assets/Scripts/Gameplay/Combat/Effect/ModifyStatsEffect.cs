@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ModifyStatsEffect : Effect
 {
     //The range for the number of times this effects activates before it goes away

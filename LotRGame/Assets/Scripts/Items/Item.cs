@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Item : MonoBehaviour
 {
     //The ID that lets the inventory know when to stack items

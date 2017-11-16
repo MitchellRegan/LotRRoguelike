@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class HealOverTimeEffect : Effect
 {
     //What type of magic this damage counts as

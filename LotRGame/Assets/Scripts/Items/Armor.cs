@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Item))]
+[System.Serializable]
 public class Armor : MonoBehaviour
 {
     //Enum for different slots that armor can be worn

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Item))]
+[System.Serializable]
 public class Weapon : MonoBehaviour
 {
     //Enum for different types of weapons
