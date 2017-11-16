@@ -136,6 +136,16 @@ public class CreateTileGrid : MonoBehaviour
         {
             this.StartMapCreation();
         }
+        //If we're loading a previous game
+        else
+        {
+            //Loading the tile grid using the SaveLoadManager
+            SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
+            this.GenerateVisibleLand2(this.tileGrid[10][10]);
+            Debug.Log("Testing loading tile grid, generating visible land");
+            this.SetPlayerPartyPosition(this.tileGrid[10][10]);
+            Debug.Log("MOO?");
+        }
     }
 
 
@@ -940,7 +950,7 @@ public class CreateTileGrid : MonoBehaviour
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
 
         //playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
-        playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_);
+        playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_, false);
 
         //Looping through all of the children for the GameData object to get the created characters
         foreach(Character t in GameData.globalReference.transform.GetComponentsInChildren<Character>())
@@ -962,6 +972,7 @@ public class CreateTileGrid : MonoBehaviour
         
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
+        Debug.Log("Selected party group: " + CharacterManager.globalReference.selectedGroup);
 
         //Creating the test enemy and adding them to a tile next to the start tile
         int connectedTileIndex = 0;

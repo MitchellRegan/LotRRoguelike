@@ -59,6 +59,23 @@ public class SaveLoadManager : MonoBehaviour
         //adding a save folder path to the beginning of the given folder name
         checkedName = "/Zein/SaveFiles/" + checkedName;
 
+        //If there's already a save folder at the current directory, we need to modify it a bit
+        if(Directory.Exists(Application.persistentDataPath + checkedName))
+        {
+            //Looping until we have a numbered version of the checked name that doesn't exist
+            int saveNum = 2;
+            while(Directory.Exists(Application.persistentDataPath + checkedName + saveNum))
+            {
+                ++saveNum;
+            }
+
+            //Once we find a directory that doesn't exist, we put the number at the end of the checked name
+            checkedName = checkedName + saveNum;
+        }
+
+        //Creating the directory for the new save
+        this.CheckSaveDirectory(checkedName);
+
         return checkedName;
     }
 
@@ -297,6 +314,27 @@ public class SaveLoadManager : MonoBehaviour
 
             //Adding the new column of tiles to the tile grid
             loadedTileGrid.Add(newTileColumn);
+        }
+
+        //Looping through all of the tiles in the tile grid to set their connections
+        for(int tc = 0; tc < loadedTileGrid.Count; ++tc)
+        {
+            for(int tr = 0; tr < loadedTileGrid[0].Count; ++tr)
+            {
+                //Initializing the list of connected tiles for the current tile
+                loadedTileGrid[tc][tr].connectedTiles = new List<TileInfo>()
+                {
+                    null,null,null,null,null,null
+                };
+
+                //Looping through all of the tile connections for the given tile
+                for(int coord = 0; coord < loadedTileGrid[tc][tr].connectedTileCoordinates.Count; ++coord)
+                {
+                    int col = loadedTileGrid[tc][tr].connectedTileCoordinates[coord].col;
+                    int row = loadedTileGrid[tc][tr].connectedTileCoordinates[coord].row;
+                    loadedTileGrid[tc][tr].connectedTiles[coord] = loadedTileGrid[col][row];
+                }
+            }
         }
 
         //Getting the de-serialized list of TileInfo classes for the city tiles

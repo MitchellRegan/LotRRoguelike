@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Movement))]
+[System.Serializable]
 public class EnemyEncounter : MonoBehaviour
 {
     //The list of all enemies that are spawned when combat begins

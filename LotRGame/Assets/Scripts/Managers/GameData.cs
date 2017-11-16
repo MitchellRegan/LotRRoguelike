@@ -173,7 +173,6 @@ public class GameData : MonoBehaviour
         //Saving the current save folder name so we know which game was played last. Used for "Continuing"
         PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
 
-
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
     }
@@ -183,8 +182,19 @@ public class GameData : MonoBehaviour
     public void ContinueGame()
     {
         //If the most recent save doesn't exist, we're trying to load settings that don't exist
-        if (!PlayerPrefs.HasKey("MostRecentSave") || PlayerPrefs.GetString("MostRecentSave") == "" || !System.IO.Directory.Exists(Application.persistentDataPath + PlayerPrefs.GetString("MostRecentSave")))
+        if (!PlayerPrefs.HasKey("MostRecentSave"))
         {
+            Debug.Log("ContinueGame, MostRecentSave doesn't exist");
+            return;
+        }
+        else if(PlayerPrefs.GetString("MostRecentSave") == "")
+        {
+            Debug.Log("ContinueGame, MostRecentSave is empty");
+            return;
+        }
+        else if(!System.IO.Directory.Exists(Application.persistentDataPath + PlayerPrefs.GetString("MostRecentSave")))
+        {
+            Debug.Log("ContinueGame, MostRecentSave folder directory doesn't exist");
             return;
         }
 

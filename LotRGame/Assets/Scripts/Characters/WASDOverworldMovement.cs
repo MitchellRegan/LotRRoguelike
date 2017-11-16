@@ -27,7 +27,7 @@ public class WASDOverworldMovement : MonoBehaviour
 
 
     //Function called externally to set the tile that this character is on
-    public void SetCurrentTile(TileInfo currentTile_)
+    public void SetCurrentTile(TileInfo currentTile_, bool rollForEncounter_ = true)
     {
         //Leaving the previous tile
         if (this.currentTile != null)
@@ -37,7 +37,7 @@ public class WASDOverworldMovement : MonoBehaviour
 
         //Setting the current tile
         this.currentTile = currentTile_;
-        this.currentTile.AddObjectToThisTile(this.gameObject);
+        this.currentTile.AddObjectToThisTile(this.gameObject, rollForEncounter_);
 
         //Resetting the travel times and clearing the tile to travel to
         this.currentTravelTime = 0;

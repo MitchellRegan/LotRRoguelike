@@ -156,7 +156,7 @@ public class TileInfo
 
 
     //Function called from Movement.SetCurrentTile to indicate that an object is occupying this tile
-    public void AddObjectToThisTile(GameObject objectToAdd_)
+    public void AddObjectToThisTile(GameObject objectToAdd_, bool rollForEncounter_ = true)
     {
         //Making sure we aren't adding a character more than once
         if (!this.objectsOnThisTile.Contains(objectToAdd_))
@@ -210,9 +210,12 @@ public class TileInfo
                         return;
                     }
                 }
-                
+
                 //If we made it this far, there wasn't an enemy encounter on the tile, so we need to check for an encounter
-                this.RollForRandomEncounter();
+                if (rollForEncounter_)
+                {
+                    this.RollForRandomEncounter();
+                }
             }
         }
     }
