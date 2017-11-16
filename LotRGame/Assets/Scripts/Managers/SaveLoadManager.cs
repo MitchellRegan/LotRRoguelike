@@ -392,36 +392,46 @@ public class SaveLoadManager : MonoBehaviour
             //We throw an exception because the file that we're supposed to load doesn't exist
             throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The PlayerProgress.txt file for this save does not exist!");
         }
-
+        Debug.Log("LoadPlayerProgress 1");
 
         //Getting all of the string data from the TileGrid.txt file
         string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt");
 
+        Debug.Log("LoadPlayerProgress 2");
         //De-serializing the player progress from the text file
         PlayerProgress loadedProgress = JsonUtility.FromJson(fileData, typeof(PlayerProgress)) as PlayerProgress;
 
+        Debug.Log("LoadPlayerProgress 3");
         //Setting the GameData.cs variables
         GameData.globalReference.currentDifficulty = loadedProgress.difficulty;
         GameData.globalReference.allowNewUnlockables = loadedProgress.allowNewUnlockables;
         GameData.globalReference.saveFolder = loadedProgress.folderName;
         GameData.globalReference.GetComponent<RandomSeedGenerator>().seed = loadedProgress.seed;
 
+        Debug.Log("LoadPlayerProgress 4");
         //Setting the TimePanelUI.cs variables
         TimePanelUI.globalReference.daysTaken = loadedProgress.daysTaken;
         TimePanelUI.globalReference.timeOfDay = loadedProgress.timeOfDay;
 
+        Debug.Log("LoadPlayerProgress 5");
         //Setting the PartyGroup.cs static references
         if (loadedProgress.partyGroup1 != null)
         {
+            Debug.Log("LoadPlayerProgress 5.1");
             //Creating a new PartyGroup instance
             GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
             PartyGroup partyGroup1 = newPartyObj.GetComponent<PartyGroup>();
 
+            Debug.Log("LoadPlayerProgress 5.2");
             //Setting the party variables
             partyGroup1.groupIndex = loadedProgress.partyGroup1.groupIndex;
             partyGroup1.combatDistance = loadedProgress.partyGroup1.combatDist;
-            partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(loadedProgress.partyGroup1.tileLocation);
+            Debug.Log("LoadPlayerProgress 5.21");
+            TileInfo partyLocation = loadedProgress.partyGroup1.tileLocation;
+            Debug.Log("LoadPlayerProgress 5.22");
+            partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
+            Debug.Log("LoadPlayerProgress 5.3");
             //Looping through all of the character save data for this party group
             partyGroup1.charactersInParty = new List<Character>();
             for(int c = 0; c < loadedProgress.partyGroup1.partyCharacters.Count; ++c)
@@ -446,6 +456,7 @@ public class SaveLoadManager : MonoBehaviour
                 }
             }
 
+            Debug.Log("LoadPlayerProgress 5.4");
             //Setting the static party group reference
             PartyGroup.group1 = partyGroup1;
         }
@@ -458,7 +469,8 @@ public class SaveLoadManager : MonoBehaviour
             //Setting the party variables
             partyGroup2.groupIndex = loadedProgress.partyGroup2.groupIndex;
             partyGroup2.combatDistance = loadedProgress.partyGroup2.combatDist;
-            partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(loadedProgress.partyGroup2.tileLocation);
+            TileInfo partyLocation = loadedProgress.partyGroup2.tileLocation;
+            partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Looping through all of the character save data for this party group
             partyGroup2.charactersInParty = new List<Character>();
@@ -496,7 +508,8 @@ public class SaveLoadManager : MonoBehaviour
             //Setting the party variables
             partyGroup3.groupIndex = loadedProgress.partyGroup3.groupIndex;
             partyGroup3.combatDistance = loadedProgress.partyGroup3.combatDist;
-            partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(loadedProgress.partyGroup3.tileLocation);
+            TileInfo partyLocation = loadedProgress.partyGroup3.tileLocation;
+            partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Looping through all of the character save data for this party group
             partyGroup3.charactersInParty = new List<Character>();
@@ -526,8 +539,10 @@ public class SaveLoadManager : MonoBehaviour
             PartyGroup.group3 = partyGroup3;
         }
 
+        Debug.Log("LoadPlayerProgress 6");
         //Setting the dead characters from CharacterManager.cs
         CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
+        Debug.Log("LoadPlayerProgress 7");
     }
 }
 
