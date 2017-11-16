@@ -142,9 +142,7 @@ public class CreateTileGrid : MonoBehaviour
             //Loading the tile grid using the SaveLoadManager
             SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
             this.GenerateVisibleLand2(this.tileGrid[10][10]);
-            Debug.Log("Testing loading tile grid, generating visible land");
             this.SetPlayerPartyPosition(this.tileGrid[10][10]);
-            Debug.Log("MOO?");
         }
     }
 

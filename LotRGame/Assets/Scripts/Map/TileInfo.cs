@@ -58,7 +58,8 @@ public class TileInfo
     //The encounter chance for this tile
     private float randomEncounterChance = 0;
     //The list of encounters that can happen on this tile
-    private List<EncounterBlock> randomEncounterList;
+    [HideInInspector]
+    public List<EncounterBlock> randomEncounterList;
 
 
 
