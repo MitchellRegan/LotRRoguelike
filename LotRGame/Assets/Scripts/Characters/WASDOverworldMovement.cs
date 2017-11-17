@@ -49,7 +49,7 @@ public class WASDOverworldMovement : MonoBehaviour
         //If this movement script is attached to a player party group, the tile grid needs to update the visible tiles
         if (this.GetComponent<PartyGroup>())
         {
-            CreateTileGrid.globalReference.GenerateVisibleLand2(this.currentTile);
+            CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
         }
     }
 

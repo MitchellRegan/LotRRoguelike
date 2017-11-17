@@ -445,6 +445,13 @@ public class SaveLoadManager : MonoBehaviour
             }
             
             TileInfo partyLocation = loadedProgress.partyGroup1.tileLocation;
+            partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
+            for(int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
+            {
+                int col = partyLocation.connectedTileCoordinates[coord].col;
+                int row = partyLocation.connectedTileCoordinates[coord].row;
+                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
+            }
             partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
             
             //Setting the static party group reference
@@ -485,6 +492,13 @@ public class SaveLoadManager : MonoBehaviour
             }
 
             TileInfo partyLocation = loadedProgress.partyGroup2.tileLocation;
+            partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
+            for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
+            {
+                int col = partyLocation.connectedTileCoordinates[coord].col;
+                int row = partyLocation.connectedTileCoordinates[coord].row;
+                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
+            }
             partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Setting the static party group reference
@@ -525,6 +539,13 @@ public class SaveLoadManager : MonoBehaviour
             }
 
             TileInfo partyLocation = loadedProgress.partyGroup3.tileLocation;
+            partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
+            for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
+            {
+                int col = partyLocation.connectedTileCoordinates[coord].col;
+                int row = partyLocation.connectedTileCoordinates[coord].row;
+                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
+            }
             partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Setting the static party group reference

@@ -174,7 +174,8 @@ public class CreateTileGrid : MonoBehaviour
                 CharacterManager.globalReference.selectedGroup = PartyGroup.group3;
             }
 
-            this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
+            //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
+            CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
         }
     }
 
@@ -1251,8 +1252,9 @@ public class CreateTileGrid : MonoBehaviour
     
 
     //Function called externally from Movement.cs and from StartMapCreation. Spawns the nearest tiles around the player party
-    public void GenerateVisibleLand2(TileInfo currentTile_)
+    public void GenerateVisibleLand(TileInfo currentTile_)
     {
+        Debug.Log("Generate Visible Land Start. Range: " + this.visibilityRange);
         //Getting all of the tiles within view range of the current tile
         List<TileInfo> tilesInRange = PathfindingAlgorithms.FindLandTilesInRange(currentTile_, this.visibilityRange);
 
