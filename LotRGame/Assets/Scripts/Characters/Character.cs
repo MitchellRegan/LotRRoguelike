@@ -66,71 +66,87 @@ public class Character : MonoBehaviour
     //Function called externally from SaveLoadManager.cs to load this character's component data
     public void LoadCharacterFromSave(CharacterSaveData saveData_)
     {
-        Debug.Log("LoadCharacterFromSave 1");
         //Setting the Character.cs variables
         this.firstName = saveData_.firstName;
         this.lastName = saveData_.lastName;
         this.sex = saveData_.sex;
-
-        Debug.Log("LoadCharacterFromSave 2");
+        
         //Setting the RaceTypes.cs variables
         this.charRaceTypes.race = saveData_.race;
         this.charRaceTypes.subtypeList = saveData_.subtypeList;
-
-        Debug.Log("LoadCharacterFromSave 3");
+        
         //Setting all of the equipped items in Inventory.cs
         if (saveData_.helmObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.helmObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.helmObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.helm = itemObj.GetComponent<Armor>();
         }
         if (saveData_.chestObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.chestObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.chestObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.chestPiece = itemObj.GetComponent<Armor>();
         }
         if (saveData_.legObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.legObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.legObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.leggings = itemObj.GetComponent<Armor>();
         }
         if (saveData_.shoeObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.shoeObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.shoeObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.shoes = itemObj.GetComponent<Armor>();
         }
         if (saveData_.gloveObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.gloveObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.gloveObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.gloves = itemObj.GetComponent<Armor>();
         }
         if (saveData_.cloakObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.cloakObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.cloakObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.cloak = itemObj.GetComponent<Armor>();
         }
         if (saveData_.necklaceObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.necklaceObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.necklaceObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.necklace = itemObj.GetComponent<Armor>();
         }
         if (saveData_.ringObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.ringObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.ringObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.ring = itemObj.GetComponent<Armor>();
         }
         if(saveData_.leftHandObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.leftHandObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.leftHandObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.leftHand = itemObj.GetComponent<Weapon>();
         }
         if(saveData_.rightHandObj != "")
         {
-            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.rightHandObj, typeof(GameObject)) as GameObject);
+            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.rightHandObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.transform.SetParent(this.transform);
             this.charInventory.rightHand = itemObj.GetComponent<Weapon>();
         }
-
-        Debug.Log("LoadCharacterFromSave 4");
+        
         //Looping through all of the inventory slot objects in the save data
         this.charInventory.itemSlots = new List<Item>();
         for(int i = 0; i < saveData_.inventorySlots.Count; ++i)
@@ -143,12 +159,14 @@ public class Character : MonoBehaviour
             //If the current item isn't empty, we add it's item component to our inventory
             else
             {
-                GameObject itemObj = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(GameObject)) as GameObject;
+                GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+                GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+                itemObj.transform.SetParent(this.transform);
                 this.charInventory.itemSlots.Add(itemObj.GetComponent<Item>());
             }
         }
-
-        Debug.Log("LoadCharacterFromSave 5");
+        this.charInventory.FindTotalWeight();
+        
         //Setting the variables in Skill.cs
         this.charSkills.cooking = saveData_.cooking;
         this.charSkills.healing = saveData_.healing;
@@ -159,8 +177,7 @@ public class Character : MonoBehaviour
         this.charSkills.climbing = saveData_.climbing;
         this.charSkills.hiding = saveData_.hiding;
         this.charSkills.swimming = saveData_.swimming;
-
-        Debug.Log("LoadCharacterFromSave 6");
+        
         //Setting the variables in PhysicalState.cs
         this.charPhysState.maxHealth = saveData_.maxHP;
         this.charPhysState.currentHealth = saveData_.currentHP;
@@ -175,8 +192,7 @@ public class Character : MonoBehaviour
         this.charPhysState.currentSleep = saveData_.currentSleep;
         this.charPhysState.maxEnergy = saveData_.maxEnergy;
         this.charPhysState.currentEnergy = saveData_.currentEnergy;
-
-        Debug.Log("LoadCharacterFromSave 7");
+        
         //Setting the variables in CombatStats.cs
         this.charCombatStats.currentInitiativeSpeed = saveData_.currentInitiativeSpeed;
         this.charCombatStats.startingPositionCol = saveData_.startingCol;
@@ -198,8 +214,7 @@ public class Character : MonoBehaviour
         {
             this.charCombatStats.combatEffects.Add(JsonUtility.FromJson(saveData_.combatEffects[ce], typeof(Effect)) as Effect);
         }
-
-        Debug.Log("LoadCharacterFromSave 8");
+        
         //Setting the variables in ActionList.cs
         this.charActionList.defaultActions = new List<Action>();
         for(int da = 0; da < saveData_.defaultActions.Count; ++da)
@@ -213,11 +228,9 @@ public class Character : MonoBehaviour
         {
             this.charActionList.rechargingSpells.Add(JsonUtility.FromJson(saveData_.rechargingSpells[rs], typeof(SpellRecharge)) as SpellRecharge);
         }
-
-        Debug.Log("LoadCharacterFromSave 9");
+        
         //Setting the variables in CharacterSprites.cs
         this.charSprites.allSprites = saveData_.ourSprites;
-        Debug.Log("LoadCharacterFromSave 10");
     }
 }
 
@@ -380,44 +393,44 @@ public class CharacterSaveData
         //Setting all of the equipped object references
         if (characterToSave_.charInventory.helm != null)
         {
-            this.helmObj = JsonUtility.ToJson(characterToSave_.charInventory.helm.gameObject);
+            this.helmObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.helm.gameObject));
         }
         if (characterToSave_.charInventory.chestPiece != null)
         {
-            this.chestObj = JsonUtility.ToJson(characterToSave_.charInventory.chestPiece.gameObject);
+            this.chestObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.chestPiece.gameObject));
         }
         if (characterToSave_.charInventory.leggings != null)
         {
-            this.legObj = JsonUtility.ToJson(characterToSave_.charInventory.leggings.gameObject);
+            this.legObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.leggings.gameObject));
         }
         if (characterToSave_.charInventory.gloves != null)
         {
-            this.gloveObj = JsonUtility.ToJson(characterToSave_.charInventory.gloves.gameObject);
+            this.gloveObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.gloves.gameObject));
         }
         if (characterToSave_.charInventory.shoes != null)
         {
-            this.shoeObj = JsonUtility.ToJson(characterToSave_.charInventory.shoes.gameObject);
+            this.shoeObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.shoes.gameObject));
         }
         if (characterToSave_.charInventory.cloak != null)
         {
-            this.cloakObj = JsonUtility.ToJson(characterToSave_.charInventory.cloak.gameObject);
+            this.cloakObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.cloak.gameObject));
         }
         if (characterToSave_.charInventory.necklace != null)
         {
-            this.necklaceObj = JsonUtility.ToJson(characterToSave_.charInventory.necklace.gameObject);
+            this.necklaceObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.necklace.gameObject));
         }
         if (characterToSave_.charInventory.ring != null)
         {
-            this.ringObj = JsonUtility.ToJson(characterToSave_.charInventory.ring.gameObject);
+            this.ringObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.ring.gameObject));
         }
 
         if (characterToSave_.charInventory.leftHand != null)
         {
-            this.leftHandObj = JsonUtility.ToJson(characterToSave_.charInventory.leftHand.gameObject);
+            this.leftHandObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.leftHand.gameObject));
         }
         if (characterToSave_.charInventory.rightHand != null)
         {
-            this.rightHandObj = JsonUtility.ToJson(characterToSave_.charInventory.rightHand.gameObject);
+            this.rightHandObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.rightHand.gameObject));
         }
 
         //Looping through all of the character inventory items to save their object references
@@ -427,7 +440,7 @@ public class CharacterSaveData
             //Making sure the current inventory object isn't null
             if (characterToSave_.charInventory.itemSlots[i] != null)
             {
-                this.inventorySlots.Add(JsonUtility.ToJson(characterToSave_.charInventory.itemSlots[i].gameObject));
+                this.inventorySlots.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.itemSlots[i].gameObject)));
             }
             //If the current item is null, we set a null slot to keep the empty space
             else

@@ -139,7 +139,6 @@ public class CreateTileGrid : MonoBehaviour
         //If we're loading a previous game
         else
         {
-            Debug.Log("CreateTileGrid.Awake, before loading tiles");
             //Loading the tile grid using the SaveLoadManager
             SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
         }
@@ -154,12 +153,10 @@ public class CreateTileGrid : MonoBehaviour
         {
             //Saving the current party progress
             SaveLoadManager.globalReference.SavePlayerProgress();
-            Debug.Log("Made it after player progress");
         }
         //If we just loaded a game save, we load our player progress
         else if(GameData.globalReference.loadType == GameData.levelLoadType.LoadLevel)
         {
-            Debug.Log("CreateTileGrid.Start, before loading progress");
             //Loading the party progress
             SaveLoadManager.globalReference.LoadPlayerProgress(GameData.globalReference.saveFolder);
 
