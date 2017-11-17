@@ -269,7 +269,6 @@ public class SaveLoadManager : MonoBehaviour
 
         //Writing the JSON map data to a new text file in the given folder's directory
         File.WriteAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt", jsonMapData);
-        Debug.Log(Application.persistentDataPath + folderName_ + "/TileGrid.txt");
     }
 
 

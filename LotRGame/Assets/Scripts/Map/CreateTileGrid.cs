@@ -1003,7 +1003,6 @@ public class CreateTileGrid : MonoBehaviour
         
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
-        Debug.Log("Selected party group: " + CharacterManager.globalReference.selectedGroup);
 
         //Creating the test enemy and adding them to a tile next to the start tile
         int connectedTileIndex = 0;
@@ -1254,7 +1253,6 @@ public class CreateTileGrid : MonoBehaviour
     //Function called externally from Movement.cs and from StartMapCreation. Spawns the nearest tiles around the player party
     public void GenerateVisibleLand(TileInfo currentTile_)
     {
-        Debug.Log("Generate Visible Land Start. Range: " + this.visibilityRange);
         //Getting all of the tiles within view range of the current tile
         List<TileInfo> tilesInRange = PathfindingAlgorithms.FindLandTilesInRange(currentTile_, this.visibilityRange);
 
