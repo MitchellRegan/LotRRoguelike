@@ -68,56 +68,66 @@ public class Character : MonoBehaviour
     {
         Debug.Log("LoadCharacterFromSave 1");
         //Setting the Character.cs variables
-        this.firstName = saveData_.ourCharacter.firstName;
-        this.lastName = saveData_.ourCharacter.lastName;
-        this.sex = saveData_.ourCharacter.sex;
+        this.firstName = saveData_.firstName;
+        this.lastName = saveData_.lastName;
+        this.sex = saveData_.sex;
 
         Debug.Log("LoadCharacterFromSave 2");
         //Setting the RaceTypes.cs variables
-        this.charRaceTypes.race = saveData_.ourRaceTypes.race;
-        this.charRaceTypes.subtypeList = saveData_.ourRaceTypes.subtypeList;
+        this.charRaceTypes.race = saveData_.race;
+        this.charRaceTypes.subtypeList = saveData_.subtypeList;
 
         Debug.Log("LoadCharacterFromSave 3");
         //Setting all of the equipped items in Inventory.cs
-        if (saveData_.helmObj != null)
+        if (saveData_.helmObj != "")
         {
-            this.charInventory.helm = saveData_.helmObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.helmObj, typeof(GameObject)) as GameObject);
+            this.charInventory.helm = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.chestObj != null)
+        if (saveData_.chestObj != "")
         {
-            this.charInventory.chestPiece = saveData_.chestObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.chestObj, typeof(GameObject)) as GameObject);
+            this.charInventory.chestPiece = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.legObj != null)
+        if (saveData_.legObj != "")
         {
-            this.charInventory.leggings = saveData_.legObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.legObj, typeof(GameObject)) as GameObject);
+            this.charInventory.leggings = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.shoeObj != null)
+        if (saveData_.shoeObj != "")
         {
-            this.charInventory.shoes = saveData_.shoeObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.shoeObj, typeof(GameObject)) as GameObject);
+            this.charInventory.shoes = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.gloveObj != null)
+        if (saveData_.gloveObj != "")
         {
-            this.charInventory.gloves = saveData_.gloveObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.gloveObj, typeof(GameObject)) as GameObject);
+            this.charInventory.gloves = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.cloakObj != null)
+        if (saveData_.cloakObj != "")
         {
-            this.charInventory.cloak = saveData_.cloakObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.cloakObj, typeof(GameObject)) as GameObject);
+            this.charInventory.cloak = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.necklaceObj != null)
+        if (saveData_.necklaceObj != "")
         {
-            this.charInventory.necklace = saveData_.necklaceObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.necklaceObj, typeof(GameObject)) as GameObject);
+            this.charInventory.necklace = itemObj.GetComponent<Armor>();
         }
-        if (saveData_.ringObj != null)
+        if (saveData_.ringObj != "")
         {
-            this.charInventory.ring = saveData_.ringObj.GetComponent<Armor>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.ringObj, typeof(GameObject)) as GameObject);
+            this.charInventory.ring = itemObj.GetComponent<Armor>();
         }
-        if(saveData_.leftHandObj != null)
+        if(saveData_.leftHandObj != "")
         {
-            this.charInventory.leftHand = saveData_.leftHandObj.GetComponent<Weapon>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.leftHandObj, typeof(GameObject)) as GameObject);
+            this.charInventory.leftHand = itemObj.GetComponent<Weapon>();
         }
-        if(saveData_.rightHandObj != null)
+        if(saveData_.rightHandObj != "")
         {
-            this.charInventory.rightHand = saveData_.rightHandObj.GetComponent<Weapon>();
+            GameObject itemObj = GameObject.Instantiate(JsonUtility.FromJson(saveData_.rightHandObj, typeof(GameObject)) as GameObject);
+            this.charInventory.rightHand = itemObj.GetComponent<Weapon>();
         }
 
         Debug.Log("LoadCharacterFromSave 4");
@@ -126,67 +136,83 @@ public class Character : MonoBehaviour
         for(int i = 0; i < saveData_.inventorySlots.Count; ++i)
         {
             //If the current item is emtpy, we add an empty slot
-            if(saveData_.inventorySlots[i] == null)
+            if(saveData_.inventorySlots[i] == "")
             {
                 this.charInventory.itemSlots.Add(null);
             }
             //If the current item isn't empty, we add it's item component to our inventory
             else
             {
-                this.charInventory.itemSlots.Add(saveData_.inventorySlots[i].GetComponent<Item>());
+                GameObject itemObj = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(GameObject)) as GameObject;
+                this.charInventory.itemSlots.Add(itemObj.GetComponent<Item>());
             }
         }
 
         Debug.Log("LoadCharacterFromSave 5");
         //Setting the variables in Skill.cs
-        this.charSkills.cooking = saveData_.ourSkills.cooking;
-        this.charSkills.healing = saveData_.ourSkills.healing;
-        this.charSkills.crafting = saveData_.ourSkills.crafting;
-        this.charSkills.foraging = saveData_.ourSkills.foraging;
-        this.charSkills.tracking = saveData_.ourSkills.tracking;
-        this.charSkills.fishing = saveData_.ourSkills.fishing;
-        this.charSkills.climbing = saveData_.ourSkills.climbing;
-        this.charSkills.hiding = saveData_.ourSkills.hiding;
-        this.charSkills.swimming = saveData_.ourSkills.swimming;
+        this.charSkills.cooking = saveData_.cooking;
+        this.charSkills.healing = saveData_.healing;
+        this.charSkills.crafting = saveData_.crafting;
+        this.charSkills.foraging = saveData_.foraging;
+        this.charSkills.tracking = saveData_.tracking;
+        this.charSkills.fishing = saveData_.fishing;
+        this.charSkills.climbing = saveData_.climbing;
+        this.charSkills.hiding = saveData_.hiding;
+        this.charSkills.swimming = saveData_.swimming;
 
         Debug.Log("LoadCharacterFromSave 6");
         //Setting the variables in PhysicalState.cs
-        this.charPhysState.maxHealth = saveData_.ourState.maxHealth;
-        this.charPhysState.currentHealth = saveData_.ourState.currentHealth;
-        this.charPhysState.requiresFood = saveData_.ourState.requiresFood;
-        this.charPhysState.maxFood = saveData_.ourState.maxFood;
-        this.charPhysState.currentFood = saveData_.ourState.currentFood;
-        this.charPhysState.requiresWater = saveData_.ourState.requiresWater;
-        this.charPhysState.maxWater = saveData_.ourState.maxWater;
-        this.charPhysState.currentWater = saveData_.ourState.currentWater;
-        this.charPhysState.requiresSleep = saveData_.ourState.requiresSleep;
-        this.charPhysState.maxSleep = saveData_.ourState.maxSleep;
-        this.charPhysState.currentSleep = saveData_.ourState.currentSleep;
-        this.charPhysState.maxEnergy = saveData_.ourState.maxEnergy;
-        this.charPhysState.currentEnergy = saveData_.ourState.currentEnergy;
+        this.charPhysState.maxHealth = saveData_.maxHP;
+        this.charPhysState.currentHealth = saveData_.currentHP;
+        this.charPhysState.requiresFood = saveData_.requireFood;
+        this.charPhysState.maxFood = saveData_.maxFood;
+        this.charPhysState.currentFood = saveData_.currentFood;
+        this.charPhysState.requiresWater = saveData_.requireWater;
+        this.charPhysState.maxWater = saveData_.maxWater;
+        this.charPhysState.currentWater = saveData_.currentWater;
+        this.charPhysState.requiresSleep = saveData_.requireSleep;
+        this.charPhysState.maxSleep = saveData_.maxSleep;
+        this.charPhysState.currentSleep = saveData_.currentSleep;
+        this.charPhysState.maxEnergy = saveData_.maxEnergy;
+        this.charPhysState.currentEnergy = saveData_.currentEnergy;
 
         Debug.Log("LoadCharacterFromSave 7");
         //Setting the variables in CombatStats.cs
-        this.charCombatStats.currentInitiativeSpeed = saveData_.ourCombatStats.currentInitiativeSpeed;
-        this.charCombatStats.startingPositionCol = saveData_.ourCombatStats.startingPositionCol;
-        this.charCombatStats.startingPositionRow = saveData_.ourCombatStats.startingPositionRow;
-        this.charCombatStats.evasion = saveData_.ourCombatStats.evasion;
-        this.charCombatStats.punching = saveData_.ourCombatStats.punching;
-        this.charCombatStats.daggers = saveData_.ourCombatStats.daggers;
-        this.charCombatStats.swords = saveData_.ourCombatStats.swords;
-        this.charCombatStats.axes = saveData_.ourCombatStats.axes;
-        this.charCombatStats.spears = saveData_.ourCombatStats.spears;
-        this.charCombatStats.bows = saveData_.ourCombatStats.bows;
-        this.charCombatStats.improvised = saveData_.ourCombatStats.improvised;
-        this.charCombatStats.holyMagic = saveData_.ourCombatStats.holyMagic;
-        this.charCombatStats.darkMagic = saveData_.ourCombatStats.darkMagic;
-        this.charCombatStats.natureMagic = saveData_.ourCombatStats.natureMagic;
-        this.charCombatStats.combatEffects = saveData_.ourCombatStats.combatEffects;
+        this.charCombatStats.currentInitiativeSpeed = saveData_.currentInitiativeSpeed;
+        this.charCombatStats.startingPositionCol = saveData_.startingCol;
+        this.charCombatStats.startingPositionRow = saveData_.startingRow;
+        this.charCombatStats.evasion = saveData_.evasion;
+        this.charCombatStats.punching = saveData_.punching;
+        this.charCombatStats.daggers = saveData_.daggers;
+        this.charCombatStats.swords = saveData_.swords;
+        this.charCombatStats.axes = saveData_.axes;
+        this.charCombatStats.spears = saveData_.spears;
+        this.charCombatStats.bows = saveData_.bows;
+        this.charCombatStats.improvised = saveData_.improvised;
+        this.charCombatStats.holyMagic = saveData_.holyMagic;
+        this.charCombatStats.darkMagic = saveData_.darkMagic;
+        this.charCombatStats.natureMagic = saveData_.natureMagic;
+
+        this.charCombatStats.combatEffects = new List<Effect>();
+        for (int ce = 0; ce < saveData_.combatEffects.Count; ++ce)
+        {
+            this.charCombatStats.combatEffects.Add(JsonUtility.FromJson(saveData_.combatEffects[ce], typeof(Effect)) as Effect);
+        }
 
         Debug.Log("LoadCharacterFromSave 8");
         //Setting the variables in ActionList.cs
-        this.charActionList.defaultActions = saveData_.ourActions.defaultActions;
-        this.charActionList.rechargingSpells = saveData_.ourActions.rechargingSpells;
+        this.charActionList.defaultActions = new List<Action>();
+        for(int da = 0; da < saveData_.defaultActions.Count; ++da)
+        {
+            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            GameObject actionPrefab = objWrapper.objToSave;
+            this.charActionList.defaultActions.Add(actionPrefab.GetComponent<Action>());
+        }
+        this.charActionList.rechargingSpells = new List<SpellRecharge>();
+        for (int rs = 0; rs < saveData_.rechargingSpells.Count; ++rs)
+        {
+            this.charActionList.rechargingSpells.Add(JsonUtility.FromJson(saveData_.rechargingSpells[rs], typeof(SpellRecharge)) as SpellRecharge);
+        }
 
         Debug.Log("LoadCharacterFromSave 9");
         //Setting the variables in CharacterSprites.cs
@@ -206,7 +232,7 @@ public class CharacterSaveData
 
     //Variables in RaceTypes.cs
     public RaceTypes.Races race;
-    public List<string> subtypeList;
+    public List<RaceTypes.Subtypes> subtypeList;
 
     //Variables in Inventory.cs
     public string helmObj = "";
@@ -235,8 +261,8 @@ public class CharacterSaveData
     public int swimming = 0;
 
     //Variables in PhysicalState.cs
-    public float maxHP = 0;
-    public float currentHP = 0;
+    public int maxHP = 0;
+    public int currentHP = 0;
     public float maxFood = 0;
     public float currentFood = 0;
     public float maxWater = 0;
@@ -284,11 +310,7 @@ public class CharacterSaveData
 
         //Setting variables from RaceTypes.cs
         this.race = characterToSave_.charRaceTypes.race;
-        this.subtypeList = new List<string>();
-        for(int st = 0; st < characterToSave_.charRaceTypes.subtypeList.Count; ++st)
-        {
-            this.subtypeList.Add(JsonUtility.ToJson(characterToSave_.charRaceTypes.subtypeList[st]));
-        }
+        this.subtypeList = characterToSave_.charRaceTypes.subtypeList;
 
         //Setting variables from Skills.cs
         this.cooking = characterToSave_.charSkills.cooking;
@@ -342,7 +364,8 @@ public class CharacterSaveData
         this.defaultActions = new List<string>();
         for(int da = 0; da < characterToSave_.charActionList.defaultActions.Count; ++da)
         {
-            this.defaultActions.Add(JsonUtility.ToJson(characterToSave_.charActionList.defaultActions[da]));
+            GameObjectSerializationWrapper objWrapper = new GameObjectSerializationWrapper(characterToSave_.charActionList.defaultActions[da].gameObject);
+            this.defaultActions.Add(JsonUtility.ToJson(objWrapper));
         }
 
         this.rechargingSpells = new List<string>();
@@ -412,5 +435,20 @@ public class CharacterSaveData
                 this.inventorySlots.Add("");
             }
         }
+    }
+}
+
+
+//Class used in Character.cs and SaveLoadManager.cs as a wrapper to store game object references for serialization
+[System.Serializable]
+public class GameObjectSerializationWrapper
+{
+    //Reference to the game object we're going to serialize
+    public GameObject objToSave;
+
+    //Constructor for this class
+    public GameObjectSerializationWrapper(GameObject obj_)
+    {
+        this.objToSave = obj_;
     }
 }

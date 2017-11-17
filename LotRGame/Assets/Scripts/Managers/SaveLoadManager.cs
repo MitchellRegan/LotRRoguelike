@@ -426,10 +426,6 @@ public class SaveLoadManager : MonoBehaviour
             //Setting the party variables
             partyGroup1.groupIndex = loadedProgress.partyGroup1.groupIndex;
             partyGroup1.combatDistance = loadedProgress.partyGroup1.combatDist;
-            Debug.Log("LoadPlayerProgress 5.21");
-            TileInfo partyLocation = loadedProgress.partyGroup1.tileLocation;
-            Debug.Log("LoadPlayerProgress 5.22");
-            partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             Debug.Log("LoadPlayerProgress 5.3");
             //Looping through all of the character save data for this party group
@@ -456,6 +452,11 @@ public class SaveLoadManager : MonoBehaviour
                 }
             }
 
+            Debug.Log("LoadPlayerProgress 5.31");
+            TileInfo partyLocation = loadedProgress.partyGroup1.tileLocation;
+            Debug.Log("LoadPlayerProgress 5.32");
+            partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
+
             Debug.Log("LoadPlayerProgress 5.4");
             //Setting the static party group reference
             PartyGroup.group1 = partyGroup1;
@@ -469,8 +470,6 @@ public class SaveLoadManager : MonoBehaviour
             //Setting the party variables
             partyGroup2.groupIndex = loadedProgress.partyGroup2.groupIndex;
             partyGroup2.combatDistance = loadedProgress.partyGroup2.combatDist;
-            TileInfo partyLocation = loadedProgress.partyGroup2.tileLocation;
-            partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Looping through all of the character save data for this party group
             partyGroup2.charactersInParty = new List<Character>();
@@ -496,6 +495,9 @@ public class SaveLoadManager : MonoBehaviour
                 }
             }
 
+            TileInfo partyLocation = loadedProgress.partyGroup2.tileLocation;
+            partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
+
             //Setting the static party group reference
             PartyGroup.group2 = partyGroup2;
         }
@@ -508,8 +510,6 @@ public class SaveLoadManager : MonoBehaviour
             //Setting the party variables
             partyGroup3.groupIndex = loadedProgress.partyGroup3.groupIndex;
             partyGroup3.combatDistance = loadedProgress.partyGroup3.combatDist;
-            TileInfo partyLocation = loadedProgress.partyGroup3.tileLocation;
-            partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Looping through all of the character save data for this party group
             partyGroup3.charactersInParty = new List<Character>();
@@ -534,6 +534,9 @@ public class SaveLoadManager : MonoBehaviour
                     partyGroup3.charactersInParty.Add(null);
                 }
             }
+
+            TileInfo partyLocation = loadedProgress.partyGroup3.tileLocation;
+            partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
             //Setting the static party group reference
             PartyGroup.group3 = partyGroup3;

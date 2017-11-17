@@ -463,6 +463,7 @@ public class ActionList : MonoBehaviour
 }
 
 //Class used in ActionList.cs to handle recharging spells
+[System.Serializable]
 public class SpellRecharge
 {
     //The reference to the spell that's recharging
