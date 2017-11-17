@@ -22,13 +22,18 @@ public class LoadSavePanel : MonoBehaviour
     public Button deleteSaveButton;
 
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+	//Function called externally to load this panel's save file
+    public void LoadFile()
+    {
+        //Setting this file directory as the one to load
+        GameData.globalReference.LoadSaveFile(this.fileDirectory);
+    }
+
+
+    //Function called externally to delete this panel's save file
+    public void DeleteFile()
+    {
+        //Prompting the LoadSaveManager to delete this file
+        LoadSaveGameMenu.globalReference.PromptFileDeletion(this.panelIndex);
+    }
 }

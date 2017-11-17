@@ -207,4 +207,28 @@ public class GameData : MonoBehaviour
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
     }
+
+
+    //Function called from LoadSavePanel.cs to load a saved game
+    public void LoadSaveFile(string saveFolder_)
+    {
+        //Making sure the given save folder exists
+        if (!System.IO.Directory.Exists(Application.persistentDataPath + saveFolder_))
+        {
+            Debug.Log("ContinueGame, MostRecentSave folder directory doesn't exist");
+            return;
+        }
+
+        //Setting the most recent save to the given folder
+        PlayerPrefs.SetString("MostRecentSave", saveFolder_);
+
+        //Setting the save folder as our current save
+        this.saveFolder = saveFolder_;
+
+        //Telling the map generator to load our existing level
+        this.loadType = levelLoadType.LoadLevel;
+
+        //Transitioning to the gameplay level
+        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+    }
 }

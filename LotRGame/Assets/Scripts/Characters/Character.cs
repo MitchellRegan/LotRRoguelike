@@ -220,7 +220,8 @@ public class Character : MonoBehaviour
         for(int da = 0; da < saveData_.defaultActions.Count; ++da)
         {
             GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject actionPrefab = objWrapper.objToSave;
+            Debug.Log("Action Name: " + objWrapper.objToSave);
+            GameObject actionPrefab = GameObject.Instantiate(objWrapper.objToSave) as GameObject;
             this.charActionList.defaultActions.Add(actionPrefab.GetComponent<Action>());
         }
         this.charActionList.rechargingSpells = new List<SpellRecharge>();
