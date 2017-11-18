@@ -215,7 +215,6 @@ public class GameData : MonoBehaviour
         //Making sure the given save folder exists
         if (!System.IO.Directory.Exists(Application.persistentDataPath + saveFolder_))
         {
-            Debug.Log("ContinueGame, MostRecentSave folder directory doesn't exist");
             return;
         }
 
