@@ -134,6 +134,8 @@ public class CreateTileGrid : MonoBehaviour
         //If we're starting a new game, we need to generate the map first
         if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
         {
+            //Refreshing the seed so that the map will ALWAYS be the same with the same seed, since the Randomize feature in the sprite customizer can offset it
+            GameData.globalReference.GetComponent<RandomSeedGenerator>().SetSeed(GameData.globalReference.GetComponent<RandomSeedGenerator>().seed);
             this.StartMapCreation();
         }
         //If we're loading a previous game

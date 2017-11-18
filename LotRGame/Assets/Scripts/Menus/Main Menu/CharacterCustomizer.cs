@@ -115,8 +115,11 @@ public class CharacterCustomizer : MonoBehaviour
         //Looping through each customizer race sprite base
         foreach(CustomizerRaceSpriteBase rsb in this.raceSpriteBases)
         {
+            //Setting the sprite customizers to our character's sex
+            rsb.customizer.sex = this.sex;
+
             //If the currently selected race is the same as this race sprite base, we turn on its customizer
-            if(rsb.race == GameData.globalReference.startingRace)
+            if (rsb.race == GameData.globalReference.startingRace)
             {
                 rsb.customizer.gameObject.SetActive(true);
             }
@@ -166,6 +169,12 @@ public class CharacterCustomizer : MonoBehaviour
                 this.sexText.text = "Male";
                 break;
         }
+
+        //Setting all of our race sprite bases to the designated sex
+        foreach(CustomizerRaceSpriteBase rsb in this.raceSpriteBases)
+        {
+            rsb.customizer.sex = this.sex;
+        }
     }
 
 
@@ -205,6 +214,12 @@ public class CharacterCustomizer : MonoBehaviour
                 this.sex = Genders.Female;
                 this.sexText.text = "Female";
                 break;
+        }
+
+        //Setting all of our race sprite bases to the designated sex
+        foreach (CustomizerRaceSpriteBase rsb in this.raceSpriteBases)
+        {
+            rsb.customizer.sex = this.sex;
         }
     }
 

@@ -64,6 +64,10 @@ public class SpriteCustomizer : MonoBehaviour
     //The image that displays the skin color
     public Image skinColorExampleImage;
 
+    //Private reference to this character's sex so we can ignore facial hair for women
+    [HideInInspector]
+    public Genders sex = Genders.Male;
+
 
 
     //Function called when this object is created
@@ -136,7 +140,6 @@ public class SpriteCustomizer : MonoBehaviour
     {
         //Creating random indexes for each sprite
         this.hairIndex = Random.Range(0, this.hairSprites.Count);
-        this.faceHairIndex = Random.Range(0, this.facialHairSprites.Count);
         this.headIndex = Random.Range(0, this.headSprites.Count);
         this.eyeIndex = Random.Range(0, this.eyeSprites.Count);
         this.bodyIndex = Random.Range(0, this.bodySprites.Count);
@@ -148,6 +151,17 @@ public class SpriteCustomizer : MonoBehaviour
         this.hairDarknessSlider.value = 1;
         this.facialHairColorSlider.value = this.hairColorSlider.value;
         this.facialHairDarknessSlider.value = 1;
+
+        //Making it so that if this character is female we don't have facial hair
+        if(this.sex == Genders.Female)
+        {
+            this.faceHairIndex = 0;
+        }
+        //If this character isn't female, we assign random facial hair
+        else
+        {
+            this.faceHairIndex = Random.Range(0, this.facialHairSprites.Count);
+        }
 
         //Updating the sprite bases
         this.UpdateSpriteBase();
