@@ -6,6 +6,10 @@ using UnityEngine;
 [System.Serializable]
 public class EnemyEncounter : MonoBehaviour
 {
+    //Reference to the prefab that this object was instantiated from. Set from CharacterManager.CreateEnemyEncounter
+    [HideInInspector]
+    public GameObject encounterPrefab;
+
     //The list of all enemies that are spawned when combat begins
     public List<EncounterEnemy> enemies;
 

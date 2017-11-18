@@ -29,6 +29,10 @@ public class CharacterManager : MonoBehaviour
     //The list of all character object definitions that can be spawned based on sex and race
     public List<CharacterDefinition> listOfCharacterObjects;
 
+    //The list of enemy encounters on the tile grid
+    [HideInInspector]
+    public List<EnemyEncounter> tileEnemyEncounters;
+
 
 
     //Function called when this object is initialized
@@ -53,6 +57,8 @@ public class CharacterManager : MonoBehaviour
 
         //Initializing the list of dead characters
         this.deadCharacters = new List<DeadCharacterInfo>();
+        //Initializing the list of tile encounters
+        this.tileEnemyEncounters = new List<EnemyEncounter>();
     }
 
 
@@ -237,6 +243,20 @@ public class CharacterManager : MonoBehaviour
             }
         }
     }
+
+
+    //Function called externally to create instances of enemy encounter prefabs
+    public void CreateEnemyEncounter(EnemyEncounter encounterToCreate_, TileInfo tileToSpawnOn_)
+    {
+        //Creating a new instance of the encounter object
+        GameObject encounterObj = GameObject.Instantiate(encounterToCreate_.gameObject) as GameObject;
+        //Setting the encounter's tile position
+        encounterObj.GetComponent<Movement>().SetCurrentTile(tileToSpawnOn_);
+        //Setting the encounter's original object prefab
+        encounterObj.GetComponent<EnemyEncounter>().encounterPrefab = encounterToCreate_.gameObject;
+        //Adding this encounter to our list of enemy tile encounters
+        this.tileEnemyEncounters.Add(encounterObj.GetComponent<EnemyEncounter>());
+    }
 }
 
 
@@ -253,11 +273,35 @@ public class CharacterDefinition
 }
 
 
-//Class used in CharacterManager.cs to store information about a dead character
+//Class used in CharacterManager.cs and SaveLoadManager.cs to store information about a dead character
 [System.Serializable]
 public class DeadCharacterInfo
 {
+    //The dead character's first and last names
     public string firstName;
     public string lastName;
+    //The sprites that make up the dead character's appearance
     public CharSpritePackage characterSprites;
+}
+
+//Class used in CharacterManager.cs and SaveLoadManager.cs to store information about an enemy encounter in the overworld
+[System.Serializable]
+public class EnemyTileEncounterInfo
+{
+    //The prefab for the encounter object
+    public GameObject encounterPrefab;
+    //The tile that the encounter is on
+    public int encounterTileCol;
+    public int encounterTileRow;
+
+    //Constructor function for this class
+    public EnemyTileEncounterInfo(EnemyEncounter encounter_)
+    {
+        //Getting the object prefab for the encounter
+        this.encounterPrefab = encounter_.encounterPrefab;
+        //Getting the tile that this encounter is on
+        CreateTileGrid.TileColRow encounterCoords = CreateTileGrid.globalReference.GetTileCoords(encounter_.GetComponent<Movement>().currentTile);
+        this.encounterTileCol = encounterCoords.col;
+        this.encounterTileRow = encounterCoords.row;
+    }
 }

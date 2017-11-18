@@ -553,6 +553,16 @@ public class SaveLoadManager : MonoBehaviour
         
         //Setting the dead characters from CharacterManager.cs
         CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
+
+        //Setting the enemy encounters on the tile grid for CharacterManager.cs
+        for(int e = 0; e < loadedProgress.enemyTileEncounters.Count; ++e)
+        {
+            //Creating a new instance of the encounter object
+            GameObject enemyObj = GameObject.Instantiate(loadedProgress.enemyTileEncounters[e].encounterPrefab) as GameObject;
+            //Setting the enemy's tile position
+            TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
+            enemyObj.GetComponent<Movement>().SetCurrentTile(enemyTile);
+        }
     }
 }
 
@@ -577,6 +587,7 @@ public class PlayerProgress
 
     //Variable from CharacterManager.cs
     public List<DeadCharacterInfo> deadCharacters;
+    public List<EnemyTileEncounterInfo> enemyTileEncounters;
 
 
     //Constructor function for this class
@@ -611,6 +622,16 @@ public class PlayerProgress
         for(int d = 0; d < charManager_.deadCharacters.Count; ++d)
         {
             this.deadCharacters.Add(charManager_.deadCharacters[d]);
+        }
+
+        //Looping through all of the enemy tile encounters in CharacterManager.cs
+        this.enemyTileEncounters = new List<EnemyTileEncounterInfo>();
+        for(int e = 0; e < CharacterManager.globalReference.tileEnemyEncounters.Count; ++e)
+        {
+            //Creating a new tile encounter info for the enemy
+            EnemyTileEncounterInfo enemyInfo = new EnemyTileEncounterInfo(CharacterManager.globalReference.tileEnemyEncounters[e]);
+            //Adding the enemy encounter info to our list to serialize
+            this.enemyTileEncounters.Add(enemyInfo);
         }
     }
 }

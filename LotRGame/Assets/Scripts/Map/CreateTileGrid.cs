@@ -1014,9 +1014,9 @@ public class CreateTileGrid : MonoBehaviour
                 break;
             }
         }
-        
-        GameObject testEnemy = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex].tilePosition, new Quaternion());
-        testEnemy.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex]);
+
+        //Creating the enemy encounter
+        CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex]);
 
 
         int connectedTileIndex2 = connectedTileIndex;
@@ -1028,8 +1028,8 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
 
-        GameObject testEnemy2 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex2].tilePosition, new Quaternion());
-        testEnemy2.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex2]);
+        //Creating the enemy encounter
+        CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex2]);
 
 
         int connectedTileIndex3 = connectedTileIndex2;
@@ -1040,8 +1040,8 @@ public class CreateTileGrid : MonoBehaviour
                 connectedTileIndex3 = c3;
             }
         }
-        GameObject testEnemy3 = GameObject.Instantiate(this.testEnemyEncounter, startTile_.connectedTiles[connectedTileIndex3].tilePosition, new Quaternion());
-        testEnemy3.GetComponent<Movement>().SetCurrentTile(startTile_.connectedTiles[connectedTileIndex3]);
+        //Creating the enemy encounter
+        CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex3]);
     }
 
 
@@ -1420,6 +1420,36 @@ public class CreateTileGrid : MonoBehaviour
         
         //Writing the file to the desktop
         System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "/Map" + mapNameExtras_ + ".png", bytes);
+    }
+
+    
+    //Function called externally to get the column and row for a given tile
+    public class TileColRow { public int col; public int row; };
+    public TileColRow GetTileCoords(TileInfo tileToSearchFor_)
+    {
+        //The coordinates that we'll return
+        TileColRow tileCoord = null;
+
+        //Looping through each column in the tile grid
+        for(int c = 0; c < this.tileGrid.Count; ++c)
+        {
+            //Looping through each row in the tile grid
+            for(int r = 0; r < this.tileGrid[0].Count; ++r)
+            {
+                //If the current tile is the one we're looking for
+                if(this.tileGrid[c][r] == tileToSearchFor_)
+                {
+                    //We set the column and row coordinates and return them
+                    tileCoord = new TileColRow();
+                    tileCoord.col = c;
+                    tileCoord.row = r;
+                    return tileCoord;
+                }
+            }
+        }
+
+        //Returning the empty tile coordinates
+        return tileCoord;
     }
 }
 
