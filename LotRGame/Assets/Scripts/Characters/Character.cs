@@ -205,6 +205,37 @@ public class Character : MonoBehaviour
                 this.charInventory.itemSlots.Add(itemObj.GetComponent<Item>());
             }
         }
+        for(int s = 0; s < saveData_.stackedItems.Count; ++s)
+        {
+            //Making sure the item in this item stack matches the same item in the 
+            //Getting the stack data
+            InventoryItemStackData stackData = JsonUtility.FromJson(saveData_.stackedItems[s], typeof(InventoryItemStackData)) as InventoryItemStackData;
+
+            //Making sure the stacked object is actually an item
+            if (stackData.stackedItem.GetComponent<Item>())
+            {
+                //Making sure the item in this stack matches the item in the designated inventory index
+                if (stackData.itemStackIndex < this.charInventory.itemSlots.Count && this.charInventory.itemSlots[stackData.itemStackIndex].itemNameID == stackData.stackedItem.GetComponent<Item>().itemNameID)
+                {
+                    //Looping through every item that's in this stack
+                    for (int si = 0; si < stackData.numberOfItemsInStack; ++si)
+                    {
+                        //Creating a new instance of the stacked item
+                        GameObject stackedItem = GameObject.Instantiate(stackData.stackedItem) as GameObject;
+                        //Parenting the stacked item to the one that's in the inventory slot
+                        stackedItem.transform.SetParent(this.charInventory.itemSlots[stackData.itemStackIndex].transform);
+                        //Increasing the stack size count in the inventory slot
+                        this.charInventory.itemSlots[stackData.itemStackIndex].currentStackSize += 1;
+
+                        //If the inventory slot has reached the max stack size, we stop
+                        if(this.charInventory.itemSlots[stackData.itemStackIndex].currentStackSize >= this.charInventory.itemSlots[stackData.itemStackIndex].maxStackSize)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         this.charInventory.FindTotalWeight();
         
         //Setting the variables in Skill.cs
@@ -300,6 +331,7 @@ public class CharacterSaveData
     public string rightHandObj = "";
 
     public List<string> inventorySlots;
+    public List<string> stackedItems;
 
     //Variables in Skills.cs
     public int cooking = 0;
@@ -486,12 +518,23 @@ public class CharacterSaveData
 
         //Looping through all of the character inventory items to save their object references
         this.inventorySlots = new List<string>();
+        this.stackedItems = new List<string>();
         for(int i = 0; i < characterToSave_.charInventory.itemSlots.Count; ++i)
         {
             //Making sure the current inventory object isn't null
             if (characterToSave_.charInventory.itemSlots[i] != null)
             {
-                this.inventorySlots.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(characterToSave_.charInventory.itemSlots[i].gameObject)));
+                GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.itemSlots[i].gameObject);
+                this.inventorySlots.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab)));
+
+                //If the current item is a stack
+                if(characterToSave_.charInventory.itemSlots[i].currentStackSize > 1)
+                {
+                    //Creating a new InventoryItemStackData class to store the item stack
+                    InventoryItemStackData stack = new InventoryItemStackData(i, itemPrefab, characterToSave_.charInventory.itemSlots[i].currentStackSize);
+                    //Adding a serialized version of the stack data to our list of stacked items
+                    this.stackedItems.Add(JsonUtility.ToJson(stack));
+                }
             }
             //If the current item is null, we set a null slot to keep the empty space
             else
@@ -514,5 +557,25 @@ public class GameObjectSerializationWrapper
     public GameObjectSerializationWrapper(GameObject obj_)
     {
         this.objToSave = obj_;
+    }
+}
+
+//Class used in Character.cs to store objects for serialization and 
+[System.Serializable]
+public class InventoryItemStackData
+{
+    //Index where this item is stored in a character's inventory
+    public int itemStackIndex = 0;
+    //The object that's being stacked in this inventory slot
+    public GameObject stackedItem;
+    //The number of items in this stack
+    public uint numberOfItemsInStack = 1;
+
+    //Constructor for this class
+    public InventoryItemStackData(int inventoryIndex_, GameObject stackedItem_, uint stackSize_)
+    {
+        this.itemStackIndex = inventoryIndex_;
+        this.stackedItem = stackedItem_;
+        this.numberOfItemsInStack = stackSize_ - 1; //Removing one because the first one is already saved in the index position
     }
 }
