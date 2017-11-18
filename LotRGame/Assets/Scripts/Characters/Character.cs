@@ -263,7 +263,7 @@ public class Character : MonoBehaviour
         this.charPhysState.currentSleep = saveData_.currentSleep;
         this.charPhysState.maxEnergy = saveData_.maxEnergy;
         this.charPhysState.currentEnergy = saveData_.currentEnergy;
-        
+
         //Setting the variables in CombatStats.cs
         this.charCombatStats.currentInitiativeSpeed = saveData_.currentInitiativeSpeed;
         this.charCombatStats.startingPositionCol = saveData_.startingCol;

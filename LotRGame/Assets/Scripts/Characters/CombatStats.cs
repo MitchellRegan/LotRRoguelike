@@ -101,6 +101,49 @@ public class CombatStats : MonoBehaviour
     //Function called from the character manager when this character is added to the player party
     public void SetCombatPosition()
     {
+        //Getting the PartyGroup that this character is in
+        PartyGroup ourGroup = null;
+        if(PartyGroup.group1 != null && PartyGroup.group1.charactersInParty.Contains(this.GetComponent<Character>()))
+        {
+            ourGroup = PartyGroup.group1;
+        }
+        else if(PartyGroup.group2 != null && PartyGroup.group2.charactersInParty.Contains(this.GetComponent<Character>()))
+        {
+            ourGroup = PartyGroup.group2;
+        }
+        else if(PartyGroup.group3 != null && PartyGroup.group3.charactersInParty.Contains(this.GetComponent<Character>()))
+        {
+            ourGroup = PartyGroup.group3;
+        }
+        //If no party group contains this character, nothing happens
+        else
+        {
+            return;
+        }
+
+        //Looping through each character in the player party to see if any of the combat positions overlap
+        bool isOverlapping = false;
+        foreach(Character partyChar in ourGroup.charactersInParty)
+        {
+            //Making sure the character we're checking isn't an empty slot or this character
+            if(partyChar != null && partyChar.charCombatStats != this)
+            {
+                //If the current party character has the same row and column positions as us
+                if(partyChar.charCombatStats.startingPositionCol == this.startingPositionCol && partyChar.charCombatStats.startingPositionRow == this.startingPositionRow)
+                {
+                    //Marking that there's overlapping positions and breaking this loop
+                    isOverlapping = true;
+                    break;
+                }
+            }
+        }
+
+        //If we make it through the first loop and there's no overlapping, we're done
+        if(!isOverlapping)
+        {
+            return;
+        }
+
         //Looping throuch each of the combat positions characters can be in
         for (int c = 0; c < 3; ++c)
         {
@@ -110,7 +153,7 @@ public class CombatStats : MonoBehaviour
                 bool emptyPos = true;
 
                 //Looping through each character in the player party
-                foreach (Character currentChar in CharacterManager.globalReference.playerParty)
+                foreach (Character currentChar in ourGroup.charactersInParty)
                 {
                     //Making sure the character we're checking isn't an empty slot in the party and also isn't this character
                     if (currentChar != null && currentChar.charCombatStats != this)

@@ -70,7 +70,7 @@ public class PartyGroup : MonoBehaviour
     public bool AddCharacterToGroup(Character charToAdd_)
     {
         //If the character is already in the total player party
-        if(CharacterManager.globalReference.playerParty.Contains(charToAdd_))
+        if (CharacterManager.globalReference.playerParty.Contains(charToAdd_))
         {
             //Making sure the character isn't already in this group
             if (!this.charactersInParty.Contains(charToAdd_))
@@ -120,7 +120,6 @@ public class PartyGroup : MonoBehaviour
 
                 //Checking the character's combat position so that it doesn't overlap with someone else
                 this.CheckCombatPositionForCharacter(charToAdd_);
-                
                 return true;
             }
         }
@@ -138,7 +137,7 @@ public class PartyGroup : MonoBehaviour
             this.CheckCombatPositionForCharacter(charToAdd_);
             return true;
         }
-
+        
         //If none of the other parameters were met, the character couldn't be added
         return false;
     }

@@ -430,11 +430,11 @@ public class SaveLoadManager : MonoBehaviour
                     GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
                     Character newCharacter = newCharacterObj.GetComponent<Character>();
 
-                    //Passing the character save data to the character instance to set all of the component variables
-                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup1.partyCharacters[c]);
-
                     //Adding the new character to our new party group
                     partyGroup1.AddCharacterToGroup(newCharacter);
+                    
+                    //Passing the character save data to the character instance to set all of the component variables
+                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup1.partyCharacters[c]);
                 }
                 //If the current character index is null, we leave the gap in the list
                 else
@@ -442,7 +442,7 @@ public class SaveLoadManager : MonoBehaviour
                     partyGroup1.charactersInParty.Add(null);
                 }
             }
-            
+
             TileInfo partyLocation = loadedProgress.partyGroup1.tileLocation;
             partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
             for(int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
