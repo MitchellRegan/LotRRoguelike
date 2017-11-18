@@ -10,7 +10,69 @@ public class QuestTracker : MonoBehaviour
     public List<Quest> questLog;
 
 
-	
+
+    //Function called when this object is created
+    private void Awake()
+    {
+        //Initializing our list of quests
+        this.questLog = new List<Quest>();
+    }
+
+
+    //Function called externally to complete a quest at the given index
+    public void CompleteQuestAtIndex(int questIndex_)
+    {
+        //Making sure the quest index is valid
+        if(questIndex_ < this.questLog.Count && questIndex_ > -1)
+        {
+            Debug.Log("QuestTracker.CompleteQuestAtIndex, " + this.questLog[questIndex_].questName + " is completed!");
+            Debug.Log("Need to implement quest rewards");
+        }
+    }
+
+
+    //Function called externally to abandon a quest at the given index
+    public void AbandonQuestAtIndex(int questIndex_)
+    {
+        //Making sure the quest index is valid
+        if (questIndex_ < this.questLog.Count && questIndex_ > -1)
+        {
+            Debug.Log("QuestTracker.AbandonQuestAtIndex, " + this.questLog[questIndex_].questName + " is abandoned!");
+        }
+    }
+
+
+    //Function called on time advance to update our quest timers
+    public void UpdateQuestTimers()
+    {
+        //Getting the amount of time that has passed on this time advance
+        int timePassed = TimePanelUI.globalReference.hoursAdvancedPerUpdate;
+
+        //Looping through all of the quests in our quest log
+        foreach(Quest q in this.questLog)
+        {
+            //Advancing time for each quest
+            q.UpdateTimePassed(timePassed);
+        }
+    }
+
+
+    //Function called from WASDOverworldMovement.cs to check if the tile the party is on is a destination to visit
+    public void CheckTravelDestinations(TileInfo currentTile_)
+    {
+        //Looping through all of the quests in our quest log
+        foreach (Quest q in this.questLog)
+        {
+            //Looping through each of the travel quests in the current quest
+            foreach (QuestTravelDestination travelQuest in q.destinationList)
+            {
+                //Checking our current tile to see if it's a travel destination
+                travelQuest.CheckTileForDestination(currentTile_);
+            }
+        }
+    }
+
+
     //Function called from CombatManager.cs to check if any kill quest enemy was defeated
     public void UpdateKillQuests(Character killedEnemy_)
     {
@@ -43,24 +105,28 @@ public class QuestTracker : MonoBehaviour
     }
 
 
-    //Function called from WASDOverworldMovement.cs to check if the tile the party is on is a destination to visit
-    public void CheckTravelDestinations(TileInfo currentTile_)
+    //Function called from CombatManager.cs to check if any escourt quest character was killed
+    public void CheckForDeadEscourtCharacter(Character killedPartyCharacter_)
     {
         //Looping through all of the quests in our quest log
         foreach(Quest q in this.questLog)
         {
-            //Looping through each of the travel quests in the current quest
-            foreach(QuestTravelDestination travelQuest in q.destinationList)
+            //Looping through each of the escourt quests in the current quest
+            foreach(QuestEscourtCharacter escourtQuest in q.escourtList)
             {
-                //Checking our current tile to see if it's a travel destination
-                travelQuest.CheckTileForDestination(currentTile_);
+                //Checking the escourt to see if the quest has failed
+                escourtQuest.CheckIfEscourtCharacterDied(killedPartyCharacter_);
+
+                //If the escourt character is dead, the quest is failed
+                if(escourtQuest.isCharacterDead)
+                {
+                    q.isQuestFailed = true;
+                }
             }
         }
     }
 }
 
-//Go to place (call from WASDOverworldMovement)
-//Escort? Get character added to party who has to survive?
 
 //Class used by QuestTracker.cs that defines what a quest is and stores player progress
 [System.Serializable]
@@ -71,14 +137,110 @@ public class Quest
     //The description for this quest
     public string questDescription;
 
+    //Bool that determines if this quest has been failed
+    [HideInInspector]
+    public bool isQuestFailed = false;
+
+    //The hour requirement for this quest. If failOnTimeReached is true, this is a countdown timer before failure. Otherwise it's a requirement to reach this time
+    public int questTimeHours = 0;
+    //The current number of hours that the escourt character has survived
+    [HideInInspector]
+    public int currentHours = 0;
+
+    //Bool for if this quest fails when the quest time hours are reached
+    public bool failOnTimeReached = false;
+
+
+    //The list of travel quests that are involved with this quest (go to location x)
+    public List<QuestTravelDestination> destinationList;
+
     //The list of kill quests that are involved with this quest (kill X number of this enemy)
     public List<QuestKillRequirement> killList;
 
     //The list of fetch quests that are involved with this quest (get X number of this item)
     public List<QuestFetchItems> fetchList;
 
-    //The list of travel quests that are involved with this quest (go to location x)
-    public List<QuestTravelDestination> destinationList;
+    //The list of escourt quests that are involved with this quest (keep person X alive)
+    public List<QuestEscourtCharacter> escourtList;
+
+
+
+    //Function called externally to update the amount of time that's passed for our timer
+    public void UpdateTimePassed(int timePassed_)
+    {
+        //If our escourt time is already at the time required, nothing happens
+        if (this.questTimeHours == 0 || this.currentHours >= this.questTimeHours)
+        {
+            return;
+        }
+
+        //Updating the current hours
+        this.currentHours += timePassed_;
+
+        //If the current hours are greater than the required amount, we cap it off
+        if (this.currentHours >= this.questTimeHours)
+        {
+            this.currentHours = this.questTimeHours;
+
+            //If this quest fails when the timer is reached, we fail this quest
+            if (this.failOnTimeReached)
+            {
+                this.isQuestFailed = true;
+            }
+        }
+    }
+}
+
+
+//Class used by Quest to define what a travel quest is
+[System.Serializable]
+public class QuestTravelDestination
+{
+    //The list of map locations that are required to visit for this quest
+    public List<MapLocation> requiredLocations;
+    //The list of map locations that have been visited
+    [HideInInspector]
+    public List<MapLocation> visitedLocations;
+
+
+
+    //Constructor for this class to initiate our lists
+    public QuestTravelDestination()
+    {
+        this.requiredLocations = new List<MapLocation>();
+        this.visitedLocations = new List<MapLocation>();
+    }
+
+
+    //Function called externally to check if a visited tile has one of our required locations
+    public void CheckTileForDestination(TileInfo visitedTile_)
+    {
+        //If there are no more map locations to visit, nothing happens
+        if (this.requiredLocations.Count == 0)
+        {
+            return;
+        }
+
+        //Checking to make sure the tile and the decoration object aren't null (just in case)
+        if (visitedTile_ != null && visitedTile_.decorationModel != null)
+        {
+            //Checking to see if the decoration model is a map location
+            if (visitedTile_.decorationModel.GetComponent<MapLocation>())
+            {
+                //Looping through all of our required locations to see if any of them match
+                foreach (MapLocation destination in this.requiredLocations)
+                {
+                    //If we find a match, we remove the location from our required list and mark it as being visited
+                    if (visitedTile_.decorationModel.GetComponent<MapLocation>().locationName == destination.locationName)
+                    {
+                        this.visitedLocations.Add(destination);
+                        this.requiredLocations.Remove(destination);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -382,53 +544,24 @@ public class QuestFetchItems
 }
 
 
-//Class used by Quest to define what a travel quest is
+//Class used by Quest to define what an escourt quest is
 [System.Serializable]
-public class QuestTravelDestination
+public class QuestEscourtCharacter
 {
-    //The list of map locations that are required to visit for this quest
-    public List<MapLocation> requiredLocations;
-    //The list of map locations that have been visited
+    //The character that needs to be escourted
+    public Character characterToEscourt;
+    //Bool that determines if this escourt character has died
     [HideInInspector]
-    public List<MapLocation> visitedLocations;
+    public bool isCharacterDead = false;
 
-
-
-    //Constructor for this class to initiate our lists
-    public QuestTravelDestination()
+    
+    //Function called externally to check if one of our escourt characters was killed
+    public void CheckIfEscourtCharacterDied(Character deadCharacter_)
     {
-        this.requiredLocations = new List<MapLocation>();
-        this.visitedLocations = new List<MapLocation>();
-    }
-
-
-    //Function called externally to check if a visited tile has one of our required locations
-    public void CheckTileForDestination(TileInfo visitedTile_)
-    {
-        //If there are no more map locations to visit, nothing happens
-        if(this.requiredLocations.Count == 0)
+        //If the dead character is the one we're escourting, the quest is failed
+        if(this.characterToEscourt == deadCharacter_)
         {
-            return;
-        }
-
-        //Checking to make sure the tile and the decoration object aren't null (just in case)
-        if(visitedTile_ != null && visitedTile_.decorationModel != null)
-        {
-            //Checking to see if the decoration model is a map location
-            if(visitedTile_.decorationModel.GetComponent<MapLocation>())
-            {
-                //Looping through all of our required locations to see if any of them match
-                foreach(MapLocation destination in this.requiredLocations)
-                {
-                    //If we find a match, we remove the location from our required list and mark it as being visited
-                    if(visitedTile_.decorationModel.GetComponent<MapLocation>().locationName == destination.locationName)
-                    {
-                        this.visitedLocations.Add(destination);
-                        this.requiredLocations.Remove(destination);
-                        break;
-                    }
-                }
-            }
+            this.isCharacterDead = true;
         }
     }
 }
