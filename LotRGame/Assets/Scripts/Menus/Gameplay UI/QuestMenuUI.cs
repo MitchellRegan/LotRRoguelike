@@ -227,9 +227,31 @@ public class QuestMenuUI : MonoBehaviour
         foreach(QuestKillRequirement kill in quest_.killList)
         {
             //Telling the player to kill a number of enemies
-            .
+            objectiveText += "Kill " + kill.killableEnemy.firstName + " ";
+            if(kill.killableEnemy.lastName != "")
+            {
+                objectiveText += kill.killableEnemy.lastName + " ";
+            }
+            objectiveText += " - " + kill.currentKills + "/" + kill.killsRequired + "/n";
         }
 
+        //Looping through each of the fetch quests
+        foreach(QuestFetchItems fetch in quest_.fetchList)
+        {
+            //Telling the player to collect a number of items
+            objectiveText += "Collect " + fetch.collectableItem.itemNameID + "  - " + fetch.currentItems + "/" + fetch.itemsRequired + "/n";
+        }
+
+        //Looping through each of the escort quests
+        foreach(QuestEscortCharacter escort in quest_.escortList)
+        {
+            //Telling the player to protect a character
+            objectiveText += "Protect " + escort.characterToEscort.firstName;
+            if(escort.characterToEscort.lastName != "")
+            {
+                objectiveText += " " + escort.characterToEscort.lastName;
+            }
+        }
 
         //Returning the completed objective list text
         return objectiveText;

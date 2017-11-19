@@ -153,6 +153,8 @@ public class CreateTileGrid : MonoBehaviour
         //If we just created a new game, we need to save player progress immediately
         if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
         {
+            //Assigning the main quests to the character quest log
+            QuestTracker.globalReference.AssignMainQuests();
             //Saving the current party progress
             SaveLoadManager.globalReference.SavePlayerProgress();
         }

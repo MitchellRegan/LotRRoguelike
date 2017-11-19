@@ -825,8 +825,8 @@ public class CombatManager : MonoBehaviour
             //If the character is a player character
             if(this.playerCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
             {
-                //Updating the quest tracker to see if the dead ally is an escourt character
-                QuestTracker.globalReference.CheckForDeadEscourtCharacter(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+                //Updating the quest tracker to see if the dead ally is an escort character
+                QuestTracker.globalReference.CheckForDeadEscortCharacter(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
             }
             //If the character is an enemy
             else if(this.enemyCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
