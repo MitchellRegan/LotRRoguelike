@@ -822,6 +822,18 @@ public class CombatManager : MonoBehaviour
         if(damagedCharTile_.objectOnThisTile.GetComponent<Character>().charPhysState.currentHealth == 0)
         {
             Debug.Log(damagedCharTile_.objectOnThisTile.name + " is dead!");
+            //If the character is a player character
+            if(this.playerCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
+            {
+                //Updating the quest tracker to see if the dead ally is an escourt character
+                QuestTracker.globalReference.CheckForDeadEscourtCharacter(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+            }
+            //If the character is an enemy
+            else if(this.enemyCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
+            {
+                //Updating the quest tracker to see if the dead enemy is a quest target
+                QuestTracker.globalReference.UpdateKillQuests(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+            }
         }
         //Updating the health bars so we can see how much health characters have
         this.UpdateHealthBars();

@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterManager))]
 public class QuestTracker : MonoBehaviour
 {
+    //The global reference for this component
+    public static QuestTracker globalReference;
+
     //The list of quests that we're currently tracking
     [HideInInspector]
     public List<Quest> questLog;
@@ -14,8 +17,37 @@ public class QuestTracker : MonoBehaviour
     //Function called when this object is created
     private void Awake()
     {
+        //Setting the global reference for this component
+        if(QuestTracker.globalReference == null)
+        {
+            QuestTracker.globalReference = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+
         //Initializing our list of quests
         this.questLog = new List<Quest>();
+    }
+
+
+    //Function called externally to start tracking a quest
+    public void AddQuestToQuestLog(Quest questToTrack_)
+    {
+        //Looping through all of the quests in our quest log
+        foreach(Quest q in this.questLog)
+        {
+            //Checking to see if we are already tracking this quest
+            if(q.questName == questToTrack_.questName)
+            {
+                //If we already have the quest, we do nothing
+                return;
+            }
+        }
+
+        //If the quest isn't already in our quest log, we start tracking it
+        this.questLog.Add(questToTrack_);
     }
 
 
@@ -37,7 +69,11 @@ public class QuestTracker : MonoBehaviour
         //Making sure the quest index is valid
         if (questIndex_ < this.questLog.Count && questIndex_ > -1)
         {
-            Debug.Log("QuestTracker.AbandonQuestAtIndex, " + this.questLog[questIndex_].questName + " is abandoned!");
+            //Making sure the quest can be abandoned (some plot specific quests can't be dropped)
+            if (this.questLog[questIndex_].canBeAbandoned)
+            {
+                Debug.Log("QuestTracker.AbandonQuestAtIndex, " + this.questLog[questIndex_].questName + " is abandoned!");
+            }
         }
     }
 
@@ -76,6 +112,7 @@ public class QuestTracker : MonoBehaviour
     //Function called from CombatManager.cs to check if any kill quest enemy was defeated
     public void UpdateKillQuests(Character killedEnemy_)
     {
+        Debug.Log("Checking kill quest target");
         //Looping through all of our quests in the quest log
         foreach(Quest q in this.questLog)
         {
@@ -141,6 +178,9 @@ public class Quest
     [HideInInspector]
     public bool isQuestFailed = false;
 
+    //Bool that determines if this quest can be abandoned
+    public bool canBeAbandoned = true;
+
     //The hour requirement for this quest. If failOnTimeReached is true, this is a countdown timer before failure. Otherwise it's a requirement to reach this time
     public int questTimeHours = 0;
     //The current number of hours that the escourt character has survived
@@ -196,27 +236,19 @@ public class Quest
 [System.Serializable]
 public class QuestTravelDestination
 {
-    //The list of map locations that are required to visit for this quest
-    public List<MapLocation> requiredLocations;
-    //The list of map locations that have been visited
+    //The map locatios that is required to visit for this quest
+    public MapLocation requiredLocation;
+    //Bool that determines if this location has been visited
     [HideInInspector]
-    public List<MapLocation> visitedLocations;
+    public bool locationVisited = false;
 
 
-
-    //Constructor for this class to initiate our lists
-    public QuestTravelDestination()
-    {
-        this.requiredLocations = new List<MapLocation>();
-        this.visitedLocations = new List<MapLocation>();
-    }
-
-
+    
     //Function called externally to check if a visited tile has one of our required locations
     public void CheckTileForDestination(TileInfo visitedTile_)
     {
-        //If there are no more map locations to visit, nothing happens
-        if (this.requiredLocations.Count == 0)
+        //If we've already visited the location, nothing happens
+        if(this.locationVisited)
         {
             return;
         }
@@ -227,16 +259,10 @@ public class QuestTravelDestination
             //Checking to see if the decoration model is a map location
             if (visitedTile_.decorationModel.GetComponent<MapLocation>())
             {
-                //Looping through all of our required locations to see if any of them match
-                foreach (MapLocation destination in this.requiredLocations)
+                //If we find a match, we remove the location from our required list and mark it as being visited
+                if (visitedTile_.decorationModel.GetComponent<MapLocation>().locationName == this.requiredLocation.locationName)
                 {
-                    //If we find a match, we remove the location from our required list and mark it as being visited
-                    if (visitedTile_.decorationModel.GetComponent<MapLocation>().locationName == destination.locationName)
-                    {
-                        this.visitedLocations.Add(destination);
-                        this.requiredLocations.Remove(destination);
-                        break;
-                    }
+                    this.locationVisited = true;
                 }
             }
         }
@@ -245,6 +271,7 @@ public class QuestTravelDestination
 
 
 //Class used by Quest to define what a kill quest is
+[System.Serializable]
 public class QuestKillRequirement
 {
     //The number of kills required to complete this quest

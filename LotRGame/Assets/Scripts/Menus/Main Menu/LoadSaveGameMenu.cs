@@ -50,7 +50,7 @@ public class LoadSaveGameMenu : MonoBehaviour
 
         //Initializing our list of loadSavePanels
         this.loadSavePanels = new List<LoadSavePanel>();
-        //Adding our original panel to our last so it's always index 0
+        //Adding our original panel to our list so it's always index 0
         this.loadSavePanels.Add(this.originalPanel);
     }
 
@@ -104,7 +104,7 @@ public class LoadSaveGameMenu : MonoBehaviour
                         //Creating a new instance of the original panel
                         GameObject newPanelObj = GameObject.Instantiate(this.originalPanel.gameObject);
                         //Setting the panel's parent transform to the same as the original's
-                        newPanelObj.transform.SetParent(this.originalPanel.transform.transform.parent);
+                        newPanelObj.transform.SetParent(this.originalPanel.transform.parent);
                         directoryPanel = newPanelObj.GetComponent<LoadSavePanel>();
                         //Adding the panel to our list of loadSavePanels
                         this.loadSavePanels.Add(directoryPanel);
@@ -141,7 +141,7 @@ public class LoadSaveGameMenu : MonoBehaviour
     }
 
 
-    //Function called from OnEnable to resize the scroll view content size
+    //Function called from UpdatePanels to resize the scroll view content size
     private void ResizeScrollView()
     {
         //Float to hold the total height that the scroll view should be
@@ -195,7 +195,7 @@ public class LoadSaveGameMenu : MonoBehaviour
 
         //Resetting our delete panel index
         this.deletePanelIndex = -1;
-        //updating our panels so that we don't have the old save folder displayed anymore
+        //Updating our panels so that we don't have the old save folder displayed anymore
         this.UpdatePanels();
     }
 }
