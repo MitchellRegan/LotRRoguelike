@@ -74,6 +74,20 @@ public class QuestMenuUI : MonoBehaviour
     }
 
 
+    //Function called externally whenever time advances to update the description
+    public void UpdateDescriptionOnTimeAdvance()
+    {
+        //If our current index is invalid or the description content is hidden, nothing happens
+        if(this.displayedQuestPanelIndex < 0 || this.displayedQuestPanelIndex >= this.questPanels.Count || !this.descriptionContentTransform.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        //We update the quest description to show the change in time
+        this.DisplayQuestDescription(this.displayedQuestPanelIndex);
+    }
+
+
     //Function called from OnEnable and AbandonQuest AtIndex to refresh our QuestUIPanels
     private void UpdatePanels(bool hideDescription_ = false)
     {
@@ -216,9 +230,14 @@ public class QuestMenuUI : MonoBehaviour
 
         //Setting the displayed quest's text name
         this.questNameText.text = displayedQuest.questName;
-
         //Setting the displayed quest's description text
         this.questDescriptionText.text = displayedQuest.questDescription;
+        //Setting the displayed quest's objective text
+        this.questObjectivesText.text = this.GetQuestObjectiveText(displayedQuest);
+
+        //Refreshing the canvases so the ContentSizeFitter components on the text resizes the text box sizes
+        Canvas.ForceUpdateCanvases();
+
         //Setting the description text's rect transform position just below the quest name text
         float descriptionPos = this.questNameText.GetComponent<RectTransform>().localPosition.y;
         descriptionPos -= this.questNameText.GetComponent<RectTransform>().rect.height;
@@ -226,8 +245,6 @@ public class QuestMenuUI : MonoBehaviour
                                                                                             descriptionPos,
                                                                                             0);
 
-        //Setting the displayed quest's objective text
-        this.questObjectivesText.text = this.GetQuestObjectiveText(displayedQuest);
         //Setting the objective text's rect transform position just below the quest description text
         descriptionPos -= this.questDescriptionText.GetComponent<RectTransform>().rect.height + this.textDescriptionGap;
         this.questObjectivesText.GetComponent<RectTransform>().localPosition = new Vector3(this.questObjectivesText.GetComponent<RectTransform>().localPosition.x,
@@ -403,7 +420,12 @@ public class QuestMenuUI : MonoBehaviour
         foreach(QuestTravelDestination loc in quest_.destinationList)
         {
             //Telling the player to visit the location name
-            objectiveText += "Travel to " + loc.requiredLocation.locationName + "\n";
+            objectiveText += "Travel to " + loc.requiredLocation.locationName;
+            if(loc.locationVisited)
+            {
+                objectiveText += "  - Completed";
+            }
+            objectiveText += "\n";
         }
         
         //Looping through each of the kill quests

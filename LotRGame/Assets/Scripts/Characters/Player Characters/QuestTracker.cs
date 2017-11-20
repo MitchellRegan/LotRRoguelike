@@ -59,9 +59,71 @@ public class QuestTracker : MonoBehaviour
                 return;
             }
         }
-        
-        //If the quest isn't already in our quest log, we start tracking it
-        this.questLog.Add(questToTrack_);
+
+        //If the quest isn't already in our quest log, we create a new version of this quest
+        Quest duplicateQuest = new Quest();
+        //Duplicating the quest name, description, and timer variables
+        duplicateQuest.questName = questToTrack_.questName;
+        duplicateQuest.questDescription = questToTrack_.questDescription;
+        duplicateQuest.isQuestFailed = false;
+        duplicateQuest.canBeAbandoned = questToTrack_.canBeAbandoned;
+        duplicateQuest.questTimeHours = questToTrack_.questTimeHours;
+        duplicateQuest.currentHours = 0;
+        duplicateQuest.failOnTimeReached = questToTrack_.failOnTimeReached;
+        duplicateQuest.turnInQuestLoaction = questToTrack_.turnInQuestLoaction;
+        //Duplicating all of the travel destinations if they exist
+        if(questToTrack_.destinationList.Count > 0)
+        {
+            duplicateQuest.destinationList = new List<QuestTravelDestination>();
+            foreach(QuestTravelDestination loc in questToTrack_.destinationList)
+            {
+                QuestTravelDestination dupLoc = new QuestTravelDestination();
+                dupLoc.requiredLocation = loc.requiredLocation;
+                dupLoc.locationVisited = false;
+                duplicateQuest.destinationList.Add(dupLoc);
+            }
+        }
+        //Duplicating all of the kill lists if they exist
+        if(questToTrack_.killList.Count > 0)
+        {
+            duplicateQuest.killList = new List<QuestKillRequirement>();
+            foreach(QuestKillRequirement kill in questToTrack_.killList)
+            {
+                QuestKillRequirement dupKill = new QuestKillRequirement();
+                dupKill.killableEnemy = kill.killableEnemy;
+                dupKill.killsRequired = kill.killsRequired;
+                dupKill.currentKills = 0;
+                duplicateQuest.killList.Add(dupKill);
+            }
+        }
+        //Duplicating all of the fetch items if they exist
+        if(questToTrack_.fetchList.Count > 0)
+        {
+            duplicateQuest.fetchList = new List<QuestFetchItems>();
+            foreach(QuestFetchItems collectable in questToTrack_.fetchList)
+            {
+                QuestFetchItems dupCollect = new QuestFetchItems();
+                dupCollect.collectableItem = collectable.collectableItem;
+                dupCollect.itemsRequired = collectable.itemsRequired;
+                dupCollect.currentItems = 0;
+                duplicateQuest.fetchList.Add(dupCollect);
+            }
+        }
+        //Duplicating all of the escort characters if they exist
+        if(questToTrack_.escortList.Count > 0)
+        {
+            duplicateQuest.escortList = new List<QuestEscortCharacter>();
+            foreach(QuestEscortCharacter esc in questToTrack_.escortList)
+            {
+                QuestEscortCharacter dupEsc = new QuestEscortCharacter();
+                dupEsc.characterToEscort = esc.characterToEscort;
+                dupEsc.isCharacterDead = false;
+                duplicateQuest.escortList.Add(dupEsc);
+            }
+        }
+
+        //Adding the duplicated quest to our quest log
+        this.questLog.Add(duplicateQuest);
     }
 
 
