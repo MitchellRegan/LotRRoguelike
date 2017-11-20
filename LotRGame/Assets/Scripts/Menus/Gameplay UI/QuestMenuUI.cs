@@ -222,7 +222,6 @@ public class QuestMenuUI : MonoBehaviour
         this.displayedQuestPanelIndex = questIndex_;
 
         //Displaying the description scroll view
-        this.descriptionContentTransform.gameObject.SetActive(false);
         this.descriptionContentTransform.gameObject.SetActive(true);
 
         //Getting the quest reference
@@ -258,29 +257,26 @@ public class QuestMenuUI : MonoBehaviour
         contentSize += this.textDescriptionGap;
         contentSize += this.questObjectivesText.GetComponent<RectTransform>().rect.height;
         this.descriptionContentTransform.sizeDelta = new Vector2(0, contentSize);
-
-        //Displaying the abandon quest and turn in quest buttons
-        this.abandonQuestButton.gameObject.SetActive(true);
-        this.turnInQuestButton.gameObject.SetActive(true);
+        
 
         //If the quest is abandonable
         if(displayedQuest.canBeAbandoned)
         {
             //We allow the abandon quest button to be clicked
-            this.abandonQuestButton.interactable = true;
+            this.abandonQuestButton.gameObject.SetActive(true);
         }
         //If the quest is NOT able to be abandoned
         else
         {
             //We disable the abandon quest button
-            this.abandonQuestButton.interactable = false;
+            this.abandonQuestButton.gameObject.SetActive(false);
         }
 
 
         //If the displayed quest is failed, it can't be turned in
         if(displayedQuest.isQuestFailed)
         {
-            this.turnInQuestButton.interactable = false;
+            this.turnInQuestButton.gameObject.SetActive(false);
             return;
         }
         //If the quest has a required turn in location
@@ -291,19 +287,19 @@ public class QuestMenuUI : MonoBehaviour
             //If the party tile doesn't have a decoration, it can't be a map location so nothing happens
             if (partyTile.decorationModel == null)
             {
-                this.turnInQuestButton.interactable = false;
+                this.turnInQuestButton.gameObject.SetActive(false);
                 return;
             }
             //If the tile has a decoration but it's not a map location, nothing happens
             else if (!partyTile.decorationModel.GetComponent<MapLocation>())
             {
-                this.turnInQuestButton.interactable = false;
+                this.turnInQuestButton.gameObject.SetActive(false);
                 return;
             }
             //If the tile has a map location but it isn't the turn in location, nothing happens
             else if (partyTile.decorationModel.GetComponent<MapLocation>().locationName != displayedQuest.turnInQuestLoaction.locationName)
             {
-                this.turnInQuestButton.interactable = false;
+                this.turnInQuestButton.gameObject.SetActive(false);
                 return;
             }
         }
@@ -313,7 +309,7 @@ public class QuestMenuUI : MonoBehaviour
             //If the quest doesn't fail when the timer is reached and the player hasn't lasted as long as is required
             if(!displayedQuest.failOnTimeReached && displayedQuest.currentHours != displayedQuest.questTimeHours)
             {
-                this.turnInQuestButton.interactable = false;
+                this.turnInQuestButton.gameObject.SetActive(false);
                 return;
             }
         }
@@ -325,7 +321,7 @@ public class QuestMenuUI : MonoBehaviour
             {
                 if(!loc.locationVisited)
                 {
-                    this.turnInQuestButton.interactable = false;
+                    this.turnInQuestButton.gameObject.SetActive(false);
                     return;
                 }
             }
@@ -338,7 +334,7 @@ public class QuestMenuUI : MonoBehaviour
             {
                 if(kill.currentKills < kill.killsRequired)
                 {
-                    this.turnInQuestButton.interactable = false;
+                    this.turnInQuestButton.gameObject.SetActive(false);
                     return;
                 }
             }
@@ -351,7 +347,7 @@ public class QuestMenuUI : MonoBehaviour
             {
                 if(collectable.currentItems < collectable.itemsRequired)
                 {
-                    this.turnInQuestButton.interactable = false;
+                    this.turnInQuestButton.gameObject.SetActive(false);
                     return;
                 }
             }
@@ -364,14 +360,14 @@ public class QuestMenuUI : MonoBehaviour
             {
                 if(escort.isCharacterDead)
                 {
-                    this.turnInQuestButton.interactable = false;
+                    this.turnInQuestButton.gameObject.SetActive(false);
                     return;
                 }
             }
         }
 
         //If we make it this far, the quest can be turned in
-        this.turnInQuestButton.interactable = true;
+        this.turnInQuestButton.gameObject.SetActive(true);
     }
 
 
@@ -417,50 +413,62 @@ public class QuestMenuUI : MonoBehaviour
         }
 
         //Looping through each of the quest location destinations
-        foreach(QuestTravelDestination loc in quest_.destinationList)
+        if (quest_.destinationList.Count > 0)
         {
-            //Telling the player to visit the location name
-            objectiveText += "Travel to " + loc.requiredLocation.locationName;
-            if(loc.locationVisited)
+            foreach (QuestTravelDestination loc in quest_.destinationList)
             {
-                objectiveText += "  - Completed";
+                //Telling the player to visit the location name
+                objectiveText += "Travel to " + loc.requiredLocation.locationName;
+                if (loc.locationVisited)
+                {
+                    objectiveText += "  - Completed";
+                }
+                objectiveText += "\n";
             }
-            objectiveText += "\n";
         }
-        
+
         //Looping through each of the kill quests
-        foreach(QuestKillRequirement kill in quest_.killList)
+        if (quest_.killList.Count > 0)
         {
-            //Telling the player to kill a number of enemies
-            objectiveText += "Kill " + kill.killableEnemy.firstName + " ";
-            if(kill.killableEnemy.lastName != "")
+            foreach (QuestKillRequirement kill in quest_.killList)
             {
-                objectiveText += kill.killableEnemy.lastName + " ";
+                //Telling the player to kill a number of enemies
+                objectiveText += "Kill " + kill.killableEnemy.firstName + " ";
+                if (kill.killableEnemy.lastName != "")
+                {
+                    objectiveText += kill.killableEnemy.lastName + " ";
+                }
+                objectiveText += " - " + kill.currentKills + "/" + kill.killsRequired + "\n";
             }
-            objectiveText += " - " + kill.currentKills + "/" + kill.killsRequired + "\n";
         }
 
         //Looping through each of the fetch quests
-        foreach(QuestFetchItems fetch in quest_.fetchList)
+        if (quest_.fetchList.Count > 0)
         {
-            //Telling the player to collect a number of items
-            objectiveText += "Collect " + fetch.collectableItem.itemNameID + "  - " + fetch.currentItems + "/" + fetch.itemsRequired + "\n";
+            foreach (QuestFetchItems fetch in quest_.fetchList)
+            {
+                //Telling the player to collect a number of items
+                objectiveText += "Collect " + fetch.collectableItem.itemNameID + "  - " + fetch.currentItems + "/" + fetch.itemsRequired + "\n";
+            }
         }
 
         //Looping through each of the escort quests
-        foreach(QuestEscortCharacter escort in quest_.escortList)
+        if (quest_.escortList.Count > 0)
         {
-            //Telling the player to protect a character
-            objectiveText += "Protect " + escort.characterToEscort.firstName;
-            if(escort.characterToEscort.lastName != "")
+            foreach (QuestEscortCharacter escort in quest_.escortList)
             {
-                objectiveText += " " + escort.characterToEscort.lastName;
+                //Telling the player to protect a character
+                objectiveText += "Protect " + escort.characterToEscort.firstName;
+                if (escort.characterToEscort.lastName != "")
+                {
+                    objectiveText += " " + escort.characterToEscort.lastName;
+                }
+                if (escort.isCharacterDead)
+                {
+                    objectiveText += "  - FAILED";
+                }
+                objectiveText += "\n";
             }
-            if(escort.isCharacterDead)
-            {
-                objectiveText += "  - FAILED";
-            }
-            objectiveText += "\n";
         }
 
         //Returning the completed objective list text

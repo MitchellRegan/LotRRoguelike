@@ -72,9 +72,9 @@ public class QuestTracker : MonoBehaviour
         duplicateQuest.failOnTimeReached = questToTrack_.failOnTimeReached;
         duplicateQuest.turnInQuestLoaction = questToTrack_.turnInQuestLoaction;
         //Duplicating all of the travel destinations if they exist
-        if(questToTrack_.destinationList.Count > 0)
+        duplicateQuest.destinationList = new List<QuestTravelDestination>();
+        if (questToTrack_.destinationList.Count > 0)
         {
-            duplicateQuest.destinationList = new List<QuestTravelDestination>();
             foreach(QuestTravelDestination loc in questToTrack_.destinationList)
             {
                 QuestTravelDestination dupLoc = new QuestTravelDestination();
@@ -84,9 +84,9 @@ public class QuestTracker : MonoBehaviour
             }
         }
         //Duplicating all of the kill lists if they exist
-        if(questToTrack_.killList.Count > 0)
+        duplicateQuest.killList = new List<QuestKillRequirement>();
+        if (questToTrack_.killList.Count > 0)
         {
-            duplicateQuest.killList = new List<QuestKillRequirement>();
             foreach(QuestKillRequirement kill in questToTrack_.killList)
             {
                 QuestKillRequirement dupKill = new QuestKillRequirement();
@@ -97,9 +97,9 @@ public class QuestTracker : MonoBehaviour
             }
         }
         //Duplicating all of the fetch items if they exist
-        if(questToTrack_.fetchList.Count > 0)
+        duplicateQuest.fetchList = new List<QuestFetchItems>();
+        if (questToTrack_.fetchList.Count > 0)
         {
-            duplicateQuest.fetchList = new List<QuestFetchItems>();
             foreach(QuestFetchItems collectable in questToTrack_.fetchList)
             {
                 QuestFetchItems dupCollect = new QuestFetchItems();
@@ -110,15 +110,53 @@ public class QuestTracker : MonoBehaviour
             }
         }
         //Duplicating all of the escort characters if they exist
-        if(questToTrack_.escortList.Count > 0)
+        duplicateQuest.escortList = new List<QuestEscortCharacter>();
+        if (questToTrack_.escortList.Count > 0)
         {
-            duplicateQuest.escortList = new List<QuestEscortCharacter>();
             foreach(QuestEscortCharacter esc in questToTrack_.escortList)
             {
                 QuestEscortCharacter dupEsc = new QuestEscortCharacter();
                 dupEsc.characterToEscort = esc.characterToEscort;
                 dupEsc.isCharacterDead = false;
                 duplicateQuest.escortList.Add(dupEsc);
+            }
+        }
+        //Duplicating all of the item rewards if they exist
+        duplicateQuest.itemRewards = new List<QuestItemReward>();
+        if(questToTrack_.itemRewards.Count > 0)
+        {
+            foreach(QuestItemReward ir in questToTrack_.itemRewards)
+            {
+                QuestItemReward dupIR = new QuestItemReward();
+                dupIR.rewardItem = ir.rewardItem;
+                dupIR.amount = ir.amount;
+                dupIR.distribution = ir.distribution;
+                duplicateQuest.itemRewards.Add(dupIR);
+            }
+        }
+        //Duplicating all of the skill point rewards if they exist
+        duplicateQuest.skillRewards = new List<QuestSkillPointReward>();
+        if(questToTrack_.skillRewards.Count > 0)
+        {
+            foreach(QuestSkillPointReward sr in questToTrack_.skillRewards)
+            {
+                QuestSkillPointReward dupSR = new QuestSkillPointReward();
+                dupSR.rewardSkill = sr.rewardSkill;
+                dupSR.numPoints = sr.numPoints;
+                dupSR.distribution = sr.distribution;
+                duplicateQuest.skillRewards.Add(dupSR);
+            }
+        }
+        //Duplicating all of the action rewards if they exist
+        duplicateQuest.actionRewards = new List<QuestActionReward>();
+        if(questToTrack_.actionRewards.Count > 0)
+        {
+            foreach(QuestActionReward ar in questToTrack_.actionRewards)
+            {
+                QuestActionReward dupAR = new QuestActionReward();
+                dupAR.rewardAction = ar.rewardAction;
+                dupAR.distribution = ar.distribution;
+                duplicateQuest.actionRewards.Add(dupAR);
             }
         }
 
@@ -154,8 +192,142 @@ public class QuestTracker : MonoBehaviour
                     return;
                 }
             }
-            Debug.Log("QuestTracker.CompleteQuestAtIndex, " + this.questLog[questIndex_].questName + " is completed!");
-            Debug.Log("Need to implement quest rewards");
+
+            //Distributing the quest rewards
+            this.DistributeQuestRewards(this.questLog[questIndex_]);
+
+            //Removing this quest from our quest log
+            this.questLog.RemoveAt(questIndex_);
+        }
+    }
+
+
+    //Function called from CompleteQuestAtIndex to distribute quest rewards
+    private void DistributeQuestRewards(Quest completedQuest_)
+    {
+        //If there are item rewards
+        if(completedQuest_.itemRewards.Count > 0)
+        {
+            //Looping through all of the item rewards
+            foreach(QuestItemReward ir in completedQuest_.itemRewards)
+            {
+                //Distributing based on the reward's distribution type
+                switch(ir.distribution)
+                {
+                    case RewardDistribution.Everyone:
+                        break;
+
+                    case RewardDistribution.OneRandomCharacter:
+                        break;
+
+                    case RewardDistribution.RandomChanceForAll:
+                        break;
+
+                    case RewardDistribution.DistributeEvenly:
+                        break;
+
+                    case RewardDistribution.DistributeRandomly:
+                        break;
+                }
+            }
+        }
+
+        //If there are skill point rewards
+        if(completedQuest_.skillRewards.Count > 0)
+        {
+            //Looping through all of the skill point rewards
+            foreach (QuestSkillPointReward sr in completedQuest_.skillRewards)
+            {
+                //Distributing based on the reward's distribution type
+                switch (sr.distribution)
+                {
+                    case RewardDistribution.Everyone:
+                        //Looping through all of the party characters
+                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
+                        {
+                            //Adding this rewarded action to the character's list of default actions
+                            partyChar.charActionList.defaultActions.Add(ar.rewardAction);
+                        }
+                        break;
+
+                    case RewardDistribution.OneRandomCharacter:
+                        break;
+
+                    case RewardDistribution.RandomChanceForAll:
+                        break;
+
+                    case RewardDistribution.DistributeEvenly:
+                        break;
+
+                    case RewardDistribution.DistributeRandomly:
+                        break;
+                }
+            }
+        }
+
+        //If there are action rewards
+        if(completedQuest_.actionRewards.Count > 0)
+        {
+            //Looping through all of the action rewards
+            foreach (QuestActionReward ar in completedQuest_.actionRewards)
+            {
+                //Distributing based on the reward's distribution type
+                switch (ar.distribution)
+                {
+                    case RewardDistribution.Everyone:
+                        //Looping through all of the party characters
+                        foreach(Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
+                        {
+                            //Adding this rewarded action to the character's list of default actions
+                            partyChar.charActionList.defaultActions.Add(ar.rewardAction);
+                        }
+                        break;
+
+                    case RewardDistribution.OneRandomCharacter:
+                        //Getting a random index for the party character who gets this action reward
+                        int maxPartyIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.Count;
+                        int randIndex = Random.Range(0, maxPartyIndex);
+                        CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.defaultActions.Add(ar.rewardAction);
+                        break;
+
+                    case RewardDistribution.RandomChanceForAll:
+                        //Looping through all of the party characters
+                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
+                        {
+                            //Getting a random roll for if this character gets the reward
+                            float randRoll = Random.Range(0, 1);
+                            if (randRoll > 0.5f)
+                            {
+                                //Adding this rewarded action to the character's list of default actions
+                                partyChar.charActionList.defaultActions.Add(ar.rewardAction);
+                            }
+                        }
+                        break;
+
+                    case RewardDistribution.DistributeEvenly:
+                        //Looping through all of the party characters
+                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
+                        {
+                            //Adding this rewarded action to the character's list of default actions
+                            partyChar.charActionList.defaultActions.Add(ar.rewardAction);
+                        }
+                        break;
+
+                    case RewardDistribution.DistributeRandomly:
+                        //Looping through all of the party characters
+                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
+                        {
+                            //Getting a random roll for if this character gets the reward
+                            float randRoll = Random.Range(0, 1);
+                            if (randRoll > 0.5f)
+                            {
+                                //Adding this rewarded action to the character's list of default actions
+                                partyChar.charActionList.defaultActions.Add(ar.rewardAction);
+                            }
+                        }
+                        break;
+                }
+            }
         }
     }
 
@@ -169,7 +341,8 @@ public class QuestTracker : MonoBehaviour
             //Making sure the quest can be abandoned (some plot specific quests can't be dropped)
             if (this.questLog[questIndex_].canBeAbandoned)
             {
-                Debug.Log("QuestTracker.AbandonQuestAtIndex, " + this.questLog[questIndex_].questName + " is abandoned!");
+                //Removing this quest from our quest log
+                this.questLog.RemoveAt(questIndex_);
             }
         }
     }
@@ -302,6 +475,13 @@ public class Quest
     //The list of escort quests that are involved with this quest (keep person X alive)
     public List<QuestEscortCharacter> escortList;
 
+
+    //The list of item rewards for completing this quest
+    public List<QuestItemReward> itemRewards;
+    //The list of skill point rewards for completing this quest
+    public List<QuestSkillPointReward> skillRewards;
+    //The list of action rewards for completing this quest
+    public List<QuestActionReward> actionRewards;
 
 
     //Function called externally to update the amount of time that's passed for our timer
@@ -601,4 +781,52 @@ public class QuestEscortCharacter
             this.isCharacterDead = true;
         }
     }
+}
+
+
+//Enum used in the quest reward classes to determine how rewards are distributed
+[System.Serializable]
+public enum RewardDistribution
+{
+    Everyone,
+    OneRandomCharacter,
+    RandomChanceForAll,
+    DistributeEvenly,
+    DistributeRandomly
+}
+
+//Class used by Quest to hold item rewards for completing quests
+[System.Serializable]
+public class QuestItemReward
+{
+    //The prefab for the item that is awarded
+    public Item rewardItem;
+    //The amount of items that are awarded
+    public int amount = 1;
+    //How this reward is distributed
+    public RewardDistribution distribution = RewardDistribution.Everyone;
+}
+
+
+//Class used by Quest to hold Skill Point rewards for completing quests
+[System.Serializable]
+public class QuestSkillPointReward
+{
+    //The type of skill that is awarded
+    public SkillList rewardSkill = SkillList.Punching;
+    //The number of skill points that are awarded
+    public int numPoints = 5;
+    //How this reward is distributed
+    public RewardDistribution distribution = RewardDistribution.Everyone;
+}
+
+
+//Class used by Quest to hold Action rewards for completing quests
+[System.Serializable]
+public class QuestActionReward
+{
+    //The action that is awarded
+    public Action rewardAction;
+    //How this reward is distributed
+    public RewardDistribution distribution = RewardDistribution.Everyone;
 }
