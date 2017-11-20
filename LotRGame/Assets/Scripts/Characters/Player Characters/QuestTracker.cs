@@ -59,7 +59,7 @@ public class QuestTracker : MonoBehaviour
                 return;
             }
         }
-
+        
         //If the quest isn't already in our quest log, we start tracking it
         this.questLog.Add(questToTrack_);
     }

@@ -51,8 +51,11 @@ public class WASDOverworldMovement : MonoBehaviour
         {
             //The tile grid needs to update the visible tiles
             CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
-            //Checking to see if our current tile is a destination for a quest
-            QuestTracker.globalReference.CheckTravelDestinations(this.currentTile);
+            if (QuestTracker.globalReference != null)
+            {
+                //Checking to see if our current tile is a destination for a quest
+                QuestTracker.globalReference.CheckTravelDestinations(this.currentTile);
+            }
         }
     }
 

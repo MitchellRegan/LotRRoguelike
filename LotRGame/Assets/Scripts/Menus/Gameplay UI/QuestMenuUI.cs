@@ -22,8 +22,8 @@ public class QuestMenuUI : MonoBehaviour
     //The buffer of units between panels
     public float bufferBetweenPanels = 2;
 
-    //Index for the panel that's marked to be abandoned
-    private int abandonQuestPanelIndex = -1;
+    //Index for the panel that's being displayed
+    private int displayedQuestPanelIndex = -1;
 
     [Space(8)]
 
@@ -35,6 +35,8 @@ public class QuestMenuUI : MonoBehaviour
     public Text questDescriptionText;
     //The text reference for the displayed quest's objectives
     public Text questObjectivesText;
+    //The gap in space between the text for quest descriptions
+    public float textDescriptionGap = 40;
 
     [Space(8)]
 
@@ -68,18 +70,21 @@ public class QuestMenuUI : MonoBehaviour
     //Function called when this object is enabled
     private void OnEnable()
     {
-        this.UpdatePanels();
+        this.UpdatePanels(true);
     }
 
 
     //Function called from OnEnable and AbandonQuest AtIndex to refresh our QuestUIPanels
-    private void UpdatePanels()
+    private void UpdatePanels(bool hideDescription_ = false)
     {
-        //Resetting our selected quest index
-        this.abandonQuestPanelIndex = -1;
-
-        //Hiding our quest description
-        this.HideQuestDescription();
+        //If we hide our description
+        if (hideDescription_)
+        {
+            //Resetting our selected quest index
+            this.displayedQuestPanelIndex = -1;
+            //Hiding our quest description
+            this.HideQuestDescription();
+        }
 
         //Looping through all of our QuestUIPanels and deleting their objects unless they're the original
         for(int p = 1; p < this.questPanels.Count; ++p)
@@ -90,6 +95,7 @@ public class QuestMenuUI : MonoBehaviour
         }
         //Resetting the list of paens so only the original is left
         this.questPanels = new List<QuestUIPanel>() { this.originalPanel };
+        this.originalPanel.gameObject.SetActive(false);
 
         //Int to hold the index for the quest we're adding to our quest panels
         int questIndex = -1;
@@ -119,6 +125,9 @@ public class QuestMenuUI : MonoBehaviour
                 //Adding the panel to our list of quest panels
                 this.questPanels.Add(newQuestPanel);
             }
+
+            //Setting the text for the panel
+            newQuestPanel.questNameText.text = q.questName;
 
             //Setting the index for the panel
             newQuestPanel.panelIndex = questIndex;
@@ -151,11 +160,11 @@ public class QuestMenuUI : MonoBehaviour
     public void AbandonSelectedQuest()
     {
         //Telling the QuestTracker to abandon the quest
-        QuestTracker.globalReference.AbandonQuestAtIndex(this.abandonQuestPanelIndex);
+        QuestTracker.globalReference.AbandonQuestAtIndex(this.displayedQuestPanelIndex);
         //Resetting the abandon quest index
-        this.abandonQuestPanelIndex = -1;
+        this.displayedQuestPanelIndex = -1;
         //Updating our panels so that we don't display the abandoned quest anymore
-        this.UpdatePanels();
+        this.UpdatePanels(true);
     }
 
 
@@ -163,11 +172,11 @@ public class QuestMenuUI : MonoBehaviour
     public void TurnInSelectedQuest()
     {
         //Telling the QuestTracker to turn in the quest
-        QuestTracker.globalReference.CompleteQuestAtIndex(this.abandonQuestPanelIndex);
+        QuestTracker.globalReference.CompleteQuestAtIndex(this.displayedQuestPanelIndex);
         //Resetting the quest index
-        this.abandonQuestPanelIndex = -1;
+        this.displayedQuestPanelIndex = -1;
         //Updating our panels so that we don't display the completed quest anymore
-        this.UpdatePanels();
+        this.UpdatePanels(true);
     }
 
 
@@ -182,6 +191,7 @@ public class QuestMenuUI : MonoBehaviour
         this.questNameText.text = "";
         this.questDescriptionText.text = "";
         this.questObjectivesText.text = "";
+        this.descriptionContentTransform.gameObject.SetActive(false);
     }
 
 
@@ -195,7 +205,11 @@ public class QuestMenuUI : MonoBehaviour
         }
 
         //Setting our selected quest index
-        this.abandonQuestPanelIndex = questIndex_;
+        this.displayedQuestPanelIndex = questIndex_;
+
+        //Displaying the description scroll view
+        this.descriptionContentTransform.gameObject.SetActive(false);
+        this.descriptionContentTransform.gameObject.SetActive(true);
 
         //Getting the quest reference
         Quest displayedQuest = QuestTracker.globalReference.questLog[questIndex_];
@@ -207,7 +221,7 @@ public class QuestMenuUI : MonoBehaviour
         this.questDescriptionText.text = displayedQuest.questDescription;
         //Setting the description text's rect transform position just below the quest name text
         float descriptionPos = this.questNameText.GetComponent<RectTransform>().localPosition.y;
-        descriptionPos += this.questNameText.GetComponent<RectTransform>().rect.height;
+        descriptionPos -= this.questNameText.GetComponent<RectTransform>().rect.height;
         this.questDescriptionText.GetComponent<RectTransform>().localPosition = new Vector3(this.questDescriptionText.GetComponent<RectTransform>().localPosition.x,
                                                                                             descriptionPos,
                                                                                             0);
@@ -215,10 +229,18 @@ public class QuestMenuUI : MonoBehaviour
         //Setting the displayed quest's objective text
         this.questObjectivesText.text = this.GetQuestObjectiveText(displayedQuest);
         //Setting the objective text's rect transform position just below the quest description text
-        descriptionPos += this.questDescriptionText.GetComponent<RectTransform>().rect.height;
+        descriptionPos -= this.questDescriptionText.GetComponent<RectTransform>().rect.height + this.textDescriptionGap;
         this.questObjectivesText.GetComponent<RectTransform>().localPosition = new Vector3(this.questObjectivesText.GetComponent<RectTransform>().localPosition.x,
                                                                                             descriptionPos,
                                                                                             0);
+
+        //Resizing the discription content view size
+        float contentSize = 0;
+        contentSize += this.questNameText.GetComponent<RectTransform>().rect.height;
+        contentSize += this.questDescriptionText.GetComponent<RectTransform>().rect.height;
+        contentSize += this.textDescriptionGap;
+        contentSize += this.questObjectivesText.GetComponent<RectTransform>().rect.height;
+        this.descriptionContentTransform.sizeDelta = new Vector2(0, contentSize);
 
         //Displaying the abandon quest and turn in quest buttons
         this.abandonQuestButton.gameObject.SetActive(true);
@@ -340,13 +362,13 @@ public class QuestMenuUI : MonoBehaviour
     private string GetQuestObjectiveText(Quest quest_)
     {
         //The string that we return
-        string objectiveText = "/n";
+        string objectiveText = "\n";
 
 
         //If the quest is failed, we display it
         if(quest_.isQuestFailed)
         {
-            objectiveText += "    QUEST FAILED! /n /n";
+            objectiveText += "    QUEST FAILED! \n \n";
         }
 
         //Setting the quest timer if the timer is required
@@ -374,14 +396,14 @@ public class QuestMenuUI : MonoBehaviour
             {
                 objectiveText += "Survive  = " + quest_.currentHours + "/" + quest_.questTimeHours + " hours";
             }
-            objectiveText += "/n";
+            objectiveText += "\n";
         }
 
         //Looping through each of the quest location destinations
         foreach(QuestTravelDestination loc in quest_.destinationList)
         {
             //Telling the player to visit the location name
-            objectiveText += "Travel to " + loc.requiredLocation.locationName + "/n";
+            objectiveText += "Travel to " + loc.requiredLocation.locationName + "\n";
         }
         
         //Looping through each of the kill quests
@@ -393,14 +415,14 @@ public class QuestMenuUI : MonoBehaviour
             {
                 objectiveText += kill.killableEnemy.lastName + " ";
             }
-            objectiveText += " - " + kill.currentKills + "/" + kill.killsRequired + "/n";
+            objectiveText += " - " + kill.currentKills + "/" + kill.killsRequired + "\n";
         }
 
         //Looping through each of the fetch quests
         foreach(QuestFetchItems fetch in quest_.fetchList)
         {
             //Telling the player to collect a number of items
-            objectiveText += "Collect " + fetch.collectableItem.itemNameID + "  - " + fetch.currentItems + "/" + fetch.itemsRequired + "/n";
+            objectiveText += "Collect " + fetch.collectableItem.itemNameID + "  - " + fetch.currentItems + "/" + fetch.itemsRequired + "\n";
         }
 
         //Looping through each of the escort quests
@@ -416,7 +438,7 @@ public class QuestMenuUI : MonoBehaviour
             {
                 objectiveText += "  - FAILED";
             }
-            objectiveText += "/n";
+            objectiveText += "\n";
         }
 
         //Returning the completed objective list text
