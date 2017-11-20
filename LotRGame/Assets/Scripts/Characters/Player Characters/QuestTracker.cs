@@ -209,7 +209,6 @@ public class QuestTracker : MonoBehaviour
     //Function called from CombatManager.cs to check if any kill quest enemy was defeated
     public void UpdateKillQuests(Character killedEnemy_)
     {
-        Debug.Log("Checking kill quest target");
         //Looping through all of our quests in the quest log
         foreach(Quest q in this.questLog)
         {
@@ -396,7 +395,7 @@ public class QuestKillRequirement
 
         //If the killed character matches, the kill counts
         if (killedCharacter_.firstName == this.killableEnemy.firstName && killedCharacter_.lastName == this.killableEnemy.lastName &&
-            killedCharacter_.sex == this.killableEnemy.sex && killedCharacter_.charRaceTypes.race == this.killableEnemy.charRaceTypes.race)
+            killedCharacter_.sex == this.killableEnemy.sex && killedCharacter_.charRaceTypes.race == this.killableEnemy.GetComponent<RaceTypes>().race)
         {
             this.currentKills += 1;
         }
