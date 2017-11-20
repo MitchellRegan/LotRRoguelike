@@ -46,10 +46,13 @@ public class WASDOverworldMovement : MonoBehaviour
         //Moving this character to the current tile's position
         this.transform.position = new Vector3(this.currentTile.tilePosition.x, this.currentTile.elevation, this.currentTile.tilePosition.z);
 
-        //If this movement script is attached to a player party group, the tile grid needs to update the visible tiles
+        //If this movement script is attached to a player party group
         if (this.GetComponent<PartyGroup>())
         {
+            //The tile grid needs to update the visible tiles
             CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
+            //Checking to see if our current tile is a destination for a quest
+            QuestTracker.globalReference.CheckTravelDestinations(this.currentTile);
         }
     }
 

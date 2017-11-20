@@ -71,6 +71,27 @@ public class QuestTracker : MonoBehaviour
         //Making sure the quest index is valid
         if(questIndex_ < this.questLog.Count && questIndex_ > -1)
         {
+            //If the quest has a designated quest turn in location
+            if(this.questLog[questIndex_].turnInQuestLoaction != null)
+            {
+                //Getting the tile that the player party is on
+                TileInfo partyTile = CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile;
+                //If the party tile doesn't have a decoration, it can't be a map location so nothing happens
+                if (partyTile.decorationModel == null)
+                {
+                    return;
+                }
+                //If the tile has a decoration but it's not a map location, nothing happens
+                else if(!partyTile.decorationModel.GetComponent<MapLocation>())
+                {
+                    return;
+                }
+                //If the tile has a map location but it isn't the turn in location, nothing happens
+                else if(partyTile.decorationModel.GetComponent<MapLocation>().locationName != this.questLog[questIndex_].turnInQuestLoaction.locationName)
+                {
+                    return;
+                }
+            }
             Debug.Log("QuestTracker.CompleteQuestAtIndex, " + this.questLog[questIndex_].questName + " is completed!");
             Debug.Log("Need to implement quest rewards");
         }
@@ -202,7 +223,10 @@ public class Quest
     public int currentHours = 0;
 
     //Bool for if this quest fails when the quest time hours are reached
-    public bool failOnTimeReached = false;
+    public bool failOnTimeReached = true;
+
+    //Map location where the player can turn in the quest. If null, it can be turned in anywhere
+    public MapLocation turnInQuestLoaction = null;
 
 
     //The list of travel quests that are involved with this quest (go to location x)

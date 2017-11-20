@@ -17,7 +17,6 @@ public class QuestMenuUI : MonoBehaviour
 
     //The reference to the scroll view's content rect transform that is scaled
     public RectTransform scrollContentTransform;
-
     //The buffer of units from the top and bottom of the scroll view
     public float topBottomScrollHeightBuffer = 7;
     //The buffer of units between panels
@@ -25,9 +24,6 @@ public class QuestMenuUI : MonoBehaviour
 
     //Index for the panel that's marked to be abandoned
     private int abandonQuestPanelIndex = -1;
-
-    //UnityEvent called to open the confirmation screen to abandon a quest
-    public UnityEvent promptAbandonQuestEvent;
 
     [Space(8)]
 
@@ -39,6 +35,13 @@ public class QuestMenuUI : MonoBehaviour
     public Text questDescriptionText;
     //The text reference for the displayed quest's objectives
     public Text questObjectivesText;
+
+    [Space(8)]
+
+    //The button that allows the player to turn in quests
+    public Button turnInQuestButton;
+    //The button that allows the player to abandon quests
+    public Button abandonQuestButton;
 
 
 
@@ -72,6 +75,12 @@ public class QuestMenuUI : MonoBehaviour
     //Function called from OnEnable and AbandonQuest AtIndex to refresh our QuestUIPanels
     private void UpdatePanels()
     {
+        //Resetting our selected quest index
+        this.abandonQuestPanelIndex = -1;
+
+        //Hiding our quest description
+        this.HideQuestDescription();
+
         //Looping through all of our QuestUIPanels and deleting their objects unless they're the original
         for(int p = 1; p < this.questPanels.Count; ++p)
         {
@@ -136,29 +145,7 @@ public class QuestMenuUI : MonoBehaviour
         //Setting the scroll view height
         this.scrollContentTransform.sizeDelta = new Vector2(0, scrollViewHeight);
     }
-
-
-    //Function called from QuestPanelUI.cs to prompt abandoning a quest
-    public void PromptQuestAbandon(int panelIndex_)
-    {
-        //Making sure the selected index is valid
-        if (panelIndex_ < 0 || panelIndex_ >= this.questPanels.Count)
-        {
-            return;
-        }
-
-        //Checking to make sure the quest can be abandoned
-        if(!QuestTracker.globalReference.questLog[panelIndex_].canBeAbandoned)
-        {
-            return;
-        }
-
-        //Setting the index for the quest we'll abandon
-        this.abandonQuestPanelIndex = panelIndex_;
-        //Invoking the unity event to promp the player confirmation screen
-        this.promptAbandonQuestEvent.Invoke();
-    }
-
+    
 
     //Function called externally to confirm a quest abandon
     public void AbandonSelectedQuest()
@@ -172,6 +159,32 @@ public class QuestMenuUI : MonoBehaviour
     }
 
 
+    //Function called externally to turn in the selected quest
+    public void TurnInSelectedQuest()
+    {
+        //Telling the QuestTracker to turn in the quest
+        QuestTracker.globalReference.CompleteQuestAtIndex(this.abandonQuestPanelIndex);
+        //Resetting the quest index
+        this.abandonQuestPanelIndex = -1;
+        //Updating our panels so that we don't display the completed quest anymore
+        this.UpdatePanels();
+    }
+
+
+    //Function called from UpdatePanels to clear the quest description
+    private void HideQuestDescription()
+    {
+        //Hiding the abandon quest and turn in quest buttons
+        this.abandonQuestButton.gameObject.SetActive(false);
+        this.turnInQuestButton.gameObject.SetActive(false);
+
+        //Hiding the quest text
+        this.questNameText.text = "";
+        this.questDescriptionText.text = "";
+        this.questObjectivesText.text = "";
+    }
+
+
     //Function called externally from QuestUIPanel.cs to display a quest's description
     public void DisplayQuestDescription(int questIndex_)
     {
@@ -180,12 +193,18 @@ public class QuestMenuUI : MonoBehaviour
         {
             return;
         }
-        
+
+        //Setting our selected quest index
+        this.abandonQuestPanelIndex = questIndex_;
+
+        //Getting the quest reference
+        Quest displayedQuest = QuestTracker.globalReference.questLog[questIndex_];
+
         //Setting the displayed quest's text name
-        this.questNameText.text = QuestTracker.globalReference.questLog[questIndex_].questName;
+        this.questNameText.text = displayedQuest.questName;
 
         //Setting the displayed quest's description text
-        this.questDescriptionText.text = QuestTracker.globalReference.questLog[questIndex_].questDescription;
+        this.questDescriptionText.text = displayedQuest.questDescription;
         //Setting the description text's rect transform position just below the quest name text
         float descriptionPos = this.questNameText.GetComponent<RectTransform>().localPosition.y;
         descriptionPos += this.questNameText.GetComponent<RectTransform>().rect.height;
@@ -194,12 +213,126 @@ public class QuestMenuUI : MonoBehaviour
                                                                                             0);
 
         //Setting the displayed quest's objective text
-        this.questObjectivesText.text = this.GetQuestObjectiveText(QuestTracker.globalReference.questLog[questIndex_]);
+        this.questObjectivesText.text = this.GetQuestObjectiveText(displayedQuest);
         //Setting the objective text's rect transform position just below the quest description text
         descriptionPos += this.questDescriptionText.GetComponent<RectTransform>().rect.height;
         this.questObjectivesText.GetComponent<RectTransform>().localPosition = new Vector3(this.questObjectivesText.GetComponent<RectTransform>().localPosition.x,
                                                                                             descriptionPos,
                                                                                             0);
+
+        //Displaying the abandon quest and turn in quest buttons
+        this.abandonQuestButton.gameObject.SetActive(true);
+        this.turnInQuestButton.gameObject.SetActive(true);
+
+        //If the quest is abandonable
+        if(displayedQuest.canBeAbandoned)
+        {
+            //We allow the abandon quest button to be clicked
+            this.abandonQuestButton.interactable = true;
+        }
+        //If the quest is NOT able to be abandoned
+        else
+        {
+            //We disable the abandon quest button
+            this.abandonQuestButton.interactable = false;
+        }
+
+
+        //If the displayed quest is failed, it can't be turned in
+        if(displayedQuest.isQuestFailed)
+        {
+            this.turnInQuestButton.interactable = false;
+            return;
+        }
+        //If the quest has a required turn in location
+        if(displayedQuest.turnInQuestLoaction != null)
+        {
+            //Getting the tile that the player party is on
+            TileInfo partyTile = CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile;
+            //If the party tile doesn't have a decoration, it can't be a map location so nothing happens
+            if (partyTile.decorationModel == null)
+            {
+                this.turnInQuestButton.interactable = false;
+                return;
+            }
+            //If the tile has a decoration but it's not a map location, nothing happens
+            else if (!partyTile.decorationModel.GetComponent<MapLocation>())
+            {
+                this.turnInQuestButton.interactable = false;
+                return;
+            }
+            //If the tile has a map location but it isn't the turn in location, nothing happens
+            else if (partyTile.decorationModel.GetComponent<MapLocation>().locationName != displayedQuest.turnInQuestLoaction.locationName)
+            {
+                this.turnInQuestButton.interactable = false;
+                return;
+            }
+        }
+        //If the quest has a timer
+        if(displayedQuest.questTimeHours > 0)
+        {
+            //If the quest doesn't fail when the timer is reached and the player hasn't lasted as long as is required
+            if(!displayedQuest.failOnTimeReached && displayedQuest.currentHours != displayedQuest.questTimeHours)
+            {
+                this.turnInQuestButton.interactable = false;
+                return;
+            }
+        }
+        //If the quest has target travel destinations
+        if(displayedQuest.destinationList.Count > 0)
+        {
+            //If any of the destinations haven't been visited, the quest can't be turned in
+            foreach(QuestTravelDestination loc in displayedQuest.destinationList)
+            {
+                if(!loc.locationVisited)
+                {
+                    this.turnInQuestButton.interactable = false;
+                    return;
+                }
+            }
+        }
+        //If the quest has a kill list
+        if(displayedQuest.killList.Count > 0)
+        {
+            //If any of the kill lists haven't been completed, the quest can't be turned in
+            foreach(QuestKillRequirement kill in displayedQuest.killList)
+            {
+                if(kill.currentKills < kill.killsRequired)
+                {
+                    this.turnInQuestButton.interactable = false;
+                    return;
+                }
+            }
+        }
+        //If the quest has a fetch list
+        if(displayedQuest.fetchList.Count > 0)
+        {
+            //If any of the item lists haven't been completed, the quest can't be turned in
+            foreach(QuestFetchItems collectable in displayedQuest.fetchList)
+            {
+                if(collectable.currentItems < collectable.itemsRequired)
+                {
+                    this.turnInQuestButton.interactable = false;
+                    return;
+                }
+            }
+        }
+        //If the quest has an escort list
+        if(displayedQuest.escortList.Count > 0)
+        {
+            //If any of the escort characters are dead, the quest can't be turned in
+            foreach(QuestEscortCharacter escort in displayedQuest.escortList)
+            {
+                if(escort.isCharacterDead)
+                {
+                    this.turnInQuestButton.interactable = false;
+                    return;
+                }
+            }
+        }
+
+        //If we make it this far, the quest can be turned in
+        this.turnInQuestButton.interactable = true;
     }
 
 
@@ -213,7 +346,35 @@ public class QuestMenuUI : MonoBehaviour
         //If the quest is failed, we display it
         if(quest_.isQuestFailed)
         {
-            objectiveText += "    QUEST FAILED! /n";
+            objectiveText += "    QUEST FAILED! /n /n";
+        }
+
+        //Setting the quest timer if the timer is required
+        if(quest_.questTimeHours > 0)
+        {
+            //If the timer is counting down to failure
+            if(quest_.failOnTimeReached)
+            {
+                objectiveText += "Time remaining  - " + (quest_.questTimeHours - quest_.currentHours);
+                if(quest_.questTimeHours - quest_.currentHours == 1)
+                {
+                    objectiveText += " hour";
+                }
+                else
+                {
+                    objectiveText += " hours";
+                }
+                if(quest_.currentHours == quest_.questTimeHours)
+                {
+                    objectiveText += " - FAILED";
+                }
+            }
+            //If the timer is counting up to survive x hours
+            else
+            {
+                objectiveText += "Survive  = " + quest_.currentHours + "/" + quest_.questTimeHours + " hours";
+            }
+            objectiveText += "/n";
         }
 
         //Looping through each of the quest location destinations
@@ -251,6 +412,11 @@ public class QuestMenuUI : MonoBehaviour
             {
                 objectiveText += " " + escort.characterToEscort.lastName;
             }
+            if(escort.isCharacterDead)
+            {
+                objectiveText += "  - FAILED";
+            }
+            objectiveText += "/n";
         }
 
         //Returning the completed objective list text
