@@ -46,6 +46,8 @@ public class QuestMenuUI : MonoBehaviour
     public Button turnInQuestButton;
     //The button that allows the player to abandon quests
     public Button abandonQuestButton;
+    //Reference to the QuestRewardUI.cs component for when quests are turned in
+    public QuestRewardUI rewardUI;
 
 
 
@@ -188,6 +190,9 @@ public class QuestMenuUI : MonoBehaviour
     //Function called externally to turn in the selected quest
     public void TurnInSelectedQuest()
     {
+        //Opening the QuestRewardUI to display the quest rewards
+        this.rewardUI.gameObject.SetActive(true);
+        this.rewardUI.DisplayQuestRewards(QuestTracker.globalReference.questLog[this.displayedQuestPanelIndex]);
         //Telling the QuestTracker to turn in the quest
         QuestTracker.globalReference.CompleteQuestAtIndex(this.displayedQuestPanelIndex);
         //Resetting the quest index

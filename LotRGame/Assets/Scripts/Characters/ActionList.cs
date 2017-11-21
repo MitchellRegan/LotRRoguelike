@@ -460,6 +460,29 @@ public class ActionList : MonoBehaviour
             this.rechargingSpells.Remove(finishedSpell);
         }
     }
+
+
+    //Function called externally to check if the default action list contains a given action
+    public bool DoesDefaultListContainAction(Action actionToCheck_)
+    {
+        //Looping through all of the actions in our default action list
+        foreach(Action ourAct in this.defaultActions)
+        {
+            //If the action name and description are the same
+            if(ourAct.actionName == actionToCheck_.actionName && ourAct.actionDescription == actionToCheck_.actionDescription)
+            {
+                //If the action is the same type and range
+                if(ourAct.type == actionToCheck_.type && ourAct.range == actionToCheck_.range)
+                {
+                    //We have the same action in our list
+                    return true;
+                }
+            }
+        }
+
+        //If we make it out of the loop without finding the action, we return false
+        return false;
+    }
 }
 
 //Class used in ActionList.cs to handle recharging spells
