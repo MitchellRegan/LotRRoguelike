@@ -130,21 +130,7 @@ public class QuestTracker : MonoBehaviour
                 QuestItemReward dupIR = new QuestItemReward();
                 dupIR.rewardItem = ir.rewardItem;
                 dupIR.amount = ir.amount;
-                dupIR.distribution = ir.distribution;
                 duplicateQuest.itemRewards.Add(dupIR);
-            }
-        }
-        //Duplicating all of the skill point rewards if they exist
-        duplicateQuest.skillRewards = new List<QuestSkillPointReward>();
-        if(questToTrack_.skillRewards.Count > 0)
-        {
-            foreach(QuestSkillPointReward sr in questToTrack_.skillRewards)
-            {
-                QuestSkillPointReward dupSR = new QuestSkillPointReward();
-                dupSR.rewardSkill = sr.rewardSkill;
-                dupSR.numPoints = sr.numPoints;
-                dupSR.distribution = sr.distribution;
-                duplicateQuest.skillRewards.Add(dupSR);
             }
         }
         //Duplicating all of the action rewards if they exist
@@ -155,7 +141,7 @@ public class QuestTracker : MonoBehaviour
             {
                 QuestActionReward dupAR = new QuestActionReward();
                 dupAR.rewardAction = ar.rewardAction;
-                dupAR.distribution = ar.distribution;
+                dupAR.rewardDistribution = ar.rewardDistribution;
                 duplicateQuest.actionRewards.Add(dupAR);
             }
         }
@@ -211,60 +197,10 @@ public class QuestTracker : MonoBehaviour
             //Looping through all of the item rewards
             foreach(QuestItemReward ir in completedQuest_.itemRewards)
             {
-                //Distributing based on the reward's distribution type
-                switch(ir.distribution)
-                {
-                    case RewardDistribution.Everyone:
-                        break;
-
-                    case RewardDistribution.OneRandomCharacter:
-                        break;
-
-                    case RewardDistribution.RandomChanceForAll:
-                        break;
-
-                    case RewardDistribution.DistributeEvenly:
-                        break;
-
-                    case RewardDistribution.DistributeRandomly:
-                        break;
-                }
+                Debug.Log("Award the player " + ir.amount + " " + ir.rewardItem.itemNameID);
             }
         }
-
-        //If there are skill point rewards
-        if(completedQuest_.skillRewards.Count > 0)
-        {
-            //Looping through all of the skill point rewards
-            foreach (QuestSkillPointReward sr in completedQuest_.skillRewards)
-            {
-                //Distributing based on the reward's distribution type
-                switch (sr.distribution)
-                {
-                    case RewardDistribution.Everyone:
-                        //Looping through all of the party characters
-                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
-                        {
-                            //Adding this rewarded action to the character's list of default actions
-                            partyChar.charActionList.defaultActions.Add(ar.rewardAction);
-                        }
-                        break;
-
-                    case RewardDistribution.OneRandomCharacter:
-                        break;
-
-                    case RewardDistribution.RandomChanceForAll:
-                        break;
-
-                    case RewardDistribution.DistributeEvenly:
-                        break;
-
-                    case RewardDistribution.DistributeRandomly:
-                        break;
-                }
-            }
-        }
-
+        
         //If there are action rewards
         if(completedQuest_.actionRewards.Count > 0)
         {
@@ -272,9 +208,9 @@ public class QuestTracker : MonoBehaviour
             foreach (QuestActionReward ar in completedQuest_.actionRewards)
             {
                 //Distributing based on the reward's distribution type
-                switch (ar.distribution)
+                switch (ar.rewardDistribution)
                 {
-                    case RewardDistribution.Everyone:
+                    case QuestActionReward.DistributionType.Everyone:
                         //Looping through all of the party characters
                         foreach(Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
                         {
@@ -283,48 +219,15 @@ public class QuestTracker : MonoBehaviour
                         }
                         break;
 
-                    case RewardDistribution.OneRandomCharacter:
+                    case QuestActionReward.DistributionType.OneRandomCharacter:
                         //Getting a random index for the party character who gets this action reward
                         int maxPartyIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.Count;
                         int randIndex = Random.Range(0, maxPartyIndex);
                         CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.defaultActions.Add(ar.rewardAction);
                         break;
 
-                    case RewardDistribution.RandomChanceForAll:
-                        //Looping through all of the party characters
-                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
-                        {
-                            //Getting a random roll for if this character gets the reward
-                            float randRoll = Random.Range(0, 1);
-                            if (randRoll > 0.5f)
-                            {
-                                //Adding this rewarded action to the character's list of default actions
-                                partyChar.charActionList.defaultActions.Add(ar.rewardAction);
-                            }
-                        }
-                        break;
-
-                    case RewardDistribution.DistributeEvenly:
-                        //Looping through all of the party characters
-                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
-                        {
-                            //Adding this rewarded action to the character's list of default actions
-                            partyChar.charActionList.defaultActions.Add(ar.rewardAction);
-                        }
-                        break;
-
-                    case RewardDistribution.DistributeRandomly:
-                        //Looping through all of the party characters
-                        foreach (Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
-                        {
-                            //Getting a random roll for if this character gets the reward
-                            float randRoll = Random.Range(0, 1);
-                            if (randRoll > 0.5f)
-                            {
-                                //Adding this rewarded action to the character's list of default actions
-                                partyChar.charActionList.defaultActions.Add(ar.rewardAction);
-                            }
-                        }
+                    case QuestActionReward.DistributionType.PlayerChoice:
+                        Debug.Log("Award the player " + ar.rewardAction.actionName);
                         break;
                 }
             }
@@ -478,8 +381,6 @@ public class Quest
 
     //The list of item rewards for completing this quest
     public List<QuestItemReward> itemRewards;
-    //The list of skill point rewards for completing this quest
-    public List<QuestSkillPointReward> skillRewards;
     //The list of action rewards for completing this quest
     public List<QuestActionReward> actionRewards;
 
@@ -784,16 +685,6 @@ public class QuestEscortCharacter
 }
 
 
-//Enum used in the quest reward classes to determine how rewards are distributed
-[System.Serializable]
-public enum RewardDistribution
-{
-    Everyone,
-    OneRandomCharacter,
-    RandomChanceForAll,
-    DistributeEvenly,
-    DistributeRandomly
-}
 
 //Class used by Quest to hold item rewards for completing quests
 [System.Serializable]
@@ -803,21 +694,6 @@ public class QuestItemReward
     public Item rewardItem;
     //The amount of items that are awarded
     public int amount = 1;
-    //How this reward is distributed
-    public RewardDistribution distribution = RewardDistribution.Everyone;
-}
-
-
-//Class used by Quest to hold Skill Point rewards for completing quests
-[System.Serializable]
-public class QuestSkillPointReward
-{
-    //The type of skill that is awarded
-    public SkillList rewardSkill = SkillList.Punching;
-    //The number of skill points that are awarded
-    public int numPoints = 5;
-    //How this reward is distributed
-    public RewardDistribution distribution = RewardDistribution.Everyone;
 }
 
 
@@ -827,6 +703,13 @@ public class QuestActionReward
 {
     //The action that is awarded
     public Action rewardAction;
-    //How this reward is distributed
-    public RewardDistribution distribution = RewardDistribution.Everyone;
+    //The way that this action is distributed
+    [System.Serializable]
+    public enum DistributionType
+    {
+        Everyone,
+        OneRandomCharacter,
+        PlayerChoice
+    }
+    public DistributionType rewardDistribution = DistributionType.Everyone;
 }

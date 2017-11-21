@@ -35,6 +35,8 @@ public class QuestMenuUI : MonoBehaviour
     public Text questDescriptionText;
     //The text reference for the displayed quest's objectives
     public Text questObjectivesText;
+    //The text reference for the displayed quest's rewards
+    public Text questRewardText;
     //The gap in space between the text for quest descriptions
     public float textDescriptionGap = 40;
 
@@ -135,6 +137,7 @@ public class QuestMenuUI : MonoBehaviour
                 GameObject newPanelObj = GameObject.Instantiate(this.originalPanel.gameObject);
                 //Setting the panel's parent transform to the same as the original's
                 newPanelObj.transform.SetParent(this.originalPanel.transform.parent);
+                newPanelObj.transform.localScale = new Vector3(1, 1, 1);
                 newQuestPanel = newPanelObj.GetComponent<QuestUIPanel>();
                 //Adding the panel to our list of quest panels
                 this.questPanels.Add(newQuestPanel);
@@ -233,6 +236,8 @@ public class QuestMenuUI : MonoBehaviour
         this.questDescriptionText.text = displayedQuest.questDescription;
         //Setting the displayed quest's objective text
         this.questObjectivesText.text = this.GetQuestObjectiveText(displayedQuest);
+        //Setting the displayed quest's reward text
+        this.questRewardText.text = this.GetQuestRewardText(displayedQuest);
 
         //Refreshing the canvases so the ContentSizeFitter components on the text resizes the text box sizes
         Canvas.ForceUpdateCanvases();
@@ -250,12 +255,20 @@ public class QuestMenuUI : MonoBehaviour
                                                                                             descriptionPos,
                                                                                             0);
 
+        //Setting the reward text's rect transform position just below the quest objective text
+        descriptionPos -= this.questObjectivesText.GetComponent<RectTransform>().rect.height + this.textDescriptionGap;
+        this.questRewardText.GetComponent<RectTransform>().localPosition = new Vector3(this.questRewardText.GetComponent<RectTransform>().localPosition.x,
+                                                                                       descriptionPos,
+                                                                                       0);
+
         //Resizing the discription content view size
         float contentSize = 0;
         contentSize += this.questNameText.GetComponent<RectTransform>().rect.height;
         contentSize += this.questDescriptionText.GetComponent<RectTransform>().rect.height;
         contentSize += this.textDescriptionGap;
         contentSize += this.questObjectivesText.GetComponent<RectTransform>().rect.height;
+        contentSize += this.textDescriptionGap;
+        contentSize += this.questRewardText.GetComponent<RectTransform>().rect.height;
         this.descriptionContentTransform.sizeDelta = new Vector2(0, contentSize);
         
 
@@ -473,5 +486,71 @@ public class QuestMenuUI : MonoBehaviour
 
         //Returning the completed objective list text
         return objectiveText;
+    }
+
+
+    //Function called from DisplayQuestDescription to get the text for the quest rewards
+    private string GetQuestRewardText(Quest quest_)
+    {
+        //If there are no rewards, nothing happens
+        if(quest_.itemRewards.Count == 0 && quest_.actionRewards.Count == 0)
+        {
+            return "";
+        }
+
+        //The string that we return
+        string rewardText = "\n";
+        rewardText += "    Rewards:\n";
+
+        //Looping through each of the item rewards
+        if(quest_.itemRewards.Count > 0)
+        {
+            foreach(QuestItemReward ir in quest_.itemRewards)
+            {
+                rewardText += "Item  - " + ir.rewardItem.itemNameID + "  x" + ir.amount + "\n";
+            }
+        }
+
+        //Looping through each of the action rewards 
+        if (quest_.actionRewards.Count > 0)
+        {
+            foreach (QuestActionReward ar in quest_.actionRewards)
+            {
+                //If the action is a move action
+                if (ar.rewardAction.GetType() == typeof(MoveAction))
+                {
+                    rewardText += "Move Action  - " + ar.rewardAction.actionName;
+                }
+                //If the action is a spell action
+                else if(ar.rewardAction.GetType() == typeof(SpellAction))
+                {
+                    rewardText += "Spell Action  - " + ar.rewardAction.actionName;
+                }
+                //If the action is an attack action
+                else if(ar.rewardAction.GetType() == typeof(AttackAction))
+                {
+                    rewardText += "Attack Action  - " + ar.rewardAction.actionName;
+                }
+
+                //Adding a description so the player knows how the ability is distributed
+                switch(ar.rewardDistribution)
+                {
+                    case QuestActionReward.DistributionType.Everyone:
+                        rewardText += "(All Party Members)\n";
+                        break;
+
+                    case QuestActionReward.DistributionType.OneRandomCharacter:
+                        rewardText += "(Random Party Member)\n";
+                        break;
+
+                    case QuestActionReward.DistributionType.PlayerChoice:
+                        rewardText += "\n";
+                        break;
+                }
+            }
+        }
+
+        //Returning the completed reward list text
+        return rewardText;
     }
 }
