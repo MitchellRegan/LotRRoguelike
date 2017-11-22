@@ -21,14 +21,33 @@ public class QuestRewardUI : MonoBehaviour
 
     [Space(8)]
 
-    //The list of buttons for each player in the party
-    public List<Button> playerPartyButtons;
+    //The list of give all items buttons for each player in the party
+    public List<Button> giveAllItemsButtons;
+    //The list of give one item buttons for each player in the party
+    public List<Button> giveOneItemButtons;
+    //The list of text objects for the item buttons
+    public List<Text> playerButtonItemText;
+
+    [Space(8)]
+
+    //The list of give action buttons for each player in the party
+    public List<Button> giveActionButtons;
     //The list of text for each of the player party buttons
-    public List<Text> playerButtonText;
+    public List<Text> playerButtonActionText;
+
+    [Space(8)]
+
+    //The game object for displaying all of the buttons to give action rewards
+    public GameObject actionRewardButtonPanel;
+    //The game object for displaying all of the buttons to give item rewards
+    public GameObject itemRewardButtonPanel;
     //The game object for the UI screen to give all characters an action
     public GameObject giveAllCharactersActionPanel;
     //The game object for the UI screen to give a random character an action
     public GameObject giveRandomCharacterActionPanel;
+
+    //Int to hold the current amount of item rewards to give
+    private int currentItemRewards = 0;
 
 
     
@@ -60,6 +79,13 @@ public class QuestRewardUI : MonoBehaviour
             //Getting the item reference
             Item rewardItem = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem;
 
+            //Setting the number of items to give away
+            this.currentItemRewards = this.questToDisplay.itemRewards[this.questRewardIndex].amount;
+
+            //Displaying the item buttons
+            this.itemRewardButtonPanel.gameObject.SetActive(true);
+            this.actionRewardButtonPanel.gameObject.SetActive(false);
+
             //Setting the reward text to the item
             this.rewardNameText.text = rewardItem.itemNameID + "  x" + this.questToDisplay.itemRewards[this.questRewardIndex].amount;
             this.rewardDescriptionText.text = "";
@@ -67,13 +93,14 @@ public class QuestRewardUI : MonoBehaviour
             this.actionTypeText.text = "";
 
             //Looping through all of the party characters to display our buttons
-            for (int pc = 0; pc < this.playerPartyButtons.Count; ++pc)
+            for (int pc = 0; pc < this.giveOneItemButtons.Count; ++pc)
             {
                 //If the current player index is null, we hide the player button
                 if (pc >= CharacterManager.globalReference.selectedGroup.charactersInParty.Count || CharacterManager.globalReference.selectedGroup.charactersInParty[pc] == null)
                 {
-                    this.playerPartyButtons[pc].gameObject.SetActive(false);
-                    this.playerButtonText[pc].text = "";
+                    this.giveOneItemButtons[pc].gameObject.SetActive(false);
+                    this.giveAllItemsButtons[pc].gameObject.SetActive(false);
+                    this.playerButtonItemText[pc].text = "";
                 }
                 //If the current player party index is not null, we show the player button and change its name
                 else
@@ -82,19 +109,22 @@ public class QuestRewardUI : MonoBehaviour
                     GameObject testItem = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
                     testItem.GetComponent<Item>().currentStackSize += (uint)this.questToDisplay.itemRewards[this.questRewardIndex].amount;
 
-                    this.playerPartyButtons[pc].gameObject.SetActive(true);
+                    this.giveOneItemButtons[pc].gameObject.SetActive(true);
+                    this.giveAllItemsButtons[pc].gameObject.SetActive(true);
+
                     //If the character at this index has an empty inventory slot we can give it to them
                     if (CharacterManager.globalReference.selectedGroup.charactersInParty[pc].charInventory.CanItemBeAddedToInventory(testItem.GetComponent<Item>()))
                     {
-                        this.playerPartyButtons[pc].interactable = true;
-                        this.playerButtonText[pc].text = "Give to " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
+                        this.giveOneItemButtons[pc].interactable = true;
+                        this.giveAllItemsButtons[pc].interactable = true;
+                        this.playerButtonItemText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
                     }
                     //If the character doesn't has an empty inventory slot, we can't give them the item
                     else
                     {
-                        Debug.Log("Inventory Remaining: " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].charInventory.CheckForEmptySlot());
-                        this.playerPartyButtons[pc].interactable = false;
-                        this.playerButtonText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName + "'s Inventory is Full";
+                        this.giveOneItemButtons[pc].gameObject.SetActive(false);
+                        this.giveAllItemsButtons[pc].gameObject.SetActive(false);
+                        this.playerButtonItemText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName + "'s Inventory is Full";
                     }
                 }
             }
@@ -105,8 +135,12 @@ public class QuestRewardUI : MonoBehaviour
             //Getting the action reference
             Action rewardAct = this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardAction;
 
+            //Displaying the item buttons
+            this.itemRewardButtonPanel.gameObject.SetActive(false);
+            this.actionRewardButtonPanel.gameObject.SetActive(true);
+
             //If the action is awarded to every character
-            switch(this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardDistribution)
+            switch (this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardDistribution)
             {
                 case QuestActionReward.DistributionType.Everyone:
                     //Setting the reward text to the action
@@ -138,24 +172,24 @@ public class QuestRewardUI : MonoBehaviour
                     this.actionTypeText.text = rewardAct.type.ToString();
 
                     //Looping through all of the party characters to display our buttons
-                    for (int pc = 0; pc < this.playerPartyButtons.Count; ++pc)
+                    for (int pc = 0; pc < this.giveActionButtons.Count; ++pc)
                     {
                         //If the current player index is null, we hide the player button
                         if (pc >= CharacterManager.globalReference.selectedGroup.charactersInParty.Count || CharacterManager.globalReference.selectedGroup.charactersInParty[pc] == null)
                         {
-                            this.playerPartyButtons[pc].gameObject.SetActive(false);
-                            this.playerButtonText[pc].text = "";
+                            this.giveActionButtons[pc].gameObject.SetActive(false);
+                            this.playerButtonActionText[pc].text = "";
                         }
                         //If the current player party index is not null, we show the player button and change its name
                         else
                         {
-                            this.playerPartyButtons[pc].gameObject.SetActive(true);
+                            this.giveActionButtons[pc].gameObject.SetActive(true);
 
                             //If the action that we're giving is a spell, we can give it to any character
                             if (rewardAct.GetType() == typeof(SpellAction))
                             {
-                                this.playerPartyButtons[pc].interactable = true;
-                                this.playerButtonText[pc].text = "Give to " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
+                                this.giveActionButtons[pc].interactable = true;
+                                this.playerButtonActionText[pc].text = "Give to " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
                             }
                             //if the action isn't a spell we need to check if the character already has the ability
                             else
@@ -163,14 +197,14 @@ public class QuestRewardUI : MonoBehaviour
                                 //If the character already has this ability in their list of default actions, we can't give it to them
                                 if (CharacterManager.globalReference.selectedGroup.charactersInParty[pc].charActionList.DoesDefaultListContainAction(rewardAct))
                                 {
-                                    this.playerPartyButtons[pc].interactable = false;
-                                    this.playerButtonText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName + " Already Knows This";
+                                    this.giveActionButtons[pc].interactable = false;
+                                    this.playerButtonActionText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName + " Already Knows This";
                                 }
                                 //If the character doesn't have this action in their default actions list, we can give it to them
                                 else
                                 {
-                                    this.playerPartyButtons[pc].interactable = true;
-                                    this.playerButtonText[pc].text = "Give to " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
+                                    this.giveActionButtons[pc].interactable = true;
+                                    this.playerButtonActionText[pc].text = "Give to " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
                                 }
                             }
                         }
@@ -195,8 +229,8 @@ public class QuestRewardUI : MonoBehaviour
         //If the reward is an item
         if (this.questRewardIndex < this.questToDisplay.itemRewards.Count)
         {
-            //Looping through for each amount of the item to give
-            for (int a = 0; a < this.questToDisplay.itemRewards[this.questRewardIndex].amount; ++a)
+            //Looping through for each of the remaining items to give
+            for (int a = 0; a < this.currentItemRewards; ++a)
             {
                 //Creating a new instance of the item
                 GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
@@ -216,6 +250,30 @@ public class QuestRewardUI : MonoBehaviour
         //Increasing the reward index and moving on to the next reward
         this.questRewardIndex += 1;
         this.UpdateRewardDescription();
+    }
+
+
+    //Function called from one of our player party buttons to designate which character gets 1 of the reward items
+    public void GiveOneRewardItemToCharAtIndex(int charIndex_)
+    {
+        //Creating a new instance of the item
+        GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+        //Adding the item to the designated character's inventory
+        Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
+        charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
+
+        //Updating the text to say how many of the item are left
+        this.rewardNameText.text = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.itemNameID + "  x" + this.currentItemRewards;
+
+        //Reducing the current number of remaining item rewards
+        this.currentItemRewards -= 1;
+
+        //If we're out of items for this reward, we move to the next reward
+        if(this.currentItemRewards < 1)
+        {
+            this.questRewardIndex += 1;
+            this.UpdateRewardDescription();
+        }
     }
 
 
