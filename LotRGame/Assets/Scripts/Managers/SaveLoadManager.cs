@@ -368,7 +368,7 @@ public class SaveLoadManager : MonoBehaviour
         this.CheckSaveDirectory(GameData.globalReference.saveFolder);
         
         //Creating a new PlayerProgress class that we'll save
-        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, CharacterManager.globalReference);
+        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
         //Serializing the current progress
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
@@ -589,9 +589,14 @@ public class PlayerProgress
     public List<DeadCharacterInfo> deadCharacters;
     public List<EnemyTileEncounterInfo> enemyTileEncounters;
 
+    //Variables from QuestTracker.cs
+    public List<QuestSaveData> questLog;
+    public List<string> finishedQuests;
+
+
 
     //Constructor function for this class
-    public PlayerProgress(GameData gameData_, TimePanelUI timePanel_, CharacterManager charManager_)
+    public PlayerProgress(GameData gameData_, TimePanelUI timePanel_, CharacterManager charManager_, QuestTracker questTracker_)
     {
         //Setting the GameData.cs variables
         this.difficulty = gameData_.currentDifficulty;
@@ -633,5 +638,15 @@ public class PlayerProgress
             //Adding the enemy encounter info to our list to serialize
             this.enemyTileEncounters.Add(enemyInfo);
         }
+
+        //Looping through all of the quests in our quest log
+        this.questLog = new List<QuestSaveData>();
+        foreach(Quest q in questTracker_.questLog)
+        {
+            this.questLog.Add(new QuestSaveData(q));
+        }
+
+        //Saving all of the finished quest names
+        this.finishedQuests = questTracker_.completedQuestNames;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 [RequireComponent(typeof(CharacterManager))]
 public class QuestTracker : MonoBehaviour
@@ -16,7 +17,8 @@ public class QuestTracker : MonoBehaviour
     public List<Quest> questLog;
 
     //The list of names of quests we've completed
-    private List<string> completedQuestNames;
+    [HideInInspector]
+    public List<string> completedQuestNames;
 
 
 
@@ -364,6 +366,96 @@ public class Quest
             {
                 this.isQuestFailed = true;
             }
+        }
+    }
+}
+
+
+//Class used to save quest data
+[System.Serializable]
+public class QuestSaveData
+{
+    public string questName;
+    public string questDescription;
+    public bool isQuestFailed;
+    public bool canBeAbandoned;
+    public int questHours;
+    public int currentHours;
+    public bool failOnTimeReached;
+    public string turnInLocationObj;
+
+    public List<string> travelDestinations;
+    public List<string> killRequirements;
+    public List<string> fetchList;
+    public List<string> escortList;
+
+    public List<string> itemRewards;
+    public List<string> actionRewards;
+
+
+    //Constructor for this class
+    public QuestSaveData(Quest ourQuest_)
+    {
+        //Saving the basic quest info
+        this.questName = ourQuest_.questName;
+        this.questDescription = ourQuest_.questDescription;
+        this.isQuestFailed = ourQuest_.isQuestFailed;
+        this.canBeAbandoned = ourQuest_.canBeAbandoned;
+        this.questHours = ourQuest_.questTimeHours;
+        this.currentHours = ourQuest_.currentHours;
+        this.failOnTimeReached = ourQuest_.failOnTimeReached;
+
+        //Serializing the turn in location if it exists
+        if (ourQuest_.turnInQuestLoaction != null)
+        {
+            GameObject locPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ourQuest_.turnInQuestLoaction.gameObject) as GameObject;
+            this.turnInLocationObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(locPrefab));
+        }
+        else
+        {
+            this.turnInLocationObj = "";
+        }
+
+        //Looping through all of our travel destinations
+        this.travelDestinations = new List<string>();
+        foreach(QuestTravelDestination td in ourQuest_.destinationList)
+        {
+            .//How to serialize correctly....
+        }
+
+        //Looping through all of our kill requirements
+        this.killRequirements = new List<string>();
+        foreach(QuestKillRequirement kr in ourQuest_.killList)
+        {
+
+        }
+
+        //Looping through all of our fetch lists
+        this.fetchList = new List<string>();
+        foreach(QuestFetchItems fi in ourQuest_.fetchList)
+        {
+
+        }
+
+        //Looping through all of our escort lists
+        this.escortList = new List<string>();
+        foreach(QuestEscortCharacter ec in ourQuest_.escortList)
+        {
+
+        }
+
+        //Looping through all of our reward items
+        this.itemRewards = new List<string>();
+        foreach(QuestItemReward ir in ourQuest_.itemRewards)
+        {
+
+        }
+
+        //Looping through all of our reward actions
+        this.actionRewards = new List<string>();
+        foreach(QuestActionReward ar in ourQuest_.actionRewards)
+        {
+
         }
     }
 }
