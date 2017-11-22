@@ -553,7 +553,7 @@ public class SaveLoadManager : MonoBehaviour
         
         //Setting the dead characters from CharacterManager.cs
         CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
-
+        
         //Setting the quest log for QuestTracker.cs
         QuestTracker.globalReference.LoadQuestLogData(loadedProgress.questLog);
 
@@ -646,7 +646,7 @@ public class PlayerProgress
         this.questLog = new List<string>();
         foreach(Quest q in questTracker_.questLog)
         {
-            this.questLog.Add(JsonUtility.ToJson(new QuestSaveData(q)));
+            this.questLog.Add(JsonUtility.ToJson(new QuestSaveData(q), true));
         }
 
         //Saving all of the finished quest names
