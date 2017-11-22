@@ -15,6 +15,9 @@ public class QuestTracker : MonoBehaviour
     [HideInInspector]
     public List<Quest> questLog;
 
+    //The list of names of quests we've completed
+    private List<string> completedQuestNames;
+
 
 
     //Function called when this object is created
@@ -32,6 +35,7 @@ public class QuestTracker : MonoBehaviour
 
         //Initializing our list of quests
         this.questLog = new List<Quest>();
+        this.completedQuestNames = new List<string>();
     }
     
 
@@ -179,58 +183,11 @@ public class QuestTracker : MonoBehaviour
                 }
             }
 
-            //Distributing the quest rewards
-            this.DistributeQuestRewards(this.questLog[questIndex_]);
+            //Adding this quest to our list of completed quests
+            this.completedQuestNames.Add(this.questLog[questIndex_].questName);
 
             //Removing this quest from our quest log
             this.questLog.RemoveAt(questIndex_);
-        }
-    }
-
-
-    //Function called from CompleteQuestAtIndex to distribute quest rewards
-    private void DistributeQuestRewards(Quest completedQuest_)
-    {
-        //If there are item rewards
-        if(completedQuest_.itemRewards.Count > 0)
-        {
-            //Looping through all of the item rewards
-            foreach(QuestItemReward ir in completedQuest_.itemRewards)
-            {
-                Debug.Log("Award the player " + ir.amount + " " + ir.rewardItem.itemNameID);
-            }
-        }
-        
-        //If there are action rewards
-        if(completedQuest_.actionRewards.Count > 0)
-        {
-            //Looping through all of the action rewards
-            foreach (QuestActionReward ar in completedQuest_.actionRewards)
-            {
-                //Distributing based on the reward's distribution type
-                switch (ar.rewardDistribution)
-                {
-                    case QuestActionReward.DistributionType.Everyone:
-                        //Looping through all of the party characters
-                        foreach(Character partyChar in CharacterManager.globalReference.selectedGroup.charactersInParty)
-                        {
-                            //Adding this rewarded action to the character's list of default actions
-                            partyChar.charActionList.defaultActions.Add(ar.rewardAction);
-                        }
-                        break;
-
-                    case QuestActionReward.DistributionType.OneRandomCharacter:
-                        //Getting a random index for the party character who gets this action reward
-                        int maxPartyIndex = CharacterManager.globalReference.selectedGroup.charactersInParty.Count;
-                        int randIndex = Random.Range(0, maxPartyIndex);
-                        CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.defaultActions.Add(ar.rewardAction);
-                        break;
-
-                    case QuestActionReward.DistributionType.PlayerChoice:
-                        Debug.Log("Award the player " + ar.rewardAction.actionName);
-                        break;
-                }
-            }
         }
     }
 

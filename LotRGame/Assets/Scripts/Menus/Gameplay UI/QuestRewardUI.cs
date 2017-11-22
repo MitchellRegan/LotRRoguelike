@@ -25,6 +25,10 @@ public class QuestRewardUI : MonoBehaviour
     public List<Button> playerPartyButtons;
     //The list of text for each of the player party buttons
     public List<Text> playerButtonText;
+    //The game object for the UI screen to give all characters an action
+    public GameObject giveAllCharactersActionPanel;
+    //The game object for the UI screen to give a random character an action
+    public GameObject giveRandomCharacterActionPanel;
 
 
     
@@ -74,9 +78,13 @@ public class QuestRewardUI : MonoBehaviour
                 //If the current player party index is not null, we show the player button and change its name
                 else
                 {
+                    //Creating a test object to see if the characters have enough room
+                    GameObject testItem = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+                    testItem.GetComponent<Item>().currentStackSize += (uint)this.questToDisplay.itemRewards[this.questRewardIndex].amount;
+
                     this.playerPartyButtons[pc].gameObject.SetActive(true);
                     //If the character at this index has an empty inventory slot we can give it to them
-                    if (CharacterManager.globalReference.selectedGroup.charactersInParty[pc].charInventory.CheckForEmptySlot() > 0)
+                    if (CharacterManager.globalReference.selectedGroup.charactersInParty[pc].charInventory.CanItemBeAddedToInventory(testItem.GetComponent<Item>()))
                     {
                         this.playerPartyButtons[pc].interactable = true;
                         this.playerButtonText[pc].text = "Give to " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName;
@@ -84,6 +92,7 @@ public class QuestRewardUI : MonoBehaviour
                     //If the character doesn't has an empty inventory slot, we can't give them the item
                     else
                     {
+                        Debug.Log("Inventory Remaining: " + CharacterManager.globalReference.selectedGroup.charactersInParty[pc].charInventory.CheckForEmptySlot());
                         this.playerPartyButtons[pc].interactable = false;
                         this.playerButtonText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName + "'s Inventory is Full";
                     }
@@ -100,50 +109,25 @@ public class QuestRewardUI : MonoBehaviour
             switch(this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardDistribution)
             {
                 case QuestActionReward.DistributionType.Everyone:
-                    //Looping through all of the characters in the player party
-                    foreach(Character pc in CharacterManager.globalReference.selectedGroup.charactersInParty)
-                    {
-                        //If the action is a spell OR a non-spell that they don't know, we add it to the character's default action list by default
-                        if(rewardAct.GetType() == typeof(SpellAction) || !pc.charActionList.DoesDefaultListContainAction(rewardAct))
-                        {
-                            pc.charActionList.defaultActions.Add(rewardAct);
-                        }
-                    }
+                    //Setting the reward text to the action
+                    this.rewardNameText.text = rewardAct.actionName;
+                    this.rewardDescriptionText.text = rewardAct.actionDescription;
+                    this.actionDistanceText.text = "Range: " + rewardAct.range;
+                    this.actionTypeText.text = rewardAct.type.ToString();
 
-                    //Moving on to the next reward
-                    this.questRewardIndex += 1;
-                    this.UpdateRewardDescription();
+                    //Showing the panel to give all characters the action
+                    this.giveAllCharactersActionPanel.gameObject.SetActive(true);
                     break;
 
                 case QuestActionReward.DistributionType.OneRandomCharacter:
-                    //Making a list of all character slots in the party
-                    List<int> partyCharIndexes = new List<int>();
-                    for(int i = 0; i < CharacterManager.globalReference.selectedGroup.charactersInParty.Count; ++i)
-                    {
-                        partyCharIndexes.Add(i);
-                    }
+                    //Setting the reward text to the action
+                    this.rewardNameText.text = rewardAct.actionName;
+                    this.rewardDescriptionText.text = rewardAct.actionDescription;
+                    this.actionDistanceText.text = "Range: " + rewardAct.range;
+                    this.actionTypeText.text = rewardAct.type.ToString();
 
-                    //Looping until we're out of valid characters to give the action to
-                    while(partyCharIndexes.Count > 0)
-                    {
-                        //Getting a random character index from the party group
-                        int randIndex = Random.Range(0, partyCharIndexes.Count);
-                        //Making sure the index isn't empty first
-                        if(CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex] != null)
-                        {
-                            //If the action is a spell OR a non-spell that they don't know, we add it to the character's default action list
-                            if(rewardAct.GetType() == typeof(SpellAction) || 
-                                !CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.DoesDefaultListContainAction(rewardAct))
-                            {
-                                CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.defaultActions.Add(rewardAct);
-                                break;
-                            }
-                        }
-                    }
-
-                    //Moving on to the next reward
-                    this.questRewardIndex += 1;
-                    this.UpdateRewardDescription();
+                    //Showing the panel to give a random character the action
+                    this.giveRandomCharacterActionPanel.gameObject.SetActive(true);
                     break;
 
                 case QuestActionReward.DistributionType.PlayerChoice:
@@ -208,11 +192,95 @@ public class QuestRewardUI : MonoBehaviour
     //Function called from one of our player party buttons to designate which character gets the reward
     public void GiveRewardToCharacterAtIndex(int charIndex_)
     {
-
+        //If the reward is an item
+        if (this.questRewardIndex < this.questToDisplay.itemRewards.Count)
+        {
+            //Looping through for each amount of the item to give
+            for (int a = 0; a < this.questToDisplay.itemRewards[this.questRewardIndex].amount; ++a)
+            {
+                //Creating a new instance of the item
+                GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+                //Adding the item to the designated character's inventory
+                Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
+                charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
+            }
+        }
+        //if the reward is an action
+        else
+        {
+            //Adding the ability to the designated character's default action list
+            Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
+            charToGive.charActionList.defaultActions.Add(this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardAction);
+        }
 
         //Increasing the reward index and moving on to the next reward
         this.questRewardIndex += 1;
         this.UpdateRewardDescription();
+    }
+
+
+    //Function called externally to give all of the party characters the reward ability
+    public void GiveAbilityToAllPartyCharacters()
+    {
+        //The action reward for all characters
+        Action rewardAct = this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardAction;
+
+        //Looping through all of the characters in the player party
+        foreach (Character pc in CharacterManager.globalReference.selectedGroup.charactersInParty)
+        {
+            //If the action is a spell OR a non-spell that they don't know, we add it to the character's default action list by default
+            if (rewardAct.GetType() == typeof(SpellAction) || !pc.charActionList.DoesDefaultListContainAction(rewardAct))
+            {
+                pc.charActionList.defaultActions.Add(rewardAct);
+            }
+        }
+
+        //Moving on to the next reward
+        this.questRewardIndex += 1;
+        this.UpdateRewardDescription();
+
+        //Hiding the panel
+        this.giveAllCharactersActionPanel.gameObject.SetActive(false);
+    }
+
+
+    //Function called externally to give a random party character the reward ability
+    public void GiveAbilityToRandomCharacter()
+    {
+        //The action reward for all characters
+        Action rewardAct = this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardAction;
+
+        //Making a list of all character slots in the party
+        List<int> partyCharIndexes = new List<int>();
+        for (int i = 0; i < CharacterManager.globalReference.selectedGroup.charactersInParty.Count; ++i)
+        {
+            partyCharIndexes.Add(i);
+        }
+
+        //Looping until we're out of valid characters to give the action to
+        while (partyCharIndexes.Count > 0)
+        {
+            //Getting a random character index from the party group
+            int randIndex = Random.Range(0, partyCharIndexes.Count);
+            //Making sure the index isn't empty first
+            if (CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex] != null)
+            {
+                //If the action is a spell OR a non-spell that they don't know, we add it to the character's default action list
+                if (rewardAct.GetType() == typeof(SpellAction) ||
+                    !CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.DoesDefaultListContainAction(rewardAct))
+                {
+                    CharacterManager.globalReference.selectedGroup.charactersInParty[randIndex].charActionList.defaultActions.Add(rewardAct);
+                    break;
+                }
+            }
+        }
+
+        //Moving on to the next reward
+        this.questRewardIndex += 1;
+        this.UpdateRewardDescription();
+
+        //Hiding the panel
+        this.giveRandomCharacterActionPanel.gameObject.SetActive(false);
     }
 
 
