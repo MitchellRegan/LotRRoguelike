@@ -784,8 +784,8 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     thisButtonUI.UpdateImages();
                     hitButtonUI.UpdateImages();
                     //Updating both of the inventory weights
-                    thisButtonUI.selectedCharacterInventory.FindTotalWeight();
-                    hitButtonUI.selectedCharacterInventory.FindTotalWeight();
+                    thisButtonUI.selectedCharacterInventory.FindArmorStats();
+                    hitButtonUI.selectedCharacterInventory.FindArmorStats();
                 }
             }
         }
@@ -978,7 +978,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         //Updating the UI for the inventory
         thisButtonUI.UpdateImages();
         //Updating the inventory weight
-        thisButtonUI.selectedCharacterInventory.FindTotalWeight();
+        thisButtonUI.selectedCharacterInventory.FindArmorStats();
     }
 
 

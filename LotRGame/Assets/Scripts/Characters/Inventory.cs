@@ -180,12 +180,12 @@ public class Inventory : MonoBehaviour
         }
 
         //Finding the weight
-        this.FindTotalWeight();
+        this.FindArmorStats();
     }
 
 
     //Finds the total weight in kilograms of all items in this inventory
-    public void FindTotalWeight()
+    public void FindArmorStats()
     {
         //The sum of the weight that'll be set
         float weightSum = 0;
@@ -397,6 +397,14 @@ public class Inventory : MonoBehaviour
         this.totalRockResist = rockResistSum;
         this.totalHolyResist = lightResistSum;
         this.totalDarkResist = darkResistSum;
+
+        //If the character that this component is on is a player character
+        if (CharacterManager.globalReference != null && CharacterManager.globalReference.selectedGroup != null &&
+            CharacterManager.globalReference.selectedGroup.charactersInParty.Contains(this.GetComponent<Character>()))
+        {
+            //Updating the QuestTracker so we know if any fetch quests have been completed
+            QuestTracker.globalReference.UpdateFetchQuests();
+        }
     }
 
 
@@ -486,7 +494,7 @@ public class Inventory : MonoBehaviour
                 itemToAdd_.transform.SetParent(this.transform);
 
                 //Update the weight
-                this.FindTotalWeight();
+                this.FindArmorStats();
 
                 return true;
             }
@@ -523,7 +531,7 @@ public class Inventory : MonoBehaviour
                         this.itemSlots[s].currentStackSize += 1;
 
                         //Update the total weight
-                        this.FindTotalWeight();
+                        this.FindArmorStats();
 
                         return true;
                     }
@@ -546,7 +554,7 @@ public class Inventory : MonoBehaviour
                                 this.itemSlots[s].currentStackSize += 1;
 
                                 //Update the total weight
-                                this.FindTotalWeight();
+                                this.FindArmorStats();
 
                                 return true;
                             }
@@ -637,8 +645,8 @@ public class Inventory : MonoBehaviour
         }
 
         //Calculating the new weight for this inventory and the other inventory
-        this.FindTotalWeight();
-        otherInventory_.FindTotalWeight();
+        this.FindArmorStats();
+        otherInventory_.FindArmorStats();
     }
 
 
@@ -1014,7 +1022,7 @@ public class Inventory : MonoBehaviour
         }
 
         //Updating this inventory's weight
-        this.FindTotalWeight();
+        this.FindArmorStats();
     }
 
 
@@ -1096,7 +1104,7 @@ public class Inventory : MonoBehaviour
         }
 
         //Updating this inventory's weight
-        this.FindTotalWeight();
+        this.FindArmorStats();
     }
 
 
@@ -1125,7 +1133,7 @@ public class Inventory : MonoBehaviour
         }
 
         //Updating this inventory's weight
-        this.FindTotalWeight();
+        this.FindArmorStats();
     }
 
 

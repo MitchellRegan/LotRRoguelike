@@ -126,6 +126,9 @@ public class QuestRewardUI : MonoBehaviour
                         this.giveAllItemsButtons[pc].gameObject.SetActive(false);
                         this.playerButtonItemText[pc].text = CharacterManager.globalReference.selectedGroup.charactersInParty[pc].firstName + "'s Inventory is Full";
                     }
+
+                    //Destroying the test object
+                    Destroy(testItem);
                 }
             }
         }
@@ -226,24 +229,52 @@ public class QuestRewardUI : MonoBehaviour
     //Function called from one of our player party buttons to designate which character gets the reward
     public void GiveRewardToCharacterAtIndex(int charIndex_)
     {
+        //Reference to the character that we're giving the reward to
+        Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
+
         //If the reward is an item
         if (this.questRewardIndex < this.questToDisplay.itemRewards.Count)
         {
+            //Item to test if the character has enough inventory space for the whole stack
+            GameObject testItem = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+
             //Looping through for each of the remaining items to give
-            for (int a = 0; a < this.currentItemRewards; ++a)
+            int stackSize = this.currentItemRewards;
+            for (int a = 0; a < stackSize; ++a)
             {
-                //Creating a new instance of the item
-                GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
-                //Adding the item to the designated character's inventory
-                Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
-                charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
+                //Making sure this item can be added to the character's inventory
+                if (charToGive.charInventory.CanItemBeAddedToInventory(testItem.GetComponent<Item>()))
+                {
+                    //Creating a new instance of the item
+                    GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+                    //Adding the item to the designated character's inventory
+                    charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
+                    //Removing 1 from our current item rewards
+                    this.currentItemRewards -= 1;
+                }
+                //If there's not enough room for the item and we still have some left, we stop this loop
+                else
+                {
+                    //Updating the text to say how many of the item are left
+                    this.rewardNameText.text = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.itemNameID + "  x" + this.currentItemRewards;
+                    //Hiding the buttons that give this character items
+                    this.giveOneItemButtons[charIndex_].gameObject.SetActive(false);
+                    this.giveAllItemsButtons[charIndex_].gameObject.SetActive(false);
+                    this.playerButtonItemText[charIndex_].text = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_].firstName + "'s Inventory is Full";
+                    //Destroying the test item once we're done
+                    Destroy(testItem);
+                    //Breaking out of this function so we don't go to the next reward yet
+                    return;
+                }
             }
+
+            //Destroying the test item once we're done
+            Destroy(testItem);
         }
-        //if the reward is an action
+        //If the reward is an action
         else
         {
             //Adding the ability to the designated character's default action list
-            Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
             charToGive.charActionList.defaultActions.Add(this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardAction);
         }
 
@@ -262,17 +293,26 @@ public class QuestRewardUI : MonoBehaviour
         Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
         charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
 
-        //Updating the text to say how many of the item are left
-        this.rewardNameText.text = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.itemNameID + "  x" + this.currentItemRewards;
-
         //Reducing the current number of remaining item rewards
         this.currentItemRewards -= 1;
+
+        //Updating the text to say how many of the item are left
+        this.rewardNameText.text = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.itemNameID + "  x" + this.currentItemRewards;
 
         //If we're out of items for this reward, we move to the next reward
         if(this.currentItemRewards < 1)
         {
             this.questRewardIndex += 1;
             this.UpdateRewardDescription();
+            return;
+        }
+        //If this character's inventory is now full
+        if(!charToGive.charInventory.CanItemBeAddedToInventory(rewardObject.GetComponent<Item>()))
+        {
+            //Hiding the buttons that give this character items
+            this.giveOneItemButtons[charIndex_].gameObject.SetActive(false);
+            this.giveAllItemsButtons[charIndex_].gameObject.SetActive(false);
+            this.playerButtonItemText[charIndex_].text = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_].firstName + "'s Inventory is Full";
         }
     }
 

@@ -236,7 +236,7 @@ public class Character : MonoBehaviour
                 }
             }
         }
-        this.charInventory.FindTotalWeight();
+        this.charInventory.FindArmorStats();
         
         //Setting the variables in Skill.cs
         this.charSkills.cooking = saveData_.cooking;

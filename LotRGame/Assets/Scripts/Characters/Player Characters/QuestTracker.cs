@@ -479,7 +479,7 @@ public class QuestFetchItems
                         //If we've found enough collectable items for this quest, we stop this function
                         if(collectedItemsCount >= this.itemsRequired)
                         {
-                            this.currentItems = checked((int)collectedItemsCount);
+                            this.currentItems = this.itemsRequired;
                             return;
                         }
                     }
@@ -495,11 +495,11 @@ public class QuestFetchItems
                     //If the item component on the right hand weapon matches our collectable, it counts
                     if(partyCharacter.charInventory.rightHand.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                     {
-                        this.currentItems += 1;
+                        collectedItemsCount += 1;
                         //If we've found enough collectable items for this quest, we stop this function
                         if (collectedItemsCount >= this.itemsRequired)
                         {
-                            this.currentItems = checked((int)collectedItemsCount);
+                            this.currentItems = this.itemsRequired;
                             return;
                         }
                     }
@@ -510,11 +510,11 @@ public class QuestFetchItems
                     //If the item component on the left hand weapon matches our collectable, it counts
                     if (partyCharacter.charInventory.leftHand.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                     {
-                        this.currentItems += 1;
+                        collectedItemsCount += 1;
                         //If we've found enough collectable items for this quest, we stop this function
                         if (collectedItemsCount >= this.itemsRequired)
                         {
-                            this.currentItems = checked((int)collectedItemsCount);
+                            this.currentItems = this.itemsRequired;
                             return;
                         }
                     }
@@ -528,93 +528,95 @@ public class QuestFetchItems
                 //Checking the helm
                 if (partyCharacter.charInventory.helm != null && partyCharacter.charInventory.helm.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the chest
                 if (partyCharacter.charInventory.chestPiece != null && partyCharacter.charInventory.chestPiece.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the legs
                 if (partyCharacter.charInventory.leggings != null && partyCharacter.charInventory.leggings.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the gloves
                 if (partyCharacter.charInventory.gloves != null && partyCharacter.charInventory.gloves.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the shoes
                 if (partyCharacter.charInventory.shoes != null && partyCharacter.charInventory.shoes.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the cloak
                 if (partyCharacter.charInventory.cloak != null && partyCharacter.charInventory.cloak.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the necklace
                 if (partyCharacter.charInventory.necklace != null && partyCharacter.charInventory.necklace.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
                 //Checking the helm
                 if (partyCharacter.charInventory.ring != null && partyCharacter.charInventory.ring.GetComponent<Item>().itemNameID == this.collectableItem.itemNameID)
                 {
-                    this.currentItems += 1;
+                    collectedItemsCount += 1;
                     //If we've found enough collectable items for this quest, we stop this function
                     if (collectedItemsCount >= this.itemsRequired)
                     {
-                        this.currentItems = checked((int)collectedItemsCount);
+                        this.currentItems = this.itemsRequired;
                         return;
                     }
                 }
             }
         }
+
+        this.currentItems = (int)collectedItemsCount;
     }
 }
 
