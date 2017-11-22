@@ -554,6 +554,9 @@ public class SaveLoadManager : MonoBehaviour
         //Setting the dead characters from CharacterManager.cs
         CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
 
+        //Setting the quest log for QuestTracker.cs
+        QuestTracker.globalReference.LoadQuestLogData(loadedProgress.questLog);
+
         //Setting the enemy encounters on the tile grid for CharacterManager.cs
         for(int e = 0; e < loadedProgress.enemyTileEncounters.Count; ++e)
         {
@@ -590,7 +593,7 @@ public class PlayerProgress
     public List<EnemyTileEncounterInfo> enemyTileEncounters;
 
     //Variables from QuestTracker.cs
-    public List<QuestSaveData> questLog;
+    public List<string> questLog;
     public List<string> finishedQuests;
 
 
@@ -640,10 +643,10 @@ public class PlayerProgress
         }
 
         //Looping through all of the quests in our quest log
-        this.questLog = new List<QuestSaveData>();
+        this.questLog = new List<string>();
         foreach(Quest q in questTracker_.questLog)
         {
-            this.questLog.Add(new QuestSaveData(q));
+            this.questLog.Add(JsonUtility.ToJson(new QuestSaveData(q)));
         }
 
         //Saving all of the finished quest names

@@ -293,6 +293,148 @@ public class QuestTracker : MonoBehaviour
             }
         }
     }
+
+
+    //Function called from SaveLoadManager.cs to load in saved quest data
+    public void LoadQuestLogData(List<string> qSave_)
+    {
+        //Looping through each quest save data class that was loaded
+        foreach(string loadQuest in qSave_)
+        {
+            //De-serializing the loaded quest string to a QuestSaveData class
+            QuestSaveData questData = JsonUtility.FromJson(loadQuest, typeof(QuestSaveData)) as QuestSaveData;
+            //Creating a new quest to hold the laoded data
+            Quest q = new Quest();
+
+            //Setting all of the basic quest info
+            q.questName = questData.questName;
+            q.questDescription = questData.questDescription;
+            q.isQuestFailed = questData.isQuestFailed;
+            q.canBeAbandoned = questData.canBeAbandoned;
+            q.questTimeHours = questData.questHours;
+            q.currentHours = questData.currentHours;
+            q.failOnTimeReached = questData.failOnTimeReached;
+            if (questData.turnInLocationObj == "")
+            {
+                q.turnInQuestLoaction = null;
+            }
+            else
+            {
+                GameObject turnInLocObj = JsonUtility.FromJson(questData.turnInLocationObj, typeof(GameObject)) as GameObject;
+                q.turnInQuestLoaction = turnInLocObj.GetComponent<MapLocation>();
+            }
+
+            //Looping through all of our travel destinations
+            q.destinationList = new List<QuestTravelDestination>();
+            for(int td = 0; td < questData.travelDestinations.Count; ++td)
+            {
+                //Getting a new quest destination class to add to our quest's list
+                QuestTravelDestination questDestination = new QuestTravelDestination();
+
+                //Getting the map location for this destination
+                string loadLoc = questData.travelDestinations[td];
+                GameObject mapLocObj = JsonUtility.FromJson(loadLoc, typeof(GameObject)) as GameObject;
+
+                questDestination.locationVisited = mapLocObj.GetComponent<MapLocation>();
+                questDestination.locationVisited = questData.destinationTraveledTo[td];
+
+                //Adding the quest destination to our quest
+                q.destinationList.Add(questDestination);
+            }
+
+            //Looping through all of our kill lists
+            q.killList = new List<QuestKillRequirement>();
+            for(int kr = 0; kr < questData.killTargets.Count; ++kr)
+            {
+                //Getting a new quest kill class to add to our quest's list
+                QuestKillRequirement questKill = new QuestKillRequirement();
+
+                //Getting the character to kill for this requirement
+                string loadKill = questData.killTargets[kr];
+                GameObject targetObj = JsonUtility.FromJson(loadKill, typeof(GameObject)) as GameObject;
+
+                questKill.killableEnemy = targetObj.GetComponent<Character>();
+                questKill.killsRequired = questData.requiredKillAmount[kr];
+                questKill.currentKills = questData.currentKillAmount[kr];
+
+                //Adding the kill requirement to our quest
+                q.killList.Add(questKill);
+            }
+
+            //Looping through all of our fetch items
+            q.fetchList = new List<QuestFetchItems>();
+            for(int fi = 0; fi < questData.fetchItems.Count; ++fi)
+            {
+                //Getting a new fetch item class to add to our quest's list
+                QuestFetchItems questFetch = new QuestFetchItems();
+
+                //Getting the item to collect for this requirement
+                string loadItem = questData.fetchItems[fi];
+                GameObject itemObj = JsonUtility.FromJson(loadItem, typeof(GameObject)) as GameObject;
+
+                questFetch.collectableItem = itemObj.GetComponent<Item>();
+                questFetch.itemsRequired = questData.requiredItemAmount[fi];
+                questFetch.currentItems = questData.currentItemAmount[fi];
+
+                //Adding the item requirement to our quest
+                q.fetchList.Add(questFetch);
+            }
+
+            //Looping through all of our escort characters
+            q.escortList = new List<QuestEscortCharacter>();
+            for(int ec = 0; ec < questData.escortCharacters.Count; ++ec)
+            {
+                //Getting a new escort class to add to our quest's list
+                QuestEscortCharacter questEscort = new QuestEscortCharacter();
+
+                //Getting the character to escort for this requirement
+                string loadChar = questData.escortCharacters[ec];
+                GameObject charObj = JsonUtility.FromJson(loadChar, typeof(GameObject)) as GameObject;
+
+                questEscort.characterToEscort = charObj.GetComponent<Character>();
+                questEscort.isCharacterDead = questData.areEscortsDead[ec];
+
+                //Adding the escort requirement to our quest
+                q.escortList.Add(questEscort);
+            }
+
+            //Looping through all of our item rewards
+            q.itemRewards = new List<QuestItemReward>();
+            for(int ir = 0; ir < questData.itemRewards.Count; ++ir)
+            {
+                //Getting a new item reward class to add to our quest's list
+                QuestItemReward itemReward = new QuestItemReward();
+
+                //Getting the item that is awarded
+                string loadItem = questData.itemRewards[ir];
+                GameObject itemObj = JsonUtility.FromJson(loadItem, typeof(GameObject)) as GameObject;
+
+                itemReward.rewardItem = itemObj.GetComponent<Item>();
+                itemReward.amount = questData.itemRewardAmounts[ir];
+
+                //Adding the item reward to our quest
+                q.itemRewards.Add(itemReward);
+            }
+
+            //Looping through all of our action rewards
+            q.actionRewards = new List<QuestActionReward>();
+            for(int ar = 0; ar < questData.actionRewards.Count; ++ar)
+            {
+                //Getting a new action reward class to add to our quest's list
+                QuestActionReward actionReward = new QuestActionReward();
+
+                //Getting the action object that is awarded
+                string loadAction = questData.actionRewards[ar];
+                GameObject actionObj = JsonUtility.FromJson(loadAction, typeof(GameObject)) as GameObject;
+
+                actionReward.rewardAction = actionObj.GetComponent<Action>();
+                actionReward.rewardDistribution = questData.actionDistributionTypes[ar];
+
+                //Adding the action reward to our quests
+                q.actionRewards.Add(actionReward);
+            }
+        }
+    }
 }
 
 
@@ -375,6 +517,7 @@ public class Quest
 [System.Serializable]
 public class QuestSaveData
 {
+    //Variables for the quest's basic info
     public string questName;
     public string questDescription;
     public bool isQuestFailed;
@@ -384,13 +527,26 @@ public class QuestSaveData
     public bool failOnTimeReached;
     public string turnInLocationObj;
 
+    //Variables for travel destination quests
     public List<string> travelDestinations;
-    public List<string> killRequirements;
-    public List<string> fetchList;
-    public List<string> escortList;
-
+    public List<bool> destinationTraveledTo;
+    //Variables for kill quests
+    public List<string> killTargets;
+    public List<int> requiredKillAmount;
+    public List<int> currentKillAmount;
+    //Variables for fetch quests
+    public List<string> fetchItems;
+    public List<int> requiredItemAmount;
+    public List<int> currentItemAmount;
+    //Variables for escort quests
+    public List<string> escortCharacters;
+    public List<bool> areEscortsDead;
+    //Variables for item rewards
     public List<string> itemRewards;
+    public List<int> itemRewardAmounts;
+    //Variables for action rewards
     public List<string> actionRewards;
+    public List<QuestActionReward.DistributionType> actionDistributionTypes;
 
 
     //Constructor for this class
@@ -408,7 +564,7 @@ public class QuestSaveData
         //Serializing the turn in location if it exists
         if (ourQuest_.turnInQuestLoaction != null)
         {
-            GameObject locPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ourQuest_.turnInQuestLoaction.gameObject) as GameObject;
+            GameObject locPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ourQuest_.turnInQuestLoaction.gameObject);
             this.turnInLocationObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(locPrefab));
         }
         else
@@ -418,44 +574,66 @@ public class QuestSaveData
 
         //Looping through all of our travel destinations
         this.travelDestinations = new List<string>();
+        this.destinationTraveledTo = new List<bool>();
         foreach(QuestTravelDestination td in ourQuest_.destinationList)
         {
-            .//How to serialize correctly....
+            GameObject locationPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(td.requiredLocation.gameObject);
+            this.travelDestinations.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(locationPrefab)));
+            this.destinationTraveledTo.Add(td.locationVisited);
         }
 
         //Looping through all of our kill requirements
-        this.killRequirements = new List<string>();
+        this.killTargets = new List<string>();
+        this.requiredKillAmount = new List<int>();
+        this.currentKillAmount = new List<int>();
         foreach(QuestKillRequirement kr in ourQuest_.killList)
         {
-
+            GameObject targetPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(kr.killableEnemy.gameObject);
+            this.killTargets.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(targetPrefab)));
+            this.requiredKillAmount.Add(kr.killsRequired);
+            this.currentKillAmount.Add(kr.currentKills);
         }
 
         //Looping through all of our fetch lists
-        this.fetchList = new List<string>();
+        this.fetchItems = new List<string>();
+        this.requiredItemAmount = new List<int>();
+        this.currentItemAmount = new List<int>();
         foreach(QuestFetchItems fi in ourQuest_.fetchList)
         {
-
+            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(fi.collectableItem.gameObject);
+            this.fetchItems.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab)));
+            this.requiredItemAmount.Add(fi.itemsRequired);
+            this.currentItemAmount.Add(fi.currentItems);
         }
 
         //Looping through all of our escort lists
-        this.escortList = new List<string>();
+        this.escortCharacters = new List<string>();
+        this.areEscortsDead = new List<bool>();
         foreach(QuestEscortCharacter ec in ourQuest_.escortList)
         {
-
+            GameObject characterPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ec.characterToEscort.gameObject);
+            this.escortCharacters.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(characterPrefab)));
+            this.areEscortsDead.Add(ec.isCharacterDead);
         }
 
         //Looping through all of our reward items
         this.itemRewards = new List<string>();
+        this.itemRewardAmounts = new List<int>();
         foreach(QuestItemReward ir in ourQuest_.itemRewards)
         {
-
+            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ir.rewardItem.gameObject);
+            this.itemRewards.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab)));
+            this.itemRewardAmounts.Add(ir.amount);
         }
 
         //Looping through all of our reward actions
         this.actionRewards = new List<string>();
+        this.actionDistributionTypes = new List<QuestActionReward.DistributionType>();
         foreach(QuestActionReward ar in ourQuest_.actionRewards)
         {
-
+            GameObject actionPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ar.rewardAction.gameObject);
+            this.actionRewards.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(actionPrefab)));
+            this.actionDistributionTypes.Add(ar.rewardDistribution);
         }
     }
 }
