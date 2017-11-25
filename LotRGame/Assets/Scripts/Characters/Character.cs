@@ -80,6 +80,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.helmObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.helm = itemObj.GetComponent<Armor>();
         }
@@ -91,6 +92,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.chestObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.chestPiece = itemObj.GetComponent<Armor>();
         }
@@ -102,6 +104,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.legObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.leggings = itemObj.GetComponent<Armor>();
         }
@@ -113,6 +116,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.shoeObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.shoes = itemObj.GetComponent<Armor>();
         }
@@ -124,6 +128,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.gloveObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.gloves = itemObj.GetComponent<Armor>();
         }
@@ -135,6 +140,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.cloakObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.cloak = itemObj.GetComponent<Armor>();
         }
@@ -146,6 +152,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.necklaceObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.necklace = itemObj.GetComponent<Armor>();
         }
@@ -157,6 +164,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.ringObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.ring = itemObj.GetComponent<Armor>();
         }
@@ -168,6 +176,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.leftHandObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.leftHand = itemObj.GetComponent<Weapon>();
         }
@@ -179,6 +188,7 @@ public class Character : MonoBehaviour
         {
             GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.rightHandObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
             GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
             itemObj.transform.SetParent(this.transform);
             this.charInventory.rightHand = itemObj.GetComponent<Weapon>();
         }
@@ -468,53 +478,53 @@ public class CharacterSaveData
         //Setting all of the equipped object references
         if (characterToSave_.charInventory.helm != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.helm.GetComponent<Item>().itemPrefabRoot;
             this.helmObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.chestPiece != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.chestPiece.GetComponent<Item>().itemPrefabRoot;
             this.chestObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.leggings != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.leggings.GetComponent<Item>().itemPrefabRoot;
             this.legObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.gloves != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.gloves.GetComponent<Item>().itemPrefabRoot;
             this.gloveObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.shoes != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.shoes.GetComponent<Item>().itemPrefabRoot;
             this.shoeObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.cloak != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.cloak.GetComponent<Item>().itemPrefabRoot;
             this.cloakObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.necklace != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.necklace.GetComponent<Item>().itemPrefabRoot;
             this.necklaceObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.ring != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.ring.GetComponent<Item>().itemPrefabRoot;
             this.ringObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
 
         if (characterToSave_.charInventory.leftHand != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.leftHand.GetComponent<Item>().itemPrefabRoot;
             this.leftHandObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
         if (characterToSave_.charInventory.rightHand != null)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.helm.gameObject);
+            GameObject itemPrefab = characterToSave_.charInventory.rightHand.GetComponent<Item>().itemPrefabRoot;
             this.rightHandObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
         }
 
