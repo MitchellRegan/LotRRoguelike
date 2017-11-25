@@ -550,7 +550,7 @@ public class SaveLoadManager : MonoBehaviour
             //Setting the static party group reference
             PartyGroup.group3 = partyGroup3;
         }
-        
+
         //Setting the dead characters from CharacterManager.cs
         CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
         

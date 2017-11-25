@@ -7,7 +7,7 @@ public class Item : MonoBehaviour
 {
     //The prefab that this object is an instance of
     [HideInInspector]
-    public GameObject itemPrefabRoot = null;
+    public GameObject itemPrefabRoot;
 
     //The ID that lets the inventory know when to stack items
     public string itemNameID = "Item";

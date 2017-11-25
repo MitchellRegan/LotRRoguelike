@@ -52,53 +52,7 @@ public class CharacterInventoryUI : MonoBehaviour
 
     //Selected Character inventory items
     public List<Image> slotImages;
-
     
-
-    //Function called when this game object is created
-    private void Awake()
-    {
-        //Sets the static UI references based on the type
-        if(this.inventoryUIType == InventoryType.Party)
-        {
-            //If there is no static party inventory, this one becomes the static reference
-            if(CharacterInventoryUI.partyInventory == null)
-            {
-                CharacterInventoryUI.partyInventory = this;
-            }
-            //If a static party inventory reference exists, this is destroyed
-            else
-            {
-                Destroy(this);
-            }
-        }
-        else if(this.inventoryUIType == InventoryType.Bag)
-        {
-            //If there is no static bag inventory, this one becomes the static reference
-            if (CharacterInventoryUI.bagInventory == null)
-            {
-                CharacterInventoryUI.bagInventory = this;
-            }
-            //If a static bag inventory reference exists, this is destroyed
-            else
-            {
-                Destroy(this);
-            }
-        }
-        else if(this.inventoryUIType == InventoryType.Trade)
-        {
-            //If there is no static trade inventory, this one becomes the static reference
-            if (CharacterInventoryUI.tradeInventory == null)
-            {
-                CharacterInventoryUI.tradeInventory = this;
-            }
-            //If a static trade inventory reference exists, this is destroyed
-            else
-            {
-                Destroy(this);
-            }
-        }
-    }
 	
 
     //Function called when this component is enabled

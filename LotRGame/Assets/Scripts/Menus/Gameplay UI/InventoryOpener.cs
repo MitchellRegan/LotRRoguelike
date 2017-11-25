@@ -29,6 +29,11 @@ public class InventoryOpener : MonoBehaviour
         {
             Destroy(this);
         }
+
+        //Setting the static references for the CharacterInventoryUI.cs static references
+        CharacterInventoryUI.partyInventory = this.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
+        CharacterInventoryUI.bagInventory = this.bagInventoryUIObject.GetComponent<CharacterInventoryUI>();
+        CharacterInventoryUI.tradeInventory = this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>();
     }
 	
 

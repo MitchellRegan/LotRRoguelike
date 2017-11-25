@@ -201,7 +201,7 @@ public class Character : MonoBehaviour
             {
                 GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
                 GameObject itemObj = GameObject.Instantiate(UnityEditor.PrefabUtility.FindPrefabRoot(itemObjw.objToSave));
-                itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave.GetComponent<Item>().itemPrefabRoot;
+                itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
                 itemObj.transform.SetParent(this.transform);
                 this.charInventory.itemSlots.Add(itemObj.GetComponent<Item>());
             }
@@ -530,12 +530,14 @@ public class CharacterSaveData
                 //If the prefab object stored in the item is null, we try to find the prefab root
                 if (characterToSave_.charInventory.itemSlots[i].itemPrefabRoot == null)
                 {
+                    Debug.Log("Prefab root is null for " + characterToSave_.charInventory.itemSlots[i].name);
                     UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.itemSlots[i].gameObject);
                 }
                 //If the prefab root object stored in the item is not null, we set it as the itemPrefab to save
                 else
                 {
-                    .//Debug here to see if each of the items to be saved actually make it to this point
+                    Debug.Log("Prefab root is NOT NULL for " + characterToSave_.charInventory.itemSlots[i].name);
+                    Debug.Log("Item ID: " + characterToSave_.charInventory.itemSlots[i].GetInstanceID() + ", Prefab ID: " + characterToSave_.charInventory.itemSlots[i].itemPrefabRoot.GetInstanceID());
                     itemPrefab = characterToSave_.charInventory.itemSlots[i].itemPrefabRoot;
                 }
                 this.inventorySlots.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab)));
