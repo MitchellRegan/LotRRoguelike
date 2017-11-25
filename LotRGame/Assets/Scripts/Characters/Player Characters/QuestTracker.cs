@@ -234,8 +234,6 @@ public class QuestTracker : MonoBehaviour
             //Looping through each of the travel quests in the current quest
             foreach (QuestTravelDestination travelQuest in q.destinationList)
             {
-                Debug.Log("Checking Travel Destination: " + q.questName);
-                Debug.Log("Travel Location: " + travelQuest.requiredLocation.locationName);
                 //Checking our current tile to see if it's a travel destination
                 travelQuest.CheckTileForDestination(currentTile_);
             }

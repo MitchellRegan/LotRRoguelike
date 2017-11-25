@@ -200,7 +200,8 @@ public class Character : MonoBehaviour
             else
             {
                 GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-                GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
+                GameObject itemObj = GameObject.Instantiate(UnityEditor.PrefabUtility.FindPrefabRoot(itemObjw.objToSave));
+                itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave.GetComponent<Item>().itemPrefabRoot;
                 itemObj.transform.SetParent(this.transform);
                 this.charInventory.itemSlots.Add(itemObj.GetComponent<Item>());
             }
@@ -222,6 +223,7 @@ public class Character : MonoBehaviour
                     {
                         //Creating a new instance of the stacked item
                         GameObject stackedItem = GameObject.Instantiate(stackData.stackedItem) as GameObject;
+                        stackedItem.GetComponent<Item>().itemPrefabRoot = stackData.stackedItem;
                         //Parenting the stacked item to the one that's in the inventory slot
                         stackedItem.transform.SetParent(this.charInventory.itemSlots[stackData.itemStackIndex].transform);
                         //Increasing the stack size count in the inventory slot
@@ -524,7 +526,18 @@ public class CharacterSaveData
             //Making sure the current inventory object isn't null
             if (characterToSave_.charInventory.itemSlots[i] != null)
             {
-                GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.itemSlots[i].gameObject);
+                GameObject itemPrefab = null;
+                //If the prefab object stored in the item is null, we try to find the prefab root
+                if (characterToSave_.charInventory.itemSlots[i].itemPrefabRoot == null)
+                {
+                    UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charInventory.itemSlots[i].gameObject);
+                }
+                //If the prefab root object stored in the item is not null, we set it as the itemPrefab to save
+                else
+                {
+                    .//Debug here to see if each of the items to be saved actually make it to this point
+                    itemPrefab = characterToSave_.charInventory.itemSlots[i].itemPrefabRoot;
+                }
                 this.inventorySlots.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab)));
 
                 //If the current item is a stack

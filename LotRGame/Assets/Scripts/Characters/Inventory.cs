@@ -363,7 +363,7 @@ public class Inventory : MonoBehaviour
         }
 
         //Getting the weight for the left hand slot if it isn't empty
-        if(this.leftHand != null)
+        if(this.leftHand != null && this.leftHand != this.rightHand)
         {
             weightSum += this.leftHand.GetComponent<Item>().kilogramPerUnit;
 
@@ -937,6 +937,9 @@ public class Inventory : MonoBehaviour
                 this.UnequipWeapon(WeaponHand.Left);
                 break;
         }
+
+        //Finding the new inventory weight
+        this.FindArmorStats();
     }
 
 

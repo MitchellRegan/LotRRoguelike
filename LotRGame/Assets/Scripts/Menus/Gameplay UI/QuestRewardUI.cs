@@ -247,6 +247,8 @@ public class QuestRewardUI : MonoBehaviour
                 {
                     //Creating a new instance of the item
                     GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+                    //Setting the item's prefab root
+                    rewardObject.GetComponent<Item>().itemPrefabRoot = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject;
                     //Adding the item to the designated character's inventory
                     charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
                     //Removing 1 from our current item rewards
@@ -288,7 +290,9 @@ public class QuestRewardUI : MonoBehaviour
     public void GiveOneRewardItemToCharAtIndex(int charIndex_)
     {
         //Creating a new instance of the item
-        GameObject rewardObject = GameObject.Instantiate(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+        GameObject rewardObject = UnityEditor.PrefabUtility.InstantiatePrefab(this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject) as GameObject;
+        //Setting the item's prefab root
+        rewardObject.GetComponent<Item>().itemPrefabRoot = this.questToDisplay.itemRewards[this.questRewardIndex].rewardItem.gameObject;
         //Adding the item to the designated character's inventory
         Character charToGive = CharacterManager.globalReference.selectedGroup.charactersInParty[charIndex_];
         charToGive.charInventory.AddItemToInventory(rewardObject.GetComponent<Item>());
