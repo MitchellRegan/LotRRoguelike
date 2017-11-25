@@ -53,7 +53,6 @@ public class InventoryOpener : MonoBehaviour
         //If the player inventory UI screen is already showing
         if (this.partyInventoryUIObject.activeSelf)
         {
-
             //If the displayed character in the party inventory screen is this character, all of the inventory UIs are disabled
             if(CharacterInventoryUI.partyInventory.selectedCharacterInventory.gameObject == CharacterManager.globalReference.playerParty[partyCharacterIndex_].gameObject)
             {
