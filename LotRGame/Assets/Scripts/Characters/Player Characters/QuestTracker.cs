@@ -47,7 +47,33 @@ public class QuestTracker : MonoBehaviour
         //Looping through all of the main quests
         foreach (QuestGiver mainQuest in this.mainQuests)
         {
-            this.AddQuestToQuestLog(mainQuest.questToGive);
+            //If the quest has a quest item, we add the item to the first character's inventory
+            if (mainQuest.GetComponent<Item>())
+            {
+                //Looping through all of the characters in the character party until we find one
+                foreach(Character c in CharacterManager.globalReference.selectedGroup.charactersInParty)
+                {
+                    //If the current character isn't null
+                    if(c != null)
+                    {
+                        //Creating a new instance of the item
+                        GameObject questI = GameObject.Instantiate(mainQuest.gameObject) as GameObject;
+                        Item questItem = questI.GetComponent<Item>();
+                        questItem.itemPrefabRoot = mainQuest.gameObject;
+
+                        //Adding the item to the character's inventory
+                        c.charInventory.AddItemToInventory(questItem);
+
+                        //Breaking this loop because we don't need to give the item to every character
+                        break;
+                    }
+                }
+            }
+            //If the quest doesn't have an item, we just add it to the quest log
+            else
+            {
+                this.AddQuestToQuestLog(mainQuest.questToGive);
+            }
         }
     }
 
