@@ -834,6 +834,14 @@ public class CombatManager : MonoBehaviour
                 //Updating the quest tracker to see if the dead enemy is a quest target
                 QuestTracker.globalReference.UpdateKillQuests(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
             }
+
+            //Getting the character sprite for the dead character
+            CharacterSpriteBase deadSprite = this.GetCharacterSprite(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+            //Removing the sprite from our list and destroying it
+            this.characterSpriteList.Remove(deadSprite);
+            Destroy(deadSprite.gameObject);
+            //Freeing up the tile that the dead character is on
+            damagedCharTile_.SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
         }
         //Updating the health bars so we can see how much health characters have
         this.UpdateHealthBars();
