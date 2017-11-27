@@ -295,6 +295,25 @@ public class QuestTracker : MonoBehaviour
     }
 
 
+    //Function called externally to check if a specific quest is in our quest log
+    public bool IsQuestInQuestLog(Quest questToCheck_)
+    {
+        //Looping through all of the quests in our quest log
+        foreach(Quest q in this.questLog)
+        {
+            //If the current quest has the same name as the one we're looking for
+            if(q.questName == questToCheck_.questName)
+            {
+                //We've found the quest and return true
+                return true;
+            }
+        }
+
+        //If we make it through all of our quests without finding it, we don't have it
+        return false;
+    }
+
+
     //Function called from SaveLoadManager.cs to load in saved quest data
     public void LoadQuestLogData(List<string> qSave_)
     {

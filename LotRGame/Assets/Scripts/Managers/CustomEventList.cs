@@ -155,10 +155,10 @@ public class PromptQuestEVT
     public static string eventName = "Prompt Quest";
 
     //The quest giver that we're going to display info about
-    public QuestGiver questToPrompt;
+    public Quest questToPrompt;
 
     //Public constructor for this class
-    public PromptQuestEVT(QuestGiver questToPrompt_)
+    public PromptQuestEVT(Quest questToPrompt_)
     {
         this.questToPrompt = questToPrompt_;
     }

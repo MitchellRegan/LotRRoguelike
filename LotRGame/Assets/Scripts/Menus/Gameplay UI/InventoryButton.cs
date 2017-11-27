@@ -819,6 +819,31 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         {
             Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<Image>());
 
+            //If the clicked button is a quest item
+            if(thisButtonItem.GetComponent<QuestGiver>())
+            {
+                //Getting the quest from the item
+                Quest itemQuest = thisButtonItem.GetComponent<QuestGiver>().questToGive;
+
+                //If the quest that is given isn't in our quest log
+                if(!QuestTracker.globalReference.IsQuestInQuestLog(itemQuest))
+                {
+                    //If the quest that is given isn't in the list of completed quests
+                    if(!QuestTracker.globalReference.completedQuestNames.Contains(itemQuest.questName))
+                    {
+                        //We create a new event to dispatch the quest info
+                        EVTData data = new EVTData();
+                        data.promptQuest = new PromptQuestEVT(itemQuest);
+
+                        //Dispatching the quest prompt
+                        EventManager.TriggerEvent(PromptQuestEVT.eventName, data);
+
+                        //Returning so nothing else happens with the item until the quest is accepted
+                        return;
+                    }
+                }
+            }
+
             //If the clicked button is food
             if(thisButtonItem.GetComponent<Food>())
             {

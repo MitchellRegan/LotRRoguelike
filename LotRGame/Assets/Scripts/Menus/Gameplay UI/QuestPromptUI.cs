@@ -7,7 +7,7 @@ public class QuestPromptUI : MonoBehaviour
 {
     //The Quest that we're prompting to give the player
     [HideInInspector]
-    public QuestGiver questToPrompt;
+    public Quest questToPrompt;
     //The UI panel that's turned on and off
     public GameObject promptUI;
 
@@ -67,6 +67,12 @@ public class QuestPromptUI : MonoBehaviour
             return;
         }
 
+        //Making sure the quest isn't one that we've already completed
+        if(QuestTracker.globalReference.completedQuestNames.Contains(this.questToPrompt.questName))
+        {
+            return;
+        }
+
         //Displaying the prompt
         this.promptUI.SetActive(true);
 
@@ -74,13 +80,13 @@ public class QuestPromptUI : MonoBehaviour
         this.questToPrompt = data_.promptQuest.questToPrompt;
 
         //Setting the displayed quest's text name
-        this.questNameText.text = this.questToPrompt.questToGive.questName;
+        this.questNameText.text = this.questToPrompt.questName;
         //Setting the displayed quest's description text
-        this.questDescriptionText.text = this.questToPrompt.questToGive.questDescription;
+        this.questDescriptionText.text = this.questToPrompt.questDescription;
         //Setting the displayed quest's objective text
-        this.questObjectivesText.text = this.GetQuestObjectiveText(this.questToPrompt.questToGive);
+        this.questObjectivesText.text = this.GetQuestObjectiveText(this.questToPrompt);
         //Setting the displayed quest's reward text
-        this.questRewardText.text = this.GetQuestRewardText(this.questToPrompt.questToGive);
+        this.questRewardText.text = this.GetQuestRewardText(this.questToPrompt);
 
         //Refreshing the canvases so the ContentSizeFitter components on the text resizes the text box sizes
         Canvas.ForceUpdateCanvases();
@@ -115,7 +121,7 @@ public class QuestPromptUI : MonoBehaviour
         this.descriptionContentTransform.sizeDelta = new Vector2(0, contentSize);
 
         //If the quest can't be abandoned, the quest can't be declined
-        if(!this.questToPrompt.questToGive.canBeAbandoned)
+        if(!this.questToPrompt.canBeAbandoned)
         {
             this.declineQuestButton.interactable = false;
         }
@@ -301,11 +307,11 @@ public class QuestPromptUI : MonoBehaviour
     //Function called externally to accept the quest and add it to the player's quest log
     public void AcceptQuest()
     {
-        //Adding the quest to the 
+        //Adding the quest to the player's quest log
+        QuestTracker.globalReference.AddQuestToQuestLog(this.questToPrompt);
 
         //Clearing our UI info and hiding the prompt
         this.ClearPromptUI();
-        this.promptUI.SetActive(false);
     }
 
 
@@ -314,13 +320,19 @@ public class QuestPromptUI : MonoBehaviour
     {
         //Clearing our UI info and hiding the prompt
         this.ClearPromptUI();
-        this.promptUI.SetActive(false);
     }
 
 
     //Function called from AcceptQuest and DeclineQuest to clear the UI
     private void ClearPromptUI()
     {
+        //Clearing all of the text info for the quest
+        this.questNameText.text = "";
+        this.questDescriptionText.text = "";
+        this.questObjectivesText.text = "";
+        this.questRewardText.text = "";
 
+        //Deactivating our prompt game object
+        this.promptUI.SetActive(false);
     }
 }
