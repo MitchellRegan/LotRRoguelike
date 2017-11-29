@@ -29,6 +29,20 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image forwardLeftArm;
     //The location for the forward leg
     public Image forwardLegs;
+    //The location for the forward cloak
+    public Image forwardCloak;
+    //The location for the forward shoes
+    public Image forwardShoes;
+    //The location for the forward leggings
+    public Image forwardLeggings;
+    //The location for the forward chestpiece
+    public Image forwardChestpiece;
+    //The location for the forward left glove
+    public Image forwardLeftGlove;
+    //The location for the forward right glove
+    public Image forwardRightGlove;
+    //The location for the forward helm
+    public Image forwardHelm;
 
     [Space(8)]
 
@@ -51,6 +65,20 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image rightSideLeftArm;
     //The location for the right side leg
     public Image rightSideLegs;
+    //The location for the right side cloak
+    public Image rightSideCloak;
+    //The location for the right side shoes
+    public Image rightSideShoes;
+    //The location for the right side leggings
+    public Image rightSideLeggings;
+    //The location for the right side chestpiece
+    public Image rightSideChestpiece;
+    //The location for the right side left glove
+    public Image rightSideLeftGlove;
+    //The location for the right side right glove
+    public Image rightSideRightGlove;
+    //The location for the right side helm
+    public Image rightSideHelm;
 
     [Space(8)]
 
@@ -73,6 +101,20 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image leftSideLeftArm;
     //The location for the left side leg
     public Image leftSideLegs;
+    //The location for the left side cloak
+    public Image leftSideCloak;
+    //The location for the left side shoes
+    public Image leftSideShoes;
+    //The location for the left side leggings
+    public Image leftSideLeggings;
+    //The location for the left side chestpiece
+    public Image leftSideChestpiece;
+    //The location for the left side left glove
+    public Image leftSideLeftGlove;
+    //The location for the left side right glove
+    public Image leftSideRightGlove;
+    //The location for the left side helm
+    public Image leftSideHelm;
 
     [Space(8)]
 
@@ -91,6 +133,20 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image backLeftArm;
     //The location for the back leg
     public Image backLegs;
+    //The location for the back cloak
+    public Image backCloak;
+    //The location for the back shoes
+    public Image backShoes;
+    //The location for the back leggings
+    public Image backLeggings;
+    //The location for the back chestpiece
+    public Image backChestpiece;
+    //The location for the back left glove
+    public Image backLeftGlove;
+    //The location for the back right glove
+    public Image backRightGlove;
+    //The location for the back helm
+    public Image backHelm;
 
 
 
