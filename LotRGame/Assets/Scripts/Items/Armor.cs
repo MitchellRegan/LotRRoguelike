@@ -37,4 +37,12 @@ public class Armor : MonoBehaviour
 
     //Damage blocked from rock attacks
     public int rockResist = 0;
+
+    [Space(8)]
+
+    //Bool that determines if this piece of armor replaces the character sprite or if it covers it
+    public bool replaceCharacterSprite = false;
+
+    //The list of sprites used to display this armor on the character
+    public List<SpriteViews> armorSpriteViews;
 }
