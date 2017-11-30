@@ -131,7 +131,7 @@ public class SpriteCustomizer : MonoBehaviour
         this.spritePackage = newSprites;
 
         //Sending the new sprites to the base
-        this.charBaseToCustomizeSide.SetSpriteImages(newSprites, CharacterSpriteBase.DirectionFacing.Right);
+        this.charBaseToCustomizeSide.SetSpriteImages(newSprites, null);
     }
 
     

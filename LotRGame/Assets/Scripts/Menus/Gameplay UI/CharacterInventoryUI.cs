@@ -126,7 +126,8 @@ public class CharacterInventoryUI : MonoBehaviour
             //Getting the reference to the sprite base component
             CharacterSpriteBase charSprite = newSpriteBase.GetComponent<CharacterSpriteBase>();
             //Setting the character sprite base's sprites
-            charSprite.SetSpriteImages(this.selectedCharacterInventory.GetComponent<Character>().charSprites.allSprites);
+            Character selectedCharacter = this.selectedCharacterInventory.GetComponent<Character>();
+            charSprite.SetSpriteImages(selectedCharacter.charSprites.allSprites, selectedCharacter.charInventory);
         }
 
         //Sets the character name

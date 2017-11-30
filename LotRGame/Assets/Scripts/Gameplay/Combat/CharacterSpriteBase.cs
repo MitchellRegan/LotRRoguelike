@@ -9,6 +9,11 @@ public class CharacterSpriteBase : MonoBehaviour
     [HideInInspector]
     public Character ourCharacter;
 
+    //The empty sprite for when there's no armor sprite to show
+    public Sprite emptySprite;
+
+    [Space(8)]
+
     //The parent object for the forward view sprites
     public GameObject forwardViewParent;
 
@@ -151,7 +156,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
 
     //Function called externally to set all of the sprite images for a character
-    public void SetSpriteImages(CharSpritePackage cSprites_, DirectionFacing direction_ = DirectionFacing.Right)
+    public void SetSpriteImages(CharSpritePackage cSprites_, Inventory characterInventory_)
     {
         //Setting the forward sprites
         this.forwardHair.sprite = cSprites_.hairSprites.front;
@@ -232,8 +237,264 @@ public class CharacterSpriteBase : MonoBehaviour
         this.rightSideLegs.color = cSprites_.skinColor;
 
 
-        //Setting the initial direction the character is facing
-        //this.SetDirectionFacing(direction_);
+        //If the character inventory given isn't null, we set all of the character armor sprites
+        if(characterInventory_ != null)
+        {
+            //Setting the helm sprites if a helm is equipped
+            if(characterInventory_.helm != null)
+            {
+                this.forwardHelm.sprite = characterInventory_.helm.armorSpriteViews[0].front;
+                this.backHelm.sprite = characterInventory_.helm.armorSpriteViews[0].back;
+                this.rightSideHelm.sprite = characterInventory_.helm.armorSpriteViews[0].side;
+                this.leftSideHelm.sprite = characterInventory_.helm.armorSpriteViews[0].side;
+
+                //If this helm covers up the character's hair, we set the hair sprite to empty
+                if(characterInventory_.helm.replaceCharacterSprite)
+                {
+                    this.forwardHair.sprite = this.emptySprite;
+                    this.backHair.sprite = this.emptySprite;
+                    this.rightSideHair.sprite = this.emptySprite;
+                    this.leftSideHair.sprite = this.emptySprite;
+                }
+            }
+            //If there is no helm, we set them to empty
+            else
+            {
+                this.forwardHelm.sprite = this.emptySprite;
+                this.backHelm.sprite = this.emptySprite;
+                this.rightSideHelm.sprite = this.emptySprite;
+                this.leftSideHelm.sprite = this.emptySprite;
+            }
+
+            //Setting the chestpiece sprites if a chestpiece is equipped
+            if(characterInventory_.chestPiece != null)
+            {
+                //Looping through to find the correct sprite view to match our character's body type
+                SpriteViews bodySpriteView = null;
+                foreach(SpriteViews sv in characterInventory_.chestPiece.armorSpriteViews)
+                {
+                    //If we find the correct sprite view for our body type
+                    if(sv.bodyType == cSprites_.bodySprites.bodyType)
+                    {
+                        //We set the sprite view and break the loop
+                        bodySpriteView = sv;
+                        break;
+                    }
+                }
+
+                //If we found a correct sprite view
+                if(bodySpriteView != null)
+                {
+                    this.forwardChestpiece.sprite = bodySpriteView.front;
+                    this.backChestpiece.sprite = bodySpriteView.back;
+                    this.rightSideChestpiece.sprite = bodySpriteView.side;
+                    this.leftSideChestpiece.sprite = bodySpriteView.side;
+
+                    //If this chestpiece covers up the character's torso, we hide them
+                    if(characterInventory_.chestPiece.replaceCharacterSprite)
+                    {
+                        this.forwardBody.sprite = this.emptySprite;
+                        this.backBody.sprite = this.emptySprite;
+                        this.rightSideBody.sprite = this.emptySprite;
+                        this.leftSideBody.sprite = this.emptySprite;
+                    }
+                }
+                //If we didn't find the correct sprite view
+                else
+                {
+                    throw new System.Exception("ERROR! CharacterSpriteBase.SetSpriteImages, No valid body type for chestpiece");
+                }
+            }
+            //If there's no chestpiece, we set them to empty
+            else
+            {
+                this.forwardChestpiece.sprite = this.emptySprite;
+                this.backChestpiece.sprite = this.emptySprite;
+                this.rightSideChestpiece.sprite = this.emptySprite;
+                this.leftSideChestpiece.sprite = this.emptySprite;
+            }
+
+            //Setting the leggings sprites if leggings are equipped
+            if (characterInventory_.leggings != null)
+            {
+                //Looping through to find the correct sprite view to match our character's body type
+                SpriteViews legSpriteView = null;
+                foreach (SpriteViews sv in characterInventory_.leggings.armorSpriteViews)
+                {
+                    //If we find the correct sprite view for our body type
+                    if (sv.bodyType == cSprites_.legSprites.bodyType)
+                    {
+                        //We set the sprite view and break the loop
+                        legSpriteView = sv;
+                        break;
+                    }
+                }
+
+                //If we found a correct sprite view
+                if (legSpriteView != null)
+                {
+                    this.forwardLeggings.sprite = legSpriteView.front;
+                    this.backLeggings.sprite = legSpriteView.back;
+                    this.rightSideLeggings.sprite = legSpriteView.side;
+                    this.leftSideLeggings.sprite = legSpriteView.side;
+                }
+                //If we didn't find the correct sprite view
+                else
+                {
+                    throw new System.Exception("ERROR! CharacterSpriteBase.SetSpriteImages, No valid body type for leggings");
+                }
+            }
+            //If there's no leggings, we set them to empty
+            else
+            {
+                this.forwardLeggings.sprite = this.emptySprite;
+                this.backLeggings.sprite = this.emptySprite;
+                this.rightSideLeggings.sprite = this.emptySprite;
+                this.leftSideLeggings.sprite = this.emptySprite;
+            }
+            
+            //Setting the shoe sprites if shoes are equipped
+            if (characterInventory_.shoes != null)
+            {
+                //Looping through to find the correct sprite view to match our character's body type
+                SpriteViews feetSpriteView = null;
+                foreach (SpriteViews sv in characterInventory_.shoes.armorSpriteViews)
+                {
+                    //If we find the correct sprite view for our body type
+                    if (sv.bodyType == cSprites_.legSprites.bodyType)
+                    {
+                        //We set the sprite view and break the loop
+                        feetSpriteView = sv;
+                        break;
+                    }
+                }
+
+                //If we found a correct sprite view
+                if (feetSpriteView != null)
+                {
+                    this.forwardShoes.sprite = feetSpriteView.front;
+                    this.backShoes.sprite = feetSpriteView.back;
+                    this.rightSideShoes.sprite = feetSpriteView.side;
+                    this.leftSideShoes.sprite = feetSpriteView.side;
+                }
+                //If we didn't find the correct sprite view
+                else
+                {
+                    throw new System.Exception("ERROR! CharacterSpriteBase.SetSpriteImages, No valid body type for shoes");
+                }
+            }
+            //If there's no shoes, we set them to empty
+            else
+            {
+                this.forwardShoes.sprite = this.emptySprite;
+                this.backShoes.sprite = this.emptySprite;
+                this.rightSideShoes.sprite = this.emptySprite;
+                this.leftSideShoes.sprite = this.emptySprite;
+            }
+
+            //Setting the glove sprites if gloves are equipped
+            if(characterInventory_.gloves != null)
+            {
+                this.forwardRightGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].front;
+                this.backRightGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].back;
+                this.rightSideRightGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].side;
+                this.leftSideRightGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].side;
+
+                this.forwardLeftGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].front;
+                this.backLeftGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].back;
+                this.rightSideLeftGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].side;
+                this.leftSideLeftGlove.sprite = characterInventory_.gloves.armorSpriteViews[0].side;
+
+                //If these gloves cover up the character's hands, we set the hand sprites to empty
+                if (characterInventory_.gloves.replaceCharacterSprite)
+                {
+                    this.forwardRightArm.sprite = this.emptySprite;
+                    this.backRightArm.sprite = this.emptySprite;
+                    this.rightSideRightArm.sprite = this.emptySprite;
+                    this.leftSideRightArm.sprite = this.emptySprite;
+
+                    this.forwardLeftArm.sprite = this.emptySprite;
+                    this.backLeftArm.sprite = this.emptySprite;
+                    this.rightSideLeftArm.sprite = this.emptySprite;
+                    this.leftSideLeftArm.sprite = this.emptySprite;
+                }
+            }
+            //If there are no gloves, we set them to empty
+            else
+            {
+                this.forwardRightGlove.sprite = this.emptySprite;
+                this.backRightGlove.sprite = this.emptySprite;
+                this.rightSideRightGlove.sprite = this.emptySprite;
+                this.leftSideRightGlove.sprite = this.emptySprite;
+
+                this.forwardLeftGlove.sprite = this.emptySprite;
+                this.backLeftGlove.sprite = this.emptySprite;
+                this.rightSideLeftGlove.sprite = this.emptySprite;
+                this.leftSideLeftGlove.sprite = this.emptySprite;
+            }
+
+            //Setting the cloak sprites if a cloak is equipped
+            if(characterInventory_.cloak != null)
+            {
+                this.forwardCloak.sprite = characterInventory_.cloak.armorSpriteViews[0].front;
+                this.backCloak.sprite = characterInventory_.cloak.armorSpriteViews[0].back;
+                this.rightSideCloak.sprite = characterInventory_.cloak.armorSpriteViews[0].side;
+                this.leftSideCloak.sprite = characterInventory_.cloak.armorSpriteViews[0].side;
+            }
+            //If there is no cloak, we set them to empty
+            else
+            {
+                this.forwardCloak.sprite = this.emptySprite;
+                this.backCloak.sprite = this.emptySprite;
+                this.rightSideCloak.sprite = this.emptySprite;
+                this.leftSideCloak.sprite = this.emptySprite;
+            }
+        }
+        //If there's no character inventory given, all of the armor sprites are empty
+        else
+        {
+            //Setting the helms
+            this.forwardHelm.sprite = this.emptySprite;
+            this.backHelm.sprite = this.emptySprite;
+            this.rightSideHelm.sprite = this.emptySprite;
+            this.leftSideHelm.sprite = this.emptySprite;
+
+            //Setting the chestpieces
+            this.forwardChestpiece.sprite = this.emptySprite;
+            this.backChestpiece.sprite = this.emptySprite;
+            this.rightSideChestpiece.sprite = this.emptySprite;
+            this.leftSideChestpiece.sprite = this.emptySprite;
+
+            //Setting the leggings
+            this.forwardLeggings.sprite = this.emptySprite;
+            this.backLeggings.sprite = this.emptySprite;
+            this.rightSideLeggings.sprite = this.emptySprite;
+            this.leftSideLeggings.sprite = this.emptySprite;
+
+            //Setting the shoes
+            this.forwardShoes.sprite = this.emptySprite;
+            this.backShoes.sprite = this.emptySprite;
+            this.rightSideShoes.sprite = this.emptySprite;
+            this.leftSideShoes.sprite = this.emptySprite;
+
+            //Setting the right gloves
+            this.forwardRightGlove.sprite = this.emptySprite;
+            this.backRightGlove.sprite = this.emptySprite;
+            this.rightSideRightGlove.sprite = this.emptySprite;
+            this.leftSideRightGlove.sprite = this.emptySprite;
+
+            //Setting the left gloves
+            this.forwardLeftGlove.sprite = this.emptySprite;
+            this.backLeftGlove.sprite = this.emptySprite;
+            this.rightSideLeftGlove.sprite = this.emptySprite;
+            this.leftSideLeftGlove.sprite = this.emptySprite;
+
+            //Setting the cloaks
+            this.forwardCloak.sprite = this.emptySprite;
+            this.backCloak.sprite = this.emptySprite;
+            this.rightSideCloak.sprite = this.emptySprite;
+            this.leftSideCloak.sprite = this.emptySprite;
+        }
     }
 
 

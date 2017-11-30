@@ -653,7 +653,7 @@ public class CombatManager : MonoBehaviour
             CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
 
             //Telling the sprite base to use the given character's sprites
-            newCharSpriteBase.SetSpriteImages(playerChar.charSprites.allSprites);
+            newCharSpriteBase.SetSpriteImages(playerChar.charSprites.allSprites, playerChar.charInventory);
             newCharSpriteBase.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
 
             //Finding the combat tile that the current player character is on
@@ -682,7 +682,7 @@ public class CombatManager : MonoBehaviour
             CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
 
             //Telling the sprite base to use the given character's sprites
-            newCharSpriteBase.SetSpriteImages(enemyChar.charSprites.allSprites);
+            newCharSpriteBase.SetSpriteImages(enemyChar.charSprites.allSprites, enemyChar.charInventory);
 
             //Finding the combat tile that the current enemy character is on
             CombatTile enemyTile = this.FindCharactersTile(enemyChar);
