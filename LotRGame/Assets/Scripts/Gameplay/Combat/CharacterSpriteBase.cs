@@ -48,6 +48,14 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image forwardRightGlove;
     //The location for the forward helm
     public Image forwardHelm;
+    //The location for the forward left weapon
+    public Image forwardLeftWeapon;
+    //The location for the forward right weapon
+    public Image forwardRightWeapon;
+    //The location for the forward overlapping left weapon
+    public Image forwardLeftWeaponOverlap;
+    //The location for the forward overlapping right weapon
+    public Image forwardRightWeaponOverlap;
 
     [Space(8)]
 
@@ -84,6 +92,12 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image rightSideRightGlove;
     //The location for the right side helm
     public Image rightSideHelm;
+    //The location for the right side left weapon
+    public Image rightSideLeftWeapon;
+    //The location for the right side right weapon
+    public Image rightSideRightWeapon;
+    //The location for the right side right overlapping weapon
+    public Image rightSideRightWeaponOverlap;
 
     [Space(8)]
 
@@ -120,6 +134,12 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image leftSideRightGlove;
     //The location for the left side helm
     public Image leftSideHelm;
+    //The location for the left side left weapon
+    public Image leftSideLeftWeapon;
+    //The location for the left side right weapon
+    public Image leftSideRightWeapon;
+    //The location for the left side left overlapping weapon
+    public Image leftSideLeftWeaponOverlap;
 
     [Space(8)]
 
@@ -152,6 +172,10 @@ public class CharacterSpriteBase : MonoBehaviour
     public Image backRightGlove;
     //The location for the back helm
     public Image backHelm;
+    //The location for the back left weapon
+    public Image backLeftWeapon;
+    //The location for the back right weapon
+    public Image backRightWeapon;
 
 
 
@@ -237,7 +261,7 @@ public class CharacterSpriteBase : MonoBehaviour
         this.rightSideLegs.color = cSprites_.skinColor;
 
 
-        //If the character inventory given isn't null, we set all of the character armor sprites
+        //If the character inventory given isn't null, we set all of the character armor and weapon sprites
         if(characterInventory_ != null)
         {
             //Setting the helm sprites if a helm is equipped
@@ -449,6 +473,76 @@ public class CharacterSpriteBase : MonoBehaviour
                 this.rightSideCloak.sprite = this.emptySprite;
                 this.leftSideCloak.sprite = this.emptySprite;
             }
+
+            //Setting the right hand weapon sprites if there's a weapon equipped in that hand
+            if(characterInventory_.rightHand != null)
+            {
+                //If the weapon sprite overlaps the character's hand (like if it's a shield or wrist claw)
+                if(characterInventory_.rightHand.overlapCharacterHand)
+                {
+                    this.forwardRightWeapon.sprite = this.emptySprite;
+                    this.backRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.back;
+                    this.rightSideRightWeapon.sprite = this.emptySprite;
+                    this.leftSideRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
+                    this.forwardRightWeaponOverlap.sprite = characterInventory_.rightHand.weaponSpriteViews.front;
+                    this.rightSideRightWeaponOverlap.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
+                }
+                //If the weapon doesn't overlap the character hand
+                else
+                {
+                    this.forwardRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.front;
+                    this.backRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.back;
+                    this.rightSideRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
+                    this.leftSideRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
+                    this.forwardRightWeaponOverlap.sprite = this.emptySprite;
+                    this.rightSideRightWeaponOverlap.sprite = this.emptySprite;
+                }
+            }
+            //If there is no weapon, we set them to empty
+            else
+            {
+                this.forwardRightWeapon.sprite = this.emptySprite;
+                this.backRightWeapon.sprite = this.emptySprite;
+                this.rightSideRightWeapon.sprite = this.emptySprite;
+                this.leftSideRightWeapon.sprite = this.emptySprite;
+                this.forwardRightWeaponOverlap.sprite = this.emptySprite;
+                this.rightSideRightWeaponOverlap.sprite = this.emptySprite;
+            }
+
+            //Setting the left hand weapon sprites if there's a weapon equipped in that hand
+            if(characterInventory_.leftHand != null)
+            {
+                //If the weapon sprite overlaps the character's hand (like if it's a shield or wrist claw)
+                if (characterInventory_.leftHand.overlapCharacterHand)
+                {
+                    this.forwardLeftWeapon.sprite = this.emptySprite;
+                    this.backLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.back;
+                    this.rightSideLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.side;
+                    this.leftSideLeftWeapon.sprite = this.emptySprite;
+                    this.forwardLeftWeaponOverlap.sprite = characterInventory_.leftHand.weaponSpriteViews.front;
+                    this.leftSideLeftWeaponOverlap.sprite = characterInventory_.leftHand.weaponSpriteViews.side;
+                }
+                //If the weapon doesn't overlap the character hand
+                else
+                {
+                    this.forwardLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.front;
+                    this.backLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.back;
+                    this.rightSideLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.side;
+                    this.leftSideLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.side;
+                    this.forwardLeftWeaponOverlap.sprite = this.emptySprite;
+                    this.leftSideLeftWeaponOverlap.sprite = this.emptySprite;
+                }
+            }
+            //If there is no weapon, we set them to empty
+            else
+            {
+                this.forwardLeftWeapon.sprite = this.emptySprite;
+                this.backLeftWeapon.sprite = this.emptySprite;
+                this.rightSideLeftWeapon.sprite = this.emptySprite;
+                this.leftSideLeftWeapon.sprite = this.emptySprite;
+                this.forwardLeftWeaponOverlap.sprite = this.emptySprite;
+                this.leftSideLeftWeaponOverlap.sprite = this.emptySprite;
+            }
         }
         //If there's no character inventory given, all of the armor sprites are empty
         else
@@ -494,6 +588,22 @@ public class CharacterSpriteBase : MonoBehaviour
             this.backCloak.sprite = this.emptySprite;
             this.rightSideCloak.sprite = this.emptySprite;
             this.leftSideCloak.sprite = this.emptySprite;
+
+            //Setting the right hand weapons
+            this.forwardRightWeapon.sprite = this.emptySprite;
+            this.backRightWeapon.sprite = this.emptySprite;
+            this.rightSideRightWeapon.sprite = this.emptySprite;
+            this.leftSideRightWeapon.sprite = this.emptySprite;
+            this.forwardRightWeaponOverlap.sprite = this.emptySprite;
+            this.rightSideRightWeaponOverlap.sprite = this.emptySprite;
+
+            //Setting the left hand weapons
+            this.forwardLeftWeapon.sprite = this.emptySprite;
+            this.backLeftWeapon.sprite = this.emptySprite;
+            this.rightSideLeftWeapon.sprite = this.emptySprite;
+            this.leftSideLeftWeapon.sprite = this.emptySprite;
+            this.forwardLeftWeaponOverlap.sprite = this.emptySprite;
+            this.leftSideLeftWeaponOverlap.sprite = this.emptySprite;
         }
     }
 
