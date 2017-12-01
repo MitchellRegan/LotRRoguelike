@@ -24,4 +24,7 @@ public class Weapon : MonoBehaviour
 
     //The sprite views for this weapon on the character sprite base
     public SpriteViews weaponSpriteViews;
+
+    //The sprite used mainly for shields to display the reverse side of a weapon
+    public Sprite reverseView = null;
 }

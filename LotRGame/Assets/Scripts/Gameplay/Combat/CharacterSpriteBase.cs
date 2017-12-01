@@ -486,6 +486,12 @@ public class CharacterSpriteBase : MonoBehaviour
                     this.leftSideRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
                     this.forwardRightWeaponOverlap.sprite = characterInventory_.rightHand.weaponSpriteViews.front;
                     this.rightSideRightWeaponOverlap.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
+
+                    //If the weapon has a reverse view
+                    if (characterInventory_.rightHand.reverseView != null)
+                    {
+                        this.leftSideRightWeapon.sprite = characterInventory_.rightHand.reverseView;
+                    }
                 }
                 //If the weapon doesn't overlap the character hand
                 else
@@ -496,6 +502,12 @@ public class CharacterSpriteBase : MonoBehaviour
                     this.leftSideRightWeapon.sprite = characterInventory_.rightHand.weaponSpriteViews.side;
                     this.forwardRightWeaponOverlap.sprite = this.emptySprite;
                     this.rightSideRightWeaponOverlap.sprite = this.emptySprite;
+
+                    //If the weapon has a reverse view
+                    if (characterInventory_.rightHand.reverseView != null)
+                    {
+                        this.leftSideRightWeapon.sprite = characterInventory_.rightHand.reverseView;
+                    }
                 }
             }
             //If there is no weapon, we set them to empty
@@ -521,6 +533,12 @@ public class CharacterSpriteBase : MonoBehaviour
                     this.leftSideLeftWeapon.sprite = this.emptySprite;
                     this.forwardLeftWeaponOverlap.sprite = characterInventory_.leftHand.weaponSpriteViews.front;
                     this.leftSideLeftWeaponOverlap.sprite = characterInventory_.leftHand.weaponSpriteViews.side;
+
+                    //If the weapon has a reverse view
+                    if(characterInventory_.leftHand.reverseView != null)
+                    {
+                        this.rightSideLeftWeapon.sprite = characterInventory_.leftHand.reverseView;
+                    }
                 }
                 //If the weapon doesn't overlap the character hand
                 else
@@ -531,6 +549,12 @@ public class CharacterSpriteBase : MonoBehaviour
                     this.leftSideLeftWeapon.sprite = characterInventory_.leftHand.weaponSpriteViews.side;
                     this.forwardLeftWeaponOverlap.sprite = this.emptySprite;
                     this.leftSideLeftWeaponOverlap.sprite = this.emptySprite;
+
+                    //If the weapon has a reverse view
+                    if (characterInventory_.leftHand.reverseView != null)
+                    {
+                        this.rightSideLeftWeapon.sprite = characterInventory_.leftHand.reverseView;
+                    }
                 }
             }
             //If there is no weapon, we set them to empty
