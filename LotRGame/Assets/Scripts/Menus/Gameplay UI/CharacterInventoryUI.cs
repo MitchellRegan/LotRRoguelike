@@ -20,6 +20,8 @@ public class CharacterInventoryUI : MonoBehaviour
 
     //The image that displays this character's combat appearance
     public GameObject playerSpriteLoc;
+    //The direction that the character sprite base is currently looking in the inventory screen
+    private CharacterSpriteBase.DirectionFacing spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
 
     //Selected Character Name
     public Text selectedCharacterName;
@@ -128,6 +130,7 @@ public class CharacterInventoryUI : MonoBehaviour
             //Setting the character sprite base's sprites
             Character selectedCharacter = this.selectedCharacterInventory.GetComponent<Character>();
             charSprite.SetSpriteImages(selectedCharacter.charSprites.allSprites, selectedCharacter.charInventory);
+            charSprite.SetDirectionFacing(this.spriteDirection);
         }
 
         //Sets the character name
@@ -504,5 +507,54 @@ public class CharacterInventoryUI : MonoBehaviour
                 }
             }
         }
+    }
+
+
+    //Function called externally from the UI buttons. Rotates the sprite base 90 degrees
+    public void RotateSpriteBase(bool rotateRight_)
+    {
+        //If we rotate the sprite base right
+        if(rotateRight_)
+        {
+            //Changing our direction
+            switch(this.spriteDirection)
+            {
+                case CharacterSpriteBase.DirectionFacing.Down:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Right;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Right:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Up;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Up:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Left;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Left:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+                    break;
+            }
+        }
+        //If we rotate the sprite base left
+        else
+        {
+            //Changing our direction
+            switch (this.spriteDirection)
+            {
+                case CharacterSpriteBase.DirectionFacing.Down:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Left;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Right:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Up:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Right;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Left:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Up;
+                    break;
+            }
+        }
+
+        //Updating our sprite view
+        this.UpdateImages();
     }
 }
