@@ -103,6 +103,9 @@ public class PartyCreator : MonoBehaviour
                         //Adding the created character to our list of party characters
                         this.newPartyCharacters.Add(createdChar.GetComponent<Character>());
 
+                        //Initilizing the created character's default inventory items
+                        this.InitializeStartingItems(createdChar.GetComponent<Inventory>(), r.characterPrefabs[genderIndex].GetComponent<Inventory>());
+
                         //Setting all of the info for each Character Customizer
                         this.SetCharacterCustomizerInfo(this.allCharacterCustomizers[c], createdChar.GetComponent<Character>());
 
@@ -115,6 +118,74 @@ public class PartyCreator : MonoBehaviour
             else
             {
                 this.allCharacterCustomizers[c].gameObject.SetActive(false);
+            }
+        }
+    }
+
+
+    //Function called from GenerateStartingCharacters to correctly initialize a character's item prefabs
+    private void InitializeStartingItems(Inventory createdCharInv_, Inventory prefabCharInv_)
+    {
+        //Setting all of the equipped object references
+        if (createdCharInv_.helm != null)
+        {
+            createdCharInv_.helm.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.helm.gameObject;
+        }
+        if (createdCharInv_.chestPiece != null)
+        {
+            createdCharInv_.chestPiece.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.chestPiece.gameObject;
+        }
+        if (createdCharInv_.leggings != null)
+        {
+            createdCharInv_.leggings.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.leggings.gameObject;
+        }
+        if (createdCharInv_.gloves != null)
+        {
+            createdCharInv_.gloves.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.gloves.gameObject;
+        }
+        if (createdCharInv_.shoes != null)
+        {
+            createdCharInv_.shoes.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.shoes.gameObject;
+        }
+        if (createdCharInv_.cloak != null)
+        {
+            createdCharInv_.cloak.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.cloak.gameObject;
+        }
+        if (createdCharInv_.necklace != null)
+        {
+            createdCharInv_.necklace.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.necklace.gameObject;
+        }
+        if (createdCharInv_.ring != null)
+        {
+            createdCharInv_.ring.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.ring.gameObject;
+        }
+
+        if (createdCharInv_.leftHand != null)
+        {
+            createdCharInv_.leftHand.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.leftHand.gameObject;
+        }
+        if (createdCharInv_.rightHand != null)
+        {
+            createdCharInv_.rightHand.GetComponent<Item>().itemPrefabRoot = prefabCharInv_.rightHand.gameObject;
+        }
+
+        //Looping through all of the inventory item slots
+        for(int i = 0; i < createdCharInv_.itemSlots.Count; ++i)
+        {
+            //If the current slot isn't empty
+            if(createdCharInv_.itemSlots[i] != null)
+            {
+                //We set the item's prefab reference to the item in the same slot in the prefab character's inventory
+                createdCharInv_.itemSlots[i].itemPrefabRoot = prefabCharInv_.itemSlots[i].gameObject;
+
+                //If there is a stack of items in this slot, we loop through all of the stacked items
+                if(createdCharInv_.itemSlots[i].currentStackSize > 1)
+                {
+                    for(int c = 0; c < createdCharInv_.transform.childCount; ++c)
+                    {
+                        createdCharInv_.transform.GetChild(c).GetComponent<Item>().itemPrefabRoot = prefabCharInv_.itemSlots[i].gameObject;
+                    }
+                }
             }
         }
     }

@@ -541,7 +541,8 @@ public class CharacterSaveData
                 if (characterToSave_.charInventory.itemSlots[i].itemPrefabRoot == null)
                 {
                     //We throw an exception because the object that we're supposed to save doesn't exist
-                    throw new System.ArgumentException("CharacterSaveData constructor, The item prefab root doesn't exist! Find out where it came from!");
+                    //throw new System.ArgumentException("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
+                    Debug.Log("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
                 }
                 //If the prefab root object stored in the item is not null, we set it as the itemPrefab to save
                 else
