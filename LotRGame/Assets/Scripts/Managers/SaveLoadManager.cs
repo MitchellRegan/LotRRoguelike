@@ -560,11 +560,20 @@ public class SaveLoadManager : MonoBehaviour
         //Setting the enemy encounters on the tile grid for CharacterManager.cs
         for(int e = 0; e < loadedProgress.enemyTileEncounters.Count; ++e)
         {
-            //Creating a new instance of the encounter object
+            //Getting the encounter reference
+            EnemyEncounter encounterPrefab = loadedProgress.enemyTileEncounters[e].encounterPrefab.GetComponent<EnemyEncounter>();
+            //Getting the enemy's tile position
+            TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
+            //Telling the character manager to instantiate the prefab
+            CharacterManager.globalReference.CreateEnemyEncounter(encounterPrefab, enemyTile);
+
+            /*//Creating a new instance of the encounter object
             GameObject enemyObj = GameObject.Instantiate(loadedProgress.enemyTileEncounters[e].encounterPrefab) as GameObject;
+            //Setting the loaded encounter's prefab reference
+            enemyObj.GetComponent<EnemyEncounter>().encounterPrefab = loadedProgress.enemyTileEncounters[e].encounterPrefab;
             //Setting the enemy's tile position
             TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
-            enemyObj.GetComponent<Movement>().SetCurrentTile(enemyTile);
+            enemyObj.GetComponent<Movement>().SetCurrentTile(enemyTile);*/
         }
     }
 }
