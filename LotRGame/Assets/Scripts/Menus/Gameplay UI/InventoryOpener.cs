@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryOpener : MonoBehaviour
 {
@@ -13,6 +14,11 @@ public class InventoryOpener : MonoBehaviour
     public GameObject bagInventoryUIObject;
     //The reference to the Inventory UI screen for trade characters
     public GameObject tradeInventoryUIObject;
+
+    [Space(8)]
+
+    //The Image that displays the icon for items that are being moved
+    public Image dragIconImage;
 
 
 

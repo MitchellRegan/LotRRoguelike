@@ -13,8 +13,6 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private bool isBeingDragged = false;
     //Bool that determines if this slot is empty. If so, it can't be dragged
     public bool slotIsEmpty = true;
-    //The UI position of this button when not being dragged
-    private Vector3 defaultPosition;
 
     //Enum that determines what inventory slot this button represents
     public enum InventoryButtonType { Bag, Armor, Weapon};
@@ -25,14 +23,6 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
 
     
-    //Function called when this component is enabled
-    private void OnEnable()
-    {
-        //Sets this button's default position
-        this.defaultPosition = this.transform.position;
-    }
-
-
     //Function called when the player's mouse clicks down on this inventory item
     public void OnPointerDown(PointerEventData eventData_)
     {
@@ -45,10 +35,14 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         //If the player left clicks to drag
         if(eventData_.button == PointerEventData.InputButton.Left)
         {
-            this.defaultPosition = this.transform.position;
+            //Setting our image opacity to be dim
+            this.GetComponent<Image>().color = new Color(1, 1, 1, 0.7f);
             //Starts dragging this item and sets it as the front UI element
             this.isBeingDragged = true;
-            this.GetComponent<RectTransform>().SetAsLastSibling();
+
+            //Setting the InventoryOpener's drag icon image to this button's image
+            InventoryOpener.globalReference.dragIconImage.gameObject.SetActive(true);
+            InventoryOpener.globalReference.dragIconImage.sprite = this.GetComponent<Image>().sprite;
         }
         //If the player right clicks to use/equip
         else if(eventData_.button == PointerEventData.InputButton.Right)
@@ -67,9 +61,10 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             return;
         }
 
-        //Ends dragging this item and resets back to the default position
+        //Ends dragging this item and resets back to the default opacity
         this.isBeingDragged = false;
-        this.transform.position = this.defaultPosition;
+        InventoryOpener.globalReference.dragIconImage.gameObject.SetActive(false);
+        this.GetComponent<Image>().color = new Color(1, 1, 1, 1);
 
         //Turning off this button's raycast blocking so that we can see what's behind it
         this.GetComponent<Image>().raycastTarget = false;
@@ -804,7 +799,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         }
 
         //Moves this item to the mouse's position on the screen
-        this.transform.position = Input.mousePosition;
+        InventoryOpener.globalReference.dragIconImage.transform.position = Input.mousePosition;
     }
 
 
@@ -903,16 +898,16 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
                 }
             }
-            //If the clicked button is armor
-            else if(thisButtonItem.GetComponent<Armor>())
+            //If the clicked button is a weapon
+            else if (thisButtonItem.GetComponent<Weapon>())
             {
-                //If this button's inventory is on a character in the player party, it can be equipped
-                if(thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
+                //If this button's inventory is on a character in the player party
+                if (thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
                 {
                     //Finding the index of this button's item in the inventory
                     int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
                     //Equipping this piece of armor
-                    thisButtonUI.selectedCharacterInventory.EquipArmor(thisItemsIndex);
+                    thisButtonUI.selectedCharacterInventory.EquipWeapon(thisItemsIndex);
                 }
                 //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
                 else
@@ -937,16 +932,16 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     }
                 }
             }
-            //If the clicked button is a weapon
-            else if(thisButtonItem.GetComponent<Weapon>())
+            //If the clicked button is armor
+            else if(thisButtonItem.GetComponent<Armor>())
             {
-                //If this button's inventory is on a character in the player party
+                //If this button's inventory is on a character in the player party, it can be equipped
                 if(thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
                 {
                     //Finding the index of this button's item in the inventory
                     int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
                     //Equipping this piece of armor
-                    thisButtonUI.selectedCharacterInventory.EquipWeapon(thisItemsIndex);
+                    thisButtonUI.selectedCharacterInventory.EquipArmor(thisItemsIndex);
                 }
                 //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
                 else
