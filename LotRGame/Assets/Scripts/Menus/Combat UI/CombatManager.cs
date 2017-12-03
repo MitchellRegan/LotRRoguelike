@@ -73,6 +73,9 @@ public class CombatManager : MonoBehaviour
     //The reference to the Info Display object so we can show what actions are being used
     public InfoDisplay ourInfoDisplay;
 
+    //The loot table for the current encounter
+    private List<EncounterLoot> lootTable;
+
 
 
 	// Function called when this object is created
@@ -339,6 +342,17 @@ public class CombatManager : MonoBehaviour
 
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
+
+        //Looping through and copying the loot table from the encounter
+        this.lootTable = new List<EncounterLoot>();
+        foreach(EncounterLoot drop in encounter_.lootTable)
+        {
+            EncounterLoot loot = new EncounterLoot();
+            loot.lootItem = drop.lootItem;
+            loot.dropChance = drop.dropChance;
+            loot.stackSizeMinMax = drop.stackSizeMinMax;
+            this.lootTable.Add(loot);
+        }
     }
 
 
@@ -933,6 +947,10 @@ public class CombatManager : MonoBehaviour
                     }
                 }
                 //If we get through the loop, that means that all enemies are dead and combat is over
+
+                //Rolling for the encounter loot to give to the player
+                this.GetEncounterLoot();
+
                 //Perform the unity event after the action so we can hide some UI elements
                 this.eventAfterActionPerformed.Invoke();
 
@@ -1184,6 +1202,63 @@ public class CombatManager : MonoBehaviour
                     targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
                 }
             }
+        }
+    }
+
+
+    //Function called from UpdateHealthBars when all enemies are dead. Rolls the loot table for the encounter
+    private void GetEncounterLoot()
+    {
+        Inventory lootInventory = CharacterInventoryUI.bagInventory.selectedCharacterInventory;
+        //Clearing all of the items in the loot inventory
+        for (int i = 0; i < lootInventory.itemSlots.Count; ++i)
+        {
+            //If there is an item in this slot, it's destroyed
+            if(lootInventory.itemSlots[i] != null)
+            {
+                Destroy(lootInventory.itemSlots[i].gameObject);
+                lootInventory.itemSlots[i] = null;
+            }
+        }
+
+        //Looping through all of the items in the loot table
+        foreach(EncounterLoot potentialLoot in this.lootTable)
+        {
+            //Rolling a random number to see if the loot drops
+            float randRoll = Random.Range(0, 1);
+            if(randRoll <= potentialLoot.dropChance)
+            {
+                //Creating an instance of the item
+                GameObject objInstance = GameObject.Instantiate(potentialLoot.lootItem.gameObject);
+                Item itemInstance = objInstance.GetComponent<Item>();
+                //Setting the prefab reference for the item
+                itemInstance.itemPrefabRoot = potentialLoot.lootItem.gameObject;
+                //Adding the item to the loot inventory
+                lootInventory.AddItemToInventory(itemInstance);
+
+                //Getting the number of items in the stack
+                int stackSize = Mathf.RoundToInt(Random.Range(potentialLoot.stackSizeMinMax.x, potentialLoot.stackSizeMinMax.y));
+                if(stackSize > 1)
+                {
+                    //Looping through all of the stacked items
+                    for(int s = 0; s < stackSize - 1; ++s)
+                    {
+                        //Creating an instance of the stacked item
+                        GameObject stackObj = GameObject.Instantiate(potentialLoot.lootItem.gameObject);
+                        Item stackItem = stackObj.GetComponent<Item>();
+                        //Setting the prefab reference for the item
+                        stackItem.itemPrefabRoot = potentialLoot.lootItem.gameObject;
+                        //Adding the stack item to the loot inventory
+                        lootInventory.AddItemToInventory(itemInstance);
+                    }
+                }
+            }
+        }
+
+        //If the loot inventory has at least 1 item in it, we display the loot UI
+        if(lootInventory.itemSlots[0] != null)
+        {
+            InventoryOpener.globalReference.bagInventoryUIObject.SetActive(true);
         }
     }
 }

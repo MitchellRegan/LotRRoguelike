@@ -178,6 +178,7 @@ public class TileInfo
                         CombatManager.globalReference.InitiateCombat(this.type, playerGroupOnTile, newEncounter);
 
                         //After combat is initiated, the enemy encounter is destroyed before it is added to this tile
+                        CharacterManager.globalReference.tileEnemyEncounters.Remove(objectToAdd_.GetComponent<EnemyEncounter>());
                         GameObject.Destroy(objectToAdd_);
                         //Breaking out of the function before multiple combats start at once
                         return;
