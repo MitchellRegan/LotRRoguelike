@@ -645,10 +645,14 @@ public class PlayerProgress
         this.enemyTileEncounters = new List<EnemyTileEncounterInfo>();
         for(int e = 0; e < CharacterManager.globalReference.tileEnemyEncounters.Count; ++e)
         {
-            //Creating a new tile encounter info for the enemy
-            EnemyTileEncounterInfo enemyInfo = new EnemyTileEncounterInfo(CharacterManager.globalReference.tileEnemyEncounters[e]);
-            //Adding the enemy encounter info to our list to serialize
-            this.enemyTileEncounters.Add(enemyInfo);
+            //Making sure the encounter isn't null first
+            if (CharacterManager.globalReference.tileEnemyEncounters[e] != null)
+            {
+                //Creating a new tile encounter info for the enemy
+                EnemyTileEncounterInfo enemyInfo = new EnemyTileEncounterInfo(CharacterManager.globalReference.tileEnemyEncounters[e]);
+                //Adding the enemy encounter info to our list to serialize
+                this.enemyTileEncounters.Add(enemyInfo);
+            }
         }
 
         //Looping through all of the quests in our quest log

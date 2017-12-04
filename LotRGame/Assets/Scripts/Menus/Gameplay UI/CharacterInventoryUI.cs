@@ -60,8 +60,13 @@ public class CharacterInventoryUI : MonoBehaviour
     //Function called when this component is enabled
     private void OnEnable()
     {
+        //If this inventory UI is for the bag/loot inventory
+        if(this.inventoryUIType == InventoryType.Bag)
+        {
+            this.selectedCharacterInventory = InventoryOpener.globalReference.bagInventory;
+        }
         //If there is no selected inventory, this object is immediately disabled
-        if(this.selectedCharacterInventory == null)
+        else if(this.selectedCharacterInventory == null)
         {
             this.gameObject.SetActive(false);
             return;

@@ -213,6 +213,8 @@ public class CombatManager : MonoBehaviour
 
             //Calls the unity event for when this combat encounter is over
             case combatState.EndCombat:
+                //Rolling for the encounter loot to give to the player
+                this.GetEncounterLoot();
                 //Creating the event data that we'll pass to the TransitionFade through the EventManager
                 EVTData transitionEvent = new EVTData();
                 //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
@@ -948,9 +950,6 @@ public class CombatManager : MonoBehaviour
                 }
                 //If we get through the loop, that means that all enemies are dead and combat is over
 
-                //Rolling for the encounter loot to give to the player
-                this.GetEncounterLoot();
-
                 //Perform the unity event after the action so we can hide some UI elements
                 this.eventAfterActionPerformed.Invoke();
 
@@ -1209,7 +1208,8 @@ public class CombatManager : MonoBehaviour
     //Function called from UpdateHealthBars when all enemies are dead. Rolls the loot table for the encounter
     private void GetEncounterLoot()
     {
-        Inventory lootInventory = CharacterInventoryUI.bagInventory.selectedCharacterInventory;
+        //Getting the reference to the inventory where we put loot
+        Inventory lootInventory = InventoryOpener.globalReference.bagInventory;
         //Clearing all of the items in the loot inventory
         for (int i = 0; i < lootInventory.itemSlots.Count; ++i)
         {
@@ -1225,7 +1225,8 @@ public class CombatManager : MonoBehaviour
         foreach(EncounterLoot potentialLoot in this.lootTable)
         {
             //Rolling a random number to see if the loot drops
-            float randRoll = Random.Range(0, 1);
+            float randRoll = Random.Range(0f, 1f);
+            Debug.Log("Loot roll for " + potentialLoot.lootItem.itemNameID + ": " + randRoll);
             if(randRoll <= potentialLoot.dropChance)
             {
                 //Creating an instance of the item
@@ -1238,7 +1239,8 @@ public class CombatManager : MonoBehaviour
 
                 //Getting the number of items in the stack
                 int stackSize = Mathf.RoundToInt(Random.Range(potentialLoot.stackSizeMinMax.x, potentialLoot.stackSizeMinMax.y));
-                if(stackSize > 1)
+                Debug.Log("Stack Size: " + stackSize);
+                if (stackSize > 1)
                 {
                     //Looping through all of the stacked items
                     for(int s = 0; s < stackSize - 1; ++s)
@@ -1250,6 +1252,7 @@ public class CombatManager : MonoBehaviour
                         stackItem.itemPrefabRoot = potentialLoot.lootItem.gameObject;
                         //Adding the stack item to the loot inventory
                         lootInventory.AddItemToInventory(itemInstance);
+                        Debug.Log("Adding stack item " + itemInstance.itemNameID);
                     }
                 }
             }

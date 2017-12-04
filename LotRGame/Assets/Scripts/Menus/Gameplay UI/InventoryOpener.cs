@@ -20,6 +20,11 @@ public class InventoryOpener : MonoBehaviour
     //The Image that displays the icon for items that are being moved
     public Image dragIconImage;
 
+    [Space(8)]
+
+    //The Inventory reference for the bag inventory object
+    public Inventory bagInventory;
+
 
 
     //Function called when this game object is created
