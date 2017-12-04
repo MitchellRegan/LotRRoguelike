@@ -126,8 +126,8 @@ public class CharacterInventoryUI : MonoBehaviour
             //Parenting the sprite base to our sprite location object
             newSpriteBase.transform.SetParent(this.playerSpriteLoc.transform);
             newSpriteBase.transform.localPosition = new Vector3();
-            newSpriteBase.transform.localScale = new Vector3(newSpriteBase.transform.localScale.x * this.playerSpriteLoc.transform.localScale.x,
-                                                            newSpriteBase.transform.localScale.y * this.playerSpriteLoc.transform.localScale.y,
+            newSpriteBase.transform.localScale = new Vector3(newSpriteBase.transform.localScale.x * this.playerSpriteLoc.transform.localScale.x * 1.2f,
+                                                            newSpriteBase.transform.localScale.y * this.playerSpriteLoc.transform.localScale.y * 1.2f,
                                                             newSpriteBase.transform.localScale.z * this.playerSpriteLoc.transform.localScale.z);
 
             //Getting the reference to the sprite base component

@@ -76,6 +76,9 @@ public class CombatManager : MonoBehaviour
     //The loot table for the current encounter
     private List<EncounterLoot> lootTable;
 
+    //The list of characters who are dead after an attack
+    private List<CharacterSpriteBase> deadCharacterSprites;
+
 
 
 	// Function called when this object is created
@@ -107,7 +110,7 @@ public class CombatManager : MonoBehaviour
 
         //Initializing the active characters list
         this.actingCharacters = new List<Character>();
-
+        this.deadCharacterSprites = new List<CharacterSpriteBase>();
         this.playerCharactersInCombat = new List<Character>();
         this.enemyCharactersInCombat = new List<Character>();
         this.characterSpriteList = new List<CharacterSpriteBase>();
@@ -136,6 +139,20 @@ public class CombatManager : MonoBehaviour
                 //If the timer is up, the state changes to the one that was previously designated
                 if(this.waitTime <= 0)
                 {
+                    //If we have dead character sprites to remove
+                    if (this.deadCharacterSprites.Count > 0)
+                    {
+                        //Looping through all of our dead character sprites to remove and destroy them
+                        foreach (CharacterSpriteBase deadCSprite in this.deadCharacterSprites)
+                        {
+                            this.characterSpriteList.Remove(deadCSprite);
+                            Destroy(deadCSprite.gameObject);
+                        }
+
+                        //Clearing the list of dead character sprites
+                        this.deadCharacterSprites = new List<CharacterSpriteBase>();
+                    }
+
                     //If the current state is player input or action selecting and the state we're switching to is increasing initiative, we hide the character highlight
                     if(this.stateAfterWait == combatState.IncreaseInitiative)
                     {
@@ -837,7 +854,6 @@ public class CombatManager : MonoBehaviour
         //Checking to see if the attacked character is dead
         if(damagedCharTile_.objectOnThisTile.GetComponent<Character>().charPhysState.currentHealth == 0)
         {
-            Debug.Log(damagedCharTile_.objectOnThisTile.name + " is dead!");
             //If the character is a player character
             if(this.playerCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
             {
@@ -854,8 +870,7 @@ public class CombatManager : MonoBehaviour
             //Getting the character sprite for the dead character
             CharacterSpriteBase deadSprite = this.GetCharacterSprite(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
             //Removing the sprite from our list and destroying it
-            this.characterSpriteList.Remove(deadSprite);
-            Destroy(deadSprite.gameObject);
+            this.deadCharacterSprites.Add(deadSprite);
             //Freeing up the tile that the dead character is on
             damagedCharTile_.SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
         }
@@ -961,7 +976,7 @@ public class CombatManager : MonoBehaviour
 
                 //Clearing the highlighted area showing the previously used action's range
                 this.ClearCombatTileHighlights();
-                this.SetWaitTime(1.5f, combatState.EndCombat);
+                this.SetWaitTime(2.5f, combatState.EndCombat);
             }
         }
     }

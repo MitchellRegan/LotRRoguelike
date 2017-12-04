@@ -75,10 +75,38 @@ public class CombatActionPanelUI : MonoBehaviour
         this.UpdateActionDetailsPanel();
 
         //Enabling all of the action buttons
-        this.standardActButton.interactable = true;
-        this.secondaryActButton.interactable = true;
-        this.quickActButton.interactable = true;
-        this.fullRoundActButton.interactable = true;
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.standardActions.Count > 0)
+        {
+            this.standardActButton.interactable = true;
+        }
+        else
+        {
+            this.standardActButton.interactable = false;
+        }
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.secondaryActions.Count > 0)
+        {
+            this.secondaryActButton.interactable = true;
+        }
+        else
+        {
+            this.secondaryActButton.interactable = false;
+        }
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.quickActions.Count > 0)
+        {
+            this.quickActButton.interactable = true;
+        }
+        else
+        {
+            this.quickActButton.interactable = false;
+        }
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.fullRoundActions.Count > 0)
+        {
+            this.fullRoundActButton.interactable = true;
+        }
+        else
+        {
+            this.fullRoundActButton.interactable = false;
+        }
         //Hiding the action display until one of the action buttons is pressed
         this.actionDisplay.SetActive(false);
     }
