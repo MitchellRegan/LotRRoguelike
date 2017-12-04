@@ -26,8 +26,8 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     //Function called when the player's mouse clicks down on this inventory item
     public void OnPointerDown(PointerEventData eventData_)
     {
-        //If this slot is empty, nothing happens
-        if(this.slotIsEmpty)
+        //If this slot is empty or the trash button, nothing happens
+        if(this.slotIsEmpty || this.buttonType == InventoryButtonType.Trash)
         {
             return;
         }
@@ -93,13 +93,83 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     //If the hit button is a trash button
                     if(results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Trash)
                     {
-                        Debug.Log("Trash item: " + thisButtonItem.itemNameID + " x" + thisButtonItem.currentStackSize);
-                        .//Weird null error here. Need to properly clear the item
-                        //We destroy this button's item
-                        Destroy(thisButtonItem.gameObject);
-                        //Refreshing this button's inventory
-                        thisButtonUI.UpdateImages();
-                        thisButtonUI.selectedCharacterInventory.FindArmorStats();
+                        //If the item being trashed isn't a quest item
+                        if (!thisButtonItem.GetComponent<QuestGiver>())
+                        {
+                            //If this button is an inventory button
+                            if (this.buttonType == InventoryButtonType.Bag)
+                            {
+                                //Getting the index of this button for the UI
+                                int thisItemIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+
+                                //Clearing the item in the inventory slot
+                                thisButtonUI.selectedCharacterInventory.itemSlots[thisItemIndex] = null;
+                            }
+                            //If this button is a weapon button
+                            else if(this.buttonType == InventoryButtonType.Weapon)
+                            {
+                                //If the weapon is in the right hand
+                                if(thisButtonUI.selectedCharacterInventory.rightHand.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.rightHand = null;
+                                }
+                                //If the weapon is in the left hand
+                                else if(thisButtonUI.selectedCharacterInventory.leftHand.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.leftHand = null;
+                                }
+                            }
+                            //If this button is an armor button
+                            else if(this.buttonType == InventoryButtonType.Armor)
+                            {
+                                //If this button item is a helm
+                                if(thisButtonUI.selectedCharacterInventory.helm.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.helm = null;
+                                }
+                                //if this button item is a chestpiece
+                                else if (thisButtonUI.selectedCharacterInventory.chestPiece.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.chestPiece = null;
+                                }
+                                //if this button item are leggings
+                                else if (thisButtonUI.selectedCharacterInventory.leggings.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.leggings = null;
+                                }
+                                //if this button item are shoes
+                                else if (thisButtonUI.selectedCharacterInventory.shoes.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.shoes = null;
+                                }
+                                //if this button item are gloves
+                                else if (thisButtonUI.selectedCharacterInventory.gloves.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.gloves = null;
+                                }
+                                //if this button item is a cloak
+                                else if (thisButtonUI.selectedCharacterInventory.cloak.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.cloak = null;
+                                }
+                                //if this button item is a ring
+                                else if (thisButtonUI.selectedCharacterInventory.ring.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.ring = null;
+                                }
+                                //if this button item is a necklace
+                                else if (thisButtonUI.selectedCharacterInventory.necklace.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.necklace = null;
+                                }
+                            }
+
+                            //We destroy this button's item
+                            Destroy(thisButtonItem.gameObject);
+                            //Refreshing this button's inventory
+                            thisButtonUI.UpdateImages();
+                            thisButtonUI.selectedCharacterInventory.FindArmorStats();
+                        }
                     }
                     //If neither item is equipped and are just in the regular inventory
                     else if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
