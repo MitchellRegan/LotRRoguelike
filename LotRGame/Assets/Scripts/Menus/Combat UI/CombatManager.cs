@@ -1259,6 +1259,16 @@ public class CombatManager : MonoBehaviour
         if(lootInventory.itemSlots[0] != null)
         {
             InventoryOpener.globalReference.bagInventoryUIObject.SetActive(true);
+            //Looping through the list of characters in the selected player party until we find one
+            foreach(Character c in CharacterManager.globalReference.selectedGroup.charactersInParty)
+            {
+                if(c != null)
+                {
+                    //Setting the selected character to be the party character whose inventory is displayed
+                    CharacterInventoryUI.partyInventory.selectedCharacterInventory = c.charInventory;
+                    break;
+                }
+            }
             InventoryOpener.globalReference.partyInventoryUIObject.SetActive(true);
         }
     }

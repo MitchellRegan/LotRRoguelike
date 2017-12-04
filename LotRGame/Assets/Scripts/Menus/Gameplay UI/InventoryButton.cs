@@ -15,7 +15,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public bool slotIsEmpty = true;
 
     //Enum that determines what inventory slot this button represents
-    public enum InventoryButtonType { Bag, Armor, Weapon};
+    public enum InventoryButtonType { Bag, Armor, Weapon, Trash};
     public InventoryButtonType buttonType = InventoryButtonType.Bag;
 
     //Text box that displays the stack size of the item shown
@@ -90,9 +90,19 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<UnityEngine.UI.Image>());
                     Item hitButtonItem = hitButtonUI.GetItemFromInventoryButton(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
 
-
+                    //If the hit button is a trash button
+                    if(results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Trash)
+                    {
+                        Debug.Log("Trash item: " + thisButtonItem.itemNameID + " x" + thisButtonItem.currentStackSize);
+                        .//Weird null error here. Need to properly clear the item
+                        //We destroy this button's item
+                        Destroy(thisButtonItem.gameObject);
+                        //Refreshing this button's inventory
+                        thisButtonUI.UpdateImages();
+                        thisButtonUI.selectedCharacterInventory.FindArmorStats();
+                    }
                     //If neither item is equipped and are just in the regular inventory
-                    if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
+                    else if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
                     {
                         //Finding the index of this button's item so it can be switched
                         int thisButtonIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<UnityEngine.UI.Image>());
