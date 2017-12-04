@@ -1226,7 +1226,6 @@ public class CombatManager : MonoBehaviour
         {
             //Rolling a random number to see if the loot drops
             float randRoll = Random.Range(0f, 1f);
-            Debug.Log("Loot roll for " + potentialLoot.lootItem.itemNameID + ": " + randRoll);
             if(randRoll <= potentialLoot.dropChance)
             {
                 //Creating an instance of the item
@@ -1239,7 +1238,6 @@ public class CombatManager : MonoBehaviour
 
                 //Getting the number of items in the stack
                 int stackSize = Mathf.RoundToInt(Random.Range(potentialLoot.stackSizeMinMax.x, potentialLoot.stackSizeMinMax.y));
-                Debug.Log("Stack Size: " + stackSize);
                 if (stackSize > 1)
                 {
                     //Looping through all of the stacked items
@@ -1251,8 +1249,7 @@ public class CombatManager : MonoBehaviour
                         //Setting the prefab reference for the item
                         stackItem.itemPrefabRoot = potentialLoot.lootItem.gameObject;
                         //Adding the stack item to the loot inventory
-                        lootInventory.AddItemToInventory(itemInstance);
-                        Debug.Log("Adding stack item " + itemInstance.itemNameID);
+                        lootInventory.AddItemToInventory(stackItem);
                     }
                 }
             }
@@ -1262,6 +1259,7 @@ public class CombatManager : MonoBehaviour
         if(lootInventory.itemSlots[0] != null)
         {
             InventoryOpener.globalReference.bagInventoryUIObject.SetActive(true);
+            InventoryOpener.globalReference.partyInventoryUIObject.SetActive(true);
         }
     }
 }

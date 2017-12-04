@@ -478,11 +478,9 @@ public class Inventory : MonoBehaviour
         //Checks to make sure the specific object instance isn't already in our inventory so we don't add it multiple times
         if(this.CheckForItem(itemToAdd_))
         {
-            Debug.Log("Duplicate found ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             //If the item was found, we don't need to do anything else
             return true;
         }
-        Debug.Log("Adding Item");
         //Looping through each slot to find an empty one
         for(int s = 0; s < this.itemSlots.Count; ++s)
         {
