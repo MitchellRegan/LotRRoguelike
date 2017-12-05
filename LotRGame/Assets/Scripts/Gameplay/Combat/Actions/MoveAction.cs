@@ -14,6 +14,8 @@ public class MoveAction : Action
 
     //The list of all combat tiles that show the travel path of the selected movement action
     private List<CombatTile> movementPath;
+    //The current count of tiles this character has moved
+    private int currentNumTilesMoved = 0;
 
     //Bool that determines if we should be animating the player moving yet or not
     private bool moveCharacter = false;
@@ -42,6 +44,7 @@ public class MoveAction : Action
     {
         //Makes it so that the Update function will now move the character through the movement path
         this.moveCharacter = true;
+        this.currentNumTilesMoved = 0;
     }
 
 
@@ -51,42 +54,42 @@ public class MoveAction : Action
         //If we should be animating this character moving from tile to tile
         if(this.moveCharacter)
         {
-            //Finding the number of tiles that have currently been traveled
-            int tilesMoved = Mathf.RoundToInt(this.currentTimePassed / (this.timeToCompleteAction / this.movementPath.Count));
-
             //Increasing the total time that's passed
             this.currentTimePassed += Time.deltaTime;
 
-            //Finding the number of tiles that have been moved after this time progression
-            int newTileMoved = Mathf.RoundToInt(this.currentTimePassed / (this.timeToCompleteAction / this.movementPath.Count));
-
             //If enough time has passed that we've moved one more tile further. We progress the acting character one more tile along the movement path
-            if (tilesMoved < newTileMoved)
+            if (this.currentTimePassed >= this.timeToCompleteAction)
             {
+                //Increasing the index for the number of tiles moved
+                this.currentNumTilesMoved += 1;
+
+                //Resetting the current movement time
+                this.currentTimePassed = 0;
+
                 //Moving the character sprite to the new tile position
                 CharacterSpriteBase charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
-                charSprite.transform.position = this.movementPath[newTileMoved].transform.position;
+                charSprite.transform.position = this.movementPath[this.currentNumTilesMoved].transform.position;
 
                 //Making sure the sprites are positioned in front of each other correctly
                 CombatManager.globalReference.UpdateCharacterSpriteOrder();
 
                 //If the new tile is to the left of the old tile, we face the character left
-                if(this.movementPath[newTileMoved].transform.position.x < this.movementPath[tilesMoved].transform.position.x)
+                if(this.movementPath[this.currentNumTilesMoved].transform.position.x < this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
                     charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Left);
                 }
                 //If the new tile is to the right of the old tile, we face the character right
-                else if(this.movementPath[newTileMoved].transform.position.x > this.movementPath[tilesMoved].transform.position.x)
+                else if(this.movementPath[this.currentNumTilesMoved].transform.position.x > this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
                     charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
                 }
                 //If the new tile is above the old tile, we face the character up
-                else if(this.movementPath[newTileMoved].transform.position.y > this.movementPath[tilesMoved].transform.position.y)
+                else if(this.movementPath[this.currentNumTilesMoved].transform.position.y > this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
                     charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Up);
                 }
                 //If the new tile is below the old tile, we face the character down
-                else if (this.movementPath[newTileMoved].transform.position.y < this.movementPath[tilesMoved].transform.position.y)
+                else if (this.movementPath[this.currentNumTilesMoved].transform.position.y < this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
                     charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Down);
                 }
@@ -95,8 +98,8 @@ public class MoveAction : Action
                 CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
                 
                 //Once the time has passed for this tile, the selected character's position is updated
-                this.actingCharacter.charCombatStats.gridPositionCol = this.movementPath[newTileMoved].col;
-                this.actingCharacter.charCombatStats.gridPositionRow = this.movementPath[newTileMoved].row;
+                this.actingCharacter.charCombatStats.gridPositionCol = this.movementPath[this.currentNumTilesMoved].col;
+                this.actingCharacter.charCombatStats.gridPositionRow = this.movementPath[this.currentNumTilesMoved].row;
                 CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, CombatTile.ObjectType.Player);
 
                 //Looping through and triggering all effects on the moving character that happen during movement
@@ -108,7 +111,7 @@ public class MoveAction : Action
                     if(this.actingCharacter.GetComponent<PhysicalState>().currentHealth <= 0)
                     {
                         //Clearing the movement path tiles
-                        for(int t = newTileMoved + 1; t < this.movementPath.Count; ++t)
+                        for(int t = this.currentNumTilesMoved; t < this.movementPath.Count; ++t)
                         {
                             this.movementPath[t].GetComponent<Image>().color = new Color(1,1,1, this.movementPath[t].inactiveTransparency);
                         }
@@ -119,7 +122,7 @@ public class MoveAction : Action
                 }
 
                 //If we've moved through all of the tiles on the movement path, this object is destroyed
-                if (newTileMoved + 1 == this.movementPath.Count)
+                if (this.currentNumTilesMoved + 1 == this.movementPath.Count)
                 {
                     //Setting the character's combat sprite to a stationary position directly on the last tile in our movement path
                     CombatManager.globalReference.GetCharacterSprite(this.actingCharacter).transform.position = this.movementPath[this.movementPath.Count - 1].transform.position;
