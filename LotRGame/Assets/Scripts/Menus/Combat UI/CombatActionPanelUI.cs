@@ -233,15 +233,18 @@ public class CombatActionPanelUI : MonoBehaviour
 
         //Finding out which tiles need to be hilighted if this action isn't a move action
         List<CombatTile> tilesToHighlight;
+        List<CombatTile> tilesToCheckForCharacters = new List<CombatTile>();
         if (!this.selectedAction.GetComponent<MoveAction>())
         {
             tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
+            tilesToCheckForCharacters = tilesToHighlight;
         }
         //If this action is a move action, we have to find the selected tiles based on environment obstacles
         else
         {
             MoveAction ourMoveAct = this.selectedAction.GetComponent<MoveAction>();
             tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange, ourMoveAct.ignoreObstacles);
+            tilesToCheckForCharacters = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + 1);
         }
 
         //Looping through all tiles in range and hilighting them
@@ -249,6 +252,25 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             tile.inActionRange = true;
             tile.HighlightTile(false);
+        }
+
+        //Looping through all of the tiles around the action highlights to check for characters
+        foreach(CombatTile checkedTile in tilesToCheckForCharacters)
+        {
+            //If there's a character sprite on this tile, we hide it a bit
+            if (checkedTile.objectOnThisTile != null)
+            {
+                if (checkedTile.objectOnThisTile.GetComponent<Character>())
+                {
+                    //Getting the sprite base for the character
+                    CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(checkedTile.objectOnThisTile.GetComponent<Character>());
+                    //If the character on the tile isn't the one that's acting
+                    if (cSprite.ourCharacter != CombatManager.globalReference.actingCharacters[0])
+                    {
+                        cSprite.MakeSpritesTransparent();
+                    }
+                }
+            }
         }
 
         //Displays the action's details

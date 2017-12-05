@@ -77,6 +77,18 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         //Highlighting any effect radius if there's a selected attack ability
         this.HighlightEffectRadius(true);
+
+        //If we have a character on this tile, we make sure they're visible
+        if(this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
+        {
+            //Making sure the character isn't the acting character
+            if (CombatManager.globalReference.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
+            {
+                //Getting the sprite base for the character
+                CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
+                cSprite.MakeSpritesVisible();
+            }
+        }
     }
 
 
@@ -90,6 +102,18 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
             {
                 this.HighlightTile(false);
+
+                //If we have a character on this tile, we make sure they're hidden again
+                if (this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
+                {
+                    //Making sure the character isn't the acting character
+                    if (CombatManager.globalReference.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
+                    {
+                        //Getting the sprite base for the character
+                        CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
+                        cSprite.MakeSpritesTransparent();
+                    }
+                }
             }
         }
         else
@@ -99,6 +123,18 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             //Stops highlighting any effect radius if there's a selected attack ability
             this.HighlightEffectRadius(false);
+
+            //If we have a character on this tile, we make sure they're hidden again
+            if (this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
+            {
+                //Making sure the character isn't the acting character
+                if (this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
+                {
+                    //Getting the sprite base for the character
+                    CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
+                    cSprite.MakeSpritesTransparent();
+                }
+            }
         }
 
         mouseOverTile = null;

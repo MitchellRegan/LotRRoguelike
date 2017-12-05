@@ -671,4 +671,181 @@ public class CharacterSpriteBase : MonoBehaviour
                 break;
         }
     }
+
+
+    //Function called externally from CombatActionPanel.cs to make all of these sprites transparent
+    public void MakeSpritesTransparent()
+    {
+        //The color transparency that is used for the hair
+        Color hairColor = new Color(this.forwardHair.color.r, this.forwardHair.color.g, this.forwardHair.color.b, 0.1f);
+        //The color transparency that is used for the skin
+        Color skinColor = new Color(this.forwardBody.color.r, this.forwardBody.color.g, this.forwardBody.color.b, 0.2f);
+        //The color transparency that is used for armor
+        Color armorColor = new Color(1, 1, 1, 0.1f);
+        //The color transparency that is used to completely hide sprites
+        Color invisible = new Color(0, 0, 0, 0);
+
+        //Hiding all of the forward sprites
+        this.forwardHair.color = hairColor;
+        this.forwardFacialHair.color = invisible;
+        this.forwardHead.color = skinColor;
+        this.forwardLeftEye.color = invisible;
+        this.forwardRightEye.color = invisible;
+        this.forwardBody.color = skinColor;
+        this.forwardRightArm.color = skinColor;
+        this.forwardLeftArm.color = skinColor;
+        this.forwardLegs.color = skinColor;
+        this.forwardCloak.color = armorColor;
+        this.forwardShoes.color = armorColor;
+        this.forwardLeggings.color = armorColor;
+        this.forwardChestpiece.color = armorColor;
+        this.forwardLeftGlove.color = armorColor;
+        this.forwardRightGlove.color = armorColor;
+        this.forwardHelm.color = armorColor;
+        this.forwardLeftWeapon.color = armorColor;
+        this.forwardRightWeapon.color = armorColor;
+        this.forwardLeftWeaponOverlap.color = armorColor;
+        this.forwardRightWeaponOverlap.color = armorColor;
+
+        //Showing all of the right side sprites
+        this.rightSideHair.color = hairColor;
+        this.rightSideFacialHair.color = invisible;
+        this.rightSideHead.color = skinColor;
+        this.rightSideEye.color = invisible;
+        this.rightSideBody.color = skinColor;
+        this.rightSideRightArm.color = skinColor;
+        this.rightSideLeftArm.color = skinColor;
+        this.rightSideLegs.color = skinColor;
+        this.rightSideCloak.color = armorColor;
+        this.rightSideShoes.color = armorColor;
+        this.rightSideLeggings.color = armorColor;
+        this.rightSideChestpiece.color = armorColor;
+        this.rightSideLeftGlove.color = armorColor;
+        this.rightSideRightGlove.color = armorColor;
+        this.rightSideHelm.color = armorColor;
+        this.rightSideLeftWeapon.color = armorColor;
+        this.rightSideRightWeapon.color = armorColor;
+        this.rightSideRightWeaponOverlap.color = armorColor;
+
+        //Showing all of the left side sprites
+        this.leftSideHair.color = hairColor;
+        this.leftSideFacialHair.color = invisible;
+        this.leftSideHead.color = skinColor;
+        this.leftSideEye.color = invisible;
+        this.leftSideBody.color = skinColor;
+        this.leftSideRightArm.color = skinColor;
+        this.leftSideLeftArm.color = skinColor;
+        this.leftSideLegs.color = skinColor;
+        this.leftSideCloak.color = armorColor;
+        this.leftSideShoes.color = armorColor;
+        this.leftSideLeggings.color = armorColor;
+        this.leftSideChestpiece.color = armorColor;
+        this.leftSideLeftGlove.color = armorColor;
+        this.leftSideRightGlove.color = armorColor;
+        this.leftSideHelm.color = armorColor;
+        this.leftSideLeftWeapon.color = armorColor;
+        this.leftSideRightWeapon.color = armorColor;
+        this.leftSideLeftWeaponOverlap.color = armorColor;
+
+        //Showing all of the back sprites
+        this.backHair.color = hairColor;
+        this.backHead.color = skinColor;
+        this.backBody.color = skinColor;
+        this.backRightArm.color = skinColor;
+        this.backLeftArm.color = skinColor;
+        this.backLegs.color = skinColor;
+        this.backCloak.color = armorColor;
+        this.backShoes.color = armorColor;
+        this.backLeggings.color = armorColor;
+        this.backChestpiece.color = armorColor;
+        this.backLeftGlove.color = armorColor;
+        this.backRightGlove.color = armorColor;
+        this.backHelm.color = armorColor;
+        this.backLeftWeapon.color = armorColor;
+        this.backRightWeapon.color = armorColor;
+    }
+
+    
+    //Function called externally to make all of our sprites visible again
+    public void MakeSpritesVisible()
+    {
+        //Showing all of the forward sprites
+        this.forwardHair.color = new Color(this.forwardHair.color.r, this.forwardHair.color.g, this.forwardHair.color.b, 1f);
+        this.forwardFacialHair.color = new Color(this.forwardFacialHair.color.r, this.forwardFacialHair.color.g, this.forwardFacialHair.color.b, 1f);
+        this.forwardHead.color = new Color(this.forwardHead.color.r, this.forwardHead.color.g, this.forwardHead.color.b, 1f);
+        this.forwardLeftEye.color = Color.white;
+        this.forwardRightEye.color = Color.white;
+        this.forwardBody.color = new Color(this.forwardBody.color.r, this.forwardBody.color.g, this.forwardBody.color.b, 1f);
+        this.forwardRightArm.color = new Color(this.forwardRightArm.color.r, this.forwardRightArm.color.g, this.forwardRightArm.color.b, 1f);
+        this.forwardLeftArm.color = new Color(this.forwardLeftArm.color.r, this.forwardLeftArm.color.g, this.forwardLeftArm.color.b, 1f);
+        this.forwardLegs.color = new Color(this.forwardLegs.color.r, this.forwardLegs.color.g, this.forwardLegs.color.b, 1f);
+        this.forwardCloak.color = Color.white;
+        this.forwardShoes.color = Color.white;
+        this.forwardLeggings.color = Color.white;
+        this.forwardChestpiece.color = Color.white;
+        this.forwardLeftGlove.color = Color.white;
+        this.forwardRightGlove.color = Color.white;
+        this.forwardHelm.color = Color.white;
+        this.forwardLeftWeapon.color = Color.white;
+        this.forwardRightWeapon.color = Color.white;
+        this.forwardLeftWeaponOverlap.color = Color.white;
+        this.forwardRightWeaponOverlap.color = Color.white;
+
+        //Showing all of the right side sprites
+        this.rightSideHair.color = new Color(this.forwardHair.color.r, this.forwardHair.color.g, this.forwardHair.color.b, 1f);
+        this.rightSideFacialHair.color = new Color(this.forwardFacialHair.color.r, this.forwardFacialHair.color.g, this.forwardFacialHair.color.b, 1f);
+        this.rightSideHead.color = new Color(this.forwardHead.color.r, this.forwardHead.color.g, this.forwardHead.color.b, 1f);
+        this.rightSideEye.color = Color.white;
+        this.rightSideBody.color = new Color(this.forwardBody.color.r, this.forwardBody.color.g, this.forwardBody.color.b, 1f);
+        this.rightSideRightArm.color = new Color(this.forwardRightArm.color.r, this.forwardRightArm.color.g, this.forwardRightArm.color.b, 1f);
+        this.rightSideLeftArm.color = new Color(this.forwardLeftArm.color.r, this.forwardLeftArm.color.g, this.forwardLeftArm.color.b, 1f);
+        this.rightSideLegs.color = new Color(this.forwardLegs.color.r, this.forwardLegs.color.g, this.forwardLegs.color.b, 1f);
+        this.rightSideCloak.color = Color.white;
+        this.rightSideShoes.color = Color.white;
+        this.rightSideLeggings.color = Color.white;
+        this.rightSideChestpiece.color = Color.white;
+        this.rightSideLeftGlove.color = Color.white;
+        this.rightSideRightGlove.color = Color.white;
+        this.rightSideHelm.color = Color.white;
+        this.rightSideLeftWeapon.color = Color.white;
+        this.rightSideRightWeapon.color = Color.white;
+        this.rightSideRightWeaponOverlap.color = Color.white;
+
+        //Showing all of the left side sprites
+        this.leftSideHair.color = new Color(this.forwardHair.color.r, this.forwardHair.color.g, this.forwardHair.color.b, 1f);
+        this.leftSideFacialHair.color = new Color(this.forwardFacialHair.color.r, this.forwardFacialHair.color.g, this.forwardFacialHair.color.b, 1f);
+        this.leftSideHead.color = new Color(this.forwardHead.color.r, this.forwardHead.color.g, this.forwardHead.color.b, 1f);
+        this.leftSideEye.color = Color.white;
+        this.leftSideBody.color = new Color(this.forwardBody.color.r, this.forwardBody.color.g, this.forwardBody.color.b, 1f);
+        this.leftSideRightArm.color = new Color(this.forwardRightArm.color.r, this.forwardRightArm.color.g, this.forwardRightArm.color.b, 1f);
+        this.leftSideLeftArm.color = new Color(this.forwardLeftArm.color.r, this.forwardLeftArm.color.g, this.forwardLeftArm.color.b, 1f);
+        this.leftSideLegs.color = new Color(this.forwardLegs.color.r, this.forwardLegs.color.g, this.forwardLegs.color.b, 1f);
+        this.leftSideCloak.color = Color.white;
+        this.leftSideShoes.color = Color.white;
+        this.leftSideLeggings.color = Color.white;
+        this.leftSideChestpiece.color = Color.white;
+        this.leftSideLeftGlove.color = Color.white;
+        this.leftSideRightGlove.color = Color.white;
+        this.leftSideHelm.color = Color.white;
+        this.leftSideLeftWeapon.color = Color.white;
+        this.leftSideRightWeapon.color = Color.white;
+        this.leftSideLeftWeaponOverlap.color = Color.white;
+
+        //Showing all of the back sprites
+        this.backHair.color = new Color(this.forwardHair.color.r, this.forwardHair.color.g, this.forwardHair.color.b, 1f);
+        this.backHead.color = new Color(this.forwardHead.color.r, this.forwardHead.color.g, this.forwardHead.color.b, 1f);
+        this.backBody.color = new Color(this.forwardBody.color.r, this.forwardBody.color.g, this.forwardBody.color.b, 1f);
+        this.backRightArm.color = new Color(this.forwardRightArm.color.r, this.forwardRightArm.color.g, this.forwardRightArm.color.b, 1f);
+        this.backLeftArm.color = new Color(this.forwardLeftArm.color.r, this.forwardLeftArm.color.g, this.forwardLeftArm.color.b, 1f);
+        this.backLegs.color = new Color(this.forwardLegs.color.r, this.forwardLegs.color.g, this.forwardLegs.color.b, 1f);
+        this.backCloak.color = Color.white;
+        this.backShoes.color = Color.white;
+        this.backLeggings.color = Color.white;
+        this.backChestpiece.color = Color.white;
+        this.backLeftGlove.color = Color.white;
+        this.backRightGlove.color = Color.white;
+        this.backHelm.color = Color.white;
+        this.backLeftWeapon.color = Color.white;
+        this.backRightWeapon.color = Color.white;
+    }
 }

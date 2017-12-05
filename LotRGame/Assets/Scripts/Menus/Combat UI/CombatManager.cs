@@ -268,6 +268,14 @@ public class CombatManager : MonoBehaviour
             {
                 tile.inActionRange = false;
                 tile.HighlightTile(false);
+
+                //If there's a character sprite on this tile, we make sure it's visible
+                if(tile.objectOnThisTile != null && tile.objectOnThisTile.GetComponent<Character>())
+                {
+                    //Getting the sprite base for the character
+                    CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(tile.objectOnThisTile.GetComponent<Character>());
+                    cSprite.MakeSpritesVisible();
+                }
             }
         }
     }
