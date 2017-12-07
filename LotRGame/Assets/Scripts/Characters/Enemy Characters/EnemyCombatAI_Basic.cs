@@ -8,12 +8,10 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Reference to this enemy's Character component
     private Character ourCharacter;
 
-    //Enum for what type of target this enemy prefers to attack
-    public enum PlayerTargetPreference { HighestThreat, LowestThreat, ClosestPlayer, FurthestPlayer, LowestHealth, HighestHealth, LowestArmor, HighestArmor, QuestItem };
-    public PlayerTargetPreference preferredTargetType = PlayerTargetPreference.HighestThreat;
-
-    //Bool that determines if this enemy takes threat into consideration at all
-    public bool ignoreThreat = false;
+    //The list of different behaviors that this enemy can be in
+    public List<StateBehavior> behaviorList;
+    //The index for our current behavior
+    private int currentBehaviorIndex = 0;
 
     //The List to track each character's combat threat
     private List<PlayerThreatMeter> threatList;
@@ -43,10 +41,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         this.ourCharacter = this.GetComponent<Character>();
 
         //Initializing our threat list if we take threat into consideration
-        if (!this.ignoreThreat)
-        {
-            this.threatList = new List<PlayerThreatMeter>();
-        }
+        this.threatList = new List<PlayerThreatMeter>();
 
         //Looping through all characters in the current combat encounter and adding them to the threat list
         foreach(Character enemyChar in CombatManager.globalReference.playerCharactersInCombat)
@@ -54,27 +49,140 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             this.threatList.Add(new PlayerThreatMeter(enemyChar, 0));
         }
 
+        //Getting our lists of actions initialized and organized
+        this.InitializeActionLists();
+
+
+        //If for SOME reason our enemy wasn't created with a behavior list (meaning Mitch screwed up), we create a default
+        if(this.behaviorList.Count == 0)
+        {
+            //Creating a new behavior for our list
+            StateBehavior defaultBehavior = new StateBehavior();
+
+            defaultBehavior.behaviorCondition = new Condition();//Condition isn't set
+
+            //Making it so this enemy just melee attacks whoever is highest on the threat list
+            defaultBehavior.preferredTargetType = StateBehavior.PlayerTargetPreference.HighestThreat;
+            defaultBehavior.state = StateBehavior.AICombatState.Hostile;
+            defaultBehavior.preferredRange = CombatManager.GroupCombatDistance.Close;
+            //Initializing an empty action list so we don't get errors
+            defaultBehavior.addedActions = new List<Action>();
+
+            //Adding the default behavior to our behavior list
+            this.behaviorList.Add(defaultBehavior);
+        }
+
+
+        //If our attack preference is for quest items, we find our target now and keep it until the target dies
+        if(this.preferredTargetType == PlayerTargetPreference.QuestItem)
+        {
+            //The index for the character that best matches our attack preference
+            int mostQuestItemsIndex = 0;
+            //The number of quest items that the current best character has in their inventory
+            int mostQuestItems = 0;
+
+            //Looping through the threat list to find the character with the most quest items in their inventory
+            for (int t = 0; t < this.threatList.Count; ++t)
+            {
+                //If we don't ignore threat, the loop breaks after the top 3 characters
+                if (!this.ignoreThreat && t > 2)
+                {
+                    break;
+                }
+
+                //Int that tracks the number of quest items the current character has
+                int thisCharsQuestItems = 0;
+
+                //Looping through the current character's inventory to find quest items
+                foreach (Item currentItem in this.threatList[t].characterRef.charInventory.itemSlots)
+                {
+                    //If the current item is a quest item, we increase the count for this character's quest itmes
+                    if (currentItem.GetComponent<QuestItem>())
+                    {
+                        thisCharsQuestItems += 1;
+                    }
+                }
+
+                //Checking each equipped armor slot for quest items
+                if (this.threatList[t].characterRef.charInventory.helm != null && this.threatList[t].characterRef.charInventory.helm.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.chestPiece != null && this.threatList[t].characterRef.charInventory.chestPiece.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.leggings != null && this.threatList[t].characterRef.charInventory.leggings.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.shoes != null && this.threatList[t].characterRef.charInventory.shoes.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.gloves != null && this.threatList[t].characterRef.charInventory.gloves.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.ring != null && this.threatList[t].characterRef.charInventory.ring.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.necklace != null && this.threatList[t].characterRef.charInventory.necklace.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.cloak != null && this.threatList[t].characterRef.charInventory.cloak.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.rightHand != null && this.threatList[t].characterRef.charInventory.rightHand.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+                if (this.threatList[t].characterRef.charInventory.leftHand != null && this.threatList[t].characterRef.charInventory.leftHand.GetComponent<QuestItem>())
+                {
+                    thisCharsQuestItems += 1;
+                }
+
+                //If the current character has more quest items than the best so far, we set the current index as the best
+                if (thisCharsQuestItems > mostQuestItems)
+                {
+                    mostQuestItemsIndex = t;
+                    mostQuestItems = thisCharsQuestItems;
+                }
+            }
+
+            //Now that we've found the character that matches our criteria the best, we set it as the target
+            this.playerCharToAttack = this.threatList[mostQuestItemsIndex].characterRef;
+        }
+    }
+
+
+    //Function called from Start to get this character's list of actions
+    private void InitializeActionLists()
+    {
         //Initializing our lists of actions
         this.attackActionList = new List<AttackAction>();
         this.effectActionList = new List<Action>();
         this.moveActionList = new List<MoveAction>();
 
         //Looping through all of the standard actions in our action list
-        foreach(Action stdAct in this.ourCharacter.charActionList.standardActions)
+        foreach (Action stdAct in this.ourCharacter.charActionList.standardActions)
         {
             //If the action is an attack
-            if(stdAct.GetComponent<AttackAction>())
+            if (stdAct.GetComponent<AttackAction>())
             {
                 this.attackActionList.Add(stdAct.GetComponent<AttackAction>());
 
                 //If this attack causes any effects
-                if(stdAct.GetComponent<AttackAction>().effectsOnHit.Count > 0)
+                if (stdAct.GetComponent<AttackAction>().effectsOnHit.Count > 0)
                 {
                     this.effectActionList.Add(stdAct);
                 }
             }
             //If the action is a move action
-            else if(stdAct.GetComponent<MoveAction>())
+            else if (stdAct.GetComponent<MoveAction>())
             {
                 this.moveActionList.Add(stdAct.GetComponent<MoveAction>());
             }
@@ -166,12 +274,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
 
         //Organizing our movement actions in decending order of distance they can move
-        for(int i = 0; i < this.moveActionList.Count - 1; ++i)
+        for (int i = 0; i < this.moveActionList.Count - 1; ++i)
         {
-            for(int j = i + 1; j < this.moveActionList.Count; ++j)
+            for (int j = i + 1; j < this.moveActionList.Count; ++j)
             {
                 //If the second move action is greater than the first, they're swapped
-                if(this.moveActionList[j].range > this.moveActionList[i].range)
+                if (this.moveActionList[j].range > this.moveActionList[i].range)
                 {
                     MoveAction placeholder = this.moveActionList[j];
                     this.moveActionList[j] = this.moveActionList[i];
@@ -179,96 +287,56 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
         }
-
-
-        //If our attack preference is for quest items, we find our target now and keep it until the target dies
-        if(this.preferredTargetType == PlayerTargetPreference.QuestItem)
-        {
-            //The index for the character that best matches our attack preference
-            int mostQuestItemsIndex = 0;
-            //The number of quest items that the current best character has in their inventory
-            int mostQuestItems = 0;
-
-            //Looping through the threat list to find the character with the most quest items in their inventory
-            for (int t = 0; t < this.threatList.Count; ++t)
-            {
-                //If we don't ignore threat, the loop breaks after the top 3 characters
-                if (!this.ignoreThreat && t > 2)
-                {
-                    break;
-                }
-
-                //Int that tracks the number of quest items the current character has
-                int thisCharsQuestItems = 0;
-
-                //Looping through the current character's inventory to find quest items
-                foreach (Item currentItem in this.threatList[t].characterRef.charInventory.itemSlots)
-                {
-                    //If the current item is a quest item, we increase the count for this character's quest itmes
-                    if (currentItem.GetComponent<QuestItem>())
-                    {
-                        thisCharsQuestItems += 1;
-                    }
-                }
-
-                //Checking each equipped armor slot for quest items
-                if (this.threatList[t].characterRef.charInventory.helm != null && this.threatList[t].characterRef.charInventory.helm.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.chestPiece != null && this.threatList[t].characterRef.charInventory.chestPiece.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.leggings != null && this.threatList[t].characterRef.charInventory.leggings.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.shoes != null && this.threatList[t].characterRef.charInventory.shoes.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.gloves != null && this.threatList[t].characterRef.charInventory.gloves.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.ring != null && this.threatList[t].characterRef.charInventory.ring.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.necklace != null && this.threatList[t].characterRef.charInventory.necklace.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.cloak != null && this.threatList[t].characterRef.charInventory.cloak.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.rightHand != null && this.threatList[t].characterRef.charInventory.rightHand.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.leftHand != null && this.threatList[t].characterRef.charInventory.leftHand.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-
-                //If the current character has more quest items than the best so far, we set the current index as the best
-                if (thisCharsQuestItems > mostQuestItems)
-                {
-                    mostQuestItemsIndex = t;
-                    mostQuestItems = thisCharsQuestItems;
-                }
-            }
-
-            //Now that we've found the character that matches our criteria the best, we set it as the target
-            this.playerCharToAttack = this.threatList[mostQuestItemsIndex].characterRef;
-        }
     }
 
     
 	//Function called from the CombatManager.cs when this enemy character's initiative is full
     public void StartEnemyTurn()
+    {
+        //Finding the index of the behavior we should have from our behavior list
+        this.currentBehaviorIndex = this.DetermineBehavior();
+
+        //Finding out which function to call for our current behavior
+        switch(this.behaviorList[this.currentBehaviorIndex].state)
+        {
+            case StateBehavior.AICombatState.Hostile:
+                this.HostileStateLogic();
+                break;
+
+            case StateBehavior.AICombatState.Support:
+                this.SupportStateLogic();
+                break;
+
+            case StateBehavior.AICombatState.Passive:
+                this.PassiveStateLogic();
+                break;
+
+            case StateBehavior.AICombatState.Terrified:
+                this.TerrifiedStateLogic();
+                break;
+        }
+    }
+    
+
+    //Function called from StartEnemyTurn to determine what behavior this enemy should have. Returns the index of the behavior from our 
+    private int DetermineBehavior()
+    {
+        //Starting with the first behavior
+        int returnedIndex = 0;
+
+        //Looping through all of our available behaviors, starting with the second behavior 
+        for(int b = 1; b < this.behaviorList.Count; ++b)
+        {
+            Debug.Log("Comparing index " + returnedIndex + " with " + b);
+        }
+
+        //Returning the selected index
+        return returnedIndex;
+    }
+
+
+    //Function called from StartEnemyTurn if the current behavior is HOSTILE
+    private void HostileStateLogic()
     {
         //Find which character to attack
         this.FindPlayerTarget();
@@ -282,23 +350,42 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Finding the shortest movement path to the target
         List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, true, true);
 
-        //Implement state manager here?
-
         //When moving:
-            //If moving closer to the target to attack
-                //find the movement action with the highest range
-                //Have the pathfinding algorithm find the fastest path to the target character (don't care about the range right now)
-                //Follow the path but only for the number of tiles that the movement range has
-            //If moving away from all player characters
-                //Find the movement action with the highest range
-                //Have the pathfinding algorithm find all tiles in range and return them
-                //Make a list of floats that has the same number of indexes as the list of combat tiles
-                //Loop through all combat tiles
-                    //Loop through all living player characters (ignore dead)
-                    //Find the distance between the current tile and the current player character's tile
-                    //Add that distance to the value of the list of floats at the same index as the current tile
-                //Loop through all of the indexes of floats to find the one with the largest value
-                //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
+        //If moving closer to the target to attack
+        //find the movement action with the highest range
+        //Have the pathfinding algorithm find the fastest path to the target character (don't care about the range right now)
+        //Follow the path but only for the number of tiles that the movement range has
+        //If moving away from all player characters
+        //Find the movement action with the highest range
+        //Have the pathfinding algorithm find all tiles in range and return them
+        //Make a list of floats that has the same number of indexes as the list of combat tiles
+        //Loop through all combat tiles
+        //Loop through all living player characters (ignore dead)
+        //Find the distance between the current tile and the current player character's tile
+        //Add that distance to the value of the list of floats at the same index as the current tile
+        //Loop through all of the indexes of floats to find the one with the largest value
+        //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
+    }
+
+
+    //Function called from StartEnemyTurn if the current behavior is SUPPORT
+    private void SupportStateLogic()
+    {
+
+    }
+
+
+    //Function called from StartEnemyTurn if the current behavior is PASSIVE
+    private void PassiveStateLogic()
+    {
+
+    }
+
+
+    //Function called from StartEnemyTurn if the current behavior is TERRIFIED
+    private void TerrifiedStateLogic()
+    {
+
     }
 
 
@@ -306,27 +393,27 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     private void FindPlayerTarget()
     {
         //If this character takes threat into consideration
-        if (!this.ignoreThreat)
+        if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat)
         {
             //Ranking the threat list in order from highest to lowest threat
             this.RankThreatList();
         }
 
         //Finding the target based on preference
-        switch(this.preferredTargetType)
+        switch(this.behaviorList[this.currentBehaviorIndex].preferredTargetType)
         {
             //Finding the character with the highest threat
-            case PlayerTargetPreference.HighestThreat:
+            case StateBehavior.PlayerTargetPreference.HighestThreat:
                 this.playerCharToAttack = this.threatList[0].characterRef;
                 break;
 
             //Finding the character with the lowest threat
-            case PlayerTargetPreference.LowestThreat:
+            case StateBehavior.PlayerTargetPreference.LowestThreat:
                 this.playerCharToAttack = this.threatList[this.threatList.Count - 1].characterRef;
                 break;
             
             //Finding the closest character to this enemy
-            case PlayerTargetPreference.ClosestPlayer:
+            case StateBehavior.PlayerTargetPreference.ClosestPlayer:
                 //The index for the character that best matches our attack preference
                 int closestDistIndex = 0;
                 //The distance that's currently the closest
@@ -338,7 +425,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if(!this.ignoreThreat && t > 2)
+                    if(!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -361,7 +448,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the furthest character to this enemy
-            case PlayerTargetPreference.FurthestPlayer:
+            case StateBehavior.PlayerTargetPreference.FurthestPlayer:
                 //The index for the character that best matches our attack preference
                 int furthestDistIndex = 0;
                 //The distance that's currently the furthest
@@ -373,7 +460,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -396,7 +483,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the lowest health
-            case PlayerTargetPreference.LowestHealth:
+            case StateBehavior.PlayerTargetPreference.LowestHealth:
                 //The index for the character that best matches our attack preference
                 int lowestHPIndex = 0;
 
@@ -404,7 +491,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for(int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if(!this.ignoreThreat && t > 2)
+                    if(!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -421,7 +508,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the highest health
-            case PlayerTargetPreference.HighestHealth:
+            case StateBehavior.PlayerTargetPreference.HighestHealth:
                 //The index for the character that best matches our attack preference
                 int highestHPIndex = 0;
 
@@ -429,7 +516,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -446,7 +533,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the lowest armor
-            case PlayerTargetPreference.LowestArmor:
+            case StateBehavior.PlayerTargetPreference.LowestArmor:
                 //The index for the character that best matches our attack preference
                 int lowestArmorIndex = 0;
 
@@ -454,7 +541,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -471,7 +558,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the highest armor
-            case PlayerTargetPreference.HighestArmor:
+            case StateBehavior.PlayerTargetPreference.HighestArmor:
                 //The index for the character that best matches our attack preference
                 int highestArmorIndex = 0;
 
@@ -479,7 +566,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -496,7 +583,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the most quest items in their inventory
-            case PlayerTargetPreference.QuestItem:
+            case StateBehavior.PlayerTargetPreference.QuestItem:
                 //If the current target isn't dead, we don't change targets
                 if(this.playerCharToAttack.charPhysState.currentHealth > 0)
                 {
@@ -512,7 +599,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for(int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -611,7 +698,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
     }
 
-
+    
     //Function called from CombatManager.cs to add to a character's threat when they use an action
     public void IncreaseThreat(Character actingCharacter_, int threatToAdd_)
     {
@@ -651,4 +738,43 @@ public class PlayerThreatMeter
         this.characterRef = characterRef_;
         this.threatLevel = threatLevel_;
     }
+}
+
+
+//Class used in EnemyCombatAI_Basic.cs to determine which state this enemy will be in at a given time
+[System.Serializable]
+public class StateBehavior
+{
+    //The condition that must be true for the enemy to use this behavior
+    public Condition behaviorCondition;
+
+    //Enum for what type of target this enemy prefers to attack
+    public enum PlayerTargetPreference { HighestThreat, LowestThreat, ClosestPlayer, FurthestPlayer, LowestHealth, HighestHealth, LowestArmor, HighestArmor, QuestItem };
+    public PlayerTargetPreference preferredTargetType = PlayerTargetPreference.HighestThreat;
+
+    //Bool that determines if this enemy takes threat into consideration at all
+    public bool ignoreThreat = false;
+
+    //Enum for the state that this enemy shifts to once this state is entered
+    public enum AICombatState { Hostile, Support, Passive, Terrified };
+    public AICombatState state = AICombatState.Hostile;
+
+    //The preferred distance from the 
+    public CombatManager.GroupCombatDistance preferredRange = CombatManager.GroupCombatDistance.Close;
+
+    //The list of actions that are added to this enemy's action list when this state is entered
+    public List<Action> addedActions;
+}
+
+
+//Class used in StateBehavior as a condition for changing the state behavior
+[System.Serializable]
+public class Condition
+{
+    //The priority for this condition in case there are multiple behavior conditions that are true. 0 is lowest, 10 is highest
+    [Range(0, 10)]
+    int priority = 1;
+
+    //Enum for what kind of condition this is
+    public enum ConditionType { TargetHPRange, PersonalHPRange, Debuffed};
 }
