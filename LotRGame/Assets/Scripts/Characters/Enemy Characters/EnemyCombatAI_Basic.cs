@@ -58,8 +58,10 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         {
             //Creating a new behavior for our list
             StateBehavior defaultBehavior = new StateBehavior();
-
-            defaultBehavior.behaviorCondition = new Condition();//Condition isn't set
+            
+            //Creating a basic condition, even though we don't need to use it because it won't change
+            defaultBehavior.type = StateBehavior.ConditionType.PersonalHPRange;
+            defaultBehavior.healthRange = new Vector2(0, 1);
 
             //Making it so this enemy just melee attacks whoever is highest on the threat list
             defaultBehavior.preferredTargetType = StateBehavior.PlayerTargetPreference.HighestThreat;
@@ -70,91 +72,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
             //Adding the default behavior to our behavior list
             this.behaviorList.Add(defaultBehavior);
-        }
-
-
-        //If our attack preference is for quest items, we find our target now and keep it until the target dies
-        if(this.preferredTargetType == PlayerTargetPreference.QuestItem)
-        {
-            //The index for the character that best matches our attack preference
-            int mostQuestItemsIndex = 0;
-            //The number of quest items that the current best character has in their inventory
-            int mostQuestItems = 0;
-
-            //Looping through the threat list to find the character with the most quest items in their inventory
-            for (int t = 0; t < this.threatList.Count; ++t)
-            {
-                //If we don't ignore threat, the loop breaks after the top 3 characters
-                if (!this.ignoreThreat && t > 2)
-                {
-                    break;
-                }
-
-                //Int that tracks the number of quest items the current character has
-                int thisCharsQuestItems = 0;
-
-                //Looping through the current character's inventory to find quest items
-                foreach (Item currentItem in this.threatList[t].characterRef.charInventory.itemSlots)
-                {
-                    //If the current item is a quest item, we increase the count for this character's quest itmes
-                    if (currentItem.GetComponent<QuestItem>())
-                    {
-                        thisCharsQuestItems += 1;
-                    }
-                }
-
-                //Checking each equipped armor slot for quest items
-                if (this.threatList[t].characterRef.charInventory.helm != null && this.threatList[t].characterRef.charInventory.helm.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.chestPiece != null && this.threatList[t].characterRef.charInventory.chestPiece.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.leggings != null && this.threatList[t].characterRef.charInventory.leggings.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.shoes != null && this.threatList[t].characterRef.charInventory.shoes.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.gloves != null && this.threatList[t].characterRef.charInventory.gloves.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.ring != null && this.threatList[t].characterRef.charInventory.ring.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.necklace != null && this.threatList[t].characterRef.charInventory.necklace.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.cloak != null && this.threatList[t].characterRef.charInventory.cloak.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.rightHand != null && this.threatList[t].characterRef.charInventory.rightHand.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-                if (this.threatList[t].characterRef.charInventory.leftHand != null && this.threatList[t].characterRef.charInventory.leftHand.GetComponent<QuestItem>())
-                {
-                    thisCharsQuestItems += 1;
-                }
-
-                //If the current character has more quest items than the best so far, we set the current index as the best
-                if (thisCharsQuestItems > mostQuestItems)
-                {
-                    mostQuestItemsIndex = t;
-                    mostQuestItems = thisCharsQuestItems;
-                }
-            }
-
-            //Now that we've found the character that matches our criteria the best, we set it as the target
-            this.playerCharToAttack = this.threatList[mostQuestItemsIndex].characterRef;
         }
     }
 
@@ -321,6 +238,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called from StartEnemyTurn to determine what behavior this enemy should have. Returns the index of the behavior from our 
     private int DetermineBehavior()
     {
+        //If we only have 1 behavior, that's the one we use
+        if(this.behaviorList.Count == 1)
+        {
+            return 0;
+        }
+
         //Starting with the first behavior
         int returnedIndex = 0;
 
@@ -328,6 +251,159 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         for(int b = 1; b < this.behaviorList.Count; ++b)
         {
             Debug.Log("Comparing index " + returnedIndex + " with " + b);
+            //Bool that, if true, means the behavior we're currently checking has its condition met
+            bool conditionMet = false;
+
+            //Switch statement to check what type of condition we're checking for
+            switch(this.behaviorList[b].type)
+            {
+                //If the target's health is between a specific health range
+                case StateBehavior.ConditionType.TargetHPRange:
+
+                    break;
+
+                //If this enemy's health is between a specific health range
+                case StateBehavior.ConditionType.PersonalHPRange:
+                    //Getting this enemy's health percentage
+                    float ourHPPercent = this.ourCharacter.charPhysState.currentHealth / this.ourCharacter.charPhysState.maxHealth;
+                    //If our HP is within this condition's health range, we meet the condition
+                    if(ourHPPercent >= this.behaviorList[b].healthRange.x && ourHPPercent <= this.behaviorList[b].healthRange.y)
+                    {
+                        conditionMet = true;
+                    }
+                    break;
+
+                //If any of this enemy's ally's health is between a specific range
+                case StateBehavior.ConditionType.AllyHPRange:
+                    //Looping through all of the enemies in this combat
+                    foreach(Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    {
+                        //If the current enemy isn't this enemy and not null
+                        if (combatEnemy != null && combatEnemy != this.ourCharacter)
+                        {
+                            //Getting the current ally's health percentage
+                            float allyHPPercent = combatEnemy.charPhysState.currentHealth / combatEnemy.charPhysState.maxHealth;
+                            //If the ally's HP is within this condition's health range, we meet the condition
+                            if (allyHPPercent >= this.behaviorList[b].healthRange.x && allyHPPercent <= this.behaviorList[b].healthRange.y)
+                            {
+                                conditionMet = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                //If the target has a buff
+                case StateBehavior.ConditionType.TargetBuffed:
+                    Debug.Log("Target Buffed not finished");
+                    break;
+
+                //If this enemy has a debuff
+                case StateBehavior.ConditionType.Debuffed:
+                    //Looping through all of the effects on this character
+                    foreach(Effect combatEffect in this.ourCharacter.charCombatStats.combatEffects)
+                    {
+                        //If the effect is a damage over time effect, we meet the condition
+                        if(combatEffect.GetType() == typeof(DamageOverTimeEffect))
+                        {
+                            conditionMet = true;
+                        }
+                        //If the effect is a stat change effect, we need to see if it's good or bad
+                        else if(combatEffect.GetType() == typeof(ModifyStatsEffect))
+                        {
+                            //Getting a float to hold the net gain in stats
+                            float netStatChange = 0;
+                            //Looping through all of the stat changes
+                            ModifyStatsEffect mse = combatEffect.GetComponent<ModifyStatsEffect>();
+                            foreach(StatModifier change in mse.StatChanges)
+                            {
+                                //If the change isn't for initiative, the value is added normally
+                                if(change.modifiedStat != StatModifier.StatName.Initiative)
+                                {
+                                    netStatChange += change.amountToChange;
+                                }
+                                //if the change is for initiative, we multiply the amount because initiative values are so low
+                                else
+                                {
+                                    netStatChange += change.amountToChange * 100f;
+                                }
+                            }
+
+                            //If the net stat changes are negative, this effect counts as a debuff so we meet the condition
+                            if(netStatChange < 0)
+                            {
+                                conditionMet = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                //If any of this enemy's allies have a debuff:
+                case StateBehavior.ConditionType.AllyDebuffed:
+                    //Looping through all of the enemies in combat to check their effects
+                    foreach(Character allyEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    {
+                        //If we've already found an ally that meets our requirements, we break this loop
+                        if(conditionMet)
+                        {
+                            break;
+                        }
+
+                        //If the current enemy isn't this enemy or null
+                        if(allyEnemy != null && this.ourCharacter != allyEnemy)
+                        {
+                            //Looping through all of the effects on this ally
+                            foreach (Effect combatEffect in allyEnemy.charCombatStats.combatEffects)
+                            {
+                                //If the effect is a damage over time effect, we meet the condition
+                                if (combatEffect.GetType() == typeof(DamageOverTimeEffect))
+                                {
+                                    conditionMet = true;
+                                }
+                                //If the effect is a stat change effect, we need to see if it's good or bad
+                                else if (combatEffect.GetType() == typeof(ModifyStatsEffect))
+                                {
+                                    //Getting a float to hold the net gain in stats
+                                    float netStatChange = 0;
+                                    //Looping through all of the stat changes
+                                    ModifyStatsEffect mse = combatEffect.GetComponent<ModifyStatsEffect>();
+                                    foreach (StatModifier change in mse.StatChanges)
+                                    {
+                                        //If the change isn't for initiative, the value is added normally
+                                        if (change.modifiedStat != StatModifier.StatName.Initiative)
+                                        {
+                                            netStatChange += change.amountToChange;
+                                        }
+                                        //if the change is for initiative, we multiply the amount because initiative values are so low
+                                        else
+                                        {
+                                            netStatChange += change.amountToChange * 100f;
+                                        }
+                                    }
+
+                                    //If the net stat changes are negative, this effect counts as a debuff so we meet the condition
+                                    if (netStatChange < 0)
+                                    {
+                                        conditionMet = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            //If the current behavior's condition is met, we check the priority level against the behavior we're currently using
+            if(conditionMet)
+            {
+                //If this behavior has a higher priority than the behavior we're currently using, this behavior becomes the one we use now
+                if(this.behaviorList[b].priority > this.behaviorList[returnedIndex].priority)
+                {
+                    returnedIndex = b;
+                }
+            }
         }
 
         //Returning the selected index
@@ -584,12 +660,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
             //Finding the character with the most quest items in their inventory
             case StateBehavior.PlayerTargetPreference.QuestItem:
-                //If the current target isn't dead, we don't change targets
-                if(this.playerCharToAttack.charPhysState.currentHealth > 0)
-                {
-                    return;
-                }
-
                 //The index for the character that best matches our attack preference
                 int mostQuestItemsIndex = 0;
                 //The number of quest items that the current best character has in their inventory
@@ -745,8 +815,18 @@ public class PlayerThreatMeter
 [System.Serializable]
 public class StateBehavior
 {
-    //The condition that must be true for the enemy to use this behavior
-    public Condition behaviorCondition;
+    //The priority for this condition in case there are multiple behavior conditions that are true. 0 is lowest, 10 is highest
+    [Range(0, 10)]
+    public int priority = 1;
+
+    //Enum for what kind of condition this is
+    public enum ConditionType { TargetHPRange, PersonalHPRange, AllyHPRange, Debuffed, AllyDebuffed, TargetBuffed };
+    public ConditionType type = ConditionType.PersonalHPRange;
+
+    //The range for health percentage for the TargetHPRange, PersonalHPRange, and AllyHPRange
+    [Range(0, 1)]
+    public Vector2 healthRange = new Vector2(0, 1);
+
 
     //Enum for what type of target this enemy prefers to attack
     public enum PlayerTargetPreference { HighestThreat, LowestThreat, ClosestPlayer, FurthestPlayer, LowestHealth, HighestHealth, LowestArmor, HighestArmor, QuestItem };
@@ -764,17 +844,4 @@ public class StateBehavior
 
     //The list of actions that are added to this enemy's action list when this state is entered
     public List<Action> addedActions;
-}
-
-
-//Class used in StateBehavior as a condition for changing the state behavior
-[System.Serializable]
-public class Condition
-{
-    //The priority for this condition in case there are multiple behavior conditions that are true. 0 is lowest, 10 is highest
-    [Range(0, 10)]
-    int priority = 1;
-
-    //Enum for what kind of condition this is
-    public enum ConditionType { TargetHPRange, PersonalHPRange, Debuffed};
 }
