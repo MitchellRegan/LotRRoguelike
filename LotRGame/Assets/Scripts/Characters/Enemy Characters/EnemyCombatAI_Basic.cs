@@ -54,11 +54,11 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
 
         //If for SOME reason our enemy wasn't created with a behavior list (meaning Mitch screwed up), we create a default
-        if(this.behaviorList.Count == 0)
+        if (this.behaviorList.Count == 0)
         {
             //Creating a new behavior for our list
             StateBehavior defaultBehavior = new StateBehavior();
-            
+
             //Creating a basic condition, even though we don't need to use it because it won't change
             defaultBehavior.type = StateBehavior.ConditionType.PersonalHPRange;
             defaultBehavior.healthRange = new Vector2(0, 1);
@@ -72,6 +72,18 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
             //Adding the default behavior to our behavior list
             this.behaviorList.Add(defaultBehavior);
+        }
+        //Otherwise we check to make sure all of the health ranges for each behavior is valid
+        else
+        {
+            foreach(StateBehavior sb in this.behaviorList)
+            {
+                //If the lower health range is higher than the upper health range, that doesn't work
+                if(sb.healthRange.x > sb.healthRange.y)
+                {
+                    sb.healthRange.x = sb.healthRange.y;
+                }
+            }
         }
     }
 
@@ -250,7 +262,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Looping through all of our available behaviors, starting with the second behavior 
         for(int b = 1; b < this.behaviorList.Count; ++b)
         {
-            Debug.Log("Comparing index " + returnedIndex + " with " + b);
             //Bool that, if true, means the behavior we're currently checking has its condition met
             bool conditionMet = false;
 
@@ -265,9 +276,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If this enemy's health is between a specific health range
                 case StateBehavior.ConditionType.PersonalHPRange:
                     //Getting this enemy's health percentage
-                    float ourHPPercent = this.ourCharacter.charPhysState.currentHealth / this.ourCharacter.charPhysState.maxHealth;
+                    float ourHPPercent = (this.ourCharacter.charPhysState.currentHealth * 1f) / (this.ourCharacter.charPhysState.maxHealth * 1f);
                     //If our HP is within this condition's health range, we meet the condition
-                    if(ourHPPercent >= this.behaviorList[b].healthRange.x && ourHPPercent <= this.behaviorList[b].healthRange.y)
+                    if(ourHPPercent > this.behaviorList[b].healthRange.x && ourHPPercent <= this.behaviorList[b].healthRange.y)
                     {
                         conditionMet = true;
                     }
@@ -282,7 +293,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
                         {
                             //Getting the current ally's health percentage
-                            float allyHPPercent = combatEnemy.charPhysState.currentHealth / combatEnemy.charPhysState.maxHealth;
+                            float allyHPPercent = (combatEnemy.charPhysState.currentHealth * 1f) / (combatEnemy.charPhysState.maxHealth * 1f);
                             //If the ally's HP is within this condition's health range, we meet the condition
                             if (allyHPPercent >= this.behaviorList[b].healthRange.x && allyHPPercent <= this.behaviorList[b].healthRange.y)
                             {
@@ -406,6 +417,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             }
         }
 
+        Debug.Log("Our behavior type: " + this.behaviorList[returnedIndex].type);
         //Returning the selected index
         return returnedIndex;
     }
@@ -414,6 +426,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called from StartEnemyTurn if the current behavior is HOSTILE
     private void HostileStateLogic()
     {
+        Debug.Log("Hostile logic");
         //Find which character to attack
         this.FindPlayerTarget();
 
@@ -441,27 +454,32 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Add that distance to the value of the list of floats at the same index as the current tile
         //Loop through all of the indexes of floats to find the one with the largest value
         //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
+
+        this.EndEnemyTurn();
     }
 
 
     //Function called from StartEnemyTurn if the current behavior is SUPPORT
     private void SupportStateLogic()
     {
-
+        Debug.Log("Support Logic");
+        this.EndEnemyTurn();
     }
 
 
     //Function called from StartEnemyTurn if the current behavior is PASSIVE
     private void PassiveStateLogic()
     {
-
+        Debug.Log("Passive Logic");
+        this.EndEnemyTurn();
     }
 
 
     //Function called from StartEnemyTurn if the current behavior is TERRIFIED
     private void TerrifiedStateLogic()
     {
-
+        Debug.Log("Terrified Logic");
+        this.EndEnemyTurn();
     }
 
 
@@ -789,6 +807,13 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             }
         }
     }
+
+
+    //Function called once our turn is over. We could just tell the CombatManager.cs direcly, but I want some uniformity with all of my state logic functions
+    private void EndEnemyTurn()
+    {
+        CombatManager.globalReference.EndActingCharactersTurn();
+    }
 }
 
 
@@ -824,7 +849,6 @@ public class StateBehavior
     public ConditionType type = ConditionType.PersonalHPRange;
 
     //The range for health percentage for the TargetHPRange, PersonalHPRange, and AllyHPRange
-    [Range(0, 1)]
     public Vector2 healthRange = new Vector2(0, 1);
 
 
@@ -839,7 +863,7 @@ public class StateBehavior
     public enum AICombatState { Hostile, Support, Passive, Terrified };
     public AICombatState state = AICombatState.Hostile;
 
-    //The preferred distance from the 
+    //The preferred distance from the target
     public CombatManager.GroupCombatDistance preferredRange = CombatManager.GroupCombatDistance.Close;
 
     //The list of actions that are added to this enemy's action list when this state is entered

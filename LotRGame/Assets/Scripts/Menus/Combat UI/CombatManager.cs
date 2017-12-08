@@ -205,6 +205,7 @@ public class CombatManager : MonoBehaviour
                 //If the selected character is an enemy
                 else
                 {
+                    //Getting the index for the acting enemy
                     int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
 
@@ -212,7 +213,9 @@ public class CombatManager : MonoBehaviour
                     this.highlightRing.color = this.actingEnemyColor;
                     this.highlightRing.enabled = true;
 
-                    Debug.Log("Combat Manager.Update. Enemies need AI here: " + this.actingCharacters[0].firstName);
+                    //Starting the acting enemy's turn so it can perform its actions
+                    this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
+
                     //Resetting this enemy's initiative for now. Can't do much until I get AI in
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
                     this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
