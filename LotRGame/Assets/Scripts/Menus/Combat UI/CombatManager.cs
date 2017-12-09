@@ -215,19 +215,6 @@ public class CombatManager : MonoBehaviour
 
                     //Starting the acting enemy's turn so it can perform its actions
                     this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
-
-                    //Resetting this enemy's initiative for now. Can't do much until I get AI in
-                    this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
-                    this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
-                    if (this.actingCharacters.Count == 1)
-                    {
-                        this.actingCharacters.Clear();
-                    }
-                    else
-                    {
-                        this.actingCharacters.RemoveAt(0);
-                    }
-                    this.SetWaitTime(1, combatState.IncreaseInitiative);
                 }
                 break;
 

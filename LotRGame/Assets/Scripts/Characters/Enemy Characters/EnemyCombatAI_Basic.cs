@@ -11,7 +11,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //The list of different behaviors that this enemy can be in
     public List<StateBehavior> behaviorList;
     //The index for our current behavior
-    private int currentBehaviorIndex = 0;
+    private List<int> validBehaviorIndexList;
 
     //The List to track each character's combat threat
     private List<PlayerThreatMeter> threatList;
@@ -40,6 +40,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Getting the reference to this character component
         this.ourCharacter = this.GetComponent<Character>();
 
+        //Initializing our list that holds all of the valid behavior indexes
+        this.validBehaviorIndexList = new List<int>();
+
         //Initializing our threat list if we take threat into consideration
         this.threatList = new List<PlayerThreatMeter>();
 
@@ -60,7 +63,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             StateBehavior defaultBehavior = new StateBehavior();
 
             //Creating a basic condition, even though we don't need to use it because it won't change
-            defaultBehavior.type = StateBehavior.ConditionType.PersonalHPRange;
+            defaultBehavior.conditional = StateBehavior.ConditionalType.PersonalHPRange;
             defaultBehavior.healthRange = new Vector2(0, 1);
 
             //Making it so this enemy just melee attacks whoever is highest on the threat list
@@ -223,10 +226,17 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     public void StartEnemyTurn()
     {
         //Finding the index of the behavior we should have from our behavior list
-        this.currentBehaviorIndex = this.DetermineBehavior();
+        this.validBehaviorIndexList = this.DetermineBehavior();
 
-        //Finding out which function to call for our current behavior
-        switch(this.behaviorList[this.currentBehaviorIndex].state)
+        //If there are no valid behaviors, this enemy skips their turn
+        if(this.validBehaviorIndexList.Count == 0)
+        {
+            Debug.Log("Skipping Enemy Turn! No Valid Behaviors");
+            this.EndEnemyTurn();
+        }
+
+        //Finding out which function to call for the highest priority behavior
+        switch(this.behaviorList[this.validBehaviorIndexList[0]].state)
         {
             case StateBehavior.AICombatState.Hostile:
                 this.HostileStateLogic();
@@ -236,8 +246,8 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 this.SupportStateLogic();
                 break;
 
-            case StateBehavior.AICombatState.Passive:
-                this.PassiveStateLogic();
+            case StateBehavior.AICombatState.Defensive:
+                this.DefensiveStateLogic();
                 break;
 
             case StateBehavior.AICombatState.Terrified:
@@ -248,33 +258,28 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     
 
     //Function called from StartEnemyTurn to determine what behavior this enemy should have. Returns the index of the behavior from our 
-    private int DetermineBehavior()
+    private List<int> DetermineBehavior()
     {
         //If we only have 1 behavior, that's the one we use
         if(this.behaviorList.Count == 1)
         {
-            return 0;
+            return new List<int>() { 0 };
         }
 
-        //Starting with the first behavior
-        int returnedIndex = 0;
+        //Creating a new list to hold all of the indexes of valid behaviors
+        List<int> returnedIndexList = new List<int>();
 
-        //Looping through all of our available behaviors, starting with the second behavior 
-        for(int b = 1; b < this.behaviorList.Count; ++b)
+        //Looping through all of our available behaviors
+        for(int b = 0; b < this.behaviorList.Count; ++b)
         {
             //Bool that, if true, means the behavior we're currently checking has its condition met
             bool conditionMet = false;
 
             //Switch statement to check what type of condition we're checking for
-            switch(this.behaviorList[b].type)
+            switch(this.behaviorList[b].conditional)
             {
-                //If the target's health is between a specific health range
-                case StateBehavior.ConditionType.TargetHPRange:
-
-                    break;
-
                 //If this enemy's health is between a specific health range
-                case StateBehavior.ConditionType.PersonalHPRange:
+                case StateBehavior.ConditionalType.PersonalHPRange:
                     //Getting this enemy's health percentage
                     float ourHPPercent = (this.ourCharacter.charPhysState.currentHealth * 1f) / (this.ourCharacter.charPhysState.maxHealth * 1f);
                     //If our HP is within this condition's health range, we meet the condition
@@ -285,7 +290,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If any of this enemy's ally's health is between a specific range
-                case StateBehavior.ConditionType.AllyHPRange:
+                case StateBehavior.ConditionalType.OneAllyHPRange:
                     //Looping through all of the enemies in this combat
                     foreach(Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
                     {
@@ -304,13 +309,58 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                     break;
 
-                //If the target has a buff
-                case StateBehavior.ConditionType.TargetBuffed:
-                    Debug.Log("Target Buffed not finished");
+                //If half of this enemy's ally's health is between a specific range
+                case StateBehavior.ConditionalType.HalfAlliesHPRange:
+                    //Making an int to track the number of allies whose health is within the range
+                    int numAlliesInRange = 0;
+                    //Looping through all of the enemies in this combat
+                    foreach (Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    {
+                        //If the current enemy isn't this enemy and not null
+                        if (combatEnemy != null && combatEnemy != this.ourCharacter)
+                        {
+                            //Getting the current ally's health percentage
+                            float allyHPPercent = (combatEnemy.charPhysState.currentHealth * 1f) / (combatEnemy.charPhysState.maxHealth * 1f);
+                            //If the ally's HP is within this condition's health range, we increase the count
+                            if (allyHPPercent >= this.behaviorList[b].healthRange.x && allyHPPercent <= this.behaviorList[b].healthRange.y)
+                            {
+                                numAlliesInRange += 1;
+
+                                //If the number of allies in range is at least half of the number of enemies in combat, we meet the condition
+                                if (numAlliesInRange >= (CombatManager.globalReference.enemyCharactersInCombat.Count / 2))
+                                {
+                                    conditionMet = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                //If half of this enemy's ally's health is between a specific range
+                case StateBehavior.ConditionalType.AllAlliesHPRange:
+                    //Setting the condition to being true by default, and if it's not true, we change it in the loop
+                    conditionMet = true;
+                    //Looping through all of the enemies in this combat
+                    foreach (Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    {
+                        //If the current enemy isn't this enemy and not null
+                        if (combatEnemy != null && combatEnemy != this.ourCharacter)
+                        {
+                            //Getting the current ally's health percentage
+                            float allyHPPercent = (combatEnemy.charPhysState.currentHealth * 1f) / (combatEnemy.charPhysState.maxHealth * 1f);
+                            //If the ally's HP is NOT within this condition's health range, the condition isn't met
+                            if (allyHPPercent < this.behaviorList[b].healthRange.x || allyHPPercent > this.behaviorList[b].healthRange.y)
+                            {
+                                conditionMet = false;
+                                break;
+                            }
+                        }
+                    }
                     break;
 
                 //If this enemy has a debuff
-                case StateBehavior.ConditionType.Debuffed:
+                case StateBehavior.ConditionalType.Debuffed:
                     //Looping through all of the effects on this character
                     foreach(Effect combatEffect in this.ourCharacter.charCombatStats.combatEffects)
                     {
@@ -351,7 +401,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If any of this enemy's allies have a debuff:
-                case StateBehavior.ConditionType.AllyDebuffed:
+                case StateBehavior.ConditionalType.AllyDebuffed:
                     //Looping through all of the enemies in combat to check their effects
                     foreach(Character allyEnemy in CombatManager.globalReference.enemyCharactersInCombat)
                     {
@@ -406,20 +456,30 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
             }
 
-            //If the current behavior's condition is met, we check the priority level against the behavior we're currently using
+            //If the current behavior's condition is met, we add it to our list of valid behaviors
             if(conditionMet)
             {
-                //If this behavior has a higher priority than the behavior we're currently using, this behavior becomes the one we use now
-                if(this.behaviorList[b].priority > this.behaviorList[returnedIndex].priority)
+                returnedIndexList.Add(b);
+            }
+        }
+        
+        //Looping through all of the valid indexes and organizing them based on priority, going from highest to lowest
+        for(int hp = 0; hp < returnedIndexList.Count - 1; ++hp)
+        {
+            for(int lp = 1; lp < returnedIndexList.Count; ++lp)
+            {
+                //If the "high priority" (hp) behavior has a lower priority than the "low priority" (lp) behavior, the indexes are swapped
+                if(this.behaviorList[returnedIndexList[hp]].priority < this.behaviorList[returnedIndexList[lp]].priority)
                 {
-                    returnedIndex = b;
+                    int placeholderIndex = returnedIndexList[hp];
+                    returnedIndexList[hp] = returnedIndexList[lp];
+                    returnedIndexList[lp] = placeholderIndex;
                 }
             }
         }
 
-        Debug.Log("Our behavior type: " + this.behaviorList[returnedIndex].type);
-        //Returning the selected index
-        return returnedIndex;
+        //Returning the list of behavior indexes
+        return returnedIndexList;
     }
 
 
@@ -467,10 +527,10 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     }
 
 
-    //Function called from StartEnemyTurn if the current behavior is PASSIVE
-    private void PassiveStateLogic()
+    //Function called from StartEnemyTurn if the current behavior is DEFENSIVE
+    private void DefensiveStateLogic()
     {
-        Debug.Log("Passive Logic");
+        Debug.Log("Defensive Logic");
         this.EndEnemyTurn();
     }
 
@@ -487,14 +547,14 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     private void FindPlayerTarget()
     {
         //If this character takes threat into consideration
-        if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat)
+        if (!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat)
         {
             //Ranking the threat list in order from highest to lowest threat
             this.RankThreatList();
         }
 
         //Finding the target based on preference
-        switch(this.behaviorList[this.currentBehaviorIndex].preferredTargetType)
+        switch(this.behaviorList[this.validBehaviorIndexList[0]].preferredTargetType)
         {
             //Finding the character with the highest threat
             case StateBehavior.PlayerTargetPreference.HighestThreat:
@@ -519,7 +579,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if(!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if(!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -554,7 +614,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -585,7 +645,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for(int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if(!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if(!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -610,7 +670,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -635,7 +695,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -660,7 +720,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for (int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -687,7 +747,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 for(int t = 0; t < this.threatList.Count; ++t)
                 {
                     //If we don't ignore threat, the loop breaks after the top 3 characters
-                    if (!this.behaviorList[this.currentBehaviorIndex].ignoreThreat && t > 2)
+                    if (!this.behaviorList[this.validBehaviorIndexList[0]].ignoreThreat && t > 2)
                     {
                         break;
                     }
@@ -845,12 +905,15 @@ public class StateBehavior
     public int priority = 1;
 
     //Enum for what kind of condition this is
-    public enum ConditionType { TargetHPRange, PersonalHPRange, AllyHPRange, Debuffed, AllyDebuffed, TargetBuffed };
-    public ConditionType type = ConditionType.PersonalHPRange;
+    public enum ConditionalType { PersonalHPRange, OneAllyHPRange, HalfAlliesHPRange, AllAlliesHPRange, Debuffed, AllyDebuffed, AnyTargetBuffed, OnePlayerHPRange, HalfPlayersHPRange, AllPlayersHPRange };
+    public ConditionalType conditional = ConditionalType.PersonalHPRange;
 
     //The range for health percentage for the TargetHPRange, PersonalHPRange, and AllyHPRange
     public Vector2 healthRange = new Vector2(0, 1);
 
+    //The range of risky behavior from very low risk to very high risk
+    [Range(0.1f, 0.9f)]
+    public float chanceOfRisk = 0.5f;
 
     //Enum for what type of target this enemy prefers to attack
     public enum PlayerTargetPreference { HighestThreat, LowestThreat, ClosestPlayer, FurthestPlayer, LowestHealth, HighestHealth, LowestArmor, HighestArmor, QuestItem };
@@ -860,7 +923,7 @@ public class StateBehavior
     public bool ignoreThreat = false;
 
     //Enum for the state that this enemy shifts to once this state is entered
-    public enum AICombatState { Hostile, Support, Passive, Terrified };
+    public enum AICombatState { Hostile, Support, Defensive, Terrified };
     public AICombatState state = AICombatState.Hostile;
 
     //The preferred distance from the target
@@ -868,4 +931,7 @@ public class StateBehavior
 
     //The list of actions that are added to this enemy's action list when this state is entered
     public List<Action> addedActions;
+
+    //If true, the actions in the addedActions list are the ONLY actions that can be used in this behavior
+    public bool onlyUseAddedActions = false;
 }
