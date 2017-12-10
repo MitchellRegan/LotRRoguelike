@@ -69,7 +69,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             //Making it so this enemy just melee attacks whoever is highest on the threat list
             defaultBehavior.preferredTargetType = StateBehavior.PlayerTargetPreference.HighestThreat;
             defaultBehavior.state = StateBehavior.AICombatState.Hostile;
-            defaultBehavior.preferredRange = CombatManager.GroupCombatDistance.Close;
+            defaultBehavior.preferredDistFromTarget = 1;
             //Initializing an empty action list so we don't get errors
             defaultBehavior.addedActions = new List<Action>();
 
@@ -289,7 +289,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                     break;
 
-                //If any of this enemy's ally's health is between a specific range
+                //If any of this enemy's ally's health are between a specific range
                 case StateBehavior.ConditionalType.OneAllyHPRange:
                     //Looping through all of the enemies in this combat
                     foreach(Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
@@ -309,7 +309,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                     break;
 
-                //If half of this enemy's ally's health is between a specific range
+                //If half of this enemy's ally's health are between a specific range
                 case StateBehavior.ConditionalType.HalfAlliesHPRange:
                     //Making an int to track the number of allies whose health is within the range
                     int numAlliesInRange = 0;
@@ -337,7 +337,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                     break;
 
-                //If half of this enemy's ally's health is between a specific range
+                //If all of this enemy's ally's health are between a specific range
                 case StateBehavior.ConditionalType.AllAlliesHPRange:
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
@@ -454,6 +454,76 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         }
                     }
                     break;
+
+                //If at least one player character's health is between a specific range
+                case StateBehavior.ConditionalType.OnePlayerHPRange:
+                    //Looping through all of the player characters in this combat
+                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    {
+                        //If the current player isn't null
+                        if (playerCharacter != null)
+                        {
+                            //Getting the current player's health percentage
+                            float playerHPPercent = (playerCharacter.charPhysState.currentHealth * 1f) / (playerCharacter.charPhysState.maxHealth * 1f);
+                            //If the player's HP is within this condition's health range, we meet the condition
+                            if (playerHPPercent >= this.behaviorList[b].healthRange.x && playerHPPercent <= this.behaviorList[b].healthRange.y)
+                            {
+                                conditionMet = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                //If at least half of the player characters' health are between a specific range
+                case StateBehavior.ConditionalType.HalfPlayersHPRange:
+                    //Making an int to track the number of player characters whose health is within the range
+                    int numPlayersInRange = 0;
+                    //Looping through all of the player characters in this combat
+                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    {
+                        //If the current player isn't null
+                        if (playerCharacter != null)
+                        {
+                            //Getting the current player's health percentage
+                            float playerHPPercent = (playerCharacter.charPhysState.currentHealth * 1f) / (playerCharacter.charPhysState.maxHealth * 1f);
+                            //If the player's HP is within this condition's health range, we increase the count
+                            if (playerHPPercent >= this.behaviorList[b].healthRange.x && playerHPPercent <= this.behaviorList[b].healthRange.y)
+                            {
+                                numPlayersInRange += 1;
+
+                                //If the number of player characters that are within the health range is at least half, we meet the condition
+                                if (numPlayersInRange >= CombatManager.globalReference.playerCharactersInCombat.Count)
+                                {
+                                    conditionMet = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                //If all of the player characters' health are between a specific range
+                case StateBehavior.ConditionalType.AllPlayersHPRange:
+                    //Setting the condition to being true by default, and if it's not true, we change it in the loop
+                    conditionMet = true;
+                    //Looping through all of the player characters in this combat
+                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    {
+                        //If the current player isn't null
+                        if (playerCharacter != null)
+                        {
+                            //Getting the current player's health percentage
+                            float playerHPPercent = (playerCharacter.charPhysState.currentHealth * 1f) / (playerCharacter.charPhysState.maxHealth * 1f);
+                            //If the player's HP is NOT within this condition's health range, we don't meet the condition
+                            if (playerHPPercent < this.behaviorList[b].healthRange.x && playerHPPercent > this.behaviorList[b].healthRange.y)
+                            {
+                                conditionMet = false;
+                                break;
+                            }
+                        }
+                    }
+                    break;
             }
 
             //If the current behavior's condition is met, we add it to our list of valid behaviors
@@ -514,6 +584,97 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Add that distance to the value of the list of floats at the same index as the current tile
         //Loop through all of the indexes of floats to find the one with the largest value
         //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
+
+        //Finding the distance this enemy is from the target
+        CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
+        CombatTile targetPlayerTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
+        int currentDist = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false).Count;
+
+        //If this enemy is already in the preferred distance
+        if(this.behaviorList[0].preferredDistFromTarget == currentDist)
+        {
+            .//Need to take into consideration the added actions for the behavior and if they're the only actions allowed
+
+            //Creating a dictionary of actions and their estimated damage for each action type
+            Dictionary<AttackAction, int> standardAtkDmg = new Dictionary<AttackAction, int>();
+            Dictionary<AttackAction, int> secondaryAtkDmg = new Dictionary<AttackAction, int>();
+            Dictionary<AttackAction, int> quickAtkDmg = new Dictionary<AttackAction, int>();
+            Dictionary<AttackAction, int> fullRoundAtkDmg = new Dictionary<AttackAction, int>();
+
+            //Looping through all of the actions to find the average damage for each of them and what type of action they are
+            foreach(AttackAction atkAct in this.attackActionList)
+            {
+                //If the current attack action is within range of the target, we can use it
+                if (atkAct.range >= this.behaviorList[0].preferredDistFromTarget)
+                {
+                    //Int to hold this attack's average damage
+                    int avgDamage = 0;
+                    //Looping through all of the attack damage classes for this attack
+                    foreach (AttackDamage dmg in atkAct.damageDealt)
+                    {
+                        //Starting with the lowest dice roll amount
+                        int atkAvg = dmg.diceRolled;
+                        //Adding the highest dice roll amount
+                        atkAvg += (dmg.diceRolled * dmg.diceRolled);
+                        //Averaging the damage between the highest and lowest roll values
+                        atkAvg = atkAvg / 2;
+                        //Adding the base amount of damage
+                        atkAvg += dmg.baseDamage;
+
+                        //Adding the average non-crit damage
+                        avgDamage += Mathf.RoundToInt((1 - atkAct.critChance) * atkAvg);
+                        //Adding the average crit damage
+                        avgDamage += Mathf.RoundToInt(atkAct.critChance * atkAvg) * atkAct.critMultiplier;
+                    }
+
+                    .//Need to loop through all of the effects to see if they add damage
+
+                    //Getting the type of action this attack is
+                    switch (atkAct.type)
+                    {
+                        case Action.ActionType.Standard:
+                            standardAtkDmg.Add(atkAct, avgDamage);
+                            break;
+
+                        case Action.ActionType.Secondary:
+                            secondaryAtkDmg.Add(atkAct, avgDamage);
+                            break;
+
+                        case Action.ActionType.Quick:
+                            quickAtkDmg.Add(atkAct, avgDamage);
+                            break;
+
+                        case Action.ActionType.FullRound:
+                            fullRoundAtkDmg.Add(atkAct, avgDamage);
+                            break;
+                    }
+                }
+            }
+
+            .//Need to compare highest full-round + quick damage total vs standard + secondary + quick damage total
+            .//Possibly also put in a variable for error so they won't always go for the optimal approach
+        }
+        //If this enemy isn't within the preferred distance
+        else
+        {
+            //Getting this enemy's best move action to see if it can get us in range
+            MoveAction furthestMove = this.moveActionList[0];
+            for(int m = 0; m < this.moveActionList.Count; ++m)
+            {
+                //If the current move action can get this character in range
+                if(this.moveActionList[m].range >= Mathf.Abs(currentDist - this.behaviorList[0].preferredDistFromTarget))
+                {
+                    //We use this move action and break the loop
+                    furthestMove = this.moveActionList[m];
+                    break;
+                }
+                //If the current move action can't get this character in range, we check to see if it moves further than the current furthest
+                else if(this.moveActionList[m].range > furthestMove.range)
+                {
+                    furthestMove = this.moveActionList[m];
+                }
+            }
+        }
 
         this.EndEnemyTurn();
     }
@@ -825,6 +986,16 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called from FindPlayerTarget. Organizes the threat list so that they're in decending order of threat
     private void RankThreatList()
     {
+        //Looping through all of the characters on the threat list to see if any of them are dead
+        foreach(PlayerThreatMeter ptm in this.threatList)
+        {
+            //If the current player is dead, their threat is cleared
+            if(ptm.characterRef.charPhysState.currentHealth == 0)
+            {
+                ptm.threatLevel = 0;
+            }
+        }
+
         //Looping through the list starting from the beginning and ending at the 2nd to last index
         for(int i = 0; i < this.threatList.Count - 1; ++i)
         {
@@ -927,7 +1098,8 @@ public class StateBehavior
     public AICombatState state = AICombatState.Hostile;
 
     //The preferred distance from the target
-    public CombatManager.GroupCombatDistance preferredRange = CombatManager.GroupCombatDistance.Close;
+    [Range(1,13)]
+    public int preferredDistFromTarget = 1;
 
     //The list of actions that are added to this enemy's action list when this state is entered
     public List<Action> addedActions;
