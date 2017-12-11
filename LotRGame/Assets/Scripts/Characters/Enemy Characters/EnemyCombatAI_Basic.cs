@@ -32,6 +32,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     private bool canUseQuick = true;
     private bool canUseFull = true;
 
+    //The list of actions that will be used on this enemy's turn IN ORDER and the combat tiles where the action will be performed
+    private Dictionary<Action, CombatTile> actionsToPerformOnTiles;
+
+    //Bool that, when true, means that this enemy is ready to tell the combat manager what actions it will use
+    private bool readyToAct = false;
+
 
 
     //Function called on the first frame this character exists
@@ -225,6 +231,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 	//Function called from the CombatManager.cs when this enemy character's initiative is full
     public void StartEnemyTurn()
     {
+        //Setting it so that this enemy isn't ready to act yet
+        this.readyToAct = false;
+
+        //Clearing our current list of actions to perform so we can designate new ones
+        actionsToPerformOnTiles = new Dictionary<Action, CombatTile>();
+
         //Finding the index of the behavior we should have from our behavior list
         this.validBehaviorIndexList = this.DetermineBehavior();
 
@@ -559,31 +571,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         Debug.Log("Hostile logic");
         //Find which character to attack
         this.FindPlayerTarget();
-
-        //Using the pathfinding algorithms to find the path to the target
-        CombatTile ourTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
-        CombatTile targetTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
-
-        //Finding the shortest path to the target regardless of obstacles or characters in the way
-        List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, false, false);
-        //Finding the shortest movement path to the target
-        List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, true, true);
-
-        //When moving:
-        //If moving closer to the target to attack
-        //find the movement action with the highest range
-        //Have the pathfinding algorithm find the fastest path to the target character (don't care about the range right now)
-        //Follow the path but only for the number of tiles that the movement range has
-        //If moving away from all player characters
-        //Find the movement action with the highest range
-        //Have the pathfinding algorithm find all tiles in range and return them
-        //Make a list of floats that has the same number of indexes as the list of combat tiles
-        //Loop through all combat tiles
-        //Loop through all living player characters (ignore dead)
-        //Find the distance between the current tile and the current player character's tile
-        //Add that distance to the value of the list of floats at the same index as the current tile
-        //Loop through all of the indexes of floats to find the one with the largest value
-        //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
+        
 
         //Finding the distance this enemy is from the target
         CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
@@ -593,70 +581,179 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If this enemy is already in the preferred distance
         if(this.behaviorList[0].preferredDistFromTarget == currentDist)
         {
-            .//Need to take into consideration the added actions for the behavior and if they're the only actions allowed
-
             //Creating a dictionary of actions and their estimated damage for each action type
             Dictionary<AttackAction, int> standardAtkDmg = new Dictionary<AttackAction, int>();
             Dictionary<AttackAction, int> secondaryAtkDmg = new Dictionary<AttackAction, int>();
             Dictionary<AttackAction, int> quickAtkDmg = new Dictionary<AttackAction, int>();
             Dictionary<AttackAction, int> fullRoundAtkDmg = new Dictionary<AttackAction, int>();
 
-            //Looping through all of the actions to find the average damage for each of them and what type of action they are
-            foreach(AttackAction atkAct in this.attackActionList)
+            //Tracking the actions that have the highest amount of damage
+            AttackAction highestStandard = null;
+            AttackAction highestSecondary = null;
+            AttackAction highestQuick = null;
+            AttackAction highestFullRound = null;
+
+            //Looping through all of the actions for our current behavior to find their average damage and type
+            foreach(Action addedAct in this.behaviorList[0].addedActions)
             {
-                //If the current attack action is within range of the target, we can use it
-                if (atkAct.range >= this.behaviorList[0].preferredDistFromTarget)
+                //If this added action is an attack, we can use it
+                if (addedAct.GetType() == typeof(AttackAction))
                 {
-                    //Int to hold this attack's average damage
-                    int avgDamage = 0;
-                    //Looping through all of the attack damage classes for this attack
-                    foreach (AttackDamage dmg in atkAct.damageDealt)
+                    //If the current attack action is within range of the target, we can use it
+                    if (addedAct.range >= this.behaviorList[0].preferredDistFromTarget)
                     {
-                        //Starting with the lowest dice roll amount
-                        int atkAvg = dmg.diceRolled;
-                        //Adding the highest dice roll amount
-                        atkAvg += (dmg.diceRolled * dmg.diceRolled);
-                        //Averaging the damage between the highest and lowest roll values
-                        atkAvg = atkAvg / 2;
-                        //Adding the base amount of damage
-                        atkAvg += dmg.baseDamage;
+                        //Int to hold this attack's average damage
+                        int avgDamage = this.FindAttackAverageDamage(addedAct as AttackAction, this.playerCharToAttack);
 
-                        //Adding the average non-crit damage
-                        avgDamage += Mathf.RoundToInt((1 - atkAct.critChance) * atkAvg);
-                        //Adding the average crit damage
-                        avgDamage += Mathf.RoundToInt(atkAct.critChance * atkAvg) * atkAct.critMultiplier;
-                    }
+                        //Getting the type of action this attack is
+                        switch (addedAct.type)
+                        {
+                            case Action.ActionType.Standard:
+                                standardAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this standard attack has a higher average damage than the current highest standard attack
+                                if(highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestStandard = addedAct as AttackAction;
+                                }
+                                break;
 
-                    .//Need to loop through all of the effects to see if they add damage
+                            case Action.ActionType.Secondary:
+                                secondaryAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this secondary attack has a higher average damage than the current highest secondary attack
+                                if(highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestSecondary = addedAct as AttackAction;
+                                }
+                                break;
 
-                    //Getting the type of action this attack is
-                    switch (atkAct.type)
-                    {
-                        case Action.ActionType.Standard:
-                            standardAtkDmg.Add(atkAct, avgDamage);
-                            break;
+                            case Action.ActionType.Quick:
+                                quickAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this quick attack has a higher average damage than the current highest quick attack
+                                if(highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestQuick = addedAct as AttackAction;
+                                }
+                                break;
 
-                        case Action.ActionType.Secondary:
-                            secondaryAtkDmg.Add(atkAct, avgDamage);
-                            break;
-
-                        case Action.ActionType.Quick:
-                            quickAtkDmg.Add(atkAct, avgDamage);
-                            break;
-
-                        case Action.ActionType.FullRound:
-                            fullRoundAtkDmg.Add(atkAct, avgDamage);
-                            break;
+                            case Action.ActionType.FullRound:
+                                fullRoundAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this full round attack has a higher average damage than the current highest full round attack
+                                if(highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestFullRound = addedAct as AttackAction;
+                                }
+                                break;
+                        }
                     }
                 }
             }
 
-            .//Need to compare highest full-round + quick damage total vs standard + secondary + quick damage total
-            .//Possibly also put in a variable for error so they won't always go for the optimal approach
+            //If we can use more than just this behavior's added actions
+            if(!this.behaviorList[0].onlyUseAddedActions)
+            {
+                //Looping through all of the actions to find the average damage for each of them and what type of action they are
+                foreach (AttackAction atkAct in this.attackActionList)
+                {
+                    //If the current attack action is within range of the target, we can use it
+                    if (atkAct.range >= this.behaviorList[0].preferredDistFromTarget)
+                    {
+                        //Int to hold this attack's average damage
+                        int avgDamage = this.FindAttackAverageDamage(atkAct, this.playerCharToAttack);
+
+                        //Getting the type of action this attack is
+                        switch (atkAct.type)
+                        {
+                            case Action.ActionType.Standard:
+                                standardAtkDmg.Add(atkAct, avgDamage);
+                                break;
+
+                            case Action.ActionType.Secondary:
+                                secondaryAtkDmg.Add(atkAct, avgDamage);
+                                break;
+
+                            case Action.ActionType.Quick:
+                                quickAtkDmg.Add(atkAct, avgDamage);
+                                break;
+
+                            case Action.ActionType.FullRound:
+                                fullRoundAtkDmg.Add(atkAct, avgDamage);
+                                break;
+                        }
+                    }
+                }
+            }
+
+
+            //Int to hold the average damage if this enemy performs a standard attack, secondary attack, and quick attack
+            int avgDamageSSQ = 0;
+            //If there's a highest standard attack action, we add its damage to our average
+            if(highestStandard != null)
+            {
+                avgDamageSSQ += standardAtkDmg[highestStandard];
+            }
+            //If there's a highest secondary attack action, we add its damage to our average
+            if(highestSecondary != null)
+            {
+                avgDamageSSQ += secondaryAtkDmg[highestSecondary];
+            }
+            //If there's a highest quick attack action, we add its damage to our average
+            if(highestQuick != null)
+            {
+                avgDamageSSQ += quickAtkDmg[highestQuick];
+            }
+
+            //Int to hold the average damage if this enemy performs a full round attack and quick attack
+            int avgDamageFRQ = 0;
+            //If there's a highest full round attack action, we add its damage to our average
+            if(highestFullRound != null)
+            {
+                avgDamageFRQ += fullRoundAtkDmg[highestFullRound];
+            }
+            //If there's a highest quick attack action, we add its damage to our average
+            if (highestQuick != null)
+            {
+                avgDamageFRQ += quickAtkDmg[highestQuick];
+            }
+
+            //If the combination of standard/secondary/quick attacks has a HIGHER average than the full round/quick attacks
+            if(avgDamageSSQ > avgDamageFRQ)
+            {
+                //Adding the attacks to our list in order
+                if(highestStandard != null)
+                {
+                    this.actionsToPerformOnTiles.Add(highestStandard, targetPlayerTile);
+                }
+                if(highestSecondary != null)
+                {
+                    this.actionsToPerformOnTiles.Add(highestSecondary, targetPlayerTile);
+                }
+                if(highestQuick != null)
+                {
+                    this.actionsToPerformOnTiles.Add(highestQuick, targetPlayerTile);
+                }
+            }
+            //If the combination of standard/secondary/quick attacks has a LOWER average than the full round/quick attacks
+            else
+            {
+                //Adding the attacks to our list in order
+                if(highestFullRound != null)
+                {
+                    this.actionsToPerformOnTiles.Add(highestFullRound, targetPlayerTile);
+                }
+                if(highestQuick != null)
+                {
+                    this.actionsToPerformOnTiles.Add(highestQuick, targetPlayerTile);
+                }
+            }
         }
         //If this enemy isn't within the preferred distance
         else
         {
+            .//Need to finish movement stuff
             //Getting this enemy's best move action to see if it can get us in range
             MoveAction furthestMove = this.moveActionList[0];
             for(int m = 0; m < this.moveActionList.Count; ++m)
@@ -674,9 +771,44 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     furthestMove = this.moveActionList[m];
                 }
             }
+
+            //Using the pathfinding algorithms to find the path to the target
+            CombatTile ourTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
+            CombatTile targetTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
+
+            //Finding the shortest path to the target regardless of obstacles or characters in the way
+            List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, false, false);
+            //Finding the shortest movement path to the target
+            List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, true, true);
+
+            //When moving:
+            //If moving closer to the target to attack
+            //find the movement action with the highest range
+            //Have the pathfinding algorithm find the fastest path to the target character (don't care about the range right now)
+            //Follow the path but only for the number of tiles that the movement range has
+            //If moving away from all player characters
+            //Find the movement action with the highest range
+            //Have the pathfinding algorithm find all tiles in range and return them
+            //Make a list of floats that has the same number of indexes as the list of combat tiles
+            //Loop through all combat tiles
+            //Loop through all living player characters (ignore dead)
+            //Find the distance between the current tile and the current player character's tile
+            //Add that distance to the value of the list of floats at the same index as the current tile
+            //Loop through all of the indexes of floats to find the one with the largest value
+            //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
         }
 
-        this.EndEnemyTurn();
+
+        //If we have actions to perform, then we're ready to inform the combat manager (look in Update)
+        if(this.actionsToPerformOnTiles.Count > 0)
+        {
+            this.readyToAct = true;
+        }
+        //If we don't have any actions, then we end our turn
+        else
+        {
+            this.EndEnemyTurn();
+        }
     }
 
 
@@ -704,7 +836,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     }
 
 
-    //Function called from StartEnemyTurn. Finds out which player to target based on threat and preference
+    //Function called from HostileStateLogic. Finds out which player to target based on threat and preference
     private void FindPlayerTarget()
     {
         //If this character takes threat into consideration
@@ -983,6 +1115,86 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     }
 
 
+    //Function called from HostileStateLogic. Finds the average damage for an attack action
+    private int FindAttackAverageDamage(AttackAction attackAct_, Character targetChar_)
+    {
+        //Int to hold this attack's average damage
+        int avgDamage = 0;
+
+        //Looping through all of the attack damage classes for this attack
+        foreach (AttackDamage dmg in attackAct_.damageDealt)
+        {
+            //Starting with the lowest dice roll amount
+            int atkAvg = dmg.diceRolled;
+            //Adding the highest dice roll amount
+            atkAvg += (dmg.diceRolled * dmg.diceRolled);
+            //Averaging the damage between the highest and lowest roll values
+            atkAvg = atkAvg / 2;
+            //Adding the base amount of damage
+            atkAvg += dmg.baseDamage;
+
+            //Adding the average non-crit damage
+            avgDamage += Mathf.RoundToInt((1 - attackAct_.critChance) * atkAvg);
+            //Adding the average crit damage
+            avgDamage += Mathf.RoundToInt(attackAct_.critChance * atkAvg) * attackAct_.critMultiplier;
+        }
+
+        //Looping through all of the attack effect classes for this attack
+        foreach (AttackEffect eft in attackAct_.effectsOnHit)
+        {
+            //If the effect hits enemies
+            if (eft.effectedTargets == AttackEffect.EffectedTargets.Defender || eft.effectedTargets == AttackEffect.EffectedTargets.EnemiesOnly ||
+                eft.effectedTargets == AttackEffect.EffectedTargets.Everyone || eft.effectedTargets == AttackEffect.EffectedTargets.EnemiesExceptDefender)
+            {
+                //If the effect only hits a specific type or race, we need to make sure the target meets the race/type requirements
+                if (!eft.hitEffectedType || (eft.effectedRace == RaceTypes.Races.None && eft.effectedType == RaceTypes.Subtypes.None) ||
+                    (eft.effectedRace == this.playerCharToAttack.charRaceTypes.race && eft.effectedType == RaceTypes.Subtypes.None) ||
+                    (eft.effectedRace == RaceTypes.Races.None && this.playerCharToAttack.charRaceTypes.subtypeList.Contains(eft.effectedType) ||
+                    (eft.effectedRace == this.playerCharToAttack.charRaceTypes.race && this.playerCharToAttack.charRaceTypes.subtypeList.Contains(eft.effectedType))))
+                {
+                    //If the effect is a damage over time
+                    if (eft.effectToApply.GetType() == typeof(DamageOverTimeEffect))
+                    {
+                        DamageOverTimeEffect dotEft = eft.effectToApply as DamageOverTimeEffect;
+                        //Starting with the average of the damage per tick
+                        int dotDmgAvg = Mathf.RoundToInt(dotEft.damagePerTickRange.x + dotEft.damagePerTickRange.y) / 2;
+                        //Multiplying the damage by the average number of ticks
+                        dotDmgAvg *= (Mathf.RoundToInt(dotEft.numberOfTicksRange.x + dotEft.numberOfTicksRange.y) / 2);
+                        //Multiplying by the chance to trigger
+                        dotDmgAvg = Mathf.RoundToInt(dotDmgAvg * dotEft.chanceToTrigger);
+
+                        //Adding the average non-crit damage
+                        avgDamage += Mathf.RoundToInt((1 - dotEft.critChance) * dotDmgAvg);
+                        //Adding the average crit damage
+                        avgDamage += Mathf.RoundToInt(dotEft.critChance * dotDmgAvg) * dotEft.critMultiplier;
+                    }
+                    //If the effect is instant damage
+                    else if (eft.effectToApply.GetType() == typeof(InstantDamageEffect))
+                    {
+                        InstantDamageEffect instantDamageEft = eft.effectToApply as InstantDamageEffect;
+                        //Starting with the lowest dice roll amount
+                        int instDmgAvg = instantDamageEft.diceRolled;
+                        //Adding the highest roll amount
+                        instDmgAvg += (instantDamageEft.diceRolled * instantDamageEft.diceSides);
+                        //Averaging the damage between the highest and lowest roll values
+                        instDmgAvg = instDmgAvg / 2;
+                        //Adding the base amount of damage
+                        instDmgAvg += instantDamageEft.baseDamage;
+
+                        //Adding the average non-crit damage
+                        avgDamage += Mathf.RoundToInt((1 - instantDamageEft.critChance) * instDmgAvg);
+                        //Adding the average crit damage
+                        avgDamage += Mathf.RoundToInt(instantDamageEft.critChance * instDmgAvg) * instantDamageEft.critMultiplier;
+                    }
+                }
+            }
+        }
+
+        //Returning the average
+        return avgDamage;
+    }
+
+
     //Function called from FindPlayerTarget. Organizes the threat list so that they're in decending order of threat
     private void RankThreatList()
     {
@@ -1037,6 +1249,19 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
             }
         }
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If we aren't ready to act for some reason, OR we're waiting for the combat manager to let us give input, nothing happens
+        if(!this.readyToAct || CombatManager.globalReference.currentState != CombatManager.combatState.PlayerInput)
+        {
+            return;
+        }
+
+        .//Need to perform actions here
     }
 
 

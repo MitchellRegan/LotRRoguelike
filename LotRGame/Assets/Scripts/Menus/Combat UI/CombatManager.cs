@@ -10,8 +10,8 @@ public class CombatManager : MonoBehaviour
     public static CombatManager globalReference;
 
     //Enum for the state of this combat manager to decide what to do on update
-    private enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
-    private combatState currentState = combatState.Wait;
+    public enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
+    public combatState currentState = combatState.Wait;
 
     //The amount of time that has passed while waiting
     private float waitTime = 0;
