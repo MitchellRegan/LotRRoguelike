@@ -33,7 +33,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     private bool canUseFull = true;
 
     //The list of actions that will be used on this enemy's turn IN ORDER and the combat tiles where the action will be performed
-    private Dictionary<Action, CombatTile> actionsToPerformOnTiles;
+    private List<EnemyActionAndTile> actionsToPerformOnTiles;
 
     //Bool that, when true, means that this enemy is ready to tell the combat manager what actions it will use
     private bool readyToAct = false;
@@ -235,7 +235,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         this.readyToAct = false;
 
         //Clearing our current list of actions to perform so we can designate new ones
-        actionsToPerformOnTiles = new Dictionary<Action, CombatTile>();
+        actionsToPerformOnTiles = new List<EnemyActionAndTile>();
 
         //Finding the index of the behavior we should have from our behavior list
         this.validBehaviorIndexList = this.DetermineBehavior();
@@ -725,15 +725,18 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //Adding the attacks to our list in order
                 if(highestStandard != null)
                 {
-                    this.actionsToPerformOnTiles.Add(highestStandard, targetPlayerTile);
+                    EnemyActionAndTile newActTile = new EnemyActionAndTile(highestStandard, targetPlayerTile);
+                    this.actionsToPerformOnTiles.Add(newActTile);
                 }
                 if(highestSecondary != null)
                 {
-                    this.actionsToPerformOnTiles.Add(highestSecondary, targetPlayerTile);
+                    EnemyActionAndTile newActTile = new EnemyActionAndTile(highestSecondary, targetPlayerTile);
+                    this.actionsToPerformOnTiles.Add(newActTile);
                 }
                 if(highestQuick != null)
                 {
-                    this.actionsToPerformOnTiles.Add(highestQuick, targetPlayerTile);
+                    EnemyActionAndTile newActTile = new EnemyActionAndTile(highestQuick, targetPlayerTile);
+                    this.actionsToPerformOnTiles.Add(newActTile);
                 }
             }
             //If the combination of standard/secondary/quick attacks has a LOWER average than the full round/quick attacks
@@ -742,11 +745,13 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //Adding the attacks to our list in order
                 if(highestFullRound != null)
                 {
-                    this.actionsToPerformOnTiles.Add(highestFullRound, targetPlayerTile);
+                    EnemyActionAndTile newActTile = new EnemyActionAndTile(highestFullRound, targetPlayerTile);
+                    this.actionsToPerformOnTiles.Add(newActTile);
                 }
                 if(highestQuick != null)
                 {
-                    this.actionsToPerformOnTiles.Add(highestQuick, targetPlayerTile);
+                    EnemyActionAndTile newActTile = new EnemyActionAndTile(highestQuick, targetPlayerTile);
+                    this.actionsToPerformOnTiles.Add(newActTile);
                 }
             }
         }
@@ -1261,7 +1266,20 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             return;
         }
 
-        .//Need to perform actions here
+        //If we still have actions to complete, we tell the combat manager to perform them
+        if (this.actionsToPerformOnTiles.Count > 0)
+        {
+            //Getting the action and the tile where it happens
+            CombatManager.globalReference.PerformEnemyActionOnTile(this.actionsToPerformOnTiles[0].targetTile, this.actionsToPerformOnTiles[0].enemyActionToUse);
+
+            //Clearing the current action so we don't use it again
+            this.actionsToPerformOnTiles.RemoveAt(0);
+        }
+        //If there are no more actions to complete, we end our turn
+        else
+        {
+            this.EndEnemyTurn();
+        }
     }
 
 
@@ -1331,4 +1349,21 @@ public class StateBehavior
 
     //If true, the actions in the addedActions list are the ONLY actions that can be used in this behavior
     public bool onlyUseAddedActions = false;
+}
+
+
+//Class used in EnemyCombatAI_Basic to hold an enemy's action and the tile that they use it on
+public class EnemyActionAndTile
+{
+    //The action that the enemy will use
+    public Action enemyActionToUse;
+    //The tile that the action will be used on
+    public CombatTile targetTile;
+
+    //Constructor function for this class
+    public EnemyActionAndTile(Action enemyAct_, CombatTile targetTile_)
+    {
+        this.enemyActionToUse = enemyAct_;
+        this.targetTile = targetTile_;
+    }
 }
