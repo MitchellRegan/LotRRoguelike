@@ -758,7 +758,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If this enemy isn't within the preferred distance
         else
         {
-            .//Need to finish movement stuff
+            
+
+            .//Need to finish movement stuff. Have to figure out if we can do the move in the least amount of actions and still be able to attack
             //Getting this enemy's best move action to see if it can get us in range
             MoveAction furthestMove = this.moveActionList[0];
             for(int m = 0; m < this.moveActionList.Count; ++m)
@@ -777,14 +779,10 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
 
-            //Using the pathfinding algorithms to find the path to the target
-            CombatTile ourTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
-            CombatTile targetTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
-
             //Finding the shortest path to the target regardless of obstacles or characters in the way
-            List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, false, false);
+            List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false);
             //Finding the shortest movement path to the target
-            List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourTile, targetTile, true, true);
+            List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
 
             //When moving:
             //If moving closer to the target to attack
@@ -1160,18 +1158,35 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //If the effect is a damage over time
                     if (eft.effectToApply.GetType() == typeof(DamageOverTimeEffect))
                     {
-                        DamageOverTimeEffect dotEft = eft.effectToApply as DamageOverTimeEffect;
-                        //Starting with the average of the damage per tick
-                        int dotDmgAvg = Mathf.RoundToInt(dotEft.damagePerTickRange.x + dotEft.damagePerTickRange.y) / 2;
-                        //Multiplying the damage by the average number of ticks
-                        dotDmgAvg *= (Mathf.RoundToInt(dotEft.numberOfTicksRange.x + dotEft.numberOfTicksRange.y) / 2);
-                        //Multiplying by the chance to trigger
-                        dotDmgAvg = Mathf.RoundToInt(dotDmgAvg * dotEft.chanceToTrigger);
+                        //Bool to track if the enemy is already effected by this DoT
+                        bool alreadyHasDot = false;
+                        //Looping through all of the combat effects on the target character
+                        foreach(Effect ce in targetChar_.charCombatStats.combatEffects)
+                        {
+                            //If this target is already effected by this DoT, we can't apply it again
+                            if(ce.effectName == eft.effectToApply.effectName)
+                            {
+                                alreadyHasDot = true;
+                                break;
+                            }
+                        }
 
-                        //Adding the average non-crit damage
-                        avgDamage += Mathf.RoundToInt((1 - dotEft.critChance) * dotDmgAvg);
-                        //Adding the average crit damage
-                        avgDamage += Mathf.RoundToInt(dotEft.critChance * dotDmgAvg) * dotEft.critMultiplier;
+                        //If the target enemy isn't already effected by this effect
+                        if (!alreadyHasDot)
+                        {
+                            DamageOverTimeEffect dotEft = eft.effectToApply as DamageOverTimeEffect;
+                            //Starting with the average of the damage per tick
+                            int dotDmgAvg = Mathf.RoundToInt(dotEft.damagePerTickRange.x + dotEft.damagePerTickRange.y) / 2;
+                            //Multiplying the damage by the average number of ticks
+                            dotDmgAvg *= (Mathf.RoundToInt(dotEft.numberOfTicksRange.x + dotEft.numberOfTicksRange.y) / 2);
+                            //Multiplying by the chance to trigger
+                            dotDmgAvg = Mathf.RoundToInt(dotDmgAvg * dotEft.chanceToTrigger);
+
+                            //Adding the average non-crit damage
+                            avgDamage += Mathf.RoundToInt((1 - dotEft.critChance) * dotDmgAvg);
+                            //Adding the average crit damage
+                            avgDamage += Mathf.RoundToInt(dotEft.critChance * dotDmgAvg) * dotEft.critMultiplier;
+                        }
                     }
                     //If the effect is instant damage
                     else if (eft.effectToApply.GetType() == typeof(InstantDamageEffect))
@@ -1197,6 +1212,249 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
         //Returning the average
         return avgDamage;
+    }
+
+
+    //Function called from all of the state logic functions to find the least amount of movement actions to get to a target range
+    private List<MoveAction> FindMinimumMoveActs(int rangeToMeet)
+    {
+        //Int to hold the current range of all of our movement actions
+        int currentMoveSum = 0;
+        //Move actions for each of the different types
+        MoveAction quickMoveAct = null;
+        MoveAction secondaryMoveAct = null;
+        MoveAction standardMoveAct = null;
+
+        //Looping through all of our added actions to see if they are Quick Movement actions
+        foreach (Action aaQ in this.behaviorList[0].addedActions)
+        {
+            //If the action is a movement action and is a quick action
+            if (aaQ.type == Action.ActionType.Quick && aaQ.GetType() == typeof(MoveAction))
+            {
+                //If the current quick move action is null or has a lower range, this action becomes the one we use
+                if (quickMoveAct == null || quickMoveAct.range < aaQ.range)
+                {
+                    quickMoveAct = aaQ as MoveAction;
+                    currentMoveSum = aaQ.range;
+
+                    //If this quick action is enough to reach the target, we don't need to keep looking
+                    if (currentMoveSum >= rangeToMeet)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        //If we can use all of our actions and not just the added actions, we loop through all of our other move actions
+        if (currentMoveSum < rangeToMeet && !this.behaviorList[0].onlyUseAddedActions)
+        {
+            //Looping through all of our move actions
+            foreach (MoveAction moveAct in this.moveActionList)
+            {
+                //If the current move action is a quick action and has a longer range than our current quick action
+                if (moveAct.type == Action.ActionType.Quick && moveAct.range > currentMoveSum)
+                {
+                    //This move act becomes the new quick move
+                    quickMoveAct = moveAct;
+                    currentMoveSum = quickMoveAct.range;
+
+                    //If we have enough range to reach the target, we can stop looking for more actions
+                    if(currentMoveSum >= rangeToMeet)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        //If we still don't have enough movement range with the quick actions, we loop through secondary actions
+        if (currentMoveSum < rangeToMeet)
+        {
+            //Looping through all of our behavior's added actions
+            foreach(Action aaS in this.behaviorList[0].addedActions)
+            {
+                //If the action is a movement action and is a secondary action
+                if(aaS.type == Action.ActionType.Secondary && aaS.GetType() == typeof(MoveAction))
+                {
+                    //If the current secondary move action is null or has a lower range, this action becomes the one we use
+                    if(secondaryMoveAct == null || secondaryMoveAct.range < aaS.range)
+                    {
+                        //If the secondary move act isn't null, we remove its range from our move sum
+                        if(secondaryMoveAct != null)
+                        {
+                            currentMoveSum -= secondaryMoveAct.range;
+                        }
+
+                        secondaryMoveAct = aaS as MoveAction;
+                        currentMoveSum += aaS.range;
+
+                        //If this secondary action has enough range to reach the target without any other action, we clear the quick action
+                        if(secondaryMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= quickMoveAct.range;
+                            quickMoveAct = null;
+                        }
+                        //Otherwise, if this secondary action and the quick action together can reach the target, we don't need to keep looking
+                        else if(currentMoveSum >= rangeToMeet)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //If we can use all of our move actions and not just the added actions, we loop through the rest of our move actions
+            if(currentMoveSum < rangeToMeet && !this.behaviorList[0].onlyUseAddedActions)
+            {
+                //Looping through all of our move actions
+                foreach(MoveAction moveAct in this.moveActionList)
+                {
+                    //If the current move action is a secondary action and has a longer range than our current secondary action
+                    if(moveAct.type == Action.ActionType.Secondary && secondaryMoveAct == null || moveAct.range > secondaryMoveAct.range)
+                    {
+                        //If the current secondary move act isn't null, we subtract its range from our move sum
+                        if(secondaryMoveAct != null)
+                        {
+                            currentMoveSum -= secondaryMoveAct.range;
+                        }
+
+                        //This move act becomes the new secondary move
+                        secondaryMoveAct = moveAct;
+                        currentMoveSum += secondaryMoveAct.range;
+
+                        //If this secondary move act has enough range to reach the target without the quick action, we clear the quick action
+                        if(secondaryMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= quickMoveAct.range;
+                            quickMoveAct = null;
+                        }
+                        //If we have enough range to reach the target, we can stop looking for more actions
+                        else if (currentMoveSum >= rangeToMeet)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //If we've looked through the quick and secondary actions and STILL don't have enough range, we loop through our standard actions
+        if(currentMoveSum < rangeToMeet)
+        {
+            //Looping through all of our behavior's added actions
+            foreach(Action aaSt in this.behaviorList[0].addedActions)
+            {
+                //If the action is a movement action and is a standard action
+                if(aaSt.type == Action.ActionType.Standard && aaSt.GetType() == typeof(MoveAction))
+                {
+                    //If the current standard move action is null or has a lower range, this action becomes the one we use
+                    if(standardMoveAct == null || standardMoveAct.range < aaSt.range)
+                    {
+                        //If the standard move act isn't null, we remove its range from our move sum
+                        if(standardMoveAct != null)
+                        {
+                            currentMoveSum -= standardMoveAct.range;
+                        }
+
+                        standardMoveAct = aaSt as MoveAction;
+                        currentMoveSum += aaSt.range;
+
+                        //If this standard action has enough range to reach the target without any other action, we clear the quick and secondary actions
+                        if(standardMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= quickMoveAct.range;
+                            currentMoveSum -= secondaryMoveAct.range;
+                            quickMoveAct = null;
+                            secondaryMoveAct = null;
+                        }
+                        //If this standard action and the quick action together can reach the target without the secondary action, we clear the secondary action
+                        else if(standardMoveAct.range + quickMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= secondaryMoveAct.range;
+                            secondaryMoveAct = null;
+                        }
+                        //If this standard action and the secondary action together can reach the target without the quick action, we clear the quick action
+                        else if(standardMoveAct.range + secondaryMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= quickMoveAct.range;
+                            quickMoveAct = null;
+                        }
+                        //Otherwise, if this secondary action, secondary action, and the quick action together can reach the target, we don't need to keep looking
+                        else if (currentMoveSum >= rangeToMeet)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //If we can still use all of our move actions and not just the added actions, we loop through the rest of our move actions
+            if(currentMoveSum < rangeToMeet && !this.behaviorList[0].onlyUseAddedActions)
+            {
+                //Looping through all of our move actions
+                foreach(MoveAction moveAct in this.moveActionList)
+                {
+                    //If the current move action is a standard action and has a longer range than our current standard action
+                    if(moveAct.type == Action.ActionType.Standard && standardMoveAct == null || moveAct.range > standardMoveAct.range)
+                    {
+                        //If the current standard move act isn't null, we subtract its range from our move sum
+                        if(standardMoveAct != null)
+                        {
+                            currentMoveSum -= standardMoveAct.range;
+                        }
+
+                        //This move act becomes the new standard move
+                        standardMoveAct = moveAct;
+                        currentMoveSum += standardMoveAct.range;
+
+                        //If this standard move act has enough range to reach the target without the quick or secondary actions, we clear the other actions
+                        if(standardMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= quickMoveAct.range;
+                            currentMoveSum -= secondaryMoveAct.range;
+                            quickMoveAct = null;
+                            secondaryMoveAct = null;
+                        }
+                        //If this standard move act and the quick move act can reach the target without the secondary action, we clear the secondary action
+                        else if(standardMoveAct.range + quickMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= secondaryMoveAct.range;
+                            secondaryMoveAct = null;
+                        }
+                        //If this standard move act and the secondary move act can reach the target without the quick action, we clear the quick action
+                        else if(standardMoveAct.range + secondaryMoveAct.range >= rangeToMeet)
+                        {
+                            currentMoveSum -= quickMoveAct.range;
+                            quickMoveAct = null;
+                        }
+                        //If we have enough range to reach the target, we can stop looking for more actions
+                        else if (currentMoveSum >= rangeToMeet)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        .//Do we need to loop through full-round actions?
+
+        //Returning all of the actions that aren't null
+        List<MoveAction> returnList = new List<MoveAction>();
+        if(quickMoveAct != null)
+        {
+            returnList.Add(quickMoveAct);
+        }
+        if(secondaryMoveAct != null)
+        {
+            returnList.Add(secondaryMoveAct);
+        }
+        if(standardMoveAct != null)
+        {
+            returnList.Add(standardMoveAct);
+        }
+        return returnList;
     }
 
 
