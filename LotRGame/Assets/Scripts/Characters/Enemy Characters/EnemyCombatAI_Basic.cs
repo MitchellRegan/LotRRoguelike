@@ -758,27 +758,22 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If this enemy isn't within the preferred distance
         else
         {
-            
-
-            .//Need to finish movement stuff. Have to figure out if we can do the move in the least amount of actions and still be able to attack
-            //Getting this enemy's best move action to see if it can get us in range
-            MoveAction furthestMove = this.moveActionList[0];
-            for(int m = 0; m < this.moveActionList.Count; ++m)
+            //Looping through all of our behavior's added actions to see if there's a full round move action. If so, we're allowed to use full round actions for movement
+            bool canUseFullRoundMove = false;
+            foreach(Action addedAct in this.behaviorList[0].addedActions)
             {
-                //If the current move action can get this character in range
-                if(this.moveActionList[m].range >= Mathf.Abs(currentDist - this.behaviorList[0].preferredDistFromTarget))
+                //If the current action is a full round action and is a move action, we're allowed to use full round move actions
+                if(addedAct.type == Action.ActionType.FullRound && addedAct.GetType() == typeof(MoveAction))
                 {
-                    //We use this move action and break the loop
-                    furthestMove = this.moveActionList[m];
+                    canUseFullRoundMove = true;
                     break;
-                }
-                //If the current move action can't get this character in range, we check to see if it moves further than the current furthest
-                else if(this.moveActionList[m].range > furthestMove.range)
-                {
-                    furthestMove = this.moveActionList[m];
                 }
             }
 
+            //Getting the list of movement actions that we will use to reach the target
+            List<MoveAction> moveActionsToTake = this.FindMinimumMoveActs(currentDist, canUseFullRoundMove);
+
+            .//Everything after this is old. Look through it to weed out shit we don't need
             //Finding the shortest path to the target regardless of obstacles or characters in the way
             List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false);
             //Finding the shortest movement path to the target
@@ -1216,7 +1211,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
 
     //Function called from all of the state logic functions to find the least amount of movement actions to get to a target range
-    private List<MoveAction> FindMinimumMoveActs(int rangeToMeet)
+    private List<MoveAction> FindMinimumMoveActs(int rangeToMeet_, bool allowFullRoundMoves_ = false)
     {
         //Int to hold the current range of all of our movement actions
         int currentMoveSum = 0;
@@ -1224,6 +1219,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         MoveAction quickMoveAct = null;
         MoveAction secondaryMoveAct = null;
         MoveAction standardMoveAct = null;
+        MoveAction fullRoundMoveAct = null;
 
         //Looping through all of our added actions to see if they are Quick Movement actions
         foreach (Action aaQ in this.behaviorList[0].addedActions)
@@ -1238,7 +1234,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     currentMoveSum = aaQ.range;
 
                     //If this quick action is enough to reach the target, we don't need to keep looking
-                    if (currentMoveSum >= rangeToMeet)
+                    if (currentMoveSum >= rangeToMeet_)
                     {
                         break;
                     }
@@ -1247,7 +1243,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //If we can use all of our actions and not just the added actions, we loop through all of our other move actions
-        if (currentMoveSum < rangeToMeet && !this.behaviorList[0].onlyUseAddedActions)
+        if (currentMoveSum < rangeToMeet_ && !this.behaviorList[0].onlyUseAddedActions)
         {
             //Looping through all of our move actions
             foreach (MoveAction moveAct in this.moveActionList)
@@ -1260,7 +1256,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     currentMoveSum = quickMoveAct.range;
 
                     //If we have enough range to reach the target, we can stop looking for more actions
-                    if(currentMoveSum >= rangeToMeet)
+                    if(currentMoveSum >= rangeToMeet_)
                     {
                         break;
                     }
@@ -1269,7 +1265,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //If we still don't have enough movement range with the quick actions, we loop through secondary actions
-        if (currentMoveSum < rangeToMeet)
+        if (currentMoveSum < rangeToMeet_)
         {
             //Looping through all of our behavior's added actions
             foreach(Action aaS in this.behaviorList[0].addedActions)
@@ -1289,14 +1285,18 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         secondaryMoveAct = aaS as MoveAction;
                         currentMoveSum += aaS.range;
 
-                        //If this secondary action has enough range to reach the target without any other action, we clear the quick action
-                        if(secondaryMoveAct.range >= rangeToMeet)
+                        //If this secondary action has enough range to reach the target without any other action, we clear the quick action and break the loop
+                        if(secondaryMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= quickMoveAct.range;
-                            quickMoveAct = null;
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
+                            break;
                         }
                         //Otherwise, if this secondary action and the quick action together can reach the target, we don't need to keep looking
-                        else if(currentMoveSum >= rangeToMeet)
+                        else if(currentMoveSum >= rangeToMeet_)
                         {
                             break;
                         }
@@ -1305,7 +1305,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             }
 
             //If we can use all of our move actions and not just the added actions, we loop through the rest of our move actions
-            if(currentMoveSum < rangeToMeet && !this.behaviorList[0].onlyUseAddedActions)
+            if(currentMoveSum < rangeToMeet_ && !this.behaviorList[0].onlyUseAddedActions)
             {
                 //Looping through all of our move actions
                 foreach(MoveAction moveAct in this.moveActionList)
@@ -1323,14 +1323,18 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         secondaryMoveAct = moveAct;
                         currentMoveSum += secondaryMoveAct.range;
 
-                        //If this secondary move act has enough range to reach the target without the quick action, we clear the quick action
-                        if(secondaryMoveAct.range >= rangeToMeet)
+                        //If this secondary move act has enough range to reach the target without the quick action, we clear the quick action and break the loop
+                        if(secondaryMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= quickMoveAct.range;
-                            quickMoveAct = null;
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
+                            break;
                         }
                         //If we have enough range to reach the target, we can stop looking for more actions
-                        else if (currentMoveSum >= rangeToMeet)
+                        else if (currentMoveSum >= rangeToMeet_)
                         {
                             break;
                         }
@@ -1340,7 +1344,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //If we've looked through the quick and secondary actions and STILL don't have enough range, we loop through our standard actions
-        if(currentMoveSum < rangeToMeet)
+        if(currentMoveSum < rangeToMeet_)
         {
             //Looping through all of our behavior's added actions
             foreach(Action aaSt in this.behaviorList[0].addedActions)
@@ -1360,37 +1364,45 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         standardMoveAct = aaSt as MoveAction;
                         currentMoveSum += aaSt.range;
 
-                        //If this standard action has enough range to reach the target without any other action, we clear the quick and secondary actions
-                        if(standardMoveAct.range >= rangeToMeet)
+                        //If this standard action has enough range to reach the target without any other action, we clear the quick and secondary actions and break the loop
+                        if(standardMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= quickMoveAct.range;
-                            currentMoveSum -= secondaryMoveAct.range;
-                            quickMoveAct = null;
-                            secondaryMoveAct = null;
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
+                            break;
                         }
                         //If this standard action and the quick action together can reach the target without the secondary action, we clear the secondary action
-                        else if(standardMoveAct.range + quickMoveAct.range >= rangeToMeet)
+                        else if(standardMoveAct.range + quickMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= secondaryMoveAct.range;
-                            secondaryMoveAct = null;
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
                         }
                         //If this standard action and the secondary action together can reach the target without the quick action, we clear the quick action
-                        else if(standardMoveAct.range + secondaryMoveAct.range >= rangeToMeet)
+                        else if(standardMoveAct.range + secondaryMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= quickMoveAct.range;
-                            quickMoveAct = null;
-                        }
-                        //Otherwise, if this secondary action, secondary action, and the quick action together can reach the target, we don't need to keep looking
-                        else if (currentMoveSum >= rangeToMeet)
-                        {
-                            break;
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
                         }
                     }
                 }
             }
 
             //If we can still use all of our move actions and not just the added actions, we loop through the rest of our move actions
-            if(currentMoveSum < rangeToMeet && !this.behaviorList[0].onlyUseAddedActions)
+            if(currentMoveSum < rangeToMeet_ && !this.behaviorList[0].onlyUseAddedActions)
             {
                 //Looping through all of our move actions
                 foreach(MoveAction moveAct in this.moveActionList)
@@ -1408,37 +1420,162 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         standardMoveAct = moveAct;
                         currentMoveSum += standardMoveAct.range;
 
-                        //If this standard move act has enough range to reach the target without the quick or secondary actions, we clear the other actions
-                        if(standardMoveAct.range >= rangeToMeet)
+                        //If this standard move act has enough range to reach the target without the quick or secondary actions, we clear the other actions and break the loop
+                        if(standardMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= quickMoveAct.range;
-                            currentMoveSum -= secondaryMoveAct.range;
-                            quickMoveAct = null;
-                            secondaryMoveAct = null;
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
+                            break;
                         }
                         //If this standard move act and the quick move act can reach the target without the secondary action, we clear the secondary action
-                        else if(standardMoveAct.range + quickMoveAct.range >= rangeToMeet)
+                        else if(standardMoveAct.range + quickMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= secondaryMoveAct.range;
-                            secondaryMoveAct = null;
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
                         }
                         //If this standard move act and the secondary move act can reach the target without the quick action, we clear the quick action
-                        else if(standardMoveAct.range + secondaryMoveAct.range >= rangeToMeet)
+                        else if(standardMoveAct.range + secondaryMoveAct.range >= rangeToMeet_)
                         {
-                            currentMoveSum -= quickMoveAct.range;
-                            quickMoveAct = null;
-                        }
-                        //If we have enough range to reach the target, we can stop looking for more actions
-                        else if (currentMoveSum >= rangeToMeet)
-                        {
-                            break;
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
                         }
                     }
                 }
             }
         }
 
-        .//Do we need to loop through full-round actions?
+        //If we're still not in range and we're allowed to use full round actions, we loop through our full round actions
+        if(currentMoveSum < rangeToMeet_ && allowFullRoundMoves_)
+        {
+            //Looping through all of our behavior's added actions
+            foreach(Action aaFr in this.behaviorList[0].addedActions)
+            {
+                //If the action is a movement action and is a full round action
+                if(aaFr.type == Action.ActionType.FullRound && aaFr.GetType() == typeof(MoveAction))
+                {
+                    //If the current full round action is null or has a lower range, this action becomes the one we use
+                    if(fullRoundMoveAct == null || fullRoundMoveAct.range < aaFr.range)
+                    {
+                        //If the full round move act isn't null, we remove its range from our move sum
+                        if (fullRoundMoveAct != null)
+                        {
+                            currentMoveSum -= fullRoundMoveAct.range;
+                        }
+
+                        fullRoundMoveAct = aaFr as MoveAction;
+                        currentMoveSum += aaFr.range;
+
+                        //If this full round action has enough range to reach the target without the quick action, we clear the quick, secondary and standard actions
+                        if (fullRoundMoveAct.range >= rangeToMeet_)
+                        {
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
+                            if (standardMoveAct != null)
+                            {
+                                currentMoveSum -= standardMoveAct.range;
+                                standardMoveAct = null;
+                            }
+                            break;
+                        }
+                        //If this full round action and the quick action together can reach the target without the secondary action, we clear the secondary action
+                        else if (fullRoundMoveAct.range + quickMoveAct.range >= rangeToMeet_)
+                        {
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
+                            if (standardMoveAct != null)
+                            {
+                                currentMoveSum -= standardMoveAct.range;
+                                standardMoveAct = null;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //If we can still use all of our move actions and not just the added actions, we loop through the rest of our move actions
+            if(currentMoveSum < rangeToMeet_ && !this.behaviorList[0].onlyUseAddedActions)
+            {
+                //Looping through all of our move actions
+                foreach(MoveAction moveAct in this.moveActionList)
+                {
+                    //If the current move action is a full round action and has a longer range than our current full round action
+                    if(moveAct.type == Action.ActionType.FullRound && fullRoundMoveAct == null || moveAct.range > fullRoundMoveAct.range)
+                    {
+                        //If the current full round move act isn't null, we subtract its range from our move sum
+                        if(fullRoundMoveAct != null)
+                        {
+                            currentMoveSum -= fullRoundMoveAct.range;
+                        }
+
+                        //This move act becomes the new full round move
+                        fullRoundMoveAct = moveAct;
+                        currentMoveSum += fullRoundMoveAct.range;
+
+                        //If this full round action has enough range to reach the target without the quick action, we clear the quick, secondary and standard actions
+                        if (fullRoundMoveAct.range >= rangeToMeet_)
+                        {
+                            if (quickMoveAct != null)
+                            {
+                                currentMoveSum -= quickMoveAct.range;
+                                quickMoveAct = null;
+                            }
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
+                            if (standardMoveAct != null)
+                            {
+                                currentMoveSum -= standardMoveAct.range;
+                                standardMoveAct = null;
+                            }
+                            break;
+                        }
+                        //If this full round action and the quick action together can reach the target without the secondary action, we clear the secondary action
+                        else if (fullRoundMoveAct.range + quickMoveAct.range >= rangeToMeet_)
+                        {
+                            if (secondaryMoveAct != null)
+                            {
+                                currentMoveSum -= secondaryMoveAct.range;
+                                secondaryMoveAct = null;
+                            }
+                            if (standardMoveAct != null)
+                            {
+                                currentMoveSum -= standardMoveAct.range;
+                                standardMoveAct = null;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         //Returning all of the actions that aren't null
         List<MoveAction> returnList = new List<MoveAction>();
@@ -1453,6 +1590,10 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         if(standardMoveAct != null)
         {
             returnList.Add(standardMoveAct);
+        }
+        if(fullRoundMoveAct != null)
+        {
+            returnList.Add(fullRoundMoveAct);
         }
         return returnList;
     }
