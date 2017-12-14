@@ -576,7 +576,8 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Finding the distance this enemy is from the target
         CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
         CombatTile targetPlayerTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
-        int currentDist = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false).Count;
+        List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false);
+        int currentDist = pathToTarget.Count;
 
         //If this enemy is already in the preferred distance
         if(this.behaviorList[0].preferredDistFromTarget == currentDist)
@@ -773,27 +774,189 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             //Getting the list of movement actions that we will use to reach the target
             List<MoveAction> moveActionsToTake = this.FindMinimumMoveActs(currentDist, canUseFullRoundMove);
 
-            .//Everything after this is old. Look through it to weed out shit we don't need
-            //Finding the shortest path to the target regardless of obstacles or characters in the way
-            List<CombatTile> directPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false);
-            //Finding the shortest movement path to the target
-            List<CombatTile> movementPathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
+            //Adding all of our move actions to our list of actions to take this turn
+            int currentMoveDist = -1;
+            foreach(MoveAction moveActToPerform in moveActionsToTake)
+            {
+                //Adding this move action's range to our current move distance so we know which tile this action stops at
+                currentMoveDist += moveActToPerform.range;
 
-            //When moving:
-            //If moving closer to the target to attack
-            //find the movement action with the highest range
-            //Have the pathfinding algorithm find the fastest path to the target character (don't care about the range right now)
-            //Follow the path but only for the number of tiles that the movement range has
-            //If moving away from all player characters
-            //Find the movement action with the highest range
-            //Have the pathfinding algorithm find all tiles in range and return them
-            //Make a list of floats that has the same number of indexes as the list of combat tiles
-            //Loop through all combat tiles
-            //Loop through all living player characters (ignore dead)
-            //Find the distance between the current tile and the current player character's tile
-            //Add that distance to the value of the list of floats at the same index as the current tile
-            //Loop through all of the indexes of floats to find the one with the largest value
-            //The index with the largest value (furthest total distance from players) is the same index for the tile to move to
+                //If the move distance is past where the target is, we stop at the last tile
+                if(currentMoveDist > currentDist)
+                {
+                    currentMoveDist = currentDist -= 1;
+                }
+
+                //Creating a new enemy action and tile class so we know where this enemy will perform this action
+                EnemyActionAndTile mvEAT = new EnemyActionAndTile(moveActToPerform, pathToTarget[currentMoveDist]);
+                this.actionsToPerformOnTiles.Add(mvEAT);
+            }
+
+            //Finding out which moves are still available
+            bool quickActAvailable = true;
+            bool secondaryActAvailable = true;
+            bool standardActAvailable = true;
+            bool fullRoundActAvailable = true;
+
+            //Looping through all of the move actions we know we're going to take so we know which attack actions are available
+            foreach(MoveAction mv in moveActionsToTake)
+            {
+                switch(mv.type)
+                {
+                    //If we're taking a quick move act, we can't make a quick attack act
+                    case Action.ActionType.Quick:
+                        quickActAvailable = false;
+                        break;
+                    //If we're taking a secondary move act, we can't make a secondary or full round attack act
+                    case Action.ActionType.Secondary:
+                        secondaryActAvailable = false;
+                        fullRoundActAvailable = false;
+                        break;
+                    //If we're taking a standard move act, we can't make a standard or full round attack act
+                    case Action.ActionType.Standard:
+                        standardActAvailable = false;
+                        fullRoundActAvailable = false;
+                        break;
+                    //If we're taking a full round move act, we can't make a full round, standard, or secondary attack act
+                    case Action.ActionType.FullRound:
+                        fullRoundActAvailable = false;
+                        standardActAvailable = false;
+                        secondaryActAvailable = false;
+                        break;
+                }
+            }
+
+            //Creating a dictionary of actions and their estimated damage for each action type
+            Dictionary<AttackAction, int> standardAtkDmg = new Dictionary<AttackAction, int>();
+            Dictionary<AttackAction, int> secondaryAtkDmg = new Dictionary<AttackAction, int>();
+            Dictionary<AttackAction, int> quickAtkDmg = new Dictionary<AttackAction, int>();
+            Dictionary<AttackAction, int> fullRoundAtkDmg = new Dictionary<AttackAction, int>();
+
+            //Tracking the actions that have the highest amount of damage
+            AttackAction highestStandard = null;
+            AttackAction highestSecondary = null;
+            AttackAction highestQuick = null;
+            AttackAction highestFullRound = null;
+
+            //Looping through all of the actions for our current behavior to find their average damage and type
+            foreach (Action addedAct in this.behaviorList[0].addedActions)
+            {
+                //If this added action is an attack, we can use it
+                if (addedAct.GetType() == typeof(AttackAction))
+                {
+                    //If the current attack action is within range of the target, we can use it
+                    if (addedAct.range >= this.behaviorList[0].preferredDistFromTarget)
+                    {
+                        //Int to hold this attack's average damage
+                        int avgDamage = this.FindAttackAverageDamage(addedAct as AttackAction, this.playerCharToAttack);
+
+                        //Getting the type of action this attack is
+                        switch (addedAct.type)
+                        {
+                            case Action.ActionType.Standard:
+                                standardAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this standard attack has a higher average damage than the current highest standard attack
+                                if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestStandard = addedAct as AttackAction;
+                                }
+                                break;
+
+                            case Action.ActionType.Secondary:
+                                secondaryAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this secondary attack has a higher average damage than the current highest secondary attack
+                                if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestSecondary = addedAct as AttackAction;
+                                }
+                                break;
+
+                            case Action.ActionType.Quick:
+                                quickAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this quick attack has a higher average damage than the current highest quick attack
+                                if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestQuick = addedAct as AttackAction;
+                                }
+                                break;
+
+                            case Action.ActionType.FullRound:
+                                fullRoundAtkDmg.Add(addedAct as AttackAction, avgDamage);
+                                //If this full round attack has a higher average damage than the current highest full round attack
+                                if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestFullRound = addedAct as AttackAction;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+            //If we can use more than just this behavior's added actions
+            if (!this.behaviorList[0].onlyUseAddedActions)
+            {
+                //Looping through all of the actions to find the average damage for each of them and what type of action they are
+                foreach (AttackAction atkAct in this.attackActionList)
+                {
+                    //If the current attack action is within range of the target, we can use it
+                    if (atkAct.range >= this.behaviorList[0].preferredDistFromTarget)
+                    {
+                        //Int to hold this attack's average damage
+                        int avgDamage = this.FindAttackAverageDamage(atkAct, this.playerCharToAttack);
+
+                        //Getting the type of action this attack is
+                        switch (atkAct.type)
+                        {
+                            case Action.ActionType.Standard:
+                                standardAtkDmg.Add(atkAct, avgDamage);
+                                break;
+
+                            case Action.ActionType.Secondary:
+                                secondaryAtkDmg.Add(atkAct, avgDamage);
+                                break;
+
+                            case Action.ActionType.Quick:
+                                quickAtkDmg.Add(atkAct, avgDamage);
+                                break;
+
+                            case Action.ActionType.FullRound:
+                                fullRoundAtkDmg.Add(atkAct, avgDamage);
+                                break;
+                        }
+                    }
+                }
+            }
+
+
+            //If our quick action is available and we've found a quick attack action, we add it to our list
+            if(quickActAvailable && highestQuick != null)
+            {
+                EnemyActionAndTile qEAT = new EnemyActionAndTile(highestQuick, targetPlayerTile);
+                this.actionsToPerformOnTiles.Add(qEAT);
+            }
+            //If our secondary action is available and we've found a secondary attack action, we add it to our list
+            if(secondaryActAvailable && highestSecondary != null)
+            {
+                EnemyActionAndTile scEAT = new EnemyActionAndTile(highestSecondary, targetPlayerTile);
+                this.actionsToPerformOnTiles.Add(scEAT);
+            }
+            //If our standard action is available and we've found a standard attack action, we add it to our list
+            if(standardActAvailable && highestStandard != null)
+            {
+                EnemyActionAndTile stEAT = new EnemyActionAndTile(highestStandard, targetPlayerTile);
+                this.actionsToPerformOnTiles.Add(stEAT);
+            }
+            //If our full round action is available and we've found a full round attack action, we add it to our list
+            if(fullRoundActAvailable && highestFullRound != null)
+            {
+                EnemyActionAndTile frEAT = new EnemyActionAndTile(highestFullRound, targetPlayerTile);
+                this.actionsToPerformOnTiles.Add(frEAT);
+            }
         }
 
 

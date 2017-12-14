@@ -1114,7 +1114,26 @@ public class CombatManager : MonoBehaviour
     //Function called from EnemyCombatAI_Basic.cs to perform an enemy's action at the given tile
     public void PerformEnemyActionOnTile(CombatTile tileClicked_, Action enemyAction_)
     {
-        .//This function needs to work
+        //If the action being performed is a movement action and the tile chosen isn't empty, nothing happens
+        if(enemyAction_.GetType() == typeof(MoveAction))
+        {
+            if(tileClicked_.objectOnThisTile != null)
+            return;
+        }
+        //Tells our info display object to show the name of the action used if it isn't a move action
+        else
+        {
+            this.ourInfoDisplay.StartInfoDisplay(enemyAction_.actionName, enemyAction_.timeToCompleteAction);
+        }
+
+        //Tells the action to be performed at the tile chosen
+        enemyAction_.PerformAction(tileClicked_);
+
+        //Have this combat manager wait a bit before going back because there could be animations
+        if(this.stateAfterWait != combatState.EndCombat)
+        {
+            this.SetWaitTime(enemyAction_.timeToCompleteAction, combatState.PlayerInput);
+        }
     }
 
 
