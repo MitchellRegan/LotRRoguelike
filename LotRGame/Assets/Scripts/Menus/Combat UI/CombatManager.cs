@@ -1116,7 +1116,6 @@ public class CombatManager : MonoBehaviour
     //Function called from EnemyCombatAI_Basic.cs to perform an enemy's action at the given tile
     public void PerformEnemyActionOnTile(CombatTile tileClicked_, Action enemyAction_)
     {
-        Debug.Log("Performing enemy action " + enemyAction_.actionName);
         //If the action being performed is a movement action and the tile chosen isn't empty, nothing happens
         if(enemyAction_.GetType() == typeof(MoveAction))
         {
@@ -1130,10 +1129,10 @@ public class CombatManager : MonoBehaviour
         {
             this.ourInfoDisplay.StartInfoDisplay(enemyAction_.actionName, enemyAction_.timeToCompleteAction);
         }
-        Debug.Log("Mooooooooooooooooo");
+
         //Creating a new instance of the action to use
         GameObject actionInstance = Instantiate(enemyAction_.gameObject);
-        Debug.Log("Quack");
+
         //Tells the action to be performed at the tile chosen
         actionInstance.GetComponent<Action>().PerformAction(tileClicked_);
 

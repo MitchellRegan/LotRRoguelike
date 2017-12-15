@@ -571,7 +571,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called from StartEnemyTurn if the current behavior is HOSTILE
     private void HostileStateLogic()
     {
-        Debug.Log("Hostile logic");
         //Find which character to attack
         this.FindPlayerTarget();
         
@@ -581,7 +580,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         CombatTile targetPlayerTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
         List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
         int currentDist = pathToTarget.Count;
-        Debug.Log("Range from enemy " + this.ourCharacter.firstName + " to target " + this.playerCharToAttack.name + " is " + currentDist);
 
         //If this enemy is already in the preferred distance
         if(this.behaviorList[0].preferredDistFromTarget == currentDist)
@@ -657,7 +655,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                 }
             }
-            Debug.Log("Looped through all added actions");
+
             //If we can use more than just this behavior's added actions
             if(!this.behaviorList[0].onlyUseAddedActions)
             {
@@ -675,25 +673,48 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         {
                             case Action.ActionType.Standard:
                                 standardAtkDmg.Add(atkAct, avgDamage);
+                                //If this standard attack has a higher average damage than the current highest standard attack
+                                if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestStandard = atkAct as AttackAction;
+                                }
                                 break;
 
                             case Action.ActionType.Secondary:
                                 secondaryAtkDmg.Add(atkAct, avgDamage);
+                                //If this secondary attack has a higher average damage than the current highest secondary attack
+                                if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestSecondary = atkAct as AttackAction;
+                                }
                                 break;
 
                             case Action.ActionType.Quick:
                                 quickAtkDmg.Add(atkAct, avgDamage);
+                                //If this quick attack has a higher average damage than the current highest quick attack
+                                if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestQuick = atkAct as AttackAction;
+                                }
                                 break;
 
                             case Action.ActionType.FullRound:
                                 fullRoundAtkDmg.Add(atkAct, avgDamage);
+                                //If this full round attack has a higher average damage than the current highest full round attack
+                                if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestFullRound = atkAct as AttackAction;
+                                }
                                 break;
                         }
                     }
                 }
             }
-
-            Debug.Log("Looped through all default actions");
+            
             //Int to hold the average damage if this enemy performs a standard attack, secondary attack, and quick attack
             int avgDamageSSQ = 0;
             //If there's a highest standard attack action, we add its damage to our average
@@ -764,7 +785,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If this enemy isn't within the preferred distance
         else
         {
-            Debug.Log("Enemy Not In Attack Range");
             //Looping through all of our behavior's added actions to see if there's a full round move action. If so, we're allowed to use full round actions for movement
             bool canUseFullRoundMove = false;
             foreach(Action addedAct in this.behaviorList[0].addedActions)
@@ -788,9 +808,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 currentMoveDist += moveActToPerform.range;
 
                 //If the move distance is past where the target is, we stop at the last tile
-                if(currentMoveDist > currentDist)
+                if(currentMoveDist >= currentDist)
                 {
-                    currentMoveDist = currentDist - 1;
+                    currentMoveDist = pathToTarget.Count - 1;
                 }
 
                 //Creating a new enemy action and tile class so we know where this enemy will perform this action
@@ -910,7 +930,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach (AttackAction atkAct in this.attackActionList)
                 {
                     //If the current attack action is within range of the target, we can use it
-                    if (atkAct.range >= this.behaviorList[0].preferredDistFromTarget)
+                    if (atkAct.range >= (currentDist - currentMoveDist))
                     {
                         //Int to hold this attack's average damage
                         int avgDamage = this.FindAttackAverageDamage(atkAct, this.playerCharToAttack);
@@ -920,18 +940,42 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         {
                             case Action.ActionType.Standard:
                                 standardAtkDmg.Add(atkAct, avgDamage);
+                                //If this standard attack has a higher average damage than the current highest standard attack
+                                if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestStandard = atkAct as AttackAction;
+                                }
                                 break;
 
                             case Action.ActionType.Secondary:
                                 secondaryAtkDmg.Add(atkAct, avgDamage);
+                                //If this secondary attack has a higher average damage than the current highest secondary attack
+                                if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestSecondary = atkAct as AttackAction;
+                                }
                                 break;
 
                             case Action.ActionType.Quick:
                                 quickAtkDmg.Add(atkAct, avgDamage);
+                                //If this quick attack has a higher average damage than the current highest quick attack
+                                if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestQuick = atkAct as AttackAction;
+                                }
                                 break;
 
                             case Action.ActionType.FullRound:
                                 fullRoundAtkDmg.Add(atkAct, avgDamage);
+                                //If this full round attack has a higher average damage than the current highest full round attack
+                                if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
+                                {
+                                    //This attack becomes the new highest
+                                    highestFullRound = atkAct as AttackAction;
+                                }
                                 break;
                         }
                     }
@@ -973,7 +1017,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If we don't have any actions, then we end our turn
         else
         {
-            Debug.Log("There are " + this.actionsToPerformOnTiles.Count + "actions to perform. Ending our turn now");
             this.EndEnemyTurn();
         }
     }
@@ -1839,7 +1882,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         {
             return;
         }
-        Debug.Log("Enemy Update, Starting to act now! Combat state: " + CombatManager.globalReference.currentState);
+
         //If we still have actions to complete, we tell the combat manager to perform them
         if (this.actionsToPerformOnTiles.Count > 0)
         {
@@ -1875,7 +1918,6 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called once our turn is over. We could just tell the CombatManager.cs direcly, but I want some uniformity with all of my state logic functions
     private void EndEnemyTurn()
     {
-        Debug.Log(this.ourCharacter.firstName + "'s turn is ending ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         CombatManager.globalReference.EndActingCharactersTurn();
     }
 }
