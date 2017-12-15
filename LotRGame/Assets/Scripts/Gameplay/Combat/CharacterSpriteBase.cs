@@ -678,6 +678,8 @@ public class CharacterSpriteBase : MonoBehaviour
     {
         //The color transparency that is used for the hair
         Color hairColor = new Color(this.forwardHair.color.r, this.forwardHair.color.g, this.forwardHair.color.b, 0.1f);
+        //The color transparency that is used for the facial hair
+        Color facialHairColor = new Color(this.forwardFacialHair.color.r, this.forwardFacialHair.color.g, this.forwardFacialHair.color.b, 0.1f);
         //The color transparency that is used for the skin
         Color skinColor = new Color(this.forwardBody.color.r, this.forwardBody.color.g, this.forwardBody.color.b, 0.2f);
         //The color transparency that is used for armor
@@ -687,7 +689,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
         //Hiding all of the forward sprites
         this.forwardHair.color = hairColor;
-        this.forwardFacialHair.color = invisible;
+        this.forwardFacialHair.color = facialHairColor;
         this.forwardHead.color = skinColor;
         this.forwardLeftEye.color = invisible;
         this.forwardRightEye.color = invisible;
@@ -709,7 +711,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
         //Showing all of the right side sprites
         this.rightSideHair.color = hairColor;
-        this.rightSideFacialHair.color = invisible;
+        this.rightSideFacialHair.color = facialHairColor;
         this.rightSideHead.color = skinColor;
         this.rightSideEye.color = invisible;
         this.rightSideBody.color = skinColor;
@@ -729,7 +731,7 @@ public class CharacterSpriteBase : MonoBehaviour
 
         //Showing all of the left side sprites
         this.leftSideHair.color = hairColor;
-        this.leftSideFacialHair.color = invisible;
+        this.leftSideFacialHair.color = facialHairColor;
         this.leftSideHead.color = skinColor;
         this.leftSideEye.color = invisible;
         this.leftSideBody.color = skinColor;
