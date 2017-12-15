@@ -213,6 +213,8 @@ public class CombatManager : MonoBehaviour
                     this.highlightRing.color = this.actingEnemyColor;
                     this.highlightRing.enabled = true;
 
+                    //Now we wait for enemy input
+                    this.currentState = combatState.PlayerInput;
                     //Starting the acting enemy's turn so it can perform its actions
                     this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
                 }
@@ -1114,20 +1116,26 @@ public class CombatManager : MonoBehaviour
     //Function called from EnemyCombatAI_Basic.cs to perform an enemy's action at the given tile
     public void PerformEnemyActionOnTile(CombatTile tileClicked_, Action enemyAction_)
     {
+        Debug.Log("Performing enemy action " + enemyAction_.actionName);
         //If the action being performed is a movement action and the tile chosen isn't empty, nothing happens
         if(enemyAction_.GetType() == typeof(MoveAction))
         {
-            if(tileClicked_.objectOnThisTile != null)
-            return;
+            if (tileClicked_.objectOnThisTile != null)
+            {
+                return;
+            }
         }
         //Tells our info display object to show the name of the action used if it isn't a move action
         else
         {
             this.ourInfoDisplay.StartInfoDisplay(enemyAction_.actionName, enemyAction_.timeToCompleteAction);
         }
-
+        Debug.Log("Mooooooooooooooooo");
+        //Creating a new instance of the action to use
+        GameObject actionInstance = Instantiate(enemyAction_.gameObject);
+        Debug.Log("Quack");
         //Tells the action to be performed at the tile chosen
-        enemyAction_.PerformAction(tileClicked_);
+        actionInstance.GetComponent<Action>().PerformAction(tileClicked_);
 
         //Have this combat manager wait a bit before going back because there could be animations
         if(this.stateAfterWait != combatState.EndCombat)
@@ -1169,6 +1177,16 @@ public class CombatManager : MonoBehaviour
             this.playerInitiativeSliders[selectedCharIndex].background.color = this.inactivePanelColor;
             //Resetting their initiative slider
             this.playerInitiativeSliders[selectedCharIndex].initiativeSlider.value = 0;
+            //Removing the currently acting character
+            this.actingCharacters.Remove(this.actingCharacters[0]);
+        }
+        else if(this.enemyCharactersInCombat.Contains(this.actingCharacters[0]))
+        {
+            int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
+            //Resetting their initiative slider's color
+            this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
+            //Resetting their initiative slider
+            this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
             //Removing the currently acting character
             this.actingCharacters.Remove(this.actingCharacters[0]);
         }

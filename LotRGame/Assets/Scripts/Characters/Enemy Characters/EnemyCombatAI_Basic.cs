@@ -37,6 +37,8 @@ public class EnemyCombatAI_Basic : MonoBehaviour
 
     //Bool that, when true, means that this enemy is ready to tell the combat manager what actions it will use
     private bool readyToAct = false;
+    //Timer for how long this enemy has to wait for their action to be used before they can do anything else
+    private float actionCooldown = 0;
 
 
 
@@ -190,11 +192,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the default actions in our action list
-        foreach (Action dftAct in this.ourCharacter.charActionList.defaultActions)
+        /*foreach (Action dftAct in this.ourCharacter.charActionList.defaultActions)
         {
             //If the action is an attack
             if (dftAct.GetComponent<AttackAction>())
             {
+                Debug.Log("Default action " + dftAct.actionName + " for character " + this.ourCharacter.firstName);
                 this.attackActionList.Add(dftAct.GetComponent<AttackAction>());
 
                 //If this attack causes any effects
@@ -208,7 +211,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             {
                 this.moveActionList.Add(dftAct.GetComponent<MoveAction>());
             }
-        }
+        }*/
 
 
         //Organizing our movement actions in decending order of distance they can move
@@ -576,12 +579,14 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Finding the distance this enemy is from the target
         CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
         CombatTile targetPlayerTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
-        List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, false, false);
+        List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
         int currentDist = pathToTarget.Count;
+        Debug.Log("Range from enemy " + this.ourCharacter.firstName + " to target " + this.playerCharToAttack.name + " is " + currentDist);
 
         //If this enemy is already in the preferred distance
         if(this.behaviorList[0].preferredDistFromTarget == currentDist)
         {
+            Debug.Log("Enemy In Attack Range");
             //Creating a dictionary of actions and their estimated damage for each action type
             Dictionary<AttackAction, int> standardAtkDmg = new Dictionary<AttackAction, int>();
             Dictionary<AttackAction, int> secondaryAtkDmg = new Dictionary<AttackAction, int>();
@@ -652,7 +657,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                 }
             }
-
+            Debug.Log("Looped through all added actions");
             //If we can use more than just this behavior's added actions
             if(!this.behaviorList[0].onlyUseAddedActions)
             {
@@ -688,7 +693,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
 
-
+            Debug.Log("Looped through all default actions");
             //Int to hold the average damage if this enemy performs a standard attack, secondary attack, and quick attack
             int avgDamageSSQ = 0;
             //If there's a highest standard attack action, we add its damage to our average
@@ -706,7 +711,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             {
                 avgDamageSSQ += quickAtkDmg[highestQuick];
             }
-
+            
             //Int to hold the average damage if this enemy performs a full round attack and quick attack
             int avgDamageFRQ = 0;
             //If there's a highest full round attack action, we add its damage to our average
@@ -759,6 +764,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If this enemy isn't within the preferred distance
         else
         {
+            Debug.Log("Enemy Not In Attack Range");
             //Looping through all of our behavior's added actions to see if there's a full round move action. If so, we're allowed to use full round actions for movement
             bool canUseFullRoundMove = false;
             foreach(Action addedAct in this.behaviorList[0].addedActions)
@@ -775,7 +781,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             List<MoveAction> moveActionsToTake = this.FindMinimumMoveActs(currentDist, canUseFullRoundMove);
 
             //Adding all of our move actions to our list of actions to take this turn
-            int currentMoveDist = -1;
+            int currentMoveDist = 0;
             foreach(MoveAction moveActToPerform in moveActionsToTake)
             {
                 //Adding this move action's range to our current move distance so we know which tile this action stops at
@@ -784,22 +790,22 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If the move distance is past where the target is, we stop at the last tile
                 if(currentMoveDist > currentDist)
                 {
-                    currentMoveDist = currentDist -= 1;
+                    currentMoveDist = currentDist - 1;
                 }
 
                 //Creating a new enemy action and tile class so we know where this enemy will perform this action
                 EnemyActionAndTile mvEAT = new EnemyActionAndTile(moveActToPerform, pathToTarget[currentMoveDist]);
                 this.actionsToPerformOnTiles.Add(mvEAT);
             }
-
+            
             //Finding out which moves are still available
             bool quickActAvailable = true;
             bool secondaryActAvailable = true;
             bool standardActAvailable = true;
             bool fullRoundActAvailable = true;
-
+            
             //Looping through all of the move actions we know we're going to take so we know which attack actions are available
-            foreach(MoveAction mv in moveActionsToTake)
+            foreach (MoveAction mv in moveActionsToTake)
             {
                 switch(mv.type)
                 {
@@ -825,7 +831,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         break;
                 }
             }
-
+            
             //Creating a dictionary of actions and their estimated damage for each action type
             Dictionary<AttackAction, int> standardAtkDmg = new Dictionary<AttackAction, int>();
             Dictionary<AttackAction, int> secondaryAtkDmg = new Dictionary<AttackAction, int>();
@@ -896,7 +902,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                 }
             }
-
+            
             //If we can use more than just this behavior's added actions
             if (!this.behaviorList[0].onlyUseAddedActions)
             {
@@ -932,9 +938,8 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
 
-
             //If our quick action is available and we've found a quick attack action, we add it to our list
-            if(quickActAvailable && highestQuick != null)
+            if (quickActAvailable && highestQuick != null)
             {
                 EnemyActionAndTile qEAT = new EnemyActionAndTile(highestQuick, targetPlayerTile);
                 this.actionsToPerformOnTiles.Add(qEAT);
@@ -968,6 +973,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If we don't have any actions, then we end our turn
         else
         {
+            Debug.Log("There are " + this.actionsToPerformOnTiles.Count + "actions to perform. Ending our turn now");
             this.EndEnemyTurn();
         }
     }
@@ -1404,7 +1410,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
         }
-
+        
         //If we can use all of our actions and not just the added actions, we loop through all of our other move actions
         if (currentMoveSum < rangeToMeet_ && !this.behaviorList[0].onlyUseAddedActions)
         {
@@ -1426,7 +1432,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
         }
-
+        
         //If we still don't have enough movement range with the quick actions, we loop through secondary actions
         if (currentMoveSum < rangeToMeet_)
         {
@@ -1505,9 +1511,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
         }
-
+        
         //If we've looked through the quick and secondary actions and STILL don't have enough range, we loop through our standard actions
-        if(currentMoveSum < rangeToMeet_)
+        if (currentMoveSum < rangeToMeet_)
         {
             //Looping through all of our behavior's added actions
             foreach(Action aaSt in this.behaviorList[0].addedActions)
@@ -1563,7 +1569,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
                 }
             }
-
+            
             //If we can still use all of our move actions and not just the added actions, we loop through the rest of our move actions
             if(currentMoveSum < rangeToMeet_ && !this.behaviorList[0].onlyUseAddedActions)
             {
@@ -1571,7 +1577,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a standard action and has a longer range than our current standard action
-                    if(moveAct.type == Action.ActionType.Standard && standardMoveAct == null || moveAct.range > standardMoveAct.range)
+                    if(moveAct.type == Action.ActionType.Standard && (standardMoveAct == null || moveAct.range > standardMoveAct.range))
                     {
                         //If the current standard move act isn't null, we subtract its range from our move sum
                         if(standardMoveAct != null)
@@ -1620,9 +1626,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
         }
-
+        
         //If we're still not in range and we're allowed to use full round actions, we loop through our full round actions
-        if(currentMoveSum < rangeToMeet_ && allowFullRoundMoves_)
+        if (currentMoveSum < rangeToMeet_ && allowFullRoundMoves_)
         {
             //Looping through all of our behavior's added actions
             foreach(Action aaFr in this.behaviorList[0].addedActions)
@@ -1739,7 +1745,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 }
             }
         }
-
+        
         //Returning all of the actions that aren't null
         List<MoveAction> returnList = new List<MoveAction>();
         if(quickMoveAct != null)
@@ -1822,17 +1828,37 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called every frame
     private void Update()
     {
+        //If we're still waiting for the action cooldown to expire, we subtract the amount of time that's passed
+        if(this.actionCooldown > 0)
+        {
+            this.actionCooldown -= Time.deltaTime;
+        }
+
         //If we aren't ready to act for some reason, OR we're waiting for the combat manager to let us give input, nothing happens
-        if(!this.readyToAct || CombatManager.globalReference.currentState != CombatManager.combatState.PlayerInput)
+        if(!this.readyToAct || this.actionCooldown > 0 || CombatManager.globalReference.currentState != CombatManager.combatState.PlayerInput)
         {
             return;
         }
-
+        Debug.Log("Enemy Update, Starting to act now! Combat state: " + CombatManager.globalReference.currentState);
         //If we still have actions to complete, we tell the combat manager to perform them
         if (this.actionsToPerformOnTiles.Count > 0)
         {
             //Getting the action and the tile where it happens
             CombatManager.globalReference.PerformEnemyActionOnTile(this.actionsToPerformOnTiles[0].targetTile, this.actionsToPerformOnTiles[0].enemyActionToUse);
+
+            //Setting our action cooldown for the amount of time this takes
+            this.actionCooldown = this.actionsToPerformOnTiles[0].enemyActionToUse.timeToCompleteAction;
+
+            //If this action is a move action, we need to multiply the cooldown based on how many tiles we're moving
+            if(this.actionsToPerformOnTiles[0].enemyActionToUse.GetType() == typeof(MoveAction))
+            {
+                //Finding the distance this enemy is from the target
+                CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
+                List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, this.actionsToPerformOnTiles[0].targetTile, true, true);
+
+                //Multiplying the number of tiles by the action time for our cooldown
+                this.actionCooldown *= pathToTarget.Count;
+            }
 
             //Clearing the current action so we don't use it again
             this.actionsToPerformOnTiles.RemoveAt(0);
@@ -1840,6 +1866,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //If there are no more actions to complete, we end our turn
         else
         {
+            this.readyToAct = false;
             this.EndEnemyTurn();
         }
     }
@@ -1848,6 +1875,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     //Function called once our turn is over. We could just tell the CombatManager.cs direcly, but I want some uniformity with all of my state logic functions
     private void EndEnemyTurn()
     {
+        Debug.Log(this.ourCharacter.firstName + "'s turn is ending ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         CombatManager.globalReference.EndActingCharactersTurn();
     }
 }

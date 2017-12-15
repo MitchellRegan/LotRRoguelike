@@ -1062,24 +1062,26 @@ public class PathfindingAlgorithms : MonoBehaviour
                             //Telling the connected point came from the current point we're checking
                             connection.previousPoint = currentPoint.ourPathPoint;
 
+                            CombatTile connectedCombatTile = connection.GetComponent<CombatTile>();
                             //If the connected tile isn't empty, we have to check it first
-                            if (connection.GetComponent<CombatTile>().typeOnTile != CombatTile.ObjectType.Nothing)
+                            if (connectedCombatTile.typeOnTile != CombatTile.ObjectType.Nothing)
                             {
                                 //Making sure that this type of movement can safely travel across the type of object on the tile
-                                if (connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Object && avoidObjects_ ||
-                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Enemy && avoidCharacters_ ||
-                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Player && avoidCharacters_)
+                                if (connectedCombatTile == targetPoint_ ||
+                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Object && !avoidObjects_) ||
+                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Enemy && !avoidCharacters_) ||
+                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Player && !avoidCharacters_))
                                 {
                                     //Adding the connected point to the frontier and list of visited tiles
-                                    frontier.Add(connection.GetComponent<CombatTile>());
+                                    frontier.Add(connectedCombatTile);
                                 }
                             }
                             else
                             {
                                 //Adding the connected point to the frontier and list of visited tiles
-                                frontier.Add(connection.GetComponent<CombatTile>());
+                                frontier.Add(connectedCombatTile);
                             }
-                            visitedPoints.Add(connection.GetComponent<CombatTile>());
+                            visitedPoints.Add(connectedCombatTile);
                             //Marking the tile as already checked so that it isn't added again
                             connection.hasBeenChecked = true;
                         }

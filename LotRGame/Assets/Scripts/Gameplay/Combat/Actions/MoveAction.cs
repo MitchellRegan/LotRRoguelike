@@ -42,6 +42,12 @@ public class MoveAction : Action
     //Function inherited from Action.cs
     public override void PerformAction(CombatTile targetTile_)
     {
+        //If the acting character is an enemy, we need to set the movement path since we're not mousing over tiles
+        if(CombatManager.globalReference.enemyCharactersInCombat.Contains(this.actingCharacter))
+        {
+            this.movementPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], targetTile_, true, true);
+        }
+
         //Makes it so that the Update function will now move the character through the movement path
         this.moveCharacter = true;
         this.currentNumTilesMoved = 0;
