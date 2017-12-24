@@ -11,6 +11,15 @@ public class LocationOpenerUI : MonoBehaviour
     //The Canvas UI that's opened when the player travels to a city
     public GameObject cityUICanvas;
 
+    //The buttons for each of the different vendor UI elements that the city could have
+    public Button generalStoreUI;
+    public Button blacksmithUI;
+    public Button tavernUI;
+    public Button mageTowerUI;
+    public Button churchUI;
+    public Button darkTempleUI;
+    public Button castleUI;
+
     //The reference to the player tile's map location
     MapLocation playerTileLocation = null;
 
@@ -69,7 +78,8 @@ public class LocationOpenerUI : MonoBehaviour
         //If the tile location is a city
         if(this.playerTileLocation.GetComponent<CityLocation>())
         {
-            this.playerTileLocation.TravelToLocation();
+            this.ClearVendorUI();
+            this.DisplayCityUI(this.playerTileLocation.GetComponent<CityLocation>());
         }
 
         //If the location is a Dungeon
@@ -77,5 +87,62 @@ public class LocationOpenerUI : MonoBehaviour
         {
             this.playerTileLocation.TravelToLocation();
         }
+    }
+
+
+    //Function called from EnterTileLocation to display the correct city UI
+    private void DisplayCityUI(CityLocation city_)
+    {
+        this.playerTileLocation.TravelToLocation();
+        this.cityUICanvas.SetActive(true);
+
+        //Looping through each of the vendors in the city
+        foreach(Vendor cityVendor in city_.cityVendors)
+        {
+            //Activating the correct vendor UI based on this vendor's type
+            switch(cityVendor.type)
+            {
+                case Vendor.VendorTypes.GenderalStore:
+                    this.generalStoreUI.enabled = true;
+                    break;
+
+                case Vendor.VendorTypes.Blacksmith:
+                    this.blacksmithUI.enabled = true;
+                    break;
+
+                case Vendor.VendorTypes.Tavern:
+                    this.tavernUI.enabled = true;
+                    break;
+
+                case Vendor.VendorTypes.MageTower:
+                    this.mageTowerUI.enabled = true;
+                    break;
+
+                case Vendor.VendorTypes.Church:
+                    this.churchUI.enabled = true;
+                    break;
+
+                case Vendor.VendorTypes.DarkTemple:
+                    this.darkTempleUI.enabled = true;
+                    break;
+
+                case Vendor.VendorTypes.Castle:
+                    this.castleUI.enabled = true;
+                    break;
+            }
+        }
+    }
+
+
+    //Function called externally from UI buttons to hide all of the vendor UI elements
+    public void ClearVendorUI()
+    {
+        this.generalStoreUI.enabled = false;
+        this.blacksmithUI.enabled = false;
+        this.tavernUI.enabled = false;
+        this.mageTowerUI.enabled = false;
+        this.churchUI.enabled = false;
+        this.darkTempleUI.enabled = false;
+        this.castleUI.enabled = false;
     }
 }

@@ -23,12 +23,14 @@ public class CharacterInventoryUI : MonoBehaviour
     //The direction that the character sprite base is currently looking in the inventory screen
     private CharacterSpriteBase.DirectionFacing spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
 
-    //Selected Character Name
+    //Selected Character's Name
     public Text selectedCharacterName;
-    //Selected Character weight
+    //Selected Character's weight
     public Text selectedCharacterWeight;
-    //Selected Character physical armor
+    //Selected Character's physical armor
     public Text selectedCharacterArmorPhysical;
+    //Selected Character's money
+    public Text selectedCharacterWallet;
 
     //Selected Character magic resist
     public Text selectedCharacterResistMagic;
@@ -149,6 +151,12 @@ public class CharacterInventoryUI : MonoBehaviour
         if (this.selectedCharacterWeight != null)
         {
             this.selectedCharacterWeight.text = "Weight: " + this.selectedCharacterInventory.currentWeight;
+        }
+
+        //Sets the money text
+        if(this.selectedCharacterWallet != null)
+        {
+            this.selectedCharacterWallet.text = "" + this.selectedCharacterInventory.wallet + " $";
         }
 
         //Sets the armor text
@@ -561,5 +569,67 @@ public class CharacterInventoryUI : MonoBehaviour
 
         //Updating our sprite view
         this.UpdateImages();
+    }
+
+
+    //Function called externally from the UI buttons. Transfers money from this trade character to the party character
+    public void TradeMoney(int amountToTrade_)
+    {
+        //Making sure this inventory isn't the party character inventory, this inventory has money, and there's an open character inventory
+        if(this.inventoryUIType == InventoryType.Party || this.selectedCharacterInventory.wallet == 0 || CharacterInventoryUI.partyInventory == null)
+        {
+            return;
+        }
+
+        int amountToTrade = 0;
+        //If the amount of money to trade is more than this character has, we give everything they have
+        if(this.selectedCharacterInventory.wallet < amountToTrade_)
+        {
+            amountToTrade = this.selectedCharacterInventory.wallet;
+        }
+        //If this character has enough money, we send the full amount
+        else
+        {
+            amountToTrade = amountToTrade_;
+        }
+
+        //Subtracting the correct amount from this character's inventory and adding it to the party character's inventory
+        this.selectedCharacterInventory.wallet -= amountToTrade;
+        CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet += amountToTrade;
+
+        //Updating the money texts for both of the inventor panels
+        if (this.selectedCharacterWallet != null)
+        {
+            this.selectedCharacterWallet.text = "" + this.selectedCharacterInventory.wallet + " $";
+        }
+        if (CharacterInventoryUI.partyInventory.selectedCharacterWallet != null)
+        {
+            CharacterInventoryUI.partyInventory.selectedCharacterWallet.text = "" + CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet + " $";
+        }
+    }
+
+
+    //Function called externally from the UI buttons. Transfers all money from this trade character to the party character
+    public void TradeAllMoney()
+    {
+        //Making sure this inventory isn't the party character inventory, this inventory has money, and there's an open character inventory
+        if (this.inventoryUIType == InventoryType.Party || this.selectedCharacterInventory.wallet == 0 || CharacterInventoryUI.partyInventory == null)
+        {
+            return;
+        }
+
+        //Subtracting the correct amount from this character's inventory and adding it to the party character's inventory
+        CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet += this.selectedCharacterInventory.wallet;
+        this.selectedCharacterInventory.wallet = 0;
+
+        //Updating the money texts for both of the inventor panels
+        if(this.selectedCharacterWallet != null)
+        {
+            this.selectedCharacterWallet.text = "" + this.selectedCharacterInventory.wallet + " $";
+        }
+        if(CharacterInventoryUI.partyInventory.selectedCharacterWallet != null)
+        {
+            CharacterInventoryUI.partyInventory.selectedCharacterWallet.text = "" + CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet + " $";
+        }
     }
 }

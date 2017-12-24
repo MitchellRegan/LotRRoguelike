@@ -53,6 +53,9 @@ public class Inventory : MonoBehaviour
     //The items that are currently being held in this object's storage
     public List<Item> itemSlots = new List<Item>(20);
 
+    //The amount of money that this character is holding
+    public int wallet = 0;
+
 
 
     //Constructor for this class

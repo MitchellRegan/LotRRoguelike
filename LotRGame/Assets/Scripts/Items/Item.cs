@@ -23,4 +23,7 @@ public class Item : MonoBehaviour
 
     //The weight of each individual item in this stack
     public float kilogramPerUnit = 1;
+
+    //The default value of this item
+    public int value = 0;
 }
