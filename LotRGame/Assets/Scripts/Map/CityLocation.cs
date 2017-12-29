@@ -13,7 +13,6 @@ public class CityLocation : MapLocation
     //Function inherited from MapLocation.cs that lets the player 
     public override void TravelToLocation()
     {
-        Debug.Log("Travel to " + this.locationName);
     }
 }
 
@@ -22,6 +21,7 @@ public class CityLocation : MapLocation
 public class Vendor
 {
     //The type of vendor this is
+    [System.Serializable]
     public enum VendorTypes
     {
         GenderalStore, //Normal items and some food
@@ -59,6 +59,11 @@ public class Vendor
     public float foodMarkupMultiplier = 1.3f;
     public float armorMarkupMultiplier = 1.3f;
     public float weaponMarkupMultiplier = 1.3f;
+
+    [Space(8)]
+
+    //The list of items that this vendor can sell
+    public List<Item> itemsForSale;
 
     [Space(8)]
 

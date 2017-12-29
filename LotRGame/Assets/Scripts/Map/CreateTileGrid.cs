@@ -180,6 +180,9 @@ public class CreateTileGrid : MonoBehaviour
 
             //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
             CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
+
+            //Telling the Mini Map to load our map texture
+            MiniMapUI.globalReference.SetMapTexture(Application.persistentDataPath + GameData.globalReference.saveFolder + "/Map" + this.numberOfStepLoops + ".png");
         }
     }
 
@@ -1434,7 +1437,27 @@ public class CreateTileGrid : MonoBehaviour
         //The coordinates that we'll return
         TileColRow tileCoord = null;
 
-        //Looping through each column in the tile grid
+        //Looping through all of the tiles connected to the tile we're searching for
+        for(int ct = 0; ct < tileToSearchFor_.connectedTiles.Count; ++ct)
+        {
+            //If this current tile connection isn't empty and one of its tile connections is the tile we're searching for
+            if(tileToSearchFor_.connectedTiles[ct] != null && tileToSearchFor_.connectedTiles[ct].connectedTiles.Contains(tileToSearchFor_))
+            {
+                Debug.Log("Connection " + ct + " not null");
+                //Getting the index of the tile we're searching for in the connected tile's list of connected tiles
+                int ourTileIndex = tileToSearchFor_.connectedTiles[ct].connectedTiles.IndexOf(tileToSearchFor_);
+
+                //Returning the tile coordinates using the index of the tile we're searching for
+                GridCoordinates coords = tileToSearchFor_.connectedTiles[ct].connectedTileCoordinates[ourTileIndex];
+
+                tileCoord = new TileColRow();
+                tileCoord.col = coords.col;
+                tileCoord.row = coords.row;
+                return tileCoord;
+            }
+        }
+
+        /*//Looping through each column in the tile grid
         for(int c = 0; c < this.tileGrid.Count; ++c)
         {
             //Looping through each row in the tile grid
@@ -1450,7 +1473,7 @@ public class CreateTileGrid : MonoBehaviour
                     return tileCoord;
                 }
             }
-        }
+        }*/
 
         //Returning the empty tile coordinates
         return tileCoord;
