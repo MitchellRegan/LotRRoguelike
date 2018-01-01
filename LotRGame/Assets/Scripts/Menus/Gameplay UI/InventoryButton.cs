@@ -52,7 +52,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     }
 
 
-    //Function called when the player's mouse releases
+    //Function called when the player's mouse releases this inventory item
     public void OnPointerUp(PointerEventData eventData_)
     {
         //If this slot is empty, nothing happens
