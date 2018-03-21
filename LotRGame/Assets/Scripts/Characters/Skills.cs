@@ -54,3 +54,36 @@ public class Skills : MonoBehaviour
     public int swimming = 30;
     public int swimmingMod = 0;
 }
+
+//Enum used to reference each player skill
+public enum SkillList
+{
+    //Combat skills
+    Punching,
+    Daggers,
+    Swords,
+    Axes,
+    Spears,
+    Bows,
+    Improvised,
+
+    //Magic skills
+    HolyMagic,
+    DarkMagic,
+    NatureMagic,
+
+    //Creative
+    Cooking,
+    Healing,
+    Crafting,
+
+    //Survival
+    Foraging,
+    Tracking,
+    Fishing,
+
+    //Tactial
+    Climbing,
+    Hiding,
+    Swimming
+}
