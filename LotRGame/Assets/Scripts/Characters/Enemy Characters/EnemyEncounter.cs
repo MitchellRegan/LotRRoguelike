@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Movement))]
+[System.Serializable]
 public class EnemyEncounter : MonoBehaviour
 {
+    //Reference to the prefab that this object was instantiated from. Set from CharacterManager.CreateEnemyEncounter
+    [HideInInspector]
+    public GameObject encounterPrefab;
+
     //The list of all enemies that are spawned when combat begins
     public List<EncounterEnemy> enemies;
 
@@ -16,8 +21,14 @@ public class EnemyEncounter : MonoBehaviour
 
     //The distance that this enemy encounter engages the player party when ambushing
     public EnemyCombatPosition ambushPosition = EnemyCombatPosition.MiddleFlanking;
+
+    [Space(8)]
+
+    //The loot table for this encounter
+    public List<EncounterLoot> lootTable;
 }
 
+//Class used in EnemyEncounter.cs to set an enemy character and their position in the encounter
 [System.Serializable]
 public class EncounterEnemy
 {
@@ -33,4 +44,17 @@ public class EncounterEnemy
     public int specificCol = 0;
     [Range(0,7)]
     public int specificRow = 0;
+}
+
+//Class used in EnemyEncounter.cs and CombatManager.cs to let the player get item drops from enemy encounters
+[System.Serializable]
+public class EncounterLoot
+{
+    //The item object that is dropped
+    public Item lootItem;
+    //The range of items in this stack
+    public Vector2 stackSizeMinMax = new Vector2(1, 1);
+    //The likelihood that this item is dropped
+    [Range(0.01f, 1)]
+    public float dropChance = 0.2f;
 }

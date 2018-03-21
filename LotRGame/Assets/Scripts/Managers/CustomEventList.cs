@@ -12,6 +12,7 @@ public class EVTData
     public SceneTransitionEVT sceneTransition = null;
     public CombatTransitionEVT combatTransition = null;
     public ScreenShakeEVT screenShake = null;
+    public PromptQuestEVT promptQuest = null;
 }
 
 
@@ -143,5 +144,22 @@ public class ScreenShakeEVT
         this.screenShakeDuration = screenShakeDuration_;
         this.screenShakePower = screenShakePower_;
         this.screenShakeCurve = screenShakeCurve_;
+    }
+}
+
+
+//Event data when we prompt a quest in QuestPromptUI.cs
+public class PromptQuestEVT
+{
+    //The name used to call this event from the event manager
+    public static string eventName = "Prompt Quest";
+
+    //The quest giver that we're going to display info about
+    public Quest questToPrompt;
+
+    //Public constructor for this class
+    public PromptQuestEVT(Quest questToPrompt_)
+    {
+        this.questToPrompt = questToPrompt_;
     }
 }

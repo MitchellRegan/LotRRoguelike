@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class AttackAction : Action
 {
     //The skill used for determining accuracy
@@ -44,6 +45,42 @@ public class AttackAction : Action
         Character actingChar = CombatManager.globalReference.actingCharacters[0];
         //Reference to the character that's being attacked
         Character defendingChar;
+
+        //Getting the tile that the acting character is on
+        CombatTile actingCharTile = CombatManager.globalReference.FindCharactersTile(actingChar);
+        CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(actingChar);
+        //If the difference in vertical space between the character tile and the target tile is greater than the difference in horizontal space
+        if(Mathf.Abs(targetTile_.transform.position.y - actingCharTile.transform.position.y) > Mathf.Abs(targetTile_.transform.position.x - actingCharTile.transform.position.x))
+        {
+            //If the target tile is above the acting character's tile
+            if(targetTile_.transform.position.y > actingCharTile.transform.position.y)
+            {
+                //We make the character look up
+                cSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Up);
+            }
+            //If the target tile is below the acting character's tile
+            else
+            {
+                //We make the character look down
+                cSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Down);
+            }
+        }
+        //If the difference in horizontal space between the tiles is greater
+        else
+        {
+            //If the target tile is right of the acting character's tile
+            if (targetTile_.transform.position.x > actingCharTile.transform.position.x)
+            {
+                //We make the character look right
+                cSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
+            }
+            //If the target tile is left of the acting character's tile
+            else
+            {
+                //We make the character look left
+                cSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Left);
+            }
+        }
 
         //Looping through and triggering all combat effects on the acting character that happen on attack
         foreach(Effect e in actingChar.charCombatStats.combatEffects)

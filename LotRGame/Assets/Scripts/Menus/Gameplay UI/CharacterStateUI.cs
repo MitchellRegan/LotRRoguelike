@@ -9,13 +9,10 @@ public class CharacterStateUI : MonoBehaviour
     private Character selectedCharacter;
     private PhysicalState selectedCharacterState;
 
-    //Reference to the text field that displays the selected character's name, clan, sex, race, and physical features
+    //Reference to the text field that displays the selected character's name, sex, race, and physical features
     public Text nameText;
-    public Text clanText;
     public Text sexText;
     public Text raceText;
-    public Text metricText;
-    public Text imperialText;
 
     //References to the sliders that display the selected character's health, hunger, thirst, sleep, and energy
     public Slider healthSlider;
@@ -52,21 +49,10 @@ public class CharacterStateUI : MonoBehaviour
     {
         //Setting the name field to display the selected character's name
         this.nameText.text = this.selectedCharacter.firstName + "\n" + this.selectedCharacter.lastName;
-        //Setting the clan field to display the character's clan
-        this.clanText.text = "Clan: " + this.selectedCharacter.clanName;
         //Setting the sex field to display their sex
         this.sexText.text = "Sex: " + this.selectedCharacter.sex;
         //Setting the race field to display their race
         this.raceText.text = "Race: " + this.selectedCharacter.charRaceTypes.race;
-        //Setting the metric text to display their height and width in cm and kg
-        this.metricText.text = this.selectedCharacter.height + " cm Tall, " + this.selectedCharacter.weight + " kg.";
-
-        //Setting the imperial text to display their height and width in lb and feet
-        int pounds = Mathf.RoundToInt(this.selectedCharacter.weight * 2.2046f);
-        int inches = Mathf.RoundToInt(this.selectedCharacter.height * 0.3937f);
-        int feet = inches / 12;
-        inches = inches % 12;
-        this.imperialText.text = feet + "\'" + inches + "\" Tall, " + pounds + " lb.";
     }
 
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryOpener : MonoBehaviour
 {
@@ -13,6 +14,16 @@ public class InventoryOpener : MonoBehaviour
     public GameObject bagInventoryUIObject;
     //The reference to the Inventory UI screen for trade characters
     public GameObject tradeInventoryUIObject;
+
+    [Space(8)]
+
+    //The Image that displays the icon for items that are being moved
+    public Image dragIconImage;
+
+    [Space(8)]
+
+    //The Inventory reference for the bag inventory object
+    public Inventory bagInventory;
 
 
 
@@ -29,6 +40,11 @@ public class InventoryOpener : MonoBehaviour
         {
             Destroy(this);
         }
+
+        //Setting the static references for the CharacterInventoryUI.cs static references
+        CharacterInventoryUI.partyInventory = this.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
+        CharacterInventoryUI.bagInventory = this.bagInventoryUIObject.GetComponent<CharacterInventoryUI>();
+        CharacterInventoryUI.tradeInventory = this.tradeInventoryUIObject.GetComponent<CharacterInventoryUI>();
     }
 	
 
@@ -48,7 +64,6 @@ public class InventoryOpener : MonoBehaviour
         //If the player inventory UI screen is already showing
         if (this.partyInventoryUIObject.activeSelf)
         {
-
             //If the displayed character in the party inventory screen is this character, all of the inventory UIs are disabled
             if(CharacterInventoryUI.partyInventory.selectedCharacterInventory.gameObject == CharacterManager.globalReference.playerParty[partyCharacterIndex_].gameObject)
             {

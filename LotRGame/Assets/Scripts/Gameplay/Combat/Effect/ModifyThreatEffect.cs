@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ModifyThreatEffect : Effect
 {
     //The amount of threat that's passed to the target enemy when triggered
@@ -76,11 +77,31 @@ public class ModifyThreatEffect : Effect
         if (this.threatenAllEnemies)
         {
             CombatManager.globalReference.ApplyActionThreat(null, this.threatAddedPerTick, true);
+
+            //If we have a visual for this effect, we need to spawn it on all of the enemies
+            if(this.visualEffect != null)
+            {
+                //Looping through every enemy in this encounter
+                foreach(Character enemy in CombatManager.globalReference.enemyCharactersInCombat)
+                {
+                    //Creating the visual effect for this effect
+                    CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(enemy);
+                    this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+                }
+            }
         }
         //If this threatens only the target
         else
         {
             this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, this.threatAddedPerTick);
+
+            //If we have a visual for this effect, we need to spawn it on the target enemy
+            if (this.visualEffect != null)
+            {
+                //Creating the visual effect for this effect
+                CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+                this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+            }
         }
 
         //Counting down the ticks remaining

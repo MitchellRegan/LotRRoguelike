@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Skills : MonoBehaviour
 {
     //The ability to make food edible

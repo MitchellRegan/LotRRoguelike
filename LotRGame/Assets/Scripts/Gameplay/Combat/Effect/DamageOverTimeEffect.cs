@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class DamageOverTimeEffect : Effect
 {
     //What type of damage this damage counts as
@@ -145,7 +146,7 @@ public class DamageOverTimeEffect : Effect
         }
 
         //Creating the visual effect for this effect
-        CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
 
         //Telling the combat manager to display the damage dealt

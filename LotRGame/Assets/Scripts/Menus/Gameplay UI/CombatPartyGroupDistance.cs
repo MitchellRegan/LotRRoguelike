@@ -34,25 +34,28 @@ public class CombatPartyGroupDistance : MonoBehaviour
         switch(CharacterManager.globalReference.selectedGroup.combatDistance)
         {
             case CombatManager.GroupCombatDistance.Close:
-                this.ourSlider.value = 0;
+                this.ourSlider.value = 2;
                 break;
             case CombatManager.GroupCombatDistance.Medium:
                 this.ourSlider.value = 1;
                 break;
             case CombatManager.GroupCombatDistance.Far:
-                this.ourSlider.value = 2;
+                this.ourSlider.value = 0;
                 break;
         }
     }
 
 
-    //Function called externally using a slider to set the selected party group's preferred combat distance
-	public void SetGroupCombatDistance(int distance_)
+    //Function called every frame
+	private void Update()
     {
+        //Getting the current value for our slider
+        int distance = Mathf.RoundToInt(this.ourSlider.value);
+
         //Setting the distance based on the int given
-        switch(distance_)
+        switch(distance)
         {
-            case 2:
+            case 0:
                 CharacterManager.globalReference.selectedGroup.combatDistance = CombatManager.GroupCombatDistance.Far;
                 break;
             case 1:

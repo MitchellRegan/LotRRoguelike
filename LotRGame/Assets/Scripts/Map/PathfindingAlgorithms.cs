@@ -503,7 +503,7 @@ public class PathfindingAlgorithms : MonoBehaviour
     //Pathfinding algorithm that prioritizes the direct route to the target. Returns the tile path taken to get to the target tile.
     public static List<TileInfo> GreedyBestFirstSearchLandTile(TileInfo startingPoint_, TileInfo targetPoint_, bool earlyExit_ = true)
     {
-        //Creating the 2D list of game objects (tiles) that will be returned
+        //Creating the list of game objects (tiles) that will be returned
         List<TileInfo> tilePath = new List<TileInfo>();
 
         //The list of path points that make up the frontier (definition) and their distance from the target (key)
@@ -599,6 +599,318 @@ public class PathfindingAlgorithms : MonoBehaviour
 
         //Returning the completed list of tiles
         return tilePath;
+    }
+
+
+    //Pathfinding algorithm for land tiles that returns the list of tiles along the outside edge of a region
+    public static List<TileInfo> FindRegionEdgeTiles(TileInfo startingPoint_)
+    {
+        //The list of tiles along the region edge that will be returned. 
+        List<TileInfo> edgeTiles = new List<TileInfo>();
+
+        //The list of path points that make up the frontier
+        List<TileInfo> frontier = new List<TileInfo>();
+        //Adding the starting tile to the fronteir and making sure its previous point is cleared
+        frontier.Add(startingPoint_);
+
+        //The list of path points that have already been visited
+        List<TileInfo> visitedPoints = new List<TileInfo>();
+        visitedPoints.Add(startingPoint_);
+        
+        startingPoint_.hasBeenChecked = true;
+
+
+        //Loop through each path point until the frontier is empty
+        while (frontier.Count != 0)
+        {
+            //Getting the reference to the next path point to check
+            TileInfo currentPoint = frontier[0];
+
+            //Bool that's true if the current tile has no remaining connected tiles to add to the frontier
+            bool isEdge = false;
+
+            //Looping through all of the connected tiles for the current tile
+            for(int p = 0; p < currentPoint.connectedTiles.Count; ++p)
+            {
+                //Checking the connected tile to see if it's already in the frontier or the edge tile lists
+                if(currentPoint.connectedTiles[p] != null && !currentPoint.connectedTiles[p].hasBeenChecked)
+                {
+                    //If the connected tile has a different land type from the starting tile
+                    if (currentPoint.connectedTiles[p].regionName != startingPoint_.regionName)
+                    {
+                        //Since this tile has a connection that has a different land type, it's an edge tile
+                        isEdge = true;
+                    }
+                    //If the connected tile has the same land type and hasn't been checked yet
+                    else
+                    {
+                        //This connected tile is added to the frontier for later
+                        frontier.Add(currentPoint.connectedTiles[p]);
+                    }
+
+                    //Adding the connected tile to the list of visited points and marking it as being checked so we don't check it again
+                    currentPoint.connectedTiles[p].hasBeenChecked = true;
+                    visitedPoints.Add(currentPoint.connectedTiles[p]);
+                }
+                //If the connected tile is null, then this tile is along the edge of the map
+                else if(currentPoint.connectedTiles[p] == null)
+                {
+                    isEdge = true;
+                }
+            }
+
+            //If the current point is marked as an edge
+            if(isEdge)
+            {
+                //The current point is added to the list of edge tiles
+                edgeTiles.Add(currentPoint);
+            }
+
+            //After we're done checking the current point, we remove it from the frontier
+            frontier.Remove(currentPoint);
+        }
+
+
+        //Looping through all path points in the list of visited points to clear their data
+        foreach (TileInfo point in visitedPoints)
+        {
+            point.ClearPathfinding();
+        }
+
+
+        //Returning the completed list of edge tiles
+        return edgeTiles;
+    }
+
+
+    //Algorithm called to grow a tile region by spreading out from random tiles along the given region edge
+    public static void StepOutRegionEdge(List<TileInfo> regionEdgeTiles_, Vector2 minMaxNumberOfSteps_, int minimumStepsAllowed_)
+    {
+        //Finding the number of steps this region will spread
+        int numSteps = Mathf.RoundToInt(Random.Range(minMaxNumberOfSteps_.x, minMaxNumberOfSteps_.y));
+
+        //If the number of steps is below the absolute minimum, we set it to the minimum
+        if(numSteps < minimumStepsAllowed_)
+        {
+            numSteps = minimumStepsAllowed_;
+        }
+
+        //Creating a frontier of tiles that we can step outwards from using the edge tiles given
+        List<TileInfo> frontier = regionEdgeTiles_;
+
+        //Looping a number of times equal to our steps
+        for(int s = 0; s < numSteps; ++s)
+        {
+            //If for some reason we can still step out but there are no more tiles left in the frontier, we break the loop
+            if(frontier.Count == 0)
+            {
+                break;
+            }
+
+            //Finding a random tile along the region edge to step from
+            int randomTileIndex = Mathf.RoundToInt(Random.Range(0, regionEdgeTiles_.Count));
+            TileInfo edgeTile = regionEdgeTiles_[randomTileIndex];
+
+            //Bool to track if we were able to step out from this edge tile
+            bool canStep = false;
+
+            //Bool to track if this tile is next to a city tile
+            bool isNearCity = false;
+            //Looping through each connection in the edge tile once to check for city and dungeon tiles
+            foreach(TileInfo connectedTile in edgeTile.connectedTiles)
+            {
+                //If the current connection isn't null
+                if(connectedTile != null)
+                {
+                    //If the connected tile is a city tile or dungeon tile
+                    if (CreateTileGrid.globalReference.cityTiles.Contains(connectedTile) || CreateTileGrid.globalReference.dungeonTiles.Contains(connectedTile))
+                    {
+                        //If the city/dungeon tile that this edge tile is near has a different region name
+                        if (edgeTile.regionName != connectedTile.regionName)
+                        {
+                            //We indicate that we can't step near this tile
+                            isNearCity = true;
+                        }
+                    }
+                    //If it isn't a city tile, we check to see if any of THIS tile's connection's are a city tile
+                    else
+                    {
+                        //Looping through the connected tile's connections to see if any of them are a city tile
+                        foreach(TileInfo c in connectedTile.connectedTiles)
+                        {
+                            //If this second connected tile is a city tile
+                            if (CreateTileGrid.globalReference.cityTiles.Contains(c) || CreateTileGrid.globalReference.dungeonTiles.Contains(c))
+                            {
+                                //If the city tile that this edge tile is near has a different region name
+                                if (edgeTile.regionName != c.regionName)
+                                {
+                                    //We indicate that we can't step near this tile
+                                    isNearCity = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //If this tile isn't near a city
+            if (!isNearCity)
+            {
+                //Looping through each connection in the edge tile
+                foreach (TileInfo connection in edgeTile.connectedTiles)
+                {
+                    //Making sure the current connection isn't null
+                    if (connection != null)
+                    {
+                        //If the connected tile is from a different region from this edge tile
+                        if (connection.regionName != edgeTile.regionName)
+                        {
+                            //We change the connected tile to be in this edge tile's region
+                            connection.SetTileBasedOnAnotherTile(edgeTile);
+
+                            //Adding the connection to the frontier
+                            frontier.Add(connection);
+
+                            //We also indicate that this tile was able to step outward
+                            canStep = true;
+                        }
+                    }
+                }
+            }
+
+            //If we weren't able to step outward from this tile, we subtract from the current step count so we don't waste one
+            if(!canStep)
+            {
+                s -= 1;
+            }
+
+            //Once we're done stepping out from this tile, we remove it from the frontier
+            frontier.Remove(edgeTile);
+        }
+    }
+
+
+    //Pathfinding algorithm for land tiles that returns the tile in the center of a region given the edge tiles
+    public static TileInfo FindRegionCenterTile(List<TileInfo> edgeTiles_)
+    {
+        //The list of path points that make up the frontier
+        List<TileInfo> frontier = new List<TileInfo>();
+        //The list of path points that have already been visited
+        List<TileInfo> visitedPoints = new List<TileInfo>();
+
+        //Looping through all of the given edge tiles
+        foreach(TileInfo eT in edgeTiles_)
+        {
+            //Adding the edge tile to the frontier and visited points list
+            frontier.Add(eT);
+            visitedPoints.Add(eT);
+            //Marking the edge tile as already been checked
+            eT.hasBeenChecked = true;
+        }
+
+        //Looping through the frontier until there's only 1 tile left
+        while(frontier.Count != 1)
+        {
+            //Getting the reference to the next path point to check
+            TileInfo currentPoint = frontier[0];
+
+            //Looping through all of the tiles connected to the current point
+            foreach(TileInfo connectedTile in currentPoint.connectedTiles)
+            {
+                //If the connected tile hasn't already been checked
+                if(connectedTile != null && !connectedTile.hasBeenChecked)
+                {
+                    //Making sure the connected tile is the same land type
+                    if(connectedTile.regionName == currentPoint.regionName)
+                    {
+                        //If we made it this far, the tile is now added to the frontier and list of visited tiles
+                        frontier.Add(connectedTile);
+                        visitedPoints.Add(connectedTile);
+                        connectedTile.hasBeenChecked = true;
+                    }
+                }
+            }
+
+            //Removing the current point from the frontier
+            frontier.RemoveAt(0);
+        }
+
+        //Looping through all of the visited tiles and clearing their pathfinding
+        foreach(TileInfo tile in visitedPoints)
+        {
+            tile.ClearPathfinding();
+        }
+
+        //Once the frontier is reduced to only 1 tile, that tile should be the center, so we return in
+        return frontier[0];
+    }
+
+
+    //Pathfinding algorithm for land tiles that returns all of the land tiles within a given range of the starting tile
+    public static List<TileInfo> FindLandTilesInRange(TileInfo startingTile_, int tileRange_, bool keepSameTileType_ = false)
+    {
+        //The list of combat tiles that are returned
+        List<TileInfo> allTilesInRange = new List<TileInfo>();
+
+        //The list of each group of tiles in every range incriment. The index is the range
+        List<List<TileInfo>> tilesInEachIncriment = new List<List<TileInfo>>();
+        //Creating the first range incriment which always includes the starting tile
+        List<TileInfo> range0 = new List<TileInfo>() { startingTile_ };
+        range0[0].hasBeenChecked = true;
+        tilesInEachIncriment.Add(range0);
+
+        //Looping through each range incriment
+        for (int r = 1; r <= tileRange_; ++r)
+        {
+            //Creating a new list of tiles for this range incriment
+            List<TileInfo> newRange = new List<TileInfo>();
+
+            //Looping through each tile in the previous range
+            foreach (TileInfo tile in tilesInEachIncriment[r - 1])
+            {
+                //Looping through each tile connected to the one we're checking
+                foreach (TileInfo connection in tile.connectedTiles)
+                {
+                    //If the connected tile hasn't already been checked
+                    if (connection != null && !connection.hasBeenChecked)
+                    {
+                        //If we need to keep the same tile type and the connected tile is different
+                        if (keepSameTileType_)
+                        {
+                            if (connection.type == startingTile_.type)
+                            {
+                                //Adding the connected tile to this new range and marking it as checked
+                                newRange.Add(connection);
+                                connection.hasBeenChecked = true;
+                            }
+                        }
+                        //If we don't need to worry about the tile type
+                        else
+                        {
+                            //Adding the connected tile to this new range and marking it as checked
+                            newRange.Add(connection);
+                            connection.hasBeenChecked = true;
+                        }
+                    }
+                }
+            }
+
+            //Adding this range incriment to the list
+            tilesInEachIncriment.Add(newRange);
+        }
+
+        //Grouping all of the tiles into the list that is returned
+        foreach (List<TileInfo> rangeList in tilesInEachIncriment)
+        {
+            foreach (TileInfo tile in rangeList)
+            {
+                allTilesInRange.Add(tile);
+                //Resetting the tile to say it hasn't been checked
+                tile.hasBeenChecked = false;
+            }
+        }
+
+        return allTilesInRange;
     }
 
 
@@ -750,24 +1062,26 @@ public class PathfindingAlgorithms : MonoBehaviour
                             //Telling the connected point came from the current point we're checking
                             connection.previousPoint = currentPoint.ourPathPoint;
 
+                            CombatTile connectedCombatTile = connection.GetComponent<CombatTile>();
                             //If the connected tile isn't empty, we have to check it first
-                            if (connection.GetComponent<CombatTile>().typeOnTile != CombatTile.ObjectType.Nothing)
+                            if (connectedCombatTile.typeOnTile != CombatTile.ObjectType.Nothing)
                             {
                                 //Making sure that this type of movement can safely travel across the type of object on the tile
-                                if (connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Object && avoidObjects_ ||
-                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Enemy && avoidCharacters_ ||
-                                    connection.GetComponent<CombatTile>().typeOnTile == CombatTile.ObjectType.Player && avoidCharacters_)
+                                if (connectedCombatTile == targetPoint_ ||
+                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Object && !avoidObjects_) ||
+                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Enemy && !avoidCharacters_) ||
+                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Player && !avoidCharacters_))
                                 {
                                     //Adding the connected point to the frontier and list of visited tiles
-                                    frontier.Add(connection.GetComponent<CombatTile>());
+                                    frontier.Add(connectedCombatTile);
                                 }
                             }
                             else
                             {
                                 //Adding the connected point to the frontier and list of visited tiles
-                                frontier.Add(connection.GetComponent<CombatTile>());
+                                frontier.Add(connectedCombatTile);
                             }
-                            visitedPoints.Add(connection.GetComponent<CombatTile>());
+                            visitedPoints.Add(connectedCombatTile);
                             //Marking the tile as already checked so that it isn't added again
                             connection.hasBeenChecked = true;
                         }

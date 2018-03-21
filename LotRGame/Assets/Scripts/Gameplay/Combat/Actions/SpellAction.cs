@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class SpellAction : AttackAction
 {
     //Int for the number of times this spell can be used before it needs to be recharged

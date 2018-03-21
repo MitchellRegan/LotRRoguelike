@@ -31,6 +31,22 @@ public class RegionInfo : MonoBehaviour
 
     //The list of enemy groups that can be encountered from tracking
     public List<EncounterBlock> trackingEncounters;
+
+    [Space(8)]
+
+    //The list of enemy encounters that can happen on this tile
+    public List<EncounterBlock> randomEncounterList;
+
+    //The chance that an encounter will happen when time passes
+    [Range(0, 1)]
+    public float randomEncounterChance = 0.1f;
+
+    [Space(8)]
+
+    //The main city for this region
+    public CityLocation regionCity;
+    //The dungeon for this region
+    public DungeonLocation regionDungeon;
 }
 
 
@@ -59,5 +75,5 @@ public class EncounterBlock
     public float encounterChance = 0.1f;
 
     //The list of enemies in this encounter
-    public List<GameObject> enemies;
+    public EnemyEncounter encounterEnemies;
 }

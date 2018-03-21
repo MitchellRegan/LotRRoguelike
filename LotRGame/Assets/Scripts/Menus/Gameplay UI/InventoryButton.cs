@@ -13,11 +13,9 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private bool isBeingDragged = false;
     //Bool that determines if this slot is empty. If so, it can't be dragged
     public bool slotIsEmpty = true;
-    //The UI position of this button when not being dragged
-    private Vector3 defaultPosition;
 
     //Enum that determines what inventory slot this button represents
-    public enum InventoryButtonType { Bag, Armor, Weapon};
+    public enum InventoryButtonType { Bag, Armor, Weapon, Trash};
     public InventoryButtonType buttonType = InventoryButtonType.Bag;
 
     //Text box that displays the stack size of the item shown
@@ -25,19 +23,11 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
 
     
-    //Function called when this component is enabled
-    private void OnEnable()
-    {
-        //Sets this button's default position
-        this.defaultPosition = this.transform.position;
-    }
-
-
     //Function called when the player's mouse clicks down on this inventory item
     public void OnPointerDown(PointerEventData eventData_)
     {
-        //If this slot is empty, nothing happens
-        if(this.slotIsEmpty)
+        //If this slot is empty or the trash button, nothing happens
+        if(this.slotIsEmpty || this.buttonType == InventoryButtonType.Trash)
         {
             return;
         }
@@ -45,10 +35,14 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         //If the player left clicks to drag
         if(eventData_.button == PointerEventData.InputButton.Left)
         {
-            this.defaultPosition = this.transform.position;
+            //Setting our image opacity to be dim
+            this.GetComponent<Image>().color = new Color(1, 1, 1, 0.7f);
             //Starts dragging this item and sets it as the front UI element
             this.isBeingDragged = true;
-            this.GetComponent<RectTransform>().SetAsLastSibling();
+
+            //Setting the InventoryOpener's drag icon image to this button's image
+            InventoryOpener.globalReference.dragIconImage.gameObject.SetActive(true);
+            InventoryOpener.globalReference.dragIconImage.sprite = this.GetComponent<Image>().sprite;
         }
         //If the player right clicks to use/equip
         else if(eventData_.button == PointerEventData.InputButton.Right)
@@ -58,7 +52,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     }
 
 
-    //Function called when the player's mouse releases
+    //Function called when the player's mouse releases this inventory item
     public void OnPointerUp(PointerEventData eventData_)
     {
         //If this slot is empty, nothing happens
@@ -67,9 +61,10 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             return;
         }
 
-        //Ends dragging this item and resets back to the default position
+        //Ends dragging this item and resets back to the default opacity
         this.isBeingDragged = false;
-        this.transform.position = this.defaultPosition;
+        InventoryOpener.globalReference.dragIconImage.gameObject.SetActive(false);
+        this.GetComponent<Image>().color = new Color(1, 1, 1, 1);
 
         //Turning off this button's raycast blocking so that we can see what's behind it
         this.GetComponent<Image>().raycastTarget = false;
@@ -95,9 +90,89 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<UnityEngine.UI.Image>());
                     Item hitButtonItem = hitButtonUI.GetItemFromInventoryButton(results[0].gameObject.GetComponent<UnityEngine.UI.Image>());
 
+                    //If the hit button is a trash button
+                    if(results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Trash)
+                    {
+                        //If the item being trashed isn't a quest item
+                        if (!thisButtonItem.GetComponent<QuestGiver>())
+                        {
+                            //If this button is an inventory button
+                            if (this.buttonType == InventoryButtonType.Bag)
+                            {
+                                //Getting the index of this button for the UI
+                                int thisItemIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
 
+                                //Clearing the item in the inventory slot
+                                thisButtonUI.selectedCharacterInventory.itemSlots[thisItemIndex] = null;
+                            }
+                            //If this button is a weapon button
+                            else if(this.buttonType == InventoryButtonType.Weapon)
+                            {
+                                //If the weapon is in the right hand
+                                if(thisButtonUI.selectedCharacterInventory.rightHand.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.rightHand = null;
+                                }
+                                //If the weapon is in the left hand
+                                else if(thisButtonUI.selectedCharacterInventory.leftHand.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.leftHand = null;
+                                }
+                            }
+                            //If this button is an armor button
+                            else if(this.buttonType == InventoryButtonType.Armor)
+                            {
+                                //If this button item is a helm
+                                if(thisButtonUI.selectedCharacterInventory.helm.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.helm = null;
+                                }
+                                //if this button item is a chestpiece
+                                else if (thisButtonUI.selectedCharacterInventory.chestPiece.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.chestPiece = null;
+                                }
+                                //if this button item are leggings
+                                else if (thisButtonUI.selectedCharacterInventory.leggings.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.leggings = null;
+                                }
+                                //if this button item are shoes
+                                else if (thisButtonUI.selectedCharacterInventory.shoes.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.shoes = null;
+                                }
+                                //if this button item are gloves
+                                else if (thisButtonUI.selectedCharacterInventory.gloves.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.gloves = null;
+                                }
+                                //if this button item is a cloak
+                                else if (thisButtonUI.selectedCharacterInventory.cloak.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.cloak = null;
+                                }
+                                //if this button item is a ring
+                                else if (thisButtonUI.selectedCharacterInventory.ring.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.ring = null;
+                                }
+                                //if this button item is a necklace
+                                else if (thisButtonUI.selectedCharacterInventory.necklace.gameObject == thisButtonItem.gameObject)
+                                {
+                                    thisButtonUI.selectedCharacterInventory.necklace = null;
+                                }
+                            }
+
+                            //We destroy this button's item
+                            Destroy(thisButtonItem.gameObject);
+                            //Refreshing this button's inventory
+                            thisButtonUI.UpdateImages();
+                            thisButtonUI.selectedCharacterInventory.FindArmorStats();
+                        }
+                    }
                     //If neither item is equipped and are just in the regular inventory
-                    if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
+                    else if(this.buttonType == InventoryButtonType.Bag && results[0].gameObject.GetComponent<InventoryButton>().buttonType == InventoryButtonType.Bag)
                     {
                         //Finding the index of this button's item so it can be switched
                         int thisButtonIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<UnityEngine.UI.Image>());
@@ -784,8 +859,8 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     thisButtonUI.UpdateImages();
                     hitButtonUI.UpdateImages();
                     //Updating both of the inventory weights
-                    thisButtonUI.selectedCharacterInventory.FindTotalWeight();
-                    hitButtonUI.selectedCharacterInventory.FindTotalWeight();
+                    thisButtonUI.selectedCharacterInventory.FindArmorStats();
+                    hitButtonUI.selectedCharacterInventory.FindArmorStats();
                 }
             }
         }
@@ -804,7 +879,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         }
 
         //Moves this item to the mouse's position on the screen
-        this.transform.position = Input.mousePosition;
+        InventoryOpener.globalReference.dragIconImage.transform.position = Input.mousePosition;
     }
 
 
@@ -818,6 +893,31 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         if(this.buttonType == InventoryButtonType.Bag)
         {
             Item thisButtonItem = thisButtonUI.GetItemFromInventoryButton(this.GetComponent<Image>());
+
+            //If the clicked button is a quest item in the party inventory
+            if(thisButtonItem.GetComponent<QuestGiver>() && thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
+            {
+                //Getting the quest from the item
+                Quest itemQuest = thisButtonItem.GetComponent<QuestGiver>().questToGive;
+
+                //If the quest that is given isn't in our quest log
+                if(!QuestTracker.globalReference.IsQuestInQuestLog(itemQuest))
+                {
+                    //If the quest that is given isn't in the list of completed quests
+                    if(!QuestTracker.globalReference.completedQuestNames.Contains(itemQuest.questName))
+                    {
+                        //We create a new event to dispatch the quest info
+                        EVTData data = new EVTData();
+                        data.promptQuest = new PromptQuestEVT(itemQuest);
+
+                        //Dispatching the quest prompt
+                        EventManager.TriggerEvent(PromptQuestEVT.eventName, data);
+
+                        //Returning so nothing else happens with the item until the quest is accepted
+                        return;
+                    }
+                }
+            }
 
             //If the clicked button is food
             if(thisButtonItem.GetComponent<Food>())
@@ -858,23 +958,67 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                 //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
                 else
                 {
-                    //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
-                    if(InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
+                    //If this inventory is the bag/chest OR if it's the trade character and the party character isn't the same
+                    if (thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Bag ||
+                        thisButtonUI.selectedCharacterInventory != CharacterInventoryUI.partyInventory.selectedCharacterInventory)
                     {
-                        //Getting a quick reference to the hit button's Character Inventory UI component
-                        CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
-
-                        //If true, all items in this stack were successfully added to the party inventory and we can empty this button
-                        if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                        //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
+                        if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
                         {
-                            //Finding the index of this button's item in the inventory and setting the slot to be empty
-                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
-                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
-                        }
-                        //Otherwise, not all of the stack could fit, so we can't set this button to empty
+                            //Getting a quick reference to the hit button's Character Inventory UI component
+                            CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
 
-                        //Telling the party inventory UI screen to update so it shows the items that were added
-                        InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
+                            //If true, all items in this stack were successfully added to the party inventory and we can empty this button
+                            if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                            {
+                                //Finding the index of this button's item in the inventory and setting the slot to be empty
+                                int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                                thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                            }
+                            //Otherwise, not all of the stack could fit, so we can't set this button to empty
+
+                            //Telling the party inventory UI screen to update so it shows the items that were added
+                            InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
+                        }
+                    }
+                }
+            }
+            //If the clicked button is a weapon
+            else if (thisButtonItem.GetComponent<Weapon>())
+            {
+                //If this button's inventory is on a character in the player party
+                if (thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
+                {
+                    //Finding the index of this button's item in the inventory
+                    int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                    //Equipping this piece of armor
+                    thisButtonUI.selectedCharacterInventory.EquipWeapon(thisItemsIndex);
+                }
+                //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
+                else
+                {
+                    //If this inventory is the bag/chest OR if it's the trade character and the party character isn't the same
+                    if (thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Bag ||
+                        thisButtonUI.selectedCharacterInventory != CharacterInventoryUI.partyInventory.selectedCharacterInventory)
+                    {
+                        //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
+                        if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
+                        {
+                            //Getting a quick reference to the hit button's Character Inventory UI component
+                            CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
+
+                            //If true, all items in this stack were successfully added to the party inventory and we can empty this button
+                            if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                            {
+                                //Finding the index of this button's item in the inventory and setting the slot to be empty
+                                int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                                thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                            }
+                            //Otherwise, not all of the stack could fit, so we can't set this button to empty
+
+                            //Telling the party inventory UI screen to update so it shows the items that were added
+                            InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
+                        }
                     }
                 }
             }
@@ -892,57 +1036,28 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                 //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
                 else
                 {
-                    //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
-                    if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
+                    //If this inventory is the bag/chest OR if it's the trade character and the party character isn't the same
+                    if (thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Bag ||
+                        thisButtonUI.selectedCharacterInventory != CharacterInventoryUI.partyInventory.selectedCharacterInventory)
                     {
-                        //Getting a quick reference to the hit button's Character Inventory UI component
-                        CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
-
-                        //If true, all items in this stack were successfully added to the party inventory and we can empty this button
-                        if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                        //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
+                        if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
                         {
-                            //Finding the index of this button's item in the inventory and setting the slot to be empty
-                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
-                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                            //Getting a quick reference to the hit button's Character Inventory UI component
+                            CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
+
+                            //If true, all items in this stack were successfully added to the party inventory and we can empty this button
+                            if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
+                            {
+                                //Finding the index of this button's item in the inventory and setting the slot to be empty
+                                int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
+                                thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
+                            }
+                            //Otherwise, not all of the stack could fit, so we can't set this button to empty
+
+                            //Telling the party inventory UI screen to update so it shows the items that were added
+                            InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
                         }
-                        //Otherwise, not all of the stack could fit, so we can't set this button to empty
-
-                        //Telling the party inventory UI screen to update so it shows the items that were added
-                        InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
-                    }
-                }
-            }
-            //If the clicked button is a weapon
-            else if(thisButtonItem.GetComponent<Weapon>())
-            {
-                //If this button's inventory is on a character in the player party
-                if(thisButtonUI.inventoryUIType == CharacterInventoryUI.InventoryType.Party)
-                {
-                    //Finding the index of this button's item in the inventory
-                    int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
-                    //Equipping this piece of armor
-                    thisButtonUI.selectedCharacterInventory.EquipWeapon(thisItemsIndex);
-                }
-                //If this button's inventory is on a trade character or inventory bag/chest, it can be added to the party character's inventory
-                else
-                {
-                    //Making sure the party inventory UI screen is showing. Can't add it to the party inventory if we don't know who to send it to
-                    if (InventoryOpener.globalReference.partyInventoryUIObject.activeSelf)
-                    {
-                        //Getting a quick reference to the hit button's Character Inventory UI component
-                        CharacterInventoryUI hitButtonUI = InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>();
-
-                        //If true, all items in this stack were successfully added to the party inventory and we can empty this button
-                        if (hitButtonUI.selectedCharacterInventory.AddItemToInventory(thisButtonItem))
-                        {
-                            //Finding the index of this button's item in the inventory and setting the slot to be empty
-                            int thisItemsIndex = thisButtonUI.slotImages.IndexOf(this.GetComponent<Image>());
-                            thisButtonUI.selectedCharacterInventory.ChangeInventoryItemAtIndex(thisItemsIndex, null);
-                        }
-                        //Otherwise, not all of the stack could fit, so we can't set this button to empty
-
-                        //Telling the party inventory UI screen to update so it shows the items that were added
-                        InventoryOpener.globalReference.partyInventoryUIObject.GetComponent<CharacterInventoryUI>().UpdateImages();
                     }
                 }
             }
@@ -978,7 +1093,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         //Updating the UI for the inventory
         thisButtonUI.UpdateImages();
         //Updating the inventory weight
-        thisButtonUI.selectedCharacterInventory.FindTotalWeight();
+        thisButtonUI.selectedCharacterInventory.FindArmorStats();
     }
 
 

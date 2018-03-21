@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Movement))]
 [RequireComponent(typeof(ReceiveEvent))]
 public class PartyGroup : MonoBehaviour
 {
@@ -71,7 +70,7 @@ public class PartyGroup : MonoBehaviour
     public bool AddCharacterToGroup(Character charToAdd_)
     {
         //If the character is already in the total player party
-        if(CharacterManager.globalReference.playerParty.Contains(charToAdd_))
+        if (CharacterManager.globalReference.playerParty.Contains(charToAdd_))
         {
             //Making sure the character isn't already in this group
             if (!this.charactersInParty.Contains(charToAdd_))
@@ -121,7 +120,6 @@ public class PartyGroup : MonoBehaviour
 
                 //Checking the character's combat position so that it doesn't overlap with someone else
                 this.CheckCombatPositionForCharacter(charToAdd_);
-                
                 return true;
             }
         }
@@ -139,7 +137,7 @@ public class PartyGroup : MonoBehaviour
             this.CheckCombatPositionForCharacter(charToAdd_);
             return true;
         }
-
+        
         //If none of the other parameters were met, the character couldn't be added
         return false;
     }
@@ -160,6 +158,46 @@ public class PartyGroup : MonoBehaviour
                     //The character we're checking finds an empty spot using the Set Combat Position function in Combat Stats
                     charToCheck_.charCombatStats.SetCombatPosition();
                 }
+            }
+        }
+    }
+}
+
+//Class used in PartyGroup.cs and SaveLoadManager.cs to save info for a player party
+[System.Serializable]
+public class PartySaveData
+{
+    //The index for which party group this is
+    public int groupIndex;
+    //The combat distance that this party is at
+    public CombatManager.GroupCombatDistance combatDist;
+    //The list of save data for each character in this party
+    public List<CharacterSaveData> partyCharacters;
+    //The tile that this party is currently on
+    public TileInfo tileLocation;
+
+
+    //Constructor function for this class
+    public PartySaveData(PartyGroup groupToSave_)
+    {
+        this.groupIndex = groupToSave_.groupIndex;
+        this.combatDist = groupToSave_.combatDistance;
+        this.tileLocation = groupToSave_.GetComponent<WASDOverworldMovement>().currentTile;
+
+        //Looping through all of the characters in the given party and getting their save data
+        this.partyCharacters = new List<global::CharacterSaveData>();
+        for (int c = 0; c < groupToSave_.charactersInParty.Count; ++c)
+        {
+            //If the current character isn't null, we save it's data
+            if (groupToSave_.charactersInParty[c] != null)
+            {
+                CharacterSaveData charData = new CharacterSaveData(groupToSave_.charactersInParty[c]);
+                this.partyCharacters.Add(charData);
+            }
+            //If the current character slot is null, we add the empty slot
+            else
+            {
+                this.partyCharacters.Add(null);
             }
         }
     }

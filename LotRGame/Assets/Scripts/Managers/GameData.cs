@@ -9,6 +9,7 @@ public class GameData : MonoBehaviour
     public static GameData globalReference;
 
     //Public enum that lets us know what difficulty the player has set the game to
+    [System.Serializable]
     public enum gameDifficulty { Easy, Normal, Hard };
     public gameDifficulty currentDifficulty = gameDifficulty.Normal;
 
@@ -32,6 +33,10 @@ public class GameData : MonoBehaviour
     [HideInInspector]
     public bool allowNewUnlockables = true;
 
+    //The name of the current game folder where our save directory is
+    [HideInInspector]
+    public string saveFolder = "";
+
 
 
     //Function called when this object is initialized
@@ -49,6 +54,14 @@ public class GameData : MonoBehaviour
         {
             globalReference = this;
         }
+    }
+
+
+    //Function called the first frame that this object is alive
+    private void Start()
+    {
+        //Loading in the player preferences
+        SaveLoadManager.globalReference.LoadPlayerPreferences();
     }
 
 
@@ -131,6 +144,13 @@ public class GameData : MonoBehaviour
     }
 
 
+    //Function called externally to set the name of the save folder
+    public void SetSaveFolderName(string saveFolder_)
+    {
+        this.saveFolder = saveFolder_;
+    }
+
+
     //Function called from the New Game screen in the main menu. Starts the process of creating a new map
     public void StartNewGame()
     {
@@ -144,8 +164,68 @@ public class GameData : MonoBehaviour
             this.allowNewUnlockables = false;
         }
 
+        //Making sure our save folder name is valid
+        this.saveFolder = SaveLoadManager.globalReference.CheckFolderName(this.saveFolder);
+
         //Telling the map generator to create a new level instead of loading one from a save
         this.loadType = levelLoadType.GenerateNewLevel;
+
+        //Saving the current save folder name so we know which game was played last. Used for "Continuing"
+        PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
+
+        //Transitioning to the gameplay level
+        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+    }
+
+
+    //Function called from the MainMenu scene to continue the most recent save
+    public void ContinueGame()
+    {
+        //If the most recent save doesn't exist, we're trying to load settings that don't exist
+        if (!PlayerPrefs.HasKey("MostRecentSave"))
+        {
+            Debug.Log("ContinueGame, MostRecentSave doesn't exist");
+            return;
+        }
+        else if(PlayerPrefs.GetString("MostRecentSave") == "")
+        {
+            Debug.Log("ContinueGame, MostRecentSave is empty");
+            return;
+        }
+        else if(!System.IO.Directory.Exists(Application.persistentDataPath + PlayerPrefs.GetString("MostRecentSave")))
+        {
+            Debug.Log("ContinueGame, MostRecentSave folder directory doesn't exist");
+            return;
+        }
+
+        //Loading the folder name for the most recent save so we can "Continue"
+        this.saveFolder = PlayerPrefs.GetString("MostRecentSave");
+
+        //Telling the map generator to load our existing level
+        this.loadType = levelLoadType.LoadLevel;
+
+        //Transitioning to the gameplay level
+        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+    }
+
+
+    //Function called from LoadSavePanel.cs to load a saved game
+    public void LoadSaveFile(string saveFolder_)
+    {
+        //Making sure the given save folder exists
+        if (!System.IO.Directory.Exists(Application.persistentDataPath + saveFolder_))
+        {
+            return;
+        }
+
+        //Setting the most recent save to the given folder
+        PlayerPrefs.SetString("MostRecentSave", saveFolder_);
+
+        //Setting the save folder as our current save
+        this.saveFolder = saveFolder_;
+
+        //Telling the map generator to load our existing level
+        this.loadType = levelLoadType.LoadLevel;
 
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);

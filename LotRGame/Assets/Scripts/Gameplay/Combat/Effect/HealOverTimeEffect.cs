@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class HealOverTimeEffect : Effect
 {
     //What type of magic this damage counts as
@@ -143,7 +144,7 @@ public class HealOverTimeEffect : Effect
         CombatManager.globalReference.ApplyActionThreat(null, damagehealed, true);
         
         //Creating the visual effect for this effect
-        CombatCharacterSprite targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
+        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
 
         //Telling the combat manager to display the damage healed

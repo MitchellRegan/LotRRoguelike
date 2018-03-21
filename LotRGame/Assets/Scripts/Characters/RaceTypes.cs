@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class RaceTypes : MonoBehaviour
 {
     //Enum for the different types of character races

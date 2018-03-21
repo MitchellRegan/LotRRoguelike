@@ -10,8 +10,8 @@ public class CombatManager : MonoBehaviour
     public static CombatManager globalReference;
 
     //Enum for the state of this combat manager to decide what to do on update
-    private enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
-    private combatState currentState = combatState.Wait;
+    public enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
+    public combatState currentState = combatState.Wait;
 
     //The amount of time that has passed while waiting
     private float waitTime = 0;
@@ -60,11 +60,9 @@ public class CombatManager : MonoBehaviour
 
     //Object that's created to display damage on an attacked character's tile
     public DamageText damageTextPrefab;
-
-    //Object that's created when combat is initiated to hold each character's sprite
-    public CombatCharacterSprite characterSpritePrefab;
+    
     //The list of all CombatCharacterSprites for each character and enemy
-    public List<CombatCharacterSprite> characterSpriteList;
+    public List<CharacterSpriteBase> characterSpriteList;
 
     //The object that hilights the acting character
     public Image highlightRing;
@@ -74,6 +72,12 @@ public class CombatManager : MonoBehaviour
 
     //The reference to the Info Display object so we can show what actions are being used
     public InfoDisplay ourInfoDisplay;
+
+    //The loot table for the current encounter
+    private List<EncounterLoot> lootTable;
+
+    //The list of characters who are dead after an attack
+    private List<CharacterSpriteBase> deadCharacterSprites;
 
 
 
@@ -106,10 +110,10 @@ public class CombatManager : MonoBehaviour
 
         //Initializing the active characters list
         this.actingCharacters = new List<Character>();
-
+        this.deadCharacterSprites = new List<CharacterSpriteBase>();
         this.playerCharactersInCombat = new List<Character>();
         this.enemyCharactersInCombat = new List<Character>();
-        this.characterSpriteList = new List<CombatCharacterSprite>();
+        this.characterSpriteList = new List<CharacterSpriteBase>();
     }
 
 
@@ -135,6 +139,20 @@ public class CombatManager : MonoBehaviour
                 //If the timer is up, the state changes to the one that was previously designated
                 if(this.waitTime <= 0)
                 {
+                    //If we have dead character sprites to remove
+                    if (this.deadCharacterSprites.Count > 0)
+                    {
+                        //Looping through all of our dead character sprites to remove and destroy them
+                        foreach (CharacterSpriteBase deadCSprite in this.deadCharacterSprites)
+                        {
+                            this.characterSpriteList.Remove(deadCSprite);
+                            Destroy(deadCSprite.gameObject);
+                        }
+
+                        //Clearing the list of dead character sprites
+                        this.deadCharacterSprites = new List<CharacterSpriteBase>();
+                    }
+
                     //If the current state is player input or action selecting and the state we're switching to is increasing initiative, we hide the character highlight
                     if(this.stateAfterWait == combatState.IncreaseInitiative)
                     {
@@ -187,6 +205,7 @@ public class CombatManager : MonoBehaviour
                 //If the selected character is an enemy
                 else
                 {
+                    //Getting the index for the acting enemy
                     int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
 
@@ -194,24 +213,17 @@ public class CombatManager : MonoBehaviour
                     this.highlightRing.color = this.actingEnemyColor;
                     this.highlightRing.enabled = true;
 
-                    Debug.Log("Combat Manager.Update. Enemies need AI here");
-                    //Resetting this enemy's initiative for now. Can't do much until I get AI in
-                    this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
-                    this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
-                    if (this.actingCharacters.Count == 1)
-                    {
-                        this.actingCharacters.Clear();
-                    }
-                    else
-                    {
-                        this.actingCharacters.RemoveAt(0);
-                    }
-                    this.SetWaitTime(1, combatState.IncreaseInitiative);
+                    //Now we wait for enemy input
+                    this.currentState = combatState.PlayerInput;
+                    //Starting the acting enemy's turn so it can perform its actions
+                    this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
                 }
                 break;
 
             //Calls the unity event for when this combat encounter is over
             case combatState.EndCombat:
+                //Rolling for the encounter loot to give to the player
+                this.GetEncounterLoot();
                 //Creating the event data that we'll pass to the TransitionFade through the EventManager
                 EVTData transitionEvent = new EVTData();
                 //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
@@ -248,12 +260,21 @@ public class CombatManager : MonoBehaviour
             {
                 tile.inActionRange = false;
                 tile.HighlightTile(false);
+
+                //If there's a character sprite on this tile, we make sure it's visible
+                if(tile.objectOnThisTile != null && tile.objectOnThisTile.GetComponent<Character>())
+                {
+                    //Getting the sprite base for the character
+                    CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(tile.objectOnThisTile.GetComponent<Character>());
+                    cSprite.MakeSpritesVisible();
+                }
             }
         }
     }
 
 
     //Function called externally from LandTile.cs to initiate combat
+    [System.Serializable]
     public enum GroupCombatDistance { Far, Medium, Close };
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
@@ -340,6 +361,17 @@ public class CombatManager : MonoBehaviour
 
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
+
+        //Looping through and copying the loot table from the encounter
+        this.lootTable = new List<EncounterLoot>();
+        foreach(EncounterLoot drop in encounter_.lootTable)
+        {
+            EncounterLoot loot = new EncounterLoot();
+            loot.lootItem = drop.lootItem;
+            loot.dropChance = drop.dropChance;
+            loot.stackSizeMinMax = drop.stackSizeMinMax;
+            this.lootTable.Add(loot);
+        }
     }
 
 
@@ -638,7 +670,7 @@ public class CombatManager : MonoBehaviour
     private void CreateCharacterSprites()
     {
         //Making sure there are no more character sprites from previous combats on the screen
-        foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+        foreach(CharacterSpriteBase cSprite in this.characterSpriteList)
         {
             Destroy(cSprite.gameObject);
         }
@@ -648,10 +680,14 @@ public class CombatManager : MonoBehaviour
         foreach(Character playerChar in this.playerCharactersInCombat)
         {
             //Creating a new instance of the character sprite prefab
-            GameObject newCharSprite = GameObject.Instantiate(this.characterSpritePrefab.gameObject);
+            GameObject newCharSprite = GameObject.Instantiate(playerChar.charSprites.allSprites.spriteBase.gameObject);
+            
+            //Getting the CharacterSpriteBase component reference
+            CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
 
-            //Getting the CombatCharacterSprite component reference
-            CombatCharacterSprite charSpriteRef = newCharSprite.GetComponent<CombatCharacterSprite>();
+            //Telling the sprite base to use the given character's sprites
+            newCharSpriteBase.SetSpriteImages(playerChar.charSprites.allSprites, playerChar.charInventory);
+            newCharSpriteBase.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
 
             //Finding the combat tile that the current player character is on
             CombatTile playerTile = this.FindCharactersTile(playerChar);
@@ -659,33 +695,50 @@ public class CombatManager : MonoBehaviour
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
             
-            //Setting the info for the character sprite
-            charSpriteRef.SetSpriteOnTile(playerChar, playerTile.transform.position);
+            //Setting the position for the character sprite
+            newCharSprite.transform.position = playerTile.transform.position;
 
-            //Adding the character sprite to our list
-            this.characterSpriteList.Add(charSpriteRef);
+            //Setting the character that the sprite base represents
+            newCharSpriteBase.ourCharacter = playerChar;
+
+            //Adding the character sprite base to our list
+            this.characterSpriteList.Add(newCharSpriteBase);
         }
 
         //Looping through each enemy character in this combat
         foreach (Character enemyChar in this.enemyCharactersInCombat)
         {
             //Creating a new instance of the character sprite prefab
-            GameObject newCharSprite = GameObject.Instantiate(this.characterSpritePrefab.gameObject);
+            GameObject newCharSprite = GameObject.Instantiate(enemyChar.charSprites.allSprites.spriteBase.gameObject);
 
             //Getting the CombatCharacterSprite component reference
-            CombatCharacterSprite charSpriteRef = newCharSprite.GetComponent<CombatCharacterSprite>();
+            CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
+
+            //Telling the sprite base to use the given character's sprites
+            newCharSpriteBase.SetSpriteImages(enemyChar.charSprites.allSprites, enemyChar.charInventory);
 
             //Finding the combat tile that the current enemy character is on
             CombatTile enemyTile = this.FindCharactersTile(enemyChar);
 
+            //Getting the direction that this enemy initially faces
+            CharacterSpriteBase.DirectionFacing direction = CharacterSpriteBase.DirectionFacing.Left;
+            if (enemyTile.col < (this.combatTileGrid.Count / 2))
+            {
+                direction = CharacterSpriteBase.DirectionFacing.Right;
+            }
+            newCharSpriteBase.SetDirectionFacing(direction);
+
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
 
-            //Setting the info for the character sprite
-            charSpriteRef.SetSpriteOnTile(enemyChar, enemyTile.transform.position);
+            //Setting the position for the character sprite
+            newCharSprite.transform.position = enemyTile.transform.position;
 
-            //Adding the character sprite to our list
-            this.characterSpriteList.Add(charSpriteRef);
+            //Setting the character that the sprite base represents
+            newCharSpriteBase.ourCharacter = enemyChar;
+
+            //Adding the character sprite base to our list
+            this.characterSpriteList.Add(newCharSpriteBase);
         }
 
         //Sorting the sprites so that they appear in front of each other correctly
@@ -693,11 +746,11 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    //Function called externally to get the CombatCharacterSprite component for the given character
-    public CombatCharacterSprite GetCharacterSprite(Character charToLookFor_)
+    //Function called externally to get the CharacterSpriteBase component for the given character
+    public CharacterSpriteBase GetCharacterSprite(Character charToLookFor_)
     {
         //Looping through all of the Character Sprites
-        foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+        foreach(CharacterSpriteBase cSprite in this.characterSpriteList)
         {
             //If we find the character, their sprite is returned
             if(cSprite.ourCharacter == charToLookFor_)
@@ -718,7 +771,7 @@ public class CombatManager : MonoBehaviour
         for(int r = 0; r < this.combatTileGrid[0].Count; ++r)
         {
             //Looping through each character sprite in this combat encounter
-            foreach(CombatCharacterSprite cSprite in this.characterSpriteList)
+            foreach(CharacterSpriteBase cSprite in this.characterSpriteList)
             {
                 //If the character for the current combat sprite is positioned on the row we're checking, we move it to the front
                 if(cSprite.ourCharacter.charCombatStats.gridPositionRow == r)
@@ -801,7 +854,25 @@ public class CombatManager : MonoBehaviour
         //Checking to see if the attacked character is dead
         if(damagedCharTile_.objectOnThisTile.GetComponent<Character>().charPhysState.currentHealth == 0)
         {
-            Debug.Log(damagedCharTile_.objectOnThisTile.name + " is dead!");
+            //If the character is a player character
+            if(this.playerCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
+            {
+                //Updating the quest tracker to see if the dead ally is an escort character
+                QuestTracker.globalReference.CheckForDeadEscortCharacter(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+            }
+            //If the character is an enemy
+            else if(this.enemyCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
+            {
+                //Updating the quest tracker to see if the dead enemy is a quest target
+                QuestTracker.globalReference.UpdateKillQuests(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+            }
+
+            //Getting the character sprite for the dead character
+            CharacterSpriteBase deadSprite = this.GetCharacterSprite(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
+            //Removing the sprite from our list and destroying it
+            this.deadCharacterSprites.Add(deadSprite);
+            //Freeing up the tile that the dead character is on
+            damagedCharTile_.SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
         }
         //Updating the health bars so we can see how much health characters have
         this.UpdateHealthBars();
@@ -893,6 +964,7 @@ public class CombatManager : MonoBehaviour
                     }
                 }
                 //If we get through the loop, that means that all enemies are dead and combat is over
+
                 //Perform the unity event after the action so we can hide some UI elements
                 this.eventAfterActionPerformed.Invoke();
 
@@ -904,7 +976,7 @@ public class CombatManager : MonoBehaviour
 
                 //Clearing the highlighted area showing the previously used action's range
                 this.ClearCombatTileHighlights();
-                this.SetWaitTime(1.5f, combatState.EndCombat);
+                this.SetWaitTime(2.5f, combatState.EndCombat);
             }
         }
     }
@@ -975,7 +1047,11 @@ public class CombatManager : MonoBehaviour
                 //If the slider is filled, this character is added to the acting character list
                 if (this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
                 {
-                    this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+                    //Making sure this character isn't already in the list of acting characters
+                    if (!this.actingCharacters.Contains(this.enemyCharactersInCombat[e]))
+                    {
+                        this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
+                    }
                 }
             }
         }
@@ -1037,6 +1113,37 @@ public class CombatManager : MonoBehaviour
     }
 
 
+    //Function called from EnemyCombatAI_Basic.cs to perform an enemy's action at the given tile
+    public void PerformEnemyActionOnTile(CombatTile tileClicked_, Action enemyAction_)
+    {
+        //If the action being performed is a movement action and the tile chosen isn't empty, nothing happens
+        if(enemyAction_.GetType() == typeof(MoveAction))
+        {
+            if (tileClicked_.objectOnThisTile != null)
+            {
+                return;
+            }
+        }
+        //Tells our info display object to show the name of the action used if it isn't a move action
+        else
+        {
+            this.ourInfoDisplay.StartInfoDisplay(enemyAction_.actionName, enemyAction_.timeToCompleteAction);
+        }
+
+        //Creating a new instance of the action to use
+        GameObject actionInstance = Instantiate(enemyAction_.gameObject);
+
+        //Tells the action to be performed at the tile chosen
+        actionInstance.GetComponent<Action>().PerformAction(tileClicked_);
+
+        //Have this combat manager wait a bit before going back because there could be animations
+        if(this.stateAfterWait != combatState.EndCombat)
+        {
+            this.SetWaitTime(enemyAction_.timeToCompleteAction, combatState.PlayerInput);
+        }
+    }
+
+
     //Function called externally to end the acting character's turn
     public void EndActingCharactersTurn()
     {
@@ -1069,6 +1176,16 @@ public class CombatManager : MonoBehaviour
             this.playerInitiativeSliders[selectedCharIndex].background.color = this.inactivePanelColor;
             //Resetting their initiative slider
             this.playerInitiativeSliders[selectedCharIndex].initiativeSlider.value = 0;
+            //Removing the currently acting character
+            this.actingCharacters.Remove(this.actingCharacters[0]);
+        }
+        else if(this.enemyCharactersInCombat.Contains(this.actingCharacters[0]))
+        {
+            int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
+            //Resetting their initiative slider's color
+            this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
+            //Resetting their initiative slider
+            this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
             //Removing the currently acting character
             this.actingCharacters.Remove(this.actingCharacters[0]);
         }
@@ -1140,6 +1257,75 @@ public class CombatManager : MonoBehaviour
                     targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
                 }
             }
+        }
+    }
+
+
+    //Function called from UpdateHealthBars when all enemies are dead. Rolls the loot table for the encounter
+    private void GetEncounterLoot()
+    {
+        //Getting the reference to the inventory where we put loot
+        Inventory lootInventory = InventoryOpener.globalReference.bagInventory;
+        //Clearing all of the items in the loot inventory
+        for (int i = 0; i < lootInventory.itemSlots.Count; ++i)
+        {
+            //If there is an item in this slot, it's destroyed
+            if(lootInventory.itemSlots[i] != null)
+            {
+                Destroy(lootInventory.itemSlots[i].gameObject);
+                lootInventory.itemSlots[i] = null;
+            }
+        }
+
+        //Looping through all of the items in the loot table
+        foreach(EncounterLoot potentialLoot in this.lootTable)
+        {
+            //Rolling a random number to see if the loot drops
+            float randRoll = Random.Range(0f, 1f);
+            if(randRoll <= potentialLoot.dropChance)
+            {
+                //Creating an instance of the item
+                GameObject objInstance = GameObject.Instantiate(potentialLoot.lootItem.gameObject);
+                Item itemInstance = objInstance.GetComponent<Item>();
+                //Setting the prefab reference for the item
+                itemInstance.itemPrefabRoot = potentialLoot.lootItem.gameObject;
+                //Adding the item to the loot inventory
+                lootInventory.AddItemToInventory(itemInstance);
+
+                //Getting the number of items in the stack
+                int stackSize = Mathf.RoundToInt(Random.Range(potentialLoot.stackSizeMinMax.x, potentialLoot.stackSizeMinMax.y));
+                if (stackSize > 1)
+                {
+                    //Looping through all of the stacked items
+                    for(int s = 0; s < stackSize - 1; ++s)
+                    {
+                        //Creating an instance of the stacked item
+                        GameObject stackObj = GameObject.Instantiate(potentialLoot.lootItem.gameObject);
+                        Item stackItem = stackObj.GetComponent<Item>();
+                        //Setting the prefab reference for the item
+                        stackItem.itemPrefabRoot = potentialLoot.lootItem.gameObject;
+                        //Adding the stack item to the loot inventory
+                        lootInventory.AddItemToInventory(stackItem);
+                    }
+                }
+            }
+        }
+
+        //If the loot inventory has at least 1 item in it, we display the loot UI
+        if(lootInventory.itemSlots[0] != null)
+        {
+            InventoryOpener.globalReference.bagInventoryUIObject.SetActive(true);
+            //Looping through the list of characters in the selected player party until we find one
+            foreach(Character c in CharacterManager.globalReference.selectedGroup.charactersInParty)
+            {
+                if(c != null)
+                {
+                    //Setting the selected character to be the party character whose inventory is displayed
+                    CharacterInventoryUI.partyInventory.selectedCharacterInventory = c.charInventory;
+                    break;
+                }
+            }
+            InventoryOpener.globalReference.partyInventoryUIObject.SetActive(true);
         }
     }
 }

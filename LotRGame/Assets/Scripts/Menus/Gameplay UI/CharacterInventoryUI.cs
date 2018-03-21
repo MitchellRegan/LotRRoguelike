@@ -19,14 +19,18 @@ public class CharacterInventoryUI : MonoBehaviour
     public static CharacterInventoryUI tradeInventory;
 
     //The image that displays this character's combat appearance
-    public Image combatSprite;
+    public GameObject playerSpriteLoc;
+    //The direction that the character sprite base is currently looking in the inventory screen
+    private CharacterSpriteBase.DirectionFacing spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
 
-    //Selected Character Name
+    //Selected Character's Name
     public Text selectedCharacterName;
-    //Selected Character weight
+    //Selected Character's weight
     public Text selectedCharacterWeight;
-    //Selected Character physical armor
+    //Selected Character's physical armor
     public Text selectedCharacterArmorPhysical;
+    //Selected Character's money
+    public Text selectedCharacterWallet;
 
     //Selected Character magic resist
     public Text selectedCharacterResistMagic;
@@ -52,60 +56,19 @@ public class CharacterInventoryUI : MonoBehaviour
 
     //Selected Character inventory items
     public List<Image> slotImages;
-
     
-
-    //Function called when this game object is created
-    private void Awake()
-    {
-        //Sets the static UI references based on the type
-        if(this.inventoryUIType == InventoryType.Party)
-        {
-            //If there is no static party inventory, this one becomes the static reference
-            if(CharacterInventoryUI.partyInventory == null)
-            {
-                CharacterInventoryUI.partyInventory = this;
-            }
-            //If a static party inventory reference exists, this is destroyed
-            else
-            {
-                Destroy(this);
-            }
-        }
-        else if(this.inventoryUIType == InventoryType.Bag)
-        {
-            //If there is no static bag inventory, this one becomes the static reference
-            if (CharacterInventoryUI.bagInventory == null)
-            {
-                CharacterInventoryUI.bagInventory = this;
-            }
-            //If a static bag inventory reference exists, this is destroyed
-            else
-            {
-                Destroy(this);
-            }
-        }
-        else if(this.inventoryUIType == InventoryType.Trade)
-        {
-            //If there is no static trade inventory, this one becomes the static reference
-            if (CharacterInventoryUI.tradeInventory == null)
-            {
-                CharacterInventoryUI.tradeInventory = this;
-            }
-            //If a static trade inventory reference exists, this is destroyed
-            else
-            {
-                Destroy(this);
-            }
-        }
-    }
 	
 
     //Function called when this component is enabled
     private void OnEnable()
     {
+        //If this inventory UI is for the bag/loot inventory
+        if(this.inventoryUIType == InventoryType.Bag)
+        {
+            this.selectedCharacterInventory = InventoryOpener.globalReference.bagInventory;
+        }
         //If there is no selected inventory, this object is immediately disabled
-        if(this.selectedCharacterInventory == null)
+        else if(this.selectedCharacterInventory == null)
         {
             this.gameObject.SetActive(false);
             return;
@@ -144,10 +107,37 @@ public class CharacterInventoryUI : MonoBehaviour
     //Function called to update the inventory images and weight
     public void UpdateImages()
     {
-        //Sets the character combat image
-        if(this.combatSprite != null)
+        //Sets the character image
+        if(this.playerSpriteLoc != null)
         {
-            this.combatSprite.sprite = this.selectedCharacterInventory.GetComponent<Character>().combatSprite;
+            //Finding any child objects on this object to remove a previous player image
+            List<GameObject> allChildren = new List<GameObject>();
+            for(int c = 0; c < this.playerSpriteLoc.transform.childCount; ++c)
+            {
+                allChildren.Add(this.playerSpriteLoc.transform.GetChild(c).gameObject);
+            }
+            //Deleting each child object
+            for(int d = 0; d < allChildren.Count; ++d)
+            {
+                Destroy(allChildren[d].gameObject);
+            }
+
+            //Creating a new sprite base for the selected character
+            GameObject newSpriteBase = GameObject.Instantiate(this.selectedCharacterInventory.GetComponent<Character>().charSprites.allSprites.spriteBase.gameObject);
+
+            //Parenting the sprite base to our sprite location object
+            newSpriteBase.transform.SetParent(this.playerSpriteLoc.transform);
+            newSpriteBase.transform.localPosition = new Vector3();
+            newSpriteBase.transform.localScale = new Vector3(newSpriteBase.transform.localScale.x * this.playerSpriteLoc.transform.localScale.x * 1.2f,
+                                                            newSpriteBase.transform.localScale.y * this.playerSpriteLoc.transform.localScale.y * 1.2f,
+                                                            newSpriteBase.transform.localScale.z * this.playerSpriteLoc.transform.localScale.z);
+
+            //Getting the reference to the sprite base component
+            CharacterSpriteBase charSprite = newSpriteBase.GetComponent<CharacterSpriteBase>();
+            //Setting the character sprite base's sprites
+            Character selectedCharacter = this.selectedCharacterInventory.GetComponent<Character>();
+            charSprite.SetSpriteImages(selectedCharacter.charSprites.allSprites, selectedCharacter.charInventory);
+            charSprite.SetDirectionFacing(this.spriteDirection);
         }
 
         //Sets the character name
@@ -163,10 +153,16 @@ public class CharacterInventoryUI : MonoBehaviour
             this.selectedCharacterWeight.text = "Weight: " + this.selectedCharacterInventory.currentWeight;
         }
 
+        //Sets the money text
+        if(this.selectedCharacterWallet != null)
+        {
+            this.selectedCharacterWallet.text = "" + this.selectedCharacterInventory.wallet + " $";
+        }
+
         //Sets the armor text
         if (this.selectedCharacterArmorPhysical != null)
         {
-            this.selectedCharacterArmorPhysical.text = "Armor: " + this.selectedCharacterInventory.totalPhysicalArmor;
+            this.selectedCharacterArmorPhysical.text = "" + this.selectedCharacterInventory.totalPhysicalArmor;
         }
         //Sets magic resist texts
         if (this.selectedCharacterResistMagic != null)
@@ -523,6 +519,117 @@ public class CharacterInventoryUI : MonoBehaviour
                     c = CharacterManager.globalReference.playerParty.Count;
                 }
             }
+        }
+    }
+
+
+    //Function called externally from the UI buttons. Rotates the sprite base 90 degrees
+    public void RotateSpriteBase(bool rotateRight_)
+    {
+        //If we rotate the sprite base right
+        if(rotateRight_)
+        {
+            //Changing our direction
+            switch(this.spriteDirection)
+            {
+                case CharacterSpriteBase.DirectionFacing.Down:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Right;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Right:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Up;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Up:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Left;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Left:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+                    break;
+            }
+        }
+        //If we rotate the sprite base left
+        else
+        {
+            //Changing our direction
+            switch (this.spriteDirection)
+            {
+                case CharacterSpriteBase.DirectionFacing.Down:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Left;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Right:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Up:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Right;
+                    break;
+                case CharacterSpriteBase.DirectionFacing.Left:
+                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Up;
+                    break;
+            }
+        }
+
+        //Updating our sprite view
+        this.UpdateImages();
+    }
+
+
+    //Function called externally from the UI buttons. Transfers money from this trade character to the party character
+    public void TradeMoney(int amountToTrade_)
+    {
+        //Making sure this inventory isn't the party character inventory, this inventory has money, and there's an open character inventory
+        if(this.inventoryUIType == InventoryType.Party || this.selectedCharacterInventory.wallet == 0 || CharacterInventoryUI.partyInventory == null)
+        {
+            return;
+        }
+
+        int amountToTrade = 0;
+        //If the amount of money to trade is more than this character has, we give everything they have
+        if(this.selectedCharacterInventory.wallet < amountToTrade_)
+        {
+            amountToTrade = this.selectedCharacterInventory.wallet;
+        }
+        //If this character has enough money, we send the full amount
+        else
+        {
+            amountToTrade = amountToTrade_;
+        }
+
+        //Subtracting the correct amount from this character's inventory and adding it to the party character's inventory
+        this.selectedCharacterInventory.wallet -= amountToTrade;
+        CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet += amountToTrade;
+
+        //Updating the money texts for both of the inventor panels
+        if (this.selectedCharacterWallet != null)
+        {
+            this.selectedCharacterWallet.text = "" + this.selectedCharacterInventory.wallet + " $";
+        }
+        if (CharacterInventoryUI.partyInventory.selectedCharacterWallet != null)
+        {
+            CharacterInventoryUI.partyInventory.selectedCharacterWallet.text = "" + CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet + " $";
+        }
+    }
+
+
+    //Function called externally from the UI buttons. Transfers all money from this trade character to the party character
+    public void TradeAllMoney()
+    {
+        //Making sure this inventory isn't the party character inventory, this inventory has money, and there's an open character inventory
+        if (this.inventoryUIType == InventoryType.Party || this.selectedCharacterInventory.wallet == 0 || CharacterInventoryUI.partyInventory == null)
+        {
+            return;
+        }
+
+        //Subtracting the correct amount from this character's inventory and adding it to the party character's inventory
+        CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet += this.selectedCharacterInventory.wallet;
+        this.selectedCharacterInventory.wallet = 0;
+
+        //Updating the money texts for both of the inventor panels
+        if(this.selectedCharacterWallet != null)
+        {
+            this.selectedCharacterWallet.text = "" + this.selectedCharacterInventory.wallet + " $";
+        }
+        if(CharacterInventoryUI.partyInventory.selectedCharacterWallet != null)
+        {
+            CharacterInventoryUI.partyInventory.selectedCharacterWallet.text = "" + CharacterInventoryUI.partyInventory.selectedCharacterInventory.wallet + " $";
         }
     }
 }

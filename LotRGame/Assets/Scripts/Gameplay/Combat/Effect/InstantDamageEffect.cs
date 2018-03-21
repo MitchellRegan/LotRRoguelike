@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class InstantDamageEffect : Effect
 {
     //The type of damage that's inflicted
@@ -109,9 +110,14 @@ public class InstantDamageEffect : Effect
         targetCharacter_.charPhysState.DamageCharacter(totalDamage);
         CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
 
+        //Creating the visual effect for this effect
+        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
+        this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+
+
         //Increasing the threat to the target based on damage dealt
         //If the attack is a crit, ALL enemies have their threat increased for 25% of the damage
-        if(isCrit)
+        if (isCrit)
         {
             //Getting 25% of the damage to pass to all enemies
             int threatForAll = totalDamage / 4;

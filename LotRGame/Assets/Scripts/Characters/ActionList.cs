@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ActionList : MonoBehaviour
 {
     //The list of combat actions that this character has by default
@@ -9,21 +10,27 @@ public class ActionList : MonoBehaviour
 
     //The full list of standard actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> standardActions;
 
     //The full list of secondary actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> secondaryActions;
 
     //The full list of quick actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> quickActions;
 
     //The full list of full-round actions this character has
     [HideInInspector]
+    [System.NonSerialized]
     public List<Action> fullRoundActions;
 
     //The list of all spell actions this character can cast
+    [HideInInspector]
+    [System.NonSerialized]
     public List<SpellAction> allSpellActions;
 
     //Dictionary for all spells that are recharging and how many hours are remaining for until they're ready
@@ -453,9 +460,33 @@ public class ActionList : MonoBehaviour
             this.rechargingSpells.Remove(finishedSpell);
         }
     }
+
+
+    //Function called externally to check if the default action list contains a given action
+    public bool DoesDefaultListContainAction(Action actionToCheck_)
+    {
+        //Looping through all of the actions in our default action list
+        foreach(Action ourAct in this.defaultActions)
+        {
+            //If the action name and description are the same
+            if(ourAct.actionName == actionToCheck_.actionName && ourAct.actionDescription == actionToCheck_.actionDescription)
+            {
+                //If the action is the same type and range
+                if(ourAct.type == actionToCheck_.type && ourAct.range == actionToCheck_.range)
+                {
+                    //We have the same action in our list
+                    return true;
+                }
+            }
+        }
+
+        //If we make it out of the loop without finding the action, we return false
+        return false;
+    }
 }
 
 //Class used in ActionList.cs to handle recharging spells
+[System.Serializable]
 public class SpellRecharge
 {
     //The reference to the spell that's recharging

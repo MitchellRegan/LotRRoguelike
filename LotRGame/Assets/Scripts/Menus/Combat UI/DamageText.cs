@@ -86,6 +86,9 @@ public class DamageText : MonoBehaviour
         }
         this.timeBeforeTextShows += staggerDelay;
 
+        //Setting the text color to black
+        this.ourText.color = Color.black;
+
         //Setting the text for the damage dealt
         this.ourText.text = "" + damageDealt_;
 
