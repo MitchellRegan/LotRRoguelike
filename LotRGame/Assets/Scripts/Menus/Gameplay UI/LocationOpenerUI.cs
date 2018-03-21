@@ -254,9 +254,10 @@ public class LocationOpenerUI : MonoBehaviour
             return;
         }
 
+        //Telling the vendor panel UI which vendor we're displaying
+        VendorPanelUI.globalReference.vendorToDisplay = vendorToDisplay;
+
         //Turning the vendor canvas object on
         this.vendorUICanvas.SetActive(true);
-
-        Debug.Log("Vendor to open: " + vendorToDisplay.buildingName);
     }
 }

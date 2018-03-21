@@ -104,27 +104,209 @@ public class VendorItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             //If the item isn't a quest item, we can sell it
             else
             {
+                //Marking this button as not empty so we can use it
+                this.slotIsEmpty = false;
+
                 //Float to hold the multiplier for this item's value to this vendor
-                .//Need to set this to the vendor's base item value
-                float valueMultiplier = 0f;
+                float valueMultiplier = 0;
 
-                //If the item is food, we multiply it
-                if (buttonItem_.GetType() == typeof(Food))
+                //Bools to determine what components this item has
+                bool isFood = buttonItem_.GetComponent<Food>();
+                bool isWeapon = buttonItem_.GetComponent<Weapon>();
+                bool isArmor = buttonItem_.GetComponent<Armor>();
+
+                //If this button is a player inventory item that we can sell
+                if (this.type == VendorButtonType.Sell)
                 {
-                    .//Need to get a reference to the selected vendor to find their value multipliers
+                    //Bools to determine what item types this vendor accepts
+                    bool acceptNormalItem = VendorPanelUI.globalReference.vendorToDisplay.willBuyNormalItem;
+                    bool acceptFood = VendorPanelUI.globalReference.vendorToDisplay.willBuyFood;
+                    bool acceptWeapon = VendorPanelUI.globalReference.vendorToDisplay.willBuyWeapons;
+                    bool acceptArmor = VendorPanelUI.globalReference.vendorToDisplay.willBuyArmor;
+
+                    //If the item has none of the components and is just a base item
+                    if (!isFood && !isWeapon && !isArmor)
+                    {
+                        //If this vendor accepts normal items, we use the normal item markup
+                        if (acceptNormalItem)
+                        {
+                            valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyNormalItemValueMultiplier;
+                        }
+                        //If this vendor doesn't accept normal items, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item is just food
+                    else if (isFood && !isWeapon && !isArmor)
+                    {
+                        //If this vendor accepts food items, we use the food item markup
+                        if (acceptFood)
+                        {
+                            valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier;
+                        }
+                        //If this vendor doesn't accept food items, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item is just a weapon
+                    else if (!isFood && isWeapon && !isArmor)
+                    {
+                        //If this vendor accepts weapons, we use the weapon item markup
+                        if (acceptWeapon)
+                        {
+                            valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier;
+                        }
+                        //If this vendor doesn't accept weapons, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item is just armor
+                    else if (!isFood && !isWeapon && isArmor)
+                    {
+                        //If this vendor accepts armor items, we use the armor item markup
+                        if (acceptArmor)
+                        {
+                            valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier;
+                        }
+                        //If this vendor doesn't accept armor items, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item is both armor and weapon
+                    else if (!isFood && isWeapon && isArmor)
+                    {
+                        //If this vendor accepts either weapons or armor, we use the highest multiplier
+                        if (acceptWeapon || acceptArmor)
+                        {
+                            //If the weapon multiplier is higher than the armor multiplier, we use it
+                            if (VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier > VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier)
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier;
+                            }
+                            //Otherwise we use the armor multiplier
+                            else
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier;
+                            }
+                        }
+                        //If this vendor doesn't accept weapons or armor, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item is both food and weapon
+                    else if (isFood && isWeapon && !isArmor)
+                    {
+                        //If this vendor accepts either weapons or food, we use the highest multiplier
+                        if (acceptWeapon || acceptFood)
+                        {
+                            //If the weapon multiplier is higher than the food multiplier, we use it
+                            if (VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier > VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier)
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier;
+                            }
+                            //Otherwise we use the food multiplier
+                            else
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier;
+                            }
+                        }
+                        //If this vendor doesn't accept weapons or food, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item is both food and armor
+                    else if (isFood && !isWeapon && isArmor)
+                    {
+                        //If this vendor accepts either food or armor, we use the highest multiplier
+                        if (acceptFood || acceptArmor)
+                        {
+                            //If the weapon multiplier is higher than the armor multiplier, we use it
+                            if (VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier > VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier)
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier;
+                            }
+                            //Otherwise we use the armor multiplier
+                            else
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier;
+                            }
+                        }
+                        //If this vendor doesn't accept food or armor, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                    //If the item has all of the components
+                    else if (isFood && isWeapon && isArmor)
+                    {
+                        //If this vendor accepts either food, weapons, or armor, we use the highest multiplier
+                        if (acceptFood || acceptWeapon || acceptArmor)
+                        {
+                            //If the weapon multiplier is higher than the armor multiplier, we use it
+                            if (VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier > VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier)
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyWeaponValueMultiplier;
+                            }
+                            //Otherwise we use the armor multiplier
+                            else
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyArmorValueMultiplier;
+                            }
+
+                            //If the current multiplier is lower than the food multiplier, we use it instead
+                            if(valueMultiplier < VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier)
+                            {
+                                valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.buyFoodValueMultiplier;
+                            }
+                        }
+                        //If this vendor doesn't accept food, weapons, or armor, this button becomes marked as empty
+                        else
+                        {
+                            this.slotIsEmpty = true;
+                        }
+                    }
+                }
+                //If this button is a vendor item that can be bought
+                else if(this.type == VendorButtonType.Buy)
+                {
+                    //By default the multiplier is the normal item markup
+                    valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.normalItemMarkupMultiplier;
+
+                    //If this item is food, we go with the higher markup
+                    if(isFood && valueMultiplier < VendorPanelUI.globalReference.vendorToDisplay.foodMarkupMultiplier)
+                    {
+                        valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.foodMarkupMultiplier;
+                    }
+
+                    //If this item is a weapon, we go with the higher markup
+                    if(isWeapon && valueMultiplier < VendorPanelUI.globalReference.vendorToDisplay.weaponMarkupMultiplier)
+                    {
+                        valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.weaponMarkupMultiplier;
+                    }
+
+                    //If this item is armor, we go with the higher markup
+                    if (isArmor && valueMultiplier < VendorPanelUI.globalReference.vendorToDisplay.armorMarkupMultiplier)
+                    {
+                        valueMultiplier = VendorPanelUI.globalReference.vendorToDisplay.armorMarkupMultiplier;
+                    }
                 }
 
-                //If the item is a weapon
-                if(buttonItem_.GetType() == typeof(Weapon))
-                {
-
-                }
-
-                //If the item is armor
-                if(buttonItem_.GetType() == typeof(Armor))
-                {
-
-                }
+                //Setting this item's value and value text
+                this.value = Mathf.RoundToInt(buttonItem_.value * valueMultiplier);
+                this.itemValueText.text = "" + this.value;
             }
         }
     }

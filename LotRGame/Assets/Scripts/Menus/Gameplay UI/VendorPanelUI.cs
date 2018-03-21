@@ -8,6 +8,10 @@ public class VendorPanelUI : MonoBehaviour
     //Global static reference for this vendor UI
     public static VendorPanelUI globalReference;
 
+    //The vendor that is currently being displayed
+    [HideInInspector]
+    public Vendor vendorToDisplay;
+
     //Reference to the selected party character for vendor interactions
     private Character selectedCharacter;
 

@@ -42,6 +42,7 @@ public class Vendor
     [Space(8)]
 
     //Bools to determine if this vendor will buy certain item types
+    public bool willBuyNormalItem = true;
     public bool willBuyFood = true;
     public bool willBuyArmor = true;
     public bool willBuyWeapons = true;
@@ -49,6 +50,7 @@ public class Vendor
     [Space(8)]
 
     //The multipliers for how much markdown this vendor buys certain item types
+    public float buyNormalItemValueMultiplier = 1f;
     public float buyFoodValueMultiplier = 1f;
     public float buyArmorValueMultiplier = 1f;
     public float buyWeaponValueMultiplier = 1f;
@@ -56,6 +58,7 @@ public class Vendor
     [Space(8)]
 
     //The multipliers for how much markup this vendor sells certain item types
+    public float normalItemMarkupMultiplier = 1.3f
     public float foodMarkupMultiplier = 1.3f;
     public float armorMarkupMultiplier = 1.3f;
     public float weaponMarkupMultiplier = 1.3f;
