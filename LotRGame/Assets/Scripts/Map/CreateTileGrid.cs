@@ -1443,7 +1443,6 @@ public class CreateTileGrid : MonoBehaviour
             //If this current tile connection isn't empty and one of its tile connections is the tile we're searching for
             if(tileToSearchFor_.connectedTiles[ct] != null && tileToSearchFor_.connectedTiles[ct].connectedTiles.Contains(tileToSearchFor_))
             {
-                Debug.Log("Connection " + ct + " not null");
                 //Getting the index of the tile we're searching for in the connected tile's list of connected tiles
                 int ourTileIndex = tileToSearchFor_.connectedTiles[ct].connectedTiles.IndexOf(tileToSearchFor_);
 

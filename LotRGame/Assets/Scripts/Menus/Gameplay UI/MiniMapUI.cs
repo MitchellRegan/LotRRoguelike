@@ -68,6 +68,7 @@ public class MiniMapUI : MonoBehaviour
                 //Getting the rect transform component for this game object
                 RectTransform ourRect = this.GetComponent<RectTransform>();
 
+                Debug.Log("This is where the minimap is having problems");
                 Debug.Log("Col/Row: " + newTileColRow.col + ", " + newTileColRow.row);
                 Debug.Log("Tile 0,0 pos: " + CreateTileGrid.globalReference.tileGrid[0][0].tilePosition + ", tile type: " + CreateTileGrid.globalReference.tileGrid[0][0].type);
                 Debug.Log("Opposite corner: " + CreateTileGrid.globalReference.tileGrid[CreateTileGrid.globalReference.tileGrid.Count - 1][CreateTileGrid.globalReference.tileGrid[0].Count - 1].tilePosition + ", tile type: " + CreateTileGrid.globalReference.tileGrid[CreateTileGrid.globalReference.tileGrid.Count - 1][CreateTileGrid.globalReference.tileGrid[0].Count - 1].type);
