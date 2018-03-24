@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class OrbitCamera : MonoBehaviour
 {
+    //Static reference to this camera's rotation so the UI compas can rotate
+    public static float directionFacing = 0;
+
     //The amount that's rotated along the x and y axis per frame
     public float xRotationSpeed = 6;
     public float yRotationSpeed = 8;
@@ -29,6 +32,13 @@ public class OrbitCamera : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        //Setting the static rotation variable to this camera's Y rotation
+        directionFacing = (-1 * this.transform.eulerAngles.y) + 90;
+        if(directionFacing < 0)
+        {
+            directionFacing += 360;
+        }
+
         //Only rotates when the activate button is down and the correct mouse buttons are down
         if (Input.GetKey(this.activateButton) && this.leftMouseActivate == Input.GetMouseButton(0) && this.rightMouseActivate == Input.GetMouseButton(1))
         {

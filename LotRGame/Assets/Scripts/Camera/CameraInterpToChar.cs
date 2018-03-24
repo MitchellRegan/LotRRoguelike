@@ -22,6 +22,14 @@ public class CameraInterpToChar : MonoBehaviour
         //Sets the groupToFollow as the selected party group in the character manager
         this.transform.position = CharacterManager.globalReference.selectedGroup.transform.position;
         this.ChangeGroupToFollow();
+
+        //Rotating to face the center of the map
+        int middleRow = CreateTileGrid.globalReference.rows / 2;
+        int middleCol = CreateTileGrid.globalReference.cols / 2;
+        Vector3 middleTilePos = CreateTileGrid.globalReference.tileGrid[middleCol][middleRow].tilePosition;
+
+        //float newRotation = Mathf.Atan2(middleTilePos.x - groupToFollow.transform.position.x, middleTilePos.z - groupToFollow.transform.position.z) * Mathf.Rad2Deg;
+        //this.transform.Rotate(new Vector3(0, newRotation, 0));
 	}
 	
 

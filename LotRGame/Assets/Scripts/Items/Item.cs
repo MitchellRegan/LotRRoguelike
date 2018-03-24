@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Item : MonoBehaviour
 {
+    //The prefab that this object is an instance of
+    [HideInInspector]
+    public GameObject itemPrefabRoot;
+
     //The ID that lets the inventory know when to stack items
     public string itemNameID = "Item";
 
@@ -18,4 +23,7 @@ public class Item : MonoBehaviour
 
     //The weight of each individual item in this stack
     public float kilogramPerUnit = 1;
+
+    //The default value of this item
+    public int value = 0;
 }

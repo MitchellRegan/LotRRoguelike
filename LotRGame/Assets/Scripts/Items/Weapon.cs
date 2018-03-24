@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Item))]
+[System.Serializable]
 public class Weapon : MonoBehaviour
 {
     //Enum for different types of weapons
@@ -15,4 +16,15 @@ public class Weapon : MonoBehaviour
 
     //The list of attack actions that this weapon can perform
     public List<AttackAction> attackList;
+
+    [Space(8)]
+
+    //Bool that determines if this weapon is displayed on the outside of the character's hands
+    public bool overlapCharacterHand = false;
+
+    //The sprite views for this weapon on the character sprite base
+    public SpriteViews weaponSpriteViews;
+
+    //The sprite used mainly for shields to display the reverse side of a weapon
+    public Sprite reverseView = null;
 }
