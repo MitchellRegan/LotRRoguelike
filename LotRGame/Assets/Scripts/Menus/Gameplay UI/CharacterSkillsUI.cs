@@ -61,6 +61,13 @@ public class CharacterSkillsUI : MonoBehaviour
     }
 
 
+    //Function called every frame
+    private void Update()
+    {
+        this.UpdateSliders();
+    }
+
+
     //Function called internally to update all of the sliders to the character's current values
     private void UpdateSliders()
     {

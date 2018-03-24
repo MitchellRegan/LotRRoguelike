@@ -313,39 +313,6 @@ public class CharacterCustomizer : MonoBehaviour
     }
 }
 
-
-public enum SkillList
-{
-    //Combat skills
-    Punching,
-    Daggers,
-    Swords,
-    Axes,
-    Spears,
-    Bows,
-    Improvised,
-
-    //Magic skills
-    HolyMagic,
-    DarkMagic,
-    NatureMagic,
-
-    //Creative
-    Cooking,
-    Healing,
-    Crafting,
-
-    //Survival
-    Foraging,
-    Tracking,
-    Fishing,
-
-    //Tactial
-    Climbing,
-    Hiding,
-    Swimming
-}
-
 //Class used by CharacterCustomizer.cs so we can distinguish which sprite base to use
 [System.Serializable]
 public class CustomizerRaceSpriteBase

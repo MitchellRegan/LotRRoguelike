@@ -18,7 +18,7 @@ public class CombatActionPanelUI : MonoBehaviour
     public Color fullRoundColor;
 
     //The current type of action that we're displaying
-    public Action.ActionType actionTypeShown = Action.ActionType.Standard;
+    public Action.ActionType actionTypeShown = Action.ActionType.Major;
 
     //The list of action buttons that 
     public List<ActionButton> actionButtons;
@@ -129,27 +129,27 @@ public class CombatActionPanelUI : MonoBehaviour
             case 0:
                 this.UpdateActionButtons(actingCharActions.standardActions);
                 this.backgroundImage.color = this.standardColor;
-                this.actionTypeShown = Action.ActionType.Standard;
+                this.actionTypeShown = Action.ActionType.Major;
                 break;
             case 1:
                 this.UpdateActionButtons(actingCharActions.secondaryActions);
                 this.backgroundImage.color = this.secondaryColor;
-                this.actionTypeShown = Action.ActionType.Secondary;
+                this.actionTypeShown = Action.ActionType.Minor;
                 break;
             case 2:
                 this.UpdateActionButtons(actingCharActions.quickActions);
                 this.backgroundImage.color = this.quickColor;
-                this.actionTypeShown = Action.ActionType.Quick;
+                this.actionTypeShown = Action.ActionType.Fast;
                 break;
             case 3:
                 this.UpdateActionButtons(actingCharActions.fullRoundActions);
                 this.backgroundImage.color = this.fullRoundColor;
-                this.actionTypeShown = Action.ActionType.FullRound;
+                this.actionTypeShown = Action.ActionType.Massive;
                 break;
             default:
                 this.UpdateActionButtons(actingCharActions.standardActions);
                 this.backgroundImage.color = this.standardColor;
-                this.actionTypeShown = Action.ActionType.Standard;
+                this.actionTypeShown = Action.ActionType.Major;
                 break;
         }
     }
@@ -209,20 +209,20 @@ public class CombatActionPanelUI : MonoBehaviour
         int actionRange = 0;
         switch(this.actionTypeShown)
         {
-            case Action.ActionType.Standard:
+            case Action.ActionType.Major:
                 actionRange = actingCharacter.charActionList.standardActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.standardActions[actionIndex_].gameObject);
                 //this.selectedAction = actingCharacter.charActionList.standardActions[actionIndex_];
                 break;
-            case Action.ActionType.Secondary:
+            case Action.ActionType.Minor:
                 actionRange = actingCharacter.charActionList.secondaryActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.secondaryActions[actionIndex_].gameObject);
                 break;
-            case Action.ActionType.Quick:
+            case Action.ActionType.Fast:
                 actionRange = actingCharacter.charActionList.quickActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.quickActions[actionIndex_].gameObject);
                 break;
-            case Action.ActionType.FullRound:
+            case Action.ActionType.Massive:
                 actionRange = actingCharacter.charActionList.fullRoundActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.fullRoundActions[actionIndex_].gameObject);
                 break;
@@ -452,18 +452,18 @@ public class CombatActionPanelUI : MonoBehaviour
         //The actions are disabled based on what type was used
         switch(this.selectedAction.type)
         {
-            case Action.ActionType.Standard:
+            case Action.ActionType.Major:
                 this.standardActButton.interactable = false;
                 this.fullRoundActButton.interactable = false;
                 break;
-            case Action.ActionType.Secondary:
+            case Action.ActionType.Minor:
                 this.secondaryActButton.interactable = false;
                 this.fullRoundActButton.interactable = false;
                 break;
-            case Action.ActionType.Quick:
+            case Action.ActionType.Fast:
                 this.quickActButton.interactable = false;
                 break;
-            case Action.ActionType.FullRound:
+            case Action.ActionType.Massive:
                 this.fullRoundActButton.interactable = false;
                 this.standardActButton.interactable = false;
                 this.secondaryActButton.interactable = false;

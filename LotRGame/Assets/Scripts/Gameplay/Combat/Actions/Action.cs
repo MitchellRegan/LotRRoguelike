@@ -17,8 +17,8 @@ public class Action : MonoBehaviour
 
     //Enum for the type of action this is
     [System.Serializable]
-    public enum ActionType { Standard, Secondary, Quick, FullRound };
-    public ActionType type = ActionType.Standard;
+    public enum ActionType { Major, Minor, Fast, Massive };
+    public ActionType type = ActionType.Major;
 
     //The amount of time in seconds that this action takes to be performed
     public float timeToCompleteAction = 3;
