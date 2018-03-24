@@ -106,16 +106,16 @@ public class ActionList : MonoBehaviour
         //Adding the action to the correct list based on its type
         switch (actToAdd_.type)
         {
-            case Action.ActionType.Standard:
+            case Action.ActionType.Major:
                 this.standardActions.Add(actToAdd_);
                 break;
-            case Action.ActionType.Secondary:
+            case Action.ActionType.Minor:
                 this.secondaryActions.Add(actToAdd_);
                 break;
-            case Action.ActionType.Quick:
+            case Action.ActionType.Fast:
                 this.quickActions.Add(actToAdd_);
                 break;
-            case Action.ActionType.FullRound:
+            case Action.ActionType.Massive:
                 this.fullRoundActions.Add(actToAdd_);
                 break;
         }
