@@ -55,7 +55,7 @@ public class TimePanelUI : MonoBehaviour
         //If the current timer is greater than the max time, time is advanced and the current timer is reset
         if(this.currentTimer >= this.gameTimeBeforeHoursAdvance)
         {
-            this.AdvanceTime();
+            this.AdvanceTime(this.hoursAdvancedPerUpdate);
         }
 
         //Setting the text fields to display the correct time
@@ -83,9 +83,15 @@ public class TimePanelUI : MonoBehaviour
 
 
     //Function called externally to jump the timer forward the number of hours given
-    public void AdvanceTime()
+    public void AdvanceTime(int hoursToAdvance_)
     {
-        this.timeOfDay += this.hoursAdvancedPerUpdate;
+        //If the hours to advance are less than 1, nothing happens. THERE IS NO TIME TRAVEL HERE
+        if(hoursToAdvance_ < 1)
+        {
+            return;
+        }
+
+        this.timeOfDay += hoursToAdvance_;
 
         //If the hours are over 24, the day is advanced
         if(this.timeOfDay >= 24)

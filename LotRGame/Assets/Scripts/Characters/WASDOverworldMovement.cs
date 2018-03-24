@@ -14,6 +14,8 @@ public class WASDOverworldMovement : MonoBehaviour
     public float totalTravelTime = 0.75f;
     //The current travel time
     private float currentTravelTime = 0;
+    //The movement cost for the current tile to multiply the travel time by
+    private int currentMoveCost = 1;
     //Bool that, when True, allows this character to interpolate to the correct tile
     private bool isTraveling = false;
 
@@ -78,7 +80,7 @@ public class WASDOverworldMovement : MonoBehaviour
                                             this.tileToTravelTo.elevation - this.currentTile.elevation,
                                             this.tileToTravelTo.tilePosition.z - this.currentTile.tilePosition.z);
             //Multiplying the difference by the percentage of the travel time that's passed
-            distDiff = distDiff * (Time.deltaTime / this.totalTravelTime);
+            distDiff = distDiff * (Time.deltaTime / (this.totalTravelTime * this.currentMoveCost));
 
             //Adding the difference in distance to this character's position
             this.transform.position += distDiff;
@@ -87,7 +89,7 @@ public class WASDOverworldMovement : MonoBehaviour
             this.currentTravelTime += Time.deltaTime;
 
             //If the travel time is higher than the total travel time
-            if (this.currentTravelTime > this.totalTravelTime)
+            if (this.currentTravelTime > (this.totalTravelTime * this.currentMoveCost))
             {
                 //We reset the current travel time
                 this.currentTravelTime = 0;
@@ -174,7 +176,7 @@ public class WASDOverworldMovement : MonoBehaviour
             }
 
             //If the player pressed the forward button
-            if(Input.GetKeyDown(this.forwardButton))
+            if(Input.GetKey(this.forwardButton))
             {
                 //If there's a tile in the forward position
                 if(potentialTravelTiles.ContainsKey(TileDirection.Forward))
@@ -185,12 +187,14 @@ public class WASDOverworldMovement : MonoBehaviour
                     this.isTraveling = true;
                     //Making sure our current travel time is reset
                     this.currentTravelTime = 0;
+                    //Setting the movement cost to multiply travel time
+                    this.currentMoveCost = this.currentTile.movementCost;
                     //Dispatching the time advance event
-                    TimePanelUI.globalReference.AdvanceTime();
+                    TimePanelUI.globalReference.AdvanceTime(this.currentTile.movementCost * TimePanelUI.globalReference.hoursAdvancedPerUpdate);
                 }
             }
             //If the player presses the left button
-            else if(Input.GetKeyDown(this.leftButton))
+            else if(Input.GetKey(this.leftButton))
             {
                 //If there's a tile in the left position
                 if(potentialTravelTiles.ContainsKey(TileDirection.Left))
@@ -201,12 +205,14 @@ public class WASDOverworldMovement : MonoBehaviour
                     this.isTraveling = true;
                     //Making sure our current travel time is reset
                     this.currentTravelTime = 0;
+                    //Setting the movement cost to multiply travel time
+                    this.currentMoveCost = this.currentTile.movementCost;
                     //Dispatching the time advance event
-                    TimePanelUI.globalReference.AdvanceTime();
+                    TimePanelUI.globalReference.AdvanceTime(this.currentTile.movementCost * TimePanelUI.globalReference.hoursAdvancedPerUpdate);
                 }
             }
             //If the player presses the right button
-            else if(Input.GetKeyDown(this.rightButton))
+            else if(Input.GetKey(this.rightButton))
             {
                 //If there's a tile in the right position
                 if(potentialTravelTiles.ContainsKey(TileDirection.Right))
@@ -217,8 +223,10 @@ public class WASDOverworldMovement : MonoBehaviour
                     this.isTraveling = true;
                     //Making sure our current travel time is reset
                     this.currentTravelTime = 0;
+                    //Setting the movement cost to multiply travel time
+                    this.currentMoveCost = this.currentTile.movementCost;
                     //Dispatching the time advance event
-                    TimePanelUI.globalReference.AdvanceTime();
+                    TimePanelUI.globalReference.AdvanceTime(this.currentTile.movementCost * TimePanelUI.globalReference.hoursAdvancedPerUpdate);
                 }
             }
         }
