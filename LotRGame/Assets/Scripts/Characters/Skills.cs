@@ -5,85 +5,112 @@ using UnityEngine;
 [System.Serializable]
 public class Skills : MonoBehaviour
 {
-    //The ability to make food edible
+    //How accurately this character can fight without weapons
     [Range(1, 100)]
-    public int cooking = 30;
-    public int cookingMod = 0;
+    public int unarmed = 30;
+    public int unarmedMod = 0;
 
-    //The ability to heal damage on allies
+    //How accurately this character can use daggers in combat
     [Range(1, 100)]
-    public int healing = 30;
-    public int healingMod = 0;
+    public int daggers = 30;
+    public int daggersMod = 0;
 
-    //The ability to build or fix basic items
+    //How accurately this character can use swords in combat
     [Range(1, 100)]
-    public int crafting = 30;
-    public int craftingMod = 0;
+    public int swords = 30;
+    public int swordsMod = 0;
 
-
-
-    //The ability to search locations for food or items
+    //How accurately this character can use axes and maces in combat
     [Range(1, 100)]
-    public int foraging = 30;
-    public int foragingMod = 0;
+    public int mauls = 30;
+    public int maulsMod = 0;
 
-    //The ability to follow characters or animals
+    //How accurately this character can use pole weapons in combat
     [Range(1, 100)]
-    public int tracking = 30;
-    public int trackingMod = 0;
+    public int poles = 30;
+    public int polesMod = 0;
 
-    //The ability to fish for food in bodies of water
+    //How accurately this character can use bows in combat
     [Range(1, 100)]
-    public int fishing = 30;
-    public int fishingMod = 0;
+    public int bows = 30;
+    public int bowsMod = 0;
 
 
-
-    //The ability to climb ropes, ladders, rocky walls, etc
+    //How accurately this character can use arcane magic in combat
     [Range(1, 100)]
-    public int climbing = 30;
-    public int climbingMod = 0;
+    public int arcaneMagic = 30;
+    public int arcaneMagicMod = 0;
 
-    //The ability to avoid being seen by enemies
+    //How accurately this character can use holy magic spells in combat
     [Range(1, 100)]
-    public int hiding = 30;
-    public int hidingMod = 0;
+    public int holyMagic = 30;
+    public int holyMagicMod = 0;
 
-    //The ability to not-drown
+    //How accurately this character can use dark magic spells in combat
     [Range(1, 100)]
-    public int swimming = 30;
-    public int swimmingMod = 0;
+    public int darkMagic = 30;
+    public int darkMagicMod = 0;
+
+    //How accurately this character can use fire magic in combat
+    [Range(1, 100)]
+    public int fireMagic = 30;
+    public int fireMagicMod = 0;
+
+    //How accurately this character can use water magic in combat
+    [Range(1, 100)]
+    public int waterMagic = 30;
+    public int waterMagicMod = 0;
+
+    //How accurately this character can use wind magic in combat
+    [Range(1, 100)]
+    public int windMagic = 30;
+    public int windMagicMod = 0;
+
+    //How accurately this character can use electric magic in combat
+    [Range(1, 100)]
+    public int electricMagic = 30;
+    public int electricMagicMod = 0;
+
+    //How accurately this character can use stone magic in combat
+    [Range(1, 100)]
+    public int stoneMagic = 30;
+    public int stoneMagicMod = 0;
+
+
+
+    //The ability to forage, hunt/track, and fish in the wilderness
+    [Range(1, 100)]
+    public int survivalist = 30;
+    public int survivalistMod = 0;
+
+    //The ability to barter at shops and perform in cities
+    [Range(1, 100)]
+    public int social = 30;
+    public int socialMod = 0;
 }
 
 //Enum used to reference each player skill
 public enum SkillList
 {
     //Combat skills
-    Punching,
+    Unarmed,
     Daggers,
     Swords,
-    Axes,
-    Spears,
+    Mauls,
+    Poles,
     Bows,
-    Improvised,
 
     //Magic skills
+    ArcaneMagic,
     HolyMagic,
     DarkMagic,
-    NatureMagic,
+    FireMagic,
+    WaterMagic,
+    WindMagic,
+    ElectricMagic,
+    StoneMagic,
 
-    //Creative
-    Cooking,
-    Healing,
-    Crafting,
-
-    //Survival
-    Foraging,
-    Tracking,
-    Fishing,
-
-    //Tactial
-    Climbing,
-    Hiding,
-    Swimming
+    //Non-combat skills
+    Survivalist,
+    Social
 }

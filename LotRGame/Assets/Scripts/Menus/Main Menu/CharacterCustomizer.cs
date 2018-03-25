@@ -45,29 +45,24 @@ public class CharacterCustomizer : MonoBehaviour
     [Space(8)]
 
     //Reference to the text that shows the allocated points for each skill
-    public Text punchingPointText;
+    public Text unarmedPointText;
     public Text daggersPointText;
     public Text swordsPointText;
-    public Text axesPointText;
-    public Text spearsPointText;
+    public Text maulsPointText;
+    public Text polesPointText;
     public Text bowsPointText;
-    public Text improvisedPointText;
 
+    public Text arcaneMagicPointText;
     public Text holyMagicPointText;
     public Text darkMagicPointText;
-    public Text natureMagicPointText;
+    public Text fireMagicPointText;
+    public Text waterMagicPointText;
+    public Text windMagicPointText;
+    public Text electricMagicPointText;
+    public Text stoneMagicPointText;
 
-    public Text cookingPointText;
-    public Text healingPointText;
-    public Text craftingPointText;
-
-    public Text foragingPointText;
-    public Text trackingPointText;
-    public Text fishingPointText;
-
-    public Text climbingPointText;
-    public Text hidingPointText;
-    public Text swimmingPointText;
+    public Text survivalistPointText;
+    public Text socialPointText;
 
 
 
@@ -80,29 +75,24 @@ public class CharacterCustomizer : MonoBehaviour
         //Initializing the allocated skill dictionary
         this.allocatedSkillPoints = new Dictionary<SkillList, int>();
 
-        this.allocatedSkillPoints.Add(SkillList.Punching, 0);
+        this.allocatedSkillPoints.Add(SkillList.Unarmed, 0);
         this.allocatedSkillPoints.Add(SkillList.Daggers, 0);
         this.allocatedSkillPoints.Add(SkillList.Swords, 0);
-        this.allocatedSkillPoints.Add(SkillList.Axes, 0);
-        this.allocatedSkillPoints.Add(SkillList.Spears, 0);
+        this.allocatedSkillPoints.Add(SkillList.Mauls, 0);
+        this.allocatedSkillPoints.Add(SkillList.Poles, 0);
         this.allocatedSkillPoints.Add(SkillList.Bows, 0);
-        this.allocatedSkillPoints.Add(SkillList.Improvised, 0);
 
+        this.allocatedSkillPoints.Add(SkillList.ArcaneMagic, 0);
         this.allocatedSkillPoints.Add(SkillList.HolyMagic, 0);
         this.allocatedSkillPoints.Add(SkillList.DarkMagic, 0);
-        this.allocatedSkillPoints.Add(SkillList.NatureMagic, 0);
+        this.allocatedSkillPoints.Add(SkillList.FireMagic, 0);
+        this.allocatedSkillPoints.Add(SkillList.WaterMagic, 0);
+        this.allocatedSkillPoints.Add(SkillList.WindMagic, 0);
+        this.allocatedSkillPoints.Add(SkillList.ElectricMagic, 0);
+        this.allocatedSkillPoints.Add(SkillList.StoneMagic, 0);
 
-        this.allocatedSkillPoints.Add(SkillList.Cooking, 0);
-        this.allocatedSkillPoints.Add(SkillList.Healing, 0);
-        this.allocatedSkillPoints.Add(SkillList.Crafting, 0);
-
-        this.allocatedSkillPoints.Add(SkillList.Foraging, 0);
-        this.allocatedSkillPoints.Add(SkillList.Tracking, 0);
-        this.allocatedSkillPoints.Add(SkillList.Fishing, 0);
-
-        this.allocatedSkillPoints.Add(SkillList.Climbing, 0);
-        this.allocatedSkillPoints.Add(SkillList.Hiding, 0);
-        this.allocatedSkillPoints.Add(SkillList.Swimming, 0);
+        this.allocatedSkillPoints.Add(SkillList.Survivalist, 0);
+        this.allocatedSkillPoints.Add(SkillList.Social, 0);
 
         //Updating all of our text to show the points
         this.UpdateText();
@@ -287,29 +277,24 @@ public class CharacterCustomizer : MonoBehaviour
         this.remainingPointsText.text = "" + this.currentPoints;
 
         //Displaying all of the allocated skill points
-        this.punchingPointText.text = "" + this.allocatedSkillPoints[SkillList.Punching];
+        this.unarmedPointText.text = "" + this.allocatedSkillPoints[SkillList.Unarmed];
         this.daggersPointText.text = "" + this.allocatedSkillPoints[SkillList.Daggers];
         this.swordsPointText.text = "" + this.allocatedSkillPoints[SkillList.Swords];
-        this.axesPointText.text = "" + this.allocatedSkillPoints[SkillList.Axes];
-        this.spearsPointText.text = "" + this.allocatedSkillPoints[SkillList.Spears];
+        this.maulsPointText.text = "" + this.allocatedSkillPoints[SkillList.Mauls];
+        this.polesPointText.text = "" + this.allocatedSkillPoints[SkillList.Poles];
         this.bowsPointText.text = "" + this.allocatedSkillPoints[SkillList.Bows];
-        this.improvisedPointText.text = "" + this.allocatedSkillPoints[SkillList.Improvised];
 
+        this.arcaneMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.ArcaneMagic];
         this.holyMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.HolyMagic];
         this.darkMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.DarkMagic];
-        this.natureMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.NatureMagic];
+        this.fireMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.FireMagic];
+        this.waterMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.WaterMagic];
+        this.windMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.WindMagic];
+        this.electricMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.ElectricMagic];
+        this.stoneMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.StoneMagic];
 
-        this.cookingPointText.text = "" + this.allocatedSkillPoints[SkillList.Cooking];
-        this.healingPointText.text = "" + this.allocatedSkillPoints[SkillList.Healing];
-        this.craftingPointText.text = "" + this.allocatedSkillPoints[SkillList.Crafting];
-
-        this.foragingPointText.text = "" + this.allocatedSkillPoints[SkillList.Foraging];
-        this.trackingPointText.text = "" + this.allocatedSkillPoints[SkillList.Tracking];
-        this.fishingPointText.text = "" + this.allocatedSkillPoints[SkillList.Fishing];
-
-        this.climbingPointText.text = "" + this.allocatedSkillPoints[SkillList.Climbing];
-        this.hidingPointText.text = "" + this.allocatedSkillPoints[SkillList.Hiding];
-        this.swimmingPointText.text = "" + this.allocatedSkillPoints[SkillList.Swimming];
+        this.survivalistPointText.text = "" + this.allocatedSkillPoints[SkillList.Survivalist];
+        this.socialPointText.text = "" + this.allocatedSkillPoints[SkillList.Social];
     }
 }
 

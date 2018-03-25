@@ -381,8 +381,8 @@ public class CombatActionPanelUI : MonoBehaviour
                         case AttackDamage.DamageType.Physical:
                             this.selectedPanelDetails.damageText.text += " Physical";
                             break;
-                        case AttackDamage.DamageType.Magic:
-                            this.selectedPanelDetails.damageText.text += " Magic";
+                        case AttackDamage.DamageType.Arcane:
+                            this.selectedPanelDetails.damageText.text += " Arcane";
                             break;
                         case AttackDamage.DamageType.Fire:
                             this.selectedPanelDetails.damageText.text += " Fire";
@@ -396,8 +396,8 @@ public class CombatActionPanelUI : MonoBehaviour
                         case AttackDamage.DamageType.Wind:
                             this.selectedPanelDetails.damageText.text += " Wind";
                             break;
-                        case AttackDamage.DamageType.Rock:
-                            this.selectedPanelDetails.damageText.text += " Rock";
+                        case AttackDamage.DamageType.Stone:
+                            this.selectedPanelDetails.damageText.text += " Stone";
                             break;
                         case AttackDamage.DamageType.Holy:
                             this.selectedPanelDetails.damageText.text += " Holy";

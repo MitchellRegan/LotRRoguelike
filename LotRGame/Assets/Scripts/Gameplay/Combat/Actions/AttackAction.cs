@@ -6,7 +6,7 @@ using UnityEngine;
 public class AttackAction : Action
 {
     //The skill used for determining accuracy
-    public Weapon.WeaponType weaponSkillUsed = Weapon.WeaponType.Punching;
+    public Weapon.WeaponType weaponSkillUsed = Weapon.WeaponType.Unarmed;
 
     //Enum that determines how enemy evasion and armor affects the chance of this attack hitting
     public enum attackTouchType { Regular, IgnoreEvasion, IgnoreArmor, IgnoreEvasionAndArmor};
@@ -143,35 +143,47 @@ public class AttackAction : Action
         //Adding the correct skill modifier of the acting character to their hit roll
         switch (this.weaponSkillUsed)
         {
-            case Weapon.WeaponType.Punching:
-                hitRoll += actingChar.charCombatStats.punching + actingChar.charCombatStats.punchingMod;
+            case Weapon.WeaponType.Unarmed:
+                hitRoll += actingChar.charSkills.unarmed + actingChar.charSkills.unarmedMod;
                 break;
             case Weapon.WeaponType.Sword:
-                hitRoll += actingChar.charCombatStats.swords + actingChar.charCombatStats.swordsMod;
+                hitRoll += actingChar.charSkills.swords + actingChar.charSkills.swordsMod;
                 break;
             case Weapon.WeaponType.Dagger:
-                hitRoll += actingChar.charCombatStats.daggers + actingChar.charCombatStats.daggersMod;
+                hitRoll += actingChar.charSkills.daggers + actingChar.charSkills.daggersMod;
                 break;
-            case Weapon.WeaponType.Axe:
-                hitRoll += actingChar.charCombatStats.axes + actingChar.charCombatStats.axesMod;
+            case Weapon.WeaponType.Maul:
+                hitRoll += actingChar.charSkills.mauls + actingChar.charSkills.maulsMod;
                 break;
-            case Weapon.WeaponType.Spear:
-                hitRoll += actingChar.charCombatStats.spears + actingChar.charCombatStats.spearsMod;
+            case Weapon.WeaponType.Pole:
+                hitRoll += actingChar.charSkills.poles + actingChar.charSkills.polesMod;
                 break;
             case Weapon.WeaponType.Bow:
-                hitRoll += actingChar.charCombatStats.bows + actingChar.charCombatStats.bowsMod;
+                hitRoll += actingChar.charSkills.bows + actingChar.charSkills.bowsMod;
                 break;
-            case Weapon.WeaponType.Improvised:
-                hitRoll += actingChar.charCombatStats.improvised + actingChar.charCombatStats.improvisedMod;
+            case Weapon.WeaponType.ArcaneMagic:
+                hitRoll += actingChar.charSkills.arcaneMagic + actingChar.charSkills.arcaneMagicMod;
                 break;
             case Weapon.WeaponType.HolyMagic:
-                hitRoll += actingChar.charCombatStats.holyMagic + actingChar.charCombatStats.holyMagicMod;
+                hitRoll += actingChar.charSkills.holyMagic + actingChar.charSkills.holyMagicMod;
                 break;
             case Weapon.WeaponType.DarkMagic:
-                hitRoll += actingChar.charCombatStats.darkMagic + actingChar.charCombatStats.darkMagicMod;
+                hitRoll += actingChar.charSkills.darkMagic + actingChar.charSkills.darkMagicMod;
                 break;
-            case Weapon.WeaponType.NatureMagic:
-                hitRoll += actingChar.charCombatStats.natureMagic + actingChar.charCombatStats.natureMagicMod;
+            case Weapon.WeaponType.FireMagic:
+                hitRoll += actingChar.charSkills.fireMagic + actingChar.charSkills.fireMagicMod;
+                break;
+            case Weapon.WeaponType.WaterMagic:
+                hitRoll += actingChar.charSkills.waterMagic + actingChar.charSkills.waterMagicMod;
+                break;
+            case Weapon.WeaponType.WindMagic:
+                hitRoll += actingChar.charSkills.windMagic + actingChar.charSkills.windMagicMod;
+                break;
+            case Weapon.WeaponType.ElectricMagic:
+                hitRoll += actingChar.charSkills.electricMagic + actingChar.charSkills.electricMagicMod;
+                break;
+            case Weapon.WeaponType.StoneMagic:
+                hitRoll += actingChar.charSkills.stoneMagic + actingChar.charSkills.stoneMagicMod;
                 break;
         }
 
@@ -234,14 +246,14 @@ public class AttackAction : Action
 
         //The total amount of damage for each type that will be dealt with this attack
         int physDamage = 0;
-        int magicDamage = 0;
+        int arcaneDamage = 0;
+        int holyDamage = 0;
+        int darkDamage = 0;
         int fireDamage = 0;
         int waterDamage = 0;
         int electricDamage = 0;
         int windDamage = 0;
-        int rockDamage = 0;
-        int holyDamage = 0;
-        int darkDamage = 0;
+        int stoneDamage = 0;
 
         //Looping through each damage type for this attack
         foreach(AttackDamage atk in this.damageDealt)
@@ -265,8 +277,8 @@ public class AttackAction : Action
                 case AttackDamage.DamageType.Physical:
                     physDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Magic:
-                    magicDamage += atkDamage * critMultiplier;
+                case AttackDamage.DamageType.Arcane:
+                    arcaneDamage += atkDamage * critMultiplier;
                     break;
                 case AttackDamage.DamageType.Holy:
                     holyDamage += atkDamage * critMultiplier;
@@ -286,16 +298,16 @@ public class AttackAction : Action
                 case AttackDamage.DamageType.Wind:
                     windDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Rock:
-                    rockDamage += atkDamage * critMultiplier;
+                case AttackDamage.DamageType.Stone:
+                    arcaneDamage += atkDamage * critMultiplier;
                     break;
             }
         }
 
         //Subtracting the defending character's magic resistances 
-        if (magicDamage > 0)
+        if (arcaneDamage > 0)
         {
-            magicDamage -= defendingChar.charInventory.totalMagicResist;
+            arcaneDamage -= defendingChar.charInventory.totalArcaneResist;
         }
         if(fireDamage > 0)
         {
@@ -313,9 +325,9 @@ public class AttackAction : Action
         {
             windDamage -= defendingChar.charInventory.totalWindResist;
         }
-        if (rockDamage > 0)
+        if (stoneDamage > 0)
         {
-            rockDamage -= defendingChar.charInventory.totalRockResist;
+            stoneDamage -= defendingChar.charInventory.totalStoneResist;
         }
         if (holyDamage > 0)
         {
@@ -330,8 +342,8 @@ public class AttackAction : Action
         defendingChar.charPhysState.DamageCharacter(physDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, physDamage, CombatManager.DamageType.Physical, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(magicDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, magicDamage, CombatManager.DamageType.Magic, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(arcaneDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, arcaneDamage, CombatManager.DamageType.Arcane, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(fireDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, fireDamage, CombatManager.DamageType.Fire, targetTile_, isCrit);
@@ -345,8 +357,8 @@ public class AttackAction : Action
         defendingChar.charPhysState.DamageCharacter(electricDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, electricDamage, CombatManager.DamageType.Electric, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(rockDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, rockDamage, CombatManager.DamageType.Rock, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(stoneDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, stoneDamage, CombatManager.DamageType.Stone, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(holyDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, holyDamage, CombatManager.DamageType.Holy, targetTile_, isCrit);
@@ -356,8 +368,8 @@ public class AttackAction : Action
 
         //Increasing the threat to the target based on damage dealt
         int totalDamage = 0;
-        totalDamage += physDamage + magicDamage;//Adding physical and magical damage
-        totalDamage += fireDamage + waterDamage + windDamage + electricDamage + rockDamage;//Adding elemental damage
+        totalDamage += physDamage + arcaneDamage;//Adding physical and magical damage
+        totalDamage += fireDamage + waterDamage + windDamage + electricDamage + stoneDamage;//Adding elemental damage
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
 
         //If the attack crit, ALL enemies have their threat increased for 25% of the damage
@@ -695,7 +707,7 @@ public class AttackAction : Action
 public class AttackDamage
 {
     //The type of damage that's inflicted
-    public enum DamageType { Physical, Magic, Fire, Water, Electric, Wind, Rock, Holy, Dark };
+    public enum DamageType { Physical, Arcane, Fire, Water, Electric, Wind, Stone, Holy, Dark };
     public DamageType type = DamageType.Physical;
 
     //The amount of damage inflicted before dice rolls

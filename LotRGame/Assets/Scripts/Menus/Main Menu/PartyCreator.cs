@@ -246,29 +246,24 @@ public class PartyCreator : MonoBehaviour
                 this.newPartyCharacters[c].sex = this.allCharacterCustomizers[c].sex;
 
                 //Adding all of the allocated skill points to the designated skills
-                this.newPartyCharacters[c].charCombatStats.punching += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Punching];
-                this.newPartyCharacters[c].charCombatStats.daggers += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Daggers];
-                this.newPartyCharacters[c].charCombatStats.swords += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swords];
-                this.newPartyCharacters[c].charCombatStats.axes += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Axes];
-                this.newPartyCharacters[c].charCombatStats.spears += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Spears];
-                this.newPartyCharacters[c].charCombatStats.bows += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Bows];
-                this.newPartyCharacters[c].charCombatStats.improvised += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Improvised];
+                this.newPartyCharacters[c].charSkills.unarmed += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Unarmed];
+                this.newPartyCharacters[c].charSkills.daggers += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Daggers];
+                this.newPartyCharacters[c].charSkills.swords += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swords];
+                this.newPartyCharacters[c].charSkills.mauls += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Mauls];
+                this.newPartyCharacters[c].charSkills.poles += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Poles];
+                this.newPartyCharacters[c].charSkills.bows += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Bows];
 
-                this.newPartyCharacters[c].charCombatStats.holyMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.HolyMagic];
-                this.newPartyCharacters[c].charCombatStats.darkMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.DarkMagic];
-                this.newPartyCharacters[c].charCombatStats.natureMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.NatureMagic];
+                this.newPartyCharacters[c].charSkills.arcaneMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.ArcaneMagic];
+                this.newPartyCharacters[c].charSkills.holyMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.HolyMagic];
+                this.newPartyCharacters[c].charSkills.darkMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.DarkMagic];
+                this.newPartyCharacters[c].charSkills.fireMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.FireMagic];
+                this.newPartyCharacters[c].charSkills.waterMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.WaterMagic];
+                this.newPartyCharacters[c].charSkills.windMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.WindMagic];
+                this.newPartyCharacters[c].charSkills.electricMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.ElectricMagic];
+                this.newPartyCharacters[c].charSkills.stoneMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.StoneMagic];
 
-                this.newPartyCharacters[c].charSkills.cooking += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Cooking];
-                this.newPartyCharacters[c].charSkills.healing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Healing];
-                this.newPartyCharacters[c].charSkills.crafting += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Crafting];
-
-                this.newPartyCharacters[c].charSkills.foraging += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Foraging];
-                this.newPartyCharacters[c].charSkills.tracking += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Tracking];
-                this.newPartyCharacters[c].charSkills.fishing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Fishing];
-
-                this.newPartyCharacters[c].charSkills.climbing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Climbing];
-                this.newPartyCharacters[c].charSkills.hiding += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Hiding];
-                this.newPartyCharacters[c].charSkills.swimming += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swimming];
+                this.newPartyCharacters[c].charSkills.survivalist += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Survivalist];
+                this.newPartyCharacters[c].charSkills.social += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Social];
             }
 
 
