@@ -257,6 +257,7 @@ public class Character : MonoBehaviour
         this.charSkills.mauls = saveData_.mauls;
         this.charSkills.poles = saveData_.poles;
         this.charSkills.bows = saveData_.bows;
+        this.charSkills.shields = saveData_.shields;
         this.charSkills.arcaneMagic = saveData_.arcaneMagic;
         this.charSkills.holyMagic = saveData_.holyMagic;
         this.charSkills.darkMagic = saveData_.darkMagic;
@@ -349,6 +350,7 @@ public class CharacterSaveData
     public int mauls = 0;
     public int poles = 0;
     public int bows = 0;
+    public int shields = 0;
     public int arcaneMagic = 0;
     public int holyMagic = 0;
     public int darkMagic = 0;
@@ -409,6 +411,7 @@ public class CharacterSaveData
         this.mauls = characterToSave_.charSkills.mauls;
         this.poles = characterToSave_.charSkills.poles;
         this.bows = characterToSave_.charSkills.bows;
+        this.shields = characterToSave_.charSkills.shields;
         this.arcaneMagic = characterToSave_.charSkills.arcaneMagic;
         this.holyMagic = characterToSave_.charSkills.holyMagic;
         this.darkMagic = characterToSave_.charSkills.darkMagic;

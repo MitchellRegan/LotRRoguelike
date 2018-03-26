@@ -39,6 +39,7 @@ public class CharacterGenerator : MonoBehaviour
     public Vector2 mauls = new Vector2(10, 50);
     public Vector2 poles = new Vector2(10, 50);
     public Vector2 bows = new Vector2(10, 50);
+    public Vector2 shields = new Vector2(10, 50);
 
     public Vector2 arcaneMagic = new Vector2(10, 50);
     public Vector2 holyMagic = new Vector2(10, 50);
@@ -146,6 +147,7 @@ public class CharacterGenerator : MonoBehaviour
         characterSkillsRef.mauls = Mathf.RoundToInt(Random.Range(this.mauls.x, this.mauls.y));
         characterSkillsRef.poles = Mathf.RoundToInt(Random.Range(this.poles.x, this.poles.y));
         characterSkillsRef.bows = Mathf.RoundToInt(Random.Range(this.bows.x, this.bows.y));
+        characterSkillsRef.shields = Mathf.RoundToInt(Random.Range(this.shields.x, this.shields.y));
 
         characterSkillsRef.arcaneMagic = Mathf.RoundToInt(Random.Range(this.arcaneMagic.x, this.arcaneMagic.y));
         characterSkillsRef.holyMagic = Mathf.RoundToInt(Random.Range(this.holyMagic.x, this.holyMagic.y));

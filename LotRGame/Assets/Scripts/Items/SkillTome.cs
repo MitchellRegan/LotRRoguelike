@@ -109,6 +109,9 @@ public class SkillTome : Item
             case SkillList.Bows:
                 return characterRef_.charSkills.bows;
 
+            case SkillList.Shields:
+                return characterRef_.charSkills.shields;
+
 
 
             case SkillList.ArcaneMagic:

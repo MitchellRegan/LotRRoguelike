@@ -51,6 +51,7 @@ public class CharacterCustomizer : MonoBehaviour
     public Text maulsPointText;
     public Text polesPointText;
     public Text bowsPointText;
+    public Text shieldsPointText;
 
     public Text arcaneMagicPointText;
     public Text holyMagicPointText;
@@ -81,6 +82,7 @@ public class CharacterCustomizer : MonoBehaviour
         this.allocatedSkillPoints.Add(SkillList.Mauls, 0);
         this.allocatedSkillPoints.Add(SkillList.Poles, 0);
         this.allocatedSkillPoints.Add(SkillList.Bows, 0);
+        this.allocatedSkillPoints.Add(SkillList.Shields, 0);
 
         this.allocatedSkillPoints.Add(SkillList.ArcaneMagic, 0);
         this.allocatedSkillPoints.Add(SkillList.HolyMagic, 0);
@@ -283,6 +285,7 @@ public class CharacterCustomizer : MonoBehaviour
         this.maulsPointText.text = "" + this.allocatedSkillPoints[SkillList.Mauls];
         this.polesPointText.text = "" + this.allocatedSkillPoints[SkillList.Poles];
         this.bowsPointText.text = "" + this.allocatedSkillPoints[SkillList.Bows];
+        this.shieldsPointText.text = "" + this.allocatedSkillPoints[SkillList.Shields];
 
         this.arcaneMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.ArcaneMagic];
         this.holyMagicPointText.text = "" + this.allocatedSkillPoints[SkillList.HolyMagic];

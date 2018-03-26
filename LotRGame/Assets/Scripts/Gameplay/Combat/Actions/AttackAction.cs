@@ -161,6 +161,9 @@ public class AttackAction : Action
             case Weapon.WeaponType.Bow:
                 hitRoll += actingChar.charSkills.bows + actingChar.charSkills.bowsMod;
                 break;
+            case Weapon.WeaponType.Shield:
+                hitRoll += actingChar.charSkills.shields + actingChar.charSkills.shieldsMod;
+                break;
             case Weapon.WeaponType.ArcaneMagic:
                 hitRoll += actingChar.charSkills.arcaneMagic + actingChar.charSkills.arcaneMagicMod;
                 break;

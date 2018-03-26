@@ -7,7 +7,7 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     //Enum for different types of weapons
-    public enum WeaponType {Unarmed, Sword, Dagger, Maul, Pole, Bow, ArcaneMagic, HolyMagic, DarkMagic, FireMagic, WaterMagic, WindMagic, ElectricMagic, StoneMagic};
+    public enum WeaponType {Unarmed, Sword, Dagger, Maul, Pole, Bow, Shield, ArcaneMagic, HolyMagic, DarkMagic, FireMagic, WaterMagic, WindMagic, ElectricMagic, StoneMagic};
 
     //Enum for the number of hands it takes to wield a given weapon
     public enum WeaponSize { OneHand, TwoHands };

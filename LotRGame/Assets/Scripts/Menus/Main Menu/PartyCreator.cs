@@ -252,6 +252,7 @@ public class PartyCreator : MonoBehaviour
                 this.newPartyCharacters[c].charSkills.mauls += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Mauls];
                 this.newPartyCharacters[c].charSkills.poles += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Poles];
                 this.newPartyCharacters[c].charSkills.bows += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Bows];
+                this.newPartyCharacters[c].charSkills.shields += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Shields];
 
                 this.newPartyCharacters[c].charSkills.arcaneMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.ArcaneMagic];
                 this.newPartyCharacters[c].charSkills.holyMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.HolyMagic];

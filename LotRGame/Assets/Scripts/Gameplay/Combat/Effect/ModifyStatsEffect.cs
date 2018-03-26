@@ -218,6 +218,20 @@ public class ModifyStatsEffect : Effect
                     }
                     break;
 
+                //Shields
+                case StatModifier.StatName.Shields:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charSkills.shieldsMod += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charSkills.shieldsMod -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
                 //Arcane magic
                 case StatModifier.StatName.ArcaneMagic:
                     //If we're adding the modifier
@@ -585,6 +599,7 @@ public class StatModifier
         Mauls,
         Poles,
         Bows,
+        Shields,
 
         ArcaneMagic,
         HolyMagic,

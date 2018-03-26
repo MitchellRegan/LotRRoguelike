@@ -21,6 +21,7 @@ public class CharacterSkillsUI : MonoBehaviour
     public Slider maulSlider;
     public Slider poleSlider;
     public Slider bowSlider;
+    public Slider shieldSlider;
 
     [Space(8)]
 
@@ -73,6 +74,7 @@ public class CharacterSkillsUI : MonoBehaviour
         this.maulSlider.value = this.selectedCharacter.charSkills.mauls + this.selectedCharacter.charSkills.maulsMod;
         this.poleSlider.value = this.selectedCharacter.charSkills.poles + this.selectedCharacter.charSkills.polesMod;
         this.bowSlider.value = this.selectedCharacter.charSkills.bows + this.selectedCharacter.charSkills.bowsMod;
+        this.shieldSlider.value = this.selectedCharacter.charSkills.shields + this.selectedCharacter.charSkills.shieldsMod;
 
         this.arcaneMagicSlider.value = this.selectedCharacter.charSkills.arcaneMagic + this.selectedCharacter.charSkills.arcaneMagicMod;
         this.holyMagicSlider.value = this.selectedCharacter.charSkills.holyMagic + this.selectedCharacter.charSkills.holyMagicMod;

@@ -35,6 +35,11 @@ public class Skills : MonoBehaviour
     public int bows = 30;
     public int bowsMod = 0;
 
+    //How accurately this character can use shields in combat
+    [Range(1, 100)]
+    public int shields = 30;
+    public int shieldsMod = 0;
+
 
     //How accurately this character can use arcane magic in combat
     [Range(1, 100)]
@@ -99,6 +104,7 @@ public enum SkillList
     Mauls,
     Poles,
     Bows,
+    Shields,
 
     //Magic skills
     ArcaneMagic,
