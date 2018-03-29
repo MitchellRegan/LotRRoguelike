@@ -12,24 +12,6 @@ public class LandTile : MonoBehaviour
     [HideInInspector]
     public TileInfo tileReference;
 
-    //The list of items that can be found on this tile from foraging. MUST be listed in ascending order of skill checks needed
-    public List<Item> forageList;
-    //The list of skill rolls needed for each foraged item. MUST align with the same index of the item in the forage list
-    [Range(0, 100)]
-    public List<int> forageSkillList;
-
-    //The list of items that can be found on this tile from fishing. MUST be listed in ascending order of skill checks needed
-    public List<Item> fishingList;
-    //The list of skill rolls needed for each fished item. MUST align with the same index of the item in the fishing list
-    [Range(0, 100)]
-    public List<int> fishingSkillList;
-
-    //The list of animals that can be encountered on this tile from tracking. MUST be listed in ascending order of skill checks needed
-    public List<GameObject> trackingList;
-    //The list of skill rolls needed for each animal encounter. MUST align with the same index of the item in the tracking list
-    [Range(0, 100)]
-    public List<int> trackingSkillList;
-
     
 
     //Function called on initialization
