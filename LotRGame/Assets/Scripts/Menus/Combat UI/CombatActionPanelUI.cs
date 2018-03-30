@@ -75,7 +75,7 @@ public class CombatActionPanelUI : MonoBehaviour
         this.UpdateActionDetailsPanel();
 
         //Enabling all of the action buttons
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.standardActions.Count > 0)
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.majorActions.Count > 0)
         {
             this.standardActButton.interactable = true;
         }
@@ -83,7 +83,7 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.standardActButton.interactable = false;
         }
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.secondaryActions.Count > 0)
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.minorActions.Count > 0)
         {
             this.secondaryActButton.interactable = true;
         }
@@ -91,7 +91,7 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.secondaryActButton.interactable = false;
         }
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.quickActions.Count > 0)
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.fastActions.Count > 0)
         {
             this.quickActButton.interactable = true;
         }
@@ -99,7 +99,7 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.quickActButton.interactable = false;
         }
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.fullRoundActions.Count > 0)
+        if (CombatManager.globalReference.actingCharacters[0].charActionList.massiveActions.Count > 0)
         {
             this.fullRoundActButton.interactable = true;
         }
@@ -127,27 +127,27 @@ public class CombatActionPanelUI : MonoBehaviour
         switch (typeIndex_)
         {
             case 0:
-                this.UpdateActionButtons(actingCharActions.standardActions);
+                this.UpdateActionButtons(actingCharActions.majorActions);
                 this.backgroundImage.color = this.standardColor;
                 this.actionTypeShown = Action.ActionType.Major;
                 break;
             case 1:
-                this.UpdateActionButtons(actingCharActions.secondaryActions);
+                this.UpdateActionButtons(actingCharActions.minorActions);
                 this.backgroundImage.color = this.secondaryColor;
                 this.actionTypeShown = Action.ActionType.Minor;
                 break;
             case 2:
-                this.UpdateActionButtons(actingCharActions.quickActions);
+                this.UpdateActionButtons(actingCharActions.fastActions);
                 this.backgroundImage.color = this.quickColor;
                 this.actionTypeShown = Action.ActionType.Fast;
                 break;
             case 3:
-                this.UpdateActionButtons(actingCharActions.fullRoundActions);
+                this.UpdateActionButtons(actingCharActions.massiveActions);
                 this.backgroundImage.color = this.fullRoundColor;
                 this.actionTypeShown = Action.ActionType.Massive;
                 break;
             default:
-                this.UpdateActionButtons(actingCharActions.standardActions);
+                this.UpdateActionButtons(actingCharActions.majorActions);
                 this.backgroundImage.color = this.standardColor;
                 this.actionTypeShown = Action.ActionType.Major;
                 break;
@@ -210,21 +210,21 @@ public class CombatActionPanelUI : MonoBehaviour
         switch(this.actionTypeShown)
         {
             case Action.ActionType.Major:
-                actionRange = actingCharacter.charActionList.standardActions[actionIndex_].range;
-                actionObj = GameObject.Instantiate(actingCharacter.charActionList.standardActions[actionIndex_].gameObject);
+                actionRange = actingCharacter.charActionList.majorActions[actionIndex_].range;
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.majorActions[actionIndex_].gameObject);
                 //this.selectedAction = actingCharacter.charActionList.standardActions[actionIndex_];
                 break;
             case Action.ActionType.Minor:
-                actionRange = actingCharacter.charActionList.secondaryActions[actionIndex_].range;
-                actionObj = GameObject.Instantiate(actingCharacter.charActionList.secondaryActions[actionIndex_].gameObject);
+                actionRange = actingCharacter.charActionList.minorActions[actionIndex_].range;
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.minorActions[actionIndex_].gameObject);
                 break;
             case Action.ActionType.Fast:
-                actionRange = actingCharacter.charActionList.quickActions[actionIndex_].range;
-                actionObj = GameObject.Instantiate(actingCharacter.charActionList.quickActions[actionIndex_].gameObject);
+                actionRange = actingCharacter.charActionList.fastActions[actionIndex_].range;
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.fastActions[actionIndex_].gameObject);
                 break;
             case Action.ActionType.Massive:
-                actionRange = actingCharacter.charActionList.fullRoundActions[actionIndex_].range;
-                actionObj = GameObject.Instantiate(actingCharacter.charActionList.fullRoundActions[actionIndex_].gameObject);
+                actionRange = actingCharacter.charActionList.massiveActions[actionIndex_].range;
+                actionObj = GameObject.Instantiate(actingCharacter.charActionList.massiveActions[actionIndex_].gameObject);
                 break;
         }
 

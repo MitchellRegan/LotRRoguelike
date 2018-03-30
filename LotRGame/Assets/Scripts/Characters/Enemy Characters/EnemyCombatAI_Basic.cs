@@ -108,7 +108,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         this.moveActionList = new List<MoveAction>();
 
         //Looping through all of the standard actions in our action list
-        foreach (Action stdAct in this.ourCharacter.charActionList.standardActions)
+        foreach (Action stdAct in this.ourCharacter.charActionList.majorActions)
         {
             //If the action is an attack
             if (stdAct.GetComponent<AttackAction>())
@@ -129,7 +129,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the secondary actions in our action list
-        foreach (Action scndAct in this.ourCharacter.charActionList.secondaryActions)
+        foreach (Action scndAct in this.ourCharacter.charActionList.minorActions)
         {
             //If the action is an attack
             if (scndAct.GetComponent<AttackAction>())
@@ -150,7 +150,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the quick actions in our action list
-        foreach (Action qkAct in this.ourCharacter.charActionList.quickActions)
+        foreach (Action qkAct in this.ourCharacter.charActionList.fastActions)
         {
             //If the action is an attack
             if (qkAct.GetComponent<AttackAction>())
@@ -171,7 +171,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the full round actions in our action list
-        foreach (Action fullAct in this.ourCharacter.charActionList.fullRoundActions)
+        foreach (Action fullAct in this.ourCharacter.charActionList.massiveActions)
         {
             //If the action is an attack
             if (fullAct.GetComponent<AttackAction>())
