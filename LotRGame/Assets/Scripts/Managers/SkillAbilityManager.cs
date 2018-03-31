@@ -59,7 +59,11 @@ public class SkillAbilityManager : MonoBehaviour
                 //If the perk reward isn't null
                 if(skillRewards[r].gainedPerk != null)
                 {
-                    .//Need to make a script for characters to give them a list of perks
+                    //If the character's perk list doesn't have the learned perk, we give them the new learned perk
+                    if(!charThatLeveled_.charPerks.allPerks.Contains(skillRewards[r].gainedPerk))
+                    {
+                        charThatLeveled_.charPerks.allPerks.Add(skillRewards[r].gainedPerk);
+                    }
                 }
             }
         }

@@ -13,6 +13,7 @@ public enum Genders { Male, Female, Genderless };
 [RequireComponent(typeof(CombatStats))]
 [RequireComponent(typeof(ActionList))]
 [RequireComponent(typeof(CharacterSprites))]
+[RequireComponent(typeof(PerkList))]
 [System.Serializable]
 public class Character : MonoBehaviour
 {
@@ -47,6 +48,8 @@ public class Character : MonoBehaviour
     [HideInInspector]
     [System.NonSerialized]
     public CharacterSprites charSprites;
+    [System.NonSerialized]
+    public PerkList charPerks;
 
 
     //Function called when this character is created
@@ -60,6 +63,7 @@ public class Character : MonoBehaviour
         this.charCombatStats = this.GetComponent<CombatStats>();
         this.charActionList = this.GetComponent<ActionList>();
         this.charSprites = this.GetComponent<CharacterSprites>();
+        this.charPerks = this.GetComponent<PerkList>();
     }
 
 
@@ -311,6 +315,14 @@ public class Character : MonoBehaviour
         
         //Setting the variables in CharacterSprites.cs
         this.charSprites.allSprites = saveData_.ourSprites;
+
+        //Setting the variables in PerkList.cs
+        this.charPerks.allPerks = new List<Perk>();
+        for(int p = 0; p < saveData_.perkNames.Count; ++p)
+        {
+            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.perkNames[p], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            this.charPerks.allPerks.Add(objWrapper.objToSave.GetComponent<Perk>());
+        }
     }
 }
 
@@ -390,6 +402,9 @@ public class CharacterSaveData
 
     //Variables in CharacterSprites.cs
     public CharSpritePackage ourSprites;
+
+    //Variables in PerkList.cs
+    public List<string> perkNames;
 
 
     //Constructor for this class
@@ -558,6 +573,31 @@ public class CharacterSaveData
             else
             {
                 this.inventorySlots.Add("");
+            }
+        }
+
+        //Looping through all of the character perks to save their object references
+        this.perkNames = new List<string>();
+        for(int p = 0; p < characterToSave_.charPerks.allPerks.Count; ++p)
+        {
+            //Making sure the current perk isn't null
+            if(characterToSave_.charPerks.allPerks[p] != null)
+            {
+                GameObject perkPrefab = null;
+
+                //If the prefab object for this perk is null, we throw an error
+                if(characterToSave_.charPerks.allPerks[p].perkPrefabRoot == null)
+                {
+                    //We throw an exception because the object that we're supposed to save doesn't exist
+                    //throw new System.ArgumentException("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
+                    Debug.Log("CharacterSaveData constructor, The perk prefab root for " + characterToSave_.charPerks.allPerks[p].perkNameID + " doesn't exist! Find out where it came from!");
+                }
+                //If the prefab root object for the perk is not null, we set it as the perkPrefab to save
+                else
+                {
+                    perkPrefab = characterToSave_.charPerks.allPerks[p].perkPrefabRoot;
+                }
+                this.perkNames.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(perkPrefab)));
             }
         }
     }
