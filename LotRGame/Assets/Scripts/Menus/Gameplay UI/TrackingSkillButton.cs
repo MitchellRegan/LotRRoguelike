@@ -29,8 +29,7 @@ public class TrackingSkillButton : MonoBehaviour
             if (PartyGroup.group1.charactersInParty[pc] != null)
             {
                 //Rolling to see what the current character's skill check is
-                int skillCheck = PartyGroup.group1.charactersInParty[pc].charSkills.survivalist;
-                skillCheck += PartyGroup.group1.charactersInParty[pc].charSkills.survivalistMod;
+                int skillCheck = PartyGroup.group1.charactersInParty[pc].charSkills.GetSkillLevelValueWithMod(SkillList.Survivalist);
                 skillCheck += Random.Range(1, 100);
 
                 //If the current skill check is higher than the current highest, this check becomes the new highest

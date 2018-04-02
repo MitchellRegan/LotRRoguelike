@@ -78,62 +78,62 @@ public class SkillAbilityManager : MonoBehaviour
         {
             //Combat skills
             case SkillList.Unarmed:
-                return charThatLeveled_.charSkills.unarmed;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Unarmed);
 
             case SkillList.Daggers:
-                return charThatLeveled_.charSkills.daggers;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Daggers);
 
             case SkillList.Swords:
-                return charThatLeveled_.charSkills.swords;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Swords);
 
             case SkillList.Mauls:
-                return charThatLeveled_.charSkills.mauls;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Mauls);
 
             case SkillList.Poles:
-                return charThatLeveled_.charSkills.poles;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Poles);
 
             case SkillList.Bows:
-                return charThatLeveled_.charSkills.bows;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Bows);
 
             case SkillList.Shields:
-                return charThatLeveled_.charSkills.shields;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Shields);
 
 
             //Magic skills
             case SkillList.ArcaneMagic:
-                return charThatLeveled_.charSkills.arcaneMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.ArcaneMagic);
 
             case SkillList.HolyMagic:
-                return charThatLeveled_.charSkills.holyMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.HolyMagic);
 
             case SkillList.DarkMagic:
-                return charThatLeveled_.charSkills.darkMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.DarkMagic);
 
             case SkillList.FireMagic:
-                return charThatLeveled_.charSkills.fireMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.FireMagic);
 
             case SkillList.WaterMagic:
-                return charThatLeveled_.charSkills.waterMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.WaterMagic);
 
             case SkillList.WindMagic:
-                return charThatLeveled_.charSkills.windMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.WindMagic);
 
             case SkillList.ElectricMagic:
-                return charThatLeveled_.charSkills.electricMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.ElectricMagic);
 
             case SkillList.StoneMagic:
-                return charThatLeveled_.charSkills.stoneMagic;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.StoneMagic);
 
 
             //Non-combat skills
             case SkillList.Survivalist:
-                return charThatLeveled_.charSkills.survivalist;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Survivalist);
 
             case SkillList.Social:
-                return charThatLeveled_.charSkills.social;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Social);
 
             default:
-                return charThatLeveled_.charSkills.social;
+                return charThatLeveled_.charSkills.GetSkillLevelValue(SkillList.Social);
         }
     }
 

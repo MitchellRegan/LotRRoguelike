@@ -130,17 +130,6 @@ public class CharacterGenerator : MonoBehaviour
         //Getting the reference to this object's Skills component
         Skills characterSkillsRef = this.GetComponent<Skills>();
 
-        characterSkillsRef.survivalist = Mathf.RoundToInt(Random.Range(this.survivalist.x, this.survivalist.y));
-        characterSkillsRef.social = Mathf.RoundToInt(Random.Range(this.social.x, this.social.y));
-    }
-
-
-    //Generates this character's Combat Stats
-    private void GenerateCombatStats()
-    {
-        //Getting the reference ot this object's Combat Stats component
-        Skills characterSkillsRef = this.GetComponent<Skills>();
-
         characterSkillsRef.unarmed = Mathf.RoundToInt(Random.Range(this.unarmed.x, this.unarmed.y));
         characterSkillsRef.daggers = Mathf.RoundToInt(Random.Range(this.daggers.x, this.daggers.y));
         characterSkillsRef.swords = Mathf.RoundToInt(Random.Range(this.swords.x, this.swords.y));
@@ -158,6 +147,14 @@ public class CharacterGenerator : MonoBehaviour
         characterSkillsRef.electricMagic = Mathf.RoundToInt(Random.Range(this.electricMagic.x, this.electricMagic.y));
         characterSkillsRef.stoneMagic = Mathf.RoundToInt(Random.Range(this.stoneMagic.x, this.stoneMagic.y));
 
+        characterSkillsRef.survivalist = Mathf.RoundToInt(Random.Range(this.survivalist.x, this.survivalist.y));
+        characterSkillsRef.social = Mathf.RoundToInt(Random.Range(this.social.x, this.social.y));
+    }
+
+
+    //Generates this character's Combat Stats
+    private void GenerateCombatStats()
+    {
         //Getting the reference ot this object's Combat Stats component
         CombatStats characterCombatStatsRef = this.GetComponent<CombatStats>();
         //Sets the base initiative

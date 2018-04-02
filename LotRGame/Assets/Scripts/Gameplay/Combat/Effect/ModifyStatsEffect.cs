@@ -139,12 +139,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.unarmedMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Unarmed, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.unarmedMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Unarmed, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -153,12 +153,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.daggersMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Daggers, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.daggersMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Daggers, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -167,12 +167,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.swordsMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Swords, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.swordsMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Swords, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -181,12 +181,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.maulsMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Mauls, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.maulsMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Mauls, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -195,12 +195,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.polesMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Poles, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.polesMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Poles, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -209,12 +209,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.bowsMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Bows, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.bowsMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Bows, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -223,12 +223,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.shieldsMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Shields, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.shieldsMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.Shields, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -237,12 +237,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.arcaneMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.ArcaneMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.arcaneMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.ArcaneMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -252,12 +252,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.holyMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.HolyMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.holyMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.HolyMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -266,12 +266,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.darkMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.DarkMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.darkMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.DarkMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -280,12 +280,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.fireMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.FireMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.fireMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.FireMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -294,12 +294,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.waterMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.WaterMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.waterMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.WaterMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -308,12 +308,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.windMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.WindMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.windMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.WindMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -322,12 +322,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.electricMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.ElectricMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.electricMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.ElectricMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 
@@ -336,12 +336,12 @@ public class ModifyStatsEffect : Effect
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charSkills.stoneMagicMod += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.StoneMagic, Mathf.RoundToInt(mod.amountToChange));
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charSkills.stoneMagicMod -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charSkills.ChangeSkillModifier(SkillList.StoneMagic, -Mathf.RoundToInt(mod.amountToChange));
                     }
                     break;
 

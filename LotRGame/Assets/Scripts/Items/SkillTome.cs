@@ -81,7 +81,7 @@ public class SkillTome : Item
         }
 
         //Setting the new character skill value
-        this.SetImprovedSkillLevel(charToLearn_, improvedSkillLevel);
+        this.SetImprovedSkillLevel(charToLearn_, improvedSkillLevel - currentSkillLevel);
     }
 
 
@@ -92,59 +92,59 @@ public class SkillTome : Item
         switch(this.skillToLearn)
         {
             case SkillList.Unarmed:
-                return characterRef_.charSkills.unarmed;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Unarmed);
 
             case SkillList.Daggers:
-                return characterRef_.charSkills.daggers;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Daggers);
 
             case SkillList.Swords:
-                return characterRef_.charSkills.swords;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Swords);
 
             case SkillList.Mauls:
-                return characterRef_.charSkills.mauls;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Mauls);
 
             case SkillList.Poles:
-                return characterRef_.charSkills.poles;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Poles);
 
             case SkillList.Bows:
-                return characterRef_.charSkills.bows;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Bows);
 
             case SkillList.Shields:
-                return characterRef_.charSkills.shields;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Shields);
 
 
 
             case SkillList.ArcaneMagic:
-                return characterRef_.charSkills.arcaneMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.ArcaneMagic);
 
             case SkillList.HolyMagic:
-                return characterRef_.charSkills.holyMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.HolyMagic);
 
             case SkillList.DarkMagic:
-                return characterRef_.charSkills.darkMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.DarkMagic);
 
             case SkillList.FireMagic:
-                return characterRef_.charSkills.fireMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.FireMagic);
 
             case SkillList.WaterMagic:
-                return characterRef_.charSkills.waterMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.WaterMagic);
 
             case SkillList.WindMagic:
-                return characterRef_.charSkills.windMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.WindMagic);
 
             case SkillList.ElectricMagic:
-                return characterRef_.charSkills.electricMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.ElectricMagic);
 
             case SkillList.StoneMagic:
-                return characterRef_.charSkills.stoneMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.StoneMagic);
 
 
 
             case SkillList.Survivalist:
-                return characterRef_.charSkills.survivalist;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Survivalist);
 
             case SkillList.Social:
-                return characterRef_.charSkills.social;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Social);
 
             default:
                 return 0;
@@ -159,71 +159,75 @@ public class SkillTome : Item
         switch (this.skillToLearn)
         {
             case SkillList.Unarmed:
-                characterRef_.charSkills.unarmed = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Unarmed, newSkillLevel_);
                 break;
 
             case SkillList.Daggers:
-                characterRef_.charSkills.daggers = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Daggers, newSkillLevel_);
                 break;
 
             case SkillList.Swords:
-                characterRef_.charSkills.swords = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Swords, newSkillLevel_);
                 break;
 
             case SkillList.Mauls:
-                characterRef_.charSkills.mauls = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Mauls, newSkillLevel_);
                 break;
 
             case SkillList.Poles:
-                characterRef_.charSkills.poles = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Poles, newSkillLevel_);
                 break;
 
             case SkillList.Bows:
-                characterRef_.charSkills.bows = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Bows, newSkillLevel_);
+                break;
+
+            case SkillList.Shields:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Shields, newSkillLevel_);
                 break;
 
 
 
             case SkillList.ArcaneMagic:
-                characterRef_.charSkills.arcaneMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.ArcaneMagic, newSkillLevel_);
                 break;
 
             case SkillList.HolyMagic:
-                characterRef_.charSkills.holyMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.HolyMagic, newSkillLevel_);
                 break;
 
             case SkillList.DarkMagic:
-                characterRef_.charSkills.darkMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.DarkMagic, newSkillLevel_);
                 break;
 
             case SkillList.FireMagic:
-                characterRef_.charSkills.fireMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.FireMagic, newSkillLevel_);
                 break;
 
             case SkillList.WaterMagic:
-                characterRef_.charSkills.waterMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.WaterMagic, newSkillLevel_);
                 break;
 
             case SkillList.WindMagic:
-                characterRef_.charSkills.windMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.WindMagic, newSkillLevel_);
                 break;
 
             case SkillList.ElectricMagic:
-                characterRef_.charSkills.electricMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.ElectricMagic, newSkillLevel_);
                 break;
 
             case SkillList.StoneMagic:
-                characterRef_.charSkills.stoneMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.StoneMagic, newSkillLevel_);
                 break;
 
 
 
             case SkillList.Survivalist:
-                characterRef_.charSkills.survivalist = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Survivalist, newSkillLevel_);
                 break;
 
             case SkillList.Social:
-                characterRef_.charSkills.social = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Social, newSkillLevel_);
                 break;
         }
     }

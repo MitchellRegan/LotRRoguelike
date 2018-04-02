@@ -255,23 +255,7 @@ public class Character : MonoBehaviour
         this.charInventory.FindArmorStats();
 
         //Setting the variables in Skill.cs
-        this.charSkills.unarmed = saveData_.unarmed;
-        this.charSkills.daggers = saveData_.daggers;
-        this.charSkills.swords = saveData_.swords;
-        this.charSkills.mauls = saveData_.mauls;
-        this.charSkills.poles = saveData_.poles;
-        this.charSkills.bows = saveData_.bows;
-        this.charSkills.shields = saveData_.shields;
-        this.charSkills.arcaneMagic = saveData_.arcaneMagic;
-        this.charSkills.holyMagic = saveData_.holyMagic;
-        this.charSkills.darkMagic = saveData_.darkMagic;
-        this.charSkills.fireMagic = saveData_.fireMagic;
-        this.charSkills.waterMagic = saveData_.waterMagic;
-        this.charSkills.windMagic = saveData_.windMagic;
-        this.charSkills.electricMagic = saveData_.electricMagic;
-        this.charSkills.stoneMagic = saveData_.stoneMagic;
-        this.charSkills.survivalist = saveData_.survivalist;
-        this.charSkills.social = saveData_.social;
+        this.charSkills.LoadSkillValue(saveData_);
         
         //Setting the variables in PhysicalState.cs
         this.charPhysState.maxHealth = saveData_.maxHP;
@@ -420,23 +404,23 @@ public class CharacterSaveData
         this.subtypeList = characterToSave_.charRaceTypes.subtypeList;
 
         //Setting variables from Skills.cs
-        this.unarmed = characterToSave_.charSkills.unarmed;
-        this.daggers = characterToSave_.charSkills.daggers;
-        this.swords = characterToSave_.charSkills.swords;
-        this.mauls = characterToSave_.charSkills.mauls;
-        this.poles = characterToSave_.charSkills.poles;
-        this.bows = characterToSave_.charSkills.bows;
-        this.shields = characterToSave_.charSkills.shields;
-        this.arcaneMagic = characterToSave_.charSkills.arcaneMagic;
-        this.holyMagic = characterToSave_.charSkills.holyMagic;
-        this.darkMagic = characterToSave_.charSkills.darkMagic;
-        this.fireMagic = characterToSave_.charSkills.fireMagic;
-        this.waterMagic = characterToSave_.charSkills.waterMagic;
-        this.windMagic = characterToSave_.charSkills.windMagic;
-        this.electricMagic = characterToSave_.charSkills.electricMagic;
-        this.stoneMagic = characterToSave_.charSkills.stoneMagic;
-        this.survivalist = characterToSave_.charSkills.survivalist;
-        this.social = characterToSave_.charSkills.social;
+        this.unarmed = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Unarmed);
+        this.daggers = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Daggers);
+        this.swords = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Swords);
+        this.mauls = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Mauls);
+        this.poles = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Poles);
+        this.bows = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Bows);
+        this.shields = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Shields);
+        this.arcaneMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.ArcaneMagic);
+        this.holyMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.HolyMagic);
+        this.darkMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.DarkMagic);
+        this.fireMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.FireMagic);
+        this.waterMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.WaterMagic);
+        this.windMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.WindMagic);
+        this.electricMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.ElectricMagic);
+        this.stoneMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.StoneMagic);
+        this.survivalist = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Survivalist);
+        this.social = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Social);
 
         //Setting variables from PhysicalState.cs
         this.maxHP = characterToSave_.charPhysState.maxHealth;

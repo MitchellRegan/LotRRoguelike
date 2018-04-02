@@ -144,49 +144,49 @@ public class AttackAction : Action
         switch (this.weaponSkillUsed)
         {
             case Weapon.WeaponType.Unarmed:
-                hitRoll += actingChar.charSkills.unarmed + actingChar.charSkills.unarmedMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Unarmed);
                 break;
             case Weapon.WeaponType.Sword:
-                hitRoll += actingChar.charSkills.swords + actingChar.charSkills.swordsMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Swords);
                 break;
             case Weapon.WeaponType.Dagger:
-                hitRoll += actingChar.charSkills.daggers + actingChar.charSkills.daggersMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Daggers);
                 break;
             case Weapon.WeaponType.Maul:
-                hitRoll += actingChar.charSkills.mauls + actingChar.charSkills.maulsMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Mauls);
                 break;
             case Weapon.WeaponType.Pole:
-                hitRoll += actingChar.charSkills.poles + actingChar.charSkills.polesMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Poles);
                 break;
             case Weapon.WeaponType.Bow:
-                hitRoll += actingChar.charSkills.bows + actingChar.charSkills.bowsMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Bows);
                 break;
             case Weapon.WeaponType.Shield:
-                hitRoll += actingChar.charSkills.shields + actingChar.charSkills.shieldsMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Shields);
                 break;
             case Weapon.WeaponType.ArcaneMagic:
-                hitRoll += actingChar.charSkills.arcaneMagic + actingChar.charSkills.arcaneMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.ArcaneMagic);
                 break;
             case Weapon.WeaponType.HolyMagic:
-                hitRoll += actingChar.charSkills.holyMagic + actingChar.charSkills.holyMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.HolyMagic);
                 break;
             case Weapon.WeaponType.DarkMagic:
-                hitRoll += actingChar.charSkills.darkMagic + actingChar.charSkills.darkMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.DarkMagic);
                 break;
             case Weapon.WeaponType.FireMagic:
-                hitRoll += actingChar.charSkills.fireMagic + actingChar.charSkills.fireMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.FireMagic);
                 break;
             case Weapon.WeaponType.WaterMagic:
-                hitRoll += actingChar.charSkills.waterMagic + actingChar.charSkills.waterMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.WaterMagic);
                 break;
             case Weapon.WeaponType.WindMagic:
-                hitRoll += actingChar.charSkills.windMagic + actingChar.charSkills.windMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.WindMagic);
                 break;
             case Weapon.WeaponType.ElectricMagic:
-                hitRoll += actingChar.charSkills.electricMagic + actingChar.charSkills.electricMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.ElectricMagic);
                 break;
             case Weapon.WeaponType.StoneMagic:
-                hitRoll += actingChar.charSkills.stoneMagic + actingChar.charSkills.stoneMagicMod;
+                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.StoneMagic);
                 break;
         }
 
