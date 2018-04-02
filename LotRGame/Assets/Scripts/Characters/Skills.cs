@@ -7,91 +7,91 @@ public class Skills : MonoBehaviour
 {
     //How accurately this character can fight without weapons
     [Range(1, 100)]
-    private int unarmed = 30;
+    private int unarmed = 0;
     private int unarmedMod = 0;
 
     //How accurately this character can use daggers in combat
     [Range(1, 100)]
-    private int daggers = 30;
+    private int daggers = 0;
     private int daggersMod = 0;
 
     //How accurately this character can use swords in combat
     [Range(1, 100)]
-    private int swords = 30;
+    private int swords = 0;
     private int swordsMod = 0;
 
     //How accurately this character can use axes and maces in combat
     [Range(1, 100)]
-    private int mauls = 30;
+    private int mauls = 0;
     private int maulsMod = 0;
 
     //How accurately this character can use pole weapons in combat
     [Range(1, 100)]
-    private int poles = 30;
+    private int poles = 0;
     private int polesMod = 0;
 
     //How accurately this character can use bows in combat
     [Range(1, 100)]
-    private int bows = 30;
+    private int bows = 0;
     private int bowsMod = 0;
 
     //How accurately this character can use shields in combat
     [Range(1, 100)]
-    private int shields = 30;
+    private int shields = 0;
     private int shieldsMod = 0;
 
 
     //How accurately this character can use arcane magic in combat
     [Range(1, 100)]
-    private int arcaneMagic = 30;
+    private int arcaneMagic = 0;
     private int arcaneMagicMod = 0;
 
     //How accurately this character can use holy magic spells in combat
     [Range(1, 100)]
-    private int holyMagic = 30;
+    private int holyMagic = 0;
     private int holyMagicMod = 0;
 
     //How accurately this character can use dark magic spells in combat
     [Range(1, 100)]
-    private int darkMagic = 30;
+    private int darkMagic = 0;
     private int darkMagicMod = 0;
 
     //How accurately this character can use fire magic in combat
     [Range(1, 100)]
-    private int fireMagic = 30;
+    private int fireMagic = 0;
     private int fireMagicMod = 0;
 
     //How accurately this character can use water magic in combat
     [Range(1, 100)]
-    private int waterMagic = 30;
+    private int waterMagic = 0;
     private int waterMagicMod = 0;
 
     //How accurately this character can use wind magic in combat
     [Range(1, 100)]
-    private int windMagic = 30;
+    private int windMagic = 0;
     private int windMagicMod = 0;
 
     //How accurately this character can use electric magic in combat
     [Range(1, 100)]
-    private int electricMagic = 30;
+    private int electricMagic = 0;
     private int electricMagicMod = 0;
 
     //How accurately this character can use stone magic in combat
     [Range(1, 100)]
-    private int stoneMagic = 30;
+    private int stoneMagic = 0;
     private int stoneMagicMod = 0;
 
-
-
+    
     //The ability to forage, hunt/track, and fish in the wilderness
     [Range(1, 100)]
-    private int survivalist = 30;
+    private int survivalist = 0;
     private int survivalistMod = 0;
 
     //The ability to barter at shops and perform in cities
     [Range(1, 100)]
-    private int social = 30;
+    private int social = 0;
     private int socialMod = 0;
+
 
 
     //Function called from CharacterGenerator.cs to set this character's initial skill values within random bounds
@@ -174,6 +174,9 @@ public class Skills : MonoBehaviour
                 this.social = Mathf.RoundToInt(Random.Range(min_, max_));
                 break;
         }
+
+        //Making sure we check for any skill rewards for the leveled up skill
+        SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToSet_);
     }
 
 
@@ -342,77 +345,149 @@ public class Skills : MonoBehaviour
         {
             case SkillList.Unarmed:
                 this.unarmed += levelsToAdd_;
+                if (this.unarmed > 100)
+                {
+                    this.unarmed = 100;
+                }
                 break;
 
             case SkillList.Daggers:
                 this.daggers += levelsToAdd_;
+                if (this.daggers > 100)
+                {
+                    this.daggers = 100;
+                }
                 break;
 
             case SkillList.Swords:
                 this.swords += levelsToAdd_;
+                if (this.swords > 100)
+                {
+                    this.swords = 100;
+                }
                 break;
 
             case SkillList.Mauls:
                 this.mauls += levelsToAdd_;
+                if (this.mauls > 100)
+                {
+                    this.mauls = 100;
+                }
                 break;
 
             case SkillList.Poles:
                 this.poles += levelsToAdd_;
+                if (this.poles > 100)
+                {
+                    this.poles = 100;
+                }
                 break;
 
             case SkillList.Bows:
                 this.bows += levelsToAdd_;
+                if (this.bows > 100)
+                {
+                    this.bows = 100;
+                }
                 break;
 
             case SkillList.Shields:
                 this.shields += levelsToAdd_;
+                if (this.shields > 100)
+                {
+                    this.shields = 100;
+                }
                 break;
 
 
             case SkillList.ArcaneMagic:
                 this.arcaneMagic += levelsToAdd_;
+                if (this.arcaneMagic > 100)
+                {
+                    this.arcaneMagic = 100;
+                }
                 break;
 
             case SkillList.HolyMagic:
                 this.holyMagic += levelsToAdd_;
+                if (this.holyMagic > 100)
+                {
+                    this.holyMagic = 100;
+                }
                 break;
 
             case SkillList.DarkMagic:
                 this.darkMagic += levelsToAdd_;
+                if (this.darkMagic > 100)
+                {
+                    this.darkMagic = 100;
+                }
                 break;
 
             case SkillList.FireMagic:
                 this.fireMagic += levelsToAdd_;
+                if (this.fireMagic > 100)
+                {
+                    this.fireMagic = 100;
+                }
                 break;
 
             case SkillList.WaterMagic:
                 this.waterMagic += levelsToAdd_;
+                if (this.waterMagic > 100)
+                {
+                    this.waterMagic = 100;
+                }
                 break;
 
             case SkillList.WindMagic:
                 this.windMagic += levelsToAdd_;
+                if (this.windMagic > 100)
+                {
+                    this.windMagic = 100;
+                }
                 break;
 
             case SkillList.ElectricMagic:
                 this.electricMagic += levelsToAdd_;
+                if (this.electricMagic > 100)
+                {
+                    this.electricMagic = 100;
+                }
                 break;
 
             case SkillList.StoneMagic:
                 this.stoneMagic += levelsToAdd_;
+                if (this.stoneMagic > 100)
+                {
+                    this.stoneMagic = 100;
+                }
                 break;
 
 
             case SkillList.Survivalist:
                 this.survivalist += levelsToAdd_;
+                if (this.survivalist > 100)
+                {
+                    this.survivalist = 100;
+                }
                 break;
 
             case SkillList.Social:
                 this.social += levelsToAdd_;
+                if (this.social > 100)
+                {
+                    this.social = 100;
+                }
                 break;
 
 
             default:
                 this.social += levelsToAdd_;
+                if(this.social > 100)
+                {
+                    this.social = 100;
+                }
                 break;
         }
 
