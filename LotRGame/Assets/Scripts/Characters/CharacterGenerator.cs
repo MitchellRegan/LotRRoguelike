@@ -130,25 +130,25 @@ public class CharacterGenerator : MonoBehaviour
         //Getting the reference to this object's Skills component
         Skills characterSkillsRef = this.GetComponent<Skills>();
 
-        characterSkillsRef.unarmed = Mathf.RoundToInt(Random.Range(this.unarmed.x, this.unarmed.y));
-        characterSkillsRef.daggers = Mathf.RoundToInt(Random.Range(this.daggers.x, this.daggers.y));
-        characterSkillsRef.swords = Mathf.RoundToInt(Random.Range(this.swords.x, this.swords.y));
-        characterSkillsRef.mauls = Mathf.RoundToInt(Random.Range(this.mauls.x, this.mauls.y));
-        characterSkillsRef.poles = Mathf.RoundToInt(Random.Range(this.poles.x, this.poles.y));
-        characterSkillsRef.bows = Mathf.RoundToInt(Random.Range(this.bows.x, this.bows.y));
-        characterSkillsRef.shields = Mathf.RoundToInt(Random.Range(this.shields.x, this.shields.y));
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Unarmed, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Daggers, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Swords, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Mauls, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Poles, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Bows, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Shields, this.unarmed.x, this.unarmed.y);
 
-        characterSkillsRef.arcaneMagic = Mathf.RoundToInt(Random.Range(this.arcaneMagic.x, this.arcaneMagic.y));
-        characterSkillsRef.holyMagic = Mathf.RoundToInt(Random.Range(this.holyMagic.x, this.holyMagic.y));
-        characterSkillsRef.darkMagic = Mathf.RoundToInt(Random.Range(this.darkMagic.x, this.darkMagic.y));
-        characterSkillsRef.fireMagic = Mathf.RoundToInt(Random.Range(this.fireMagic.x, this.fireMagic.y));
-        characterSkillsRef.waterMagic = Mathf.RoundToInt(Random.Range(this.waterMagic.x, this.waterMagic.y));
-        characterSkillsRef.windMagic = Mathf.RoundToInt(Random.Range(this.windMagic.x, this.windMagic.y));
-        characterSkillsRef.electricMagic = Mathf.RoundToInt(Random.Range(this.electricMagic.x, this.electricMagic.y));
-        characterSkillsRef.stoneMagic = Mathf.RoundToInt(Random.Range(this.stoneMagic.x, this.stoneMagic.y));
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.ArcaneMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.HolyMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.DarkMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.FireMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.WaterMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.WindMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.ElectricMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.StoneMagic, this.unarmed.x, this.unarmed.y);
 
-        characterSkillsRef.survivalist = Mathf.RoundToInt(Random.Range(this.survivalist.x, this.survivalist.y));
-        characterSkillsRef.social = Mathf.RoundToInt(Random.Range(this.social.x, this.social.y));
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Survivalist, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Social, this.unarmed.x, this.unarmed.y);
     }
 
 

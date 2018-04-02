@@ -94,6 +94,88 @@ public class Skills : MonoBehaviour
     private int socialMod = 0;
 
 
+    //Function called from CharacterGenerator.cs to set this character's initial skill values within random bounds
+    public void GenerateInitialSkillValue(SkillList skillToSet_, float min_, float max_)
+    {
+        switch (skillToSet_)
+        {
+            case SkillList.Unarmed:
+                this.unarmed = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Daggers:
+                this.daggers = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Swords:
+                this.swords = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Mauls:
+                this.mauls = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Poles:
+                this.poles = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Bows:
+                this.bows = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Shields:
+                this.shields = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+
+            case SkillList.ArcaneMagic:
+                this.arcaneMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.HolyMagic:
+                this.holyMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.DarkMagic:
+                this.darkMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.FireMagic:
+                this.fireMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.WaterMagic:
+                this.waterMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.WindMagic:
+                this.windMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.ElectricMagic:
+                this.electricMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.StoneMagic:
+                this.stoneMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+
+            case SkillList.Survivalist:
+                this.survivalist = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+            case SkillList.Social:
+                this.social = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+
+
+            default:
+                this.social = Mathf.RoundToInt(Random.Range(min_, max_));
+                break;
+        }
+    }
+
 
     //Function called from Character.cs to set skill values when loading from a save file
     public void LoadSkillValue(CharacterSaveData dataToLoad_)
@@ -333,6 +415,9 @@ public class Skills : MonoBehaviour
                 this.social += levelsToAdd_;
                 break;
         }
+
+        //Making sure we check for any skill rewards for the leveled up skill
+        SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_);
     }
 
 

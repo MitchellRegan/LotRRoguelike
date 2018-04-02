@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SkillAbilityManager : MonoBehaviour
 {
+    //Static reference for this component so players can check for rewards
+    public static SkillAbilityManager globalReference;
+
     //List of reward abilities for combat skills
     public List<SkillAbilityReward> unarmedAbilities;
     public List<SkillAbilityReward> daggerAbilities;
@@ -27,6 +30,22 @@ public class SkillAbilityManager : MonoBehaviour
     public List<SkillAbilityReward> survivalistAbilities;
     public List<SkillAbilityReward> socialAbilities;
 
+
+
+    //Function called when this object is created
+    private void Awake()
+    {
+        //If the global reference already exists, this component needs to be disabled
+        if(globalReference != null)
+        {
+            this.enabled = false;
+        }
+        //If there isn't a global reference, this component becomes the global
+        else
+        {
+            globalReference = this;
+        }
+    }
 
 
     //Function called externally to check a given character's skills to see if they get any new abilities
