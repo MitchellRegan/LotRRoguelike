@@ -7,6 +7,13 @@ public class SkillAbilityManager : MonoBehaviour
     //Static reference for this component so players can check for rewards
     public static SkillAbilityManager globalReference;
 
+    //The curve that determines the required amount of EXP for each skill level
+    public AnimationCurve skillEXPCurve;
+    //The amount of EXP required for the first skill level
+    public int level0EXPRequired = 100;
+    //The amount of EXP required for the last skill level
+    public int level99EXPRequired = 200;
+
     //List of reward abilities for combat skills
     public List<SkillAbilityReward> unarmedAbilities;
     public List<SkillAbilityReward> daggerAbilities;
@@ -35,7 +42,6 @@ public class SkillAbilityManager : MonoBehaviour
     //Function called when this object is created
     private void Awake()
     {
-        Debug.Log("###############################################################################3");
         //If the global reference already exists, this component needs to be disabled
         if(globalReference != null)
         {
@@ -49,39 +55,49 @@ public class SkillAbilityManager : MonoBehaviour
     }
 
 
+    //Function called from Skills.cs to get the required amount of EXP for a given skill to level up
+    public int GetEXPRequiredForLevel(int currentSkillLevel_)
+    {
+        //Percent value of the current skill level
+        float percent = (1f * currentSkillLevel_) / 100f;
+        //The value along the EXP curve that the percent value is at
+        float curveProgress = this.skillEXPCurve.Evaluate(percent);
+
+        //The difference in EXP between the level 0 and level 99 requirements
+        int minMaxEXPDiff = this.level99EXPRequired - this.level0EXPRequired;
+
+        //Getting the EXP above the level 0 requirement based on the min/max and the curve progress
+        int addedEXP = Mathf.RoundToInt(minMaxEXPDiff * curveProgress);
+
+        return addedEXP + this.level0EXPRequired;
+    }
+
+
     //Function called externally to check a given character's skills to see if they get any new abilities
     public void CheckCharacterSkillForNewAbility(Character charThatLeveled_, SkillList skillToCheck_)
     {
-        Debug.Log("Check " + charThatLeveled_.firstName + "'s " + skillToCheck_ + " skill");
         //Getting the level that the character's given skill is at
         int currentSkillLevel = this.getCharacterSkillLevel(charThatLeveled_, skillToCheck_);
 
         //Getting the reference the correct skill ability reward lists
         List<SkillAbilityReward> skillRewards = this.getSkillRewardList(skillToCheck_);
-
-        Debug.Log("Number of rewards to loop through: " + skillRewards.Count);
+        
         //Looping through all of the skill rewards to see if the character has them
         for(int r = 0; r < skillRewards.Count; ++r)
         {
             //If the current skill reward's level is less than or equal to the character's current skill level, we see if the character already has it
             if(skillRewards[r].levelReached <= currentSkillLevel)
             {
-                Debug.Log("Skill reward has been reached!");
                 //If the ability reward isn't null
                 if(skillRewards[r].learnedAction != null)
                 {
                     //If the character's default action list doesn't have the learned action, we give them the new learned action
                     if(!charThatLeveled_.charActionList.defaultActions.Contains(skillRewards[r].learnedAction))
                     {
-                        Debug.Log("Character " + charThatLeveled_.firstName + " learned ability: " + skillRewards[r].learnedAction.actionName);
                         charThatLeveled_.charActionList.defaultActions.Add(skillRewards[r].learnedAction);
                         //Refreshing the character's action list to make the added action appear
                         charThatLeveled_.charActionList.RefreshActionLists();
                     }
-                }
-                else
-                {
-                    Debug.Log("Learned action doesn't exist");
                 }
 
                 //If the perk reward isn't null
@@ -92,10 +108,6 @@ public class SkillAbilityManager : MonoBehaviour
                     {
                         charThatLeveled_.charPerks.allPerks.Add(skillRewards[r].gainedPerk);
                     }
-                }
-                else
-                {
-                    Debug.Log("Learked perk doesn't exist");
                 }
             }
         }
