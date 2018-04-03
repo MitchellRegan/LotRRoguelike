@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class TESTLevelSkillReward : MonoBehaviour
 {
+    //If true, gives EXP, if false gives levels
+    public bool giveEXP = true;
+
+    //Amount of EXP to give
+    [Range(1, 1000)]
+    public int expToGive = 50;
+
     //Number of levels to give
     [Range(1, 10)]
     public int levelsToGive = 1;
@@ -37,7 +44,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if(PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numZero, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numZero, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numZero, this.levelsToGive);
+                }
             }
         }
 
@@ -46,7 +60,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numOne, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numOne, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numOne, this.levelsToGive);
+                }
             }
         }
 
@@ -55,7 +76,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numTwo, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numTwo, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numTwo, this.levelsToGive);
+                }
             }
         }
 
@@ -64,7 +92,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numThree, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numThree, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numThree, this.levelsToGive);
+                }
             }
         }
 
@@ -73,7 +108,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numFour, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numFour, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numFour, this.levelsToGive);
+                }
             }
         }
 
@@ -82,7 +124,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numFive, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numFive, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numFive, this.levelsToGive);
+                }
             }
         }
 
@@ -91,7 +140,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numSix, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numSix, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numSix, this.levelsToGive);
+                }
             }
         }
 
@@ -100,7 +156,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numSeven, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numSeven, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numSeven, this.levelsToGive);
+                }
             }
         }
 
@@ -109,7 +172,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numEight, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numEight, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numEight, this.levelsToGive);
+                }
             }
         }
 
@@ -118,7 +188,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numNine, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numNine, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numNine, this.levelsToGive);
+                }
             }
         }
 
@@ -127,7 +204,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numLock, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numLock, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numLock, this.levelsToGive);
+                }
             }
         }
 
@@ -136,7 +220,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numSlash, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numSlash, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numSlash, this.levelsToGive);
+                }
             }
         }
 
@@ -145,7 +236,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numStar, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numStar, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numStar, this.levelsToGive);
+                }
             }
         }
 
@@ -154,7 +252,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numMinus, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numMinus, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numMinus, this.levelsToGive);
+                }
             }
         }
 
@@ -163,7 +268,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numPlus, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numPlus, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numPlus, this.levelsToGive);
+                }
             }
         }
 
@@ -172,7 +284,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numEnter, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numEnter, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numEnter, this.levelsToGive);
+                }
             }
         }
 
@@ -181,7 +300,14 @@ public class TESTLevelSkillReward : MonoBehaviour
         {
             if (PartyGroup.group1.charactersInParty[0] != null)
             {
-                PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numPeriod, this.levelsToGive);
+                if (this.giveEXP)
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.AddSkillEXP(this.numPeriod, this.expToGive);
+                }
+                else
+                {
+                    PartyGroup.group1.charactersInParty[0].charSkills.LevelUpSkill(this.numPeriod, this.levelsToGive);
+                }
             }
         }
     }
