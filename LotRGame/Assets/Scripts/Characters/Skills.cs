@@ -775,6 +775,8 @@ public class Skills : MonoBehaviour
 
         //Making sure we check for any skill rewards for the leveled up skill
         SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_);
+        //Also checking to see if there are any class combination rewards tied to this skill
+        ClassCombinationManager.globalReference.CheckForClassCombinationRewards(this.GetComponent<Character>(), skillToLevel_);
     }
 
 

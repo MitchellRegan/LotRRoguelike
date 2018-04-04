@@ -155,8 +155,14 @@ public class SkillTome : Item
     //Function called from CharacterUseTome to set the player's new skill value
     private void SetImprovedSkillLevel(Character characterRef_, int newSkillLevel_)
     {
+        //Looping through a number of times that we level up. This is to make sure the character gets all of the skill rewards
+        for(int lvl = 0; lvl < newSkillLevel_; ++lvl)
+        {
+            characterRef_.charSkills.LevelUpSkill(this.skillToLearn, 1);
+        }
+
         //Switch statement to go through each skill and get the one that we'll improve
-        switch (this.skillToLearn)
+        /*switch (this.skillToLearn)
         {
             case SkillList.Unarmed:
                 characterRef_.charSkills.LevelUpSkill(SkillList.Unarmed, newSkillLevel_);
@@ -229,7 +235,7 @@ public class SkillTome : Item
             case SkillList.Social:
                 characterRef_.charSkills.LevelUpSkill(SkillList.Social, newSkillLevel_);
                 break;
-        }
+        }*/
     }
 }
 
