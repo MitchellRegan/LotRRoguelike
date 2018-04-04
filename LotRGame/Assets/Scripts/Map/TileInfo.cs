@@ -108,6 +108,10 @@ public class TileInfo
         {
             this.connectedTileCoordinates.Add(null);
         }
+        //Initializing the empty list of forage resources, fishing resources, and tracking encounters
+        this.foragingResources = new List<ResourceBlock>();
+        this.fishingResources = new List<ResourceBlock>();
+        this.trackingEncounters = new List<EncounterBlock>();
     }
 
 
@@ -180,8 +184,18 @@ public class TileInfo
                 //Creating a placeholder resource block variable
                 ResourceBlock forageR = new ResourceBlock();
                 forageR.skillCheck = forageResource.skillCheck;
-                forageR.resources = forageResource.resources;
-                forageR.resourceQuantities = forageResource.resourceQuantities;
+                //Duplicating the list of resources earned
+                forageR.resources = new List<Item>();
+                for(int r = 0; r < forageResource.resources.Count; ++r)
+                {
+                    forageR.resources.Add(forageResource.resources[r]);
+                }
+                //Duplicating the list of resource quantities
+                forageR.resourceQuantities = new List<int>();
+                for(int q = 0; q < forageResource.resourceQuantities.Count; ++q)
+                {
+                    forageR.resourceQuantities.Add(forageResource.resourceQuantities[q]);
+                }
 
                 //Adding the placeholder forage resource to this tile's resource list
                 this.foragingResources.Add(forageR);
@@ -232,6 +246,11 @@ public class TileInfo
         this.regionName = otherTile_.regionName;
         this.type = otherTile_.type;
         this.tileMaterial = otherTile_.tileMaterial;
+
+        //Initializing the lists of forage resources, fishing resources, and tracking encounters
+        this.foragingResources = otherTile_.foragingResources;
+        this.fishingResources = otherTile_.fishingResources;
+        this.trackingEncounters = otherTile_.trackingEncounters;
 
         //Setting this tile's elevation between the its current height and the other tile's height
         this.elevation = (Random.value * (this.elevation - otherTile_.elevation)) + otherTile_.elevation;

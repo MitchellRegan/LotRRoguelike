@@ -40,8 +40,6 @@ public class TrackingSkillButton : MonoBehaviour
             }
         }
 
-        Debug.Log("This is where we need to check tracking results. Highest roll: " + highestRoll);
-
         //Looping through this tile's tracking encounter blocks to see what the highest success is
         int currentHighestIndex = -1;
         for(int t = 0; t < trackingEncounters.Count; ++t)
@@ -50,7 +48,7 @@ public class TrackingSkillButton : MonoBehaviour
             if(trackingEncounters[t].skillCheck <= highestRoll)
             {
                 //If the current encounter's skill is higher than the current highest encounter's, it becomes the new highest
-                if(trackingEncounters[t].skillCheck > trackingEncounters[currentHighestIndex].skillCheck)
+                if(currentHighestIndex < 0 || trackingEncounters[t].skillCheck > trackingEncounters[currentHighestIndex].skillCheck)
                 {
                     currentHighestIndex = t;
                 }

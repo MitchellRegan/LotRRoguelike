@@ -46,8 +46,6 @@ public class ForageSkillButton : MonoBehaviour
             }
         }
 
-        Debug.Log("This is where we need to check foraging results. Highest roll: " + highestRoll);
-
         //Looping through this tile's foraging resource blocks to see what the highest success is
         int currentHighestIndex = -1;
         for (int f = 0; f < forageResources.Count; ++f)
@@ -56,7 +54,7 @@ public class ForageSkillButton : MonoBehaviour
             if (forageResources[f].skillCheck <= highestRoll)
             {
                 //If the current resource's skill is higher than the current highest resource's, it becomes the new highest
-                if (forageResources[f].skillCheck > forageResources[currentHighestIndex].skillCheck)
+                if (currentHighestIndex < 0 || forageResources[f].skillCheck > forageResources[currentHighestIndex].skillCheck)
                 {
                     currentHighestIndex = f;
                 }

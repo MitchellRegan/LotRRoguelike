@@ -46,8 +46,6 @@ public class FishingSkillButton : MonoBehaviour
             }
         }
 
-        Debug.Log("This is where we need to check fishing results. Highest roll: " + highestRoll);
-
         //Looping through this tile's fishing resource blocks to see what the highest success is
         int currentHighestIndex = -1;
         for(int f = 0; f < fishingResources.Count; ++f)
@@ -56,7 +54,7 @@ public class FishingSkillButton : MonoBehaviour
             if(fishingResources[f].skillCheck <= highestRoll)
             {
                 //If the current resource's skill is higher than the current highest resource's, it becomes the new highest
-                if(fishingResources[f].skillCheck > fishingResources[currentHighestIndex].skillCheck)
+                if(currentHighestIndex < 0 || fishingResources[f].skillCheck > fishingResources[currentHighestIndex].skillCheck)
                 {
                     currentHighestIndex = f;
                 }
