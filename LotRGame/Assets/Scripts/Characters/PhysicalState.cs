@@ -10,6 +10,9 @@ public class PhysicalState : MonoBehaviour
     //The maximum amount of health this character can have
     public int maxHealth = 100;
 
+    //The type of health progression curve that determines how much health they get
+    public PlayerHealthManager.healthProgressionTypes hPCurveType = PlayerHealthManager.healthProgressionTypes.Average;
+
 
     //If false, this character doesn't require food to survive
     public bool requiresFood = true;
