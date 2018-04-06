@@ -71,6 +71,11 @@ public class WASDOverworldMovement : MonoBehaviour
         {
             return;
         }
+        //If time is advancing and we're not moving, we don't let the player move (to prevent multiple time advancements at once)
+        else if(TimePanelUI.globalReference.IsTimePassing() && !this.isTraveling)
+        {
+            return;
+        }
 
         //If this party is currently traveling
         if(isTraveling)

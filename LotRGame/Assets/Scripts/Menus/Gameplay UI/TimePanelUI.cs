@@ -8,6 +8,8 @@ public class TimePanelUI : MonoBehaviour
 {
     //Static reference to this component for everything that uses time advancements
     public static TimePanelUI globalReference;
+    //Reference to the button that is used to advance time so we can disable it
+    public Button advanceTimeButton;
 
     //The number of days this current adventure has taken
     public int daysTaken = 0;
@@ -28,6 +30,14 @@ public class TimePanelUI : MonoBehaviour
 
     //Bool that determines if we're currently transitioning time
     private bool isTimePassing = false;
+    //The time that it will be when we're done transitioning time and the time when the transition started
+    private int timeAfterTransition = 0;
+    private int timeBeforeTransition = 0;
+
+    //The amount of real time that it takes to transition time 1 hour
+    public float timeItTakesToTransition1Hour = 0.1f;
+    //The current time it's taken during a transition
+    private float currentTransitionTime = 0;
 
     //The UnityEvent that's dispatched when time is advanced
     public UnityEvent onTimeAdvancedEvent;
@@ -59,13 +69,52 @@ public class TimePanelUI : MonoBehaviour
 	// Update is called once per frame
 	private void Update ()
     {
-        //Advancing the current timer
-        this.currentTimer += Time.deltaTime;
-
-        //If the current timer is greater than the max time, time is advanced and the current timer is reset
-        if(this.currentTimer >= this.gameTimeBeforeHoursAdvance)
+        //If the game time isn't currently passing
+        if (!this.isTimePassing)
         {
-            this.AdvanceTime(this.hoursAdvancedPerUpdate);
+            //Advancing the current timer
+            this.currentTimer += Time.deltaTime;
+
+            //If the current timer is greater than the max time, time is advanced and the current timer is reset
+            if (this.currentTimer >= this.gameTimeBeforeHoursAdvance)
+            {
+                this.AdvanceTime(this.hoursAdvancedPerUpdate);
+            }
+        }
+        //If the game time is passing
+        else
+        {
+            //Adding to the current transition time
+            this.currentTransitionTime += Time.deltaTime;
+
+            //Finding the total transition time (real world time to transition 1 hour times the hours passed)
+            float totalTransitionTime = this.timeItTakesToTransition1Hour * (this.timeAfterTransition - this.timeBeforeTransition);
+
+            //Finding the percent that we are through the transition and multiplying it by the amount of in-game time that needs to pass
+            int newTime = this.timeAfterTransition - this.timeBeforeTransition;
+            newTime = Mathf.RoundToInt((this.currentTransitionTime / totalTransitionTime) * newTime);
+            newTime += this.timeBeforeTransition;
+            this.timeOfDay = newTime;
+
+            //If the time of day passes beyond 24 hours, we have to correct for it
+            if(this.timeOfDay > 24)
+            {
+                //Looping all of the time variables back around 0
+                this.timeOfDay -= 24;
+                this.timeBeforeTransition -= 24;
+                this.timeAfterTransition -= 24;
+
+                //Moving to the next day
+                this.daysTaken += 1;
+            }
+
+            //If the current transition time is at the total transition time, we stop
+            if (this.currentTransitionTime >= totalTransitionTime)
+            {
+                this.currentTransitionTime = 0;
+                this.isTimePassing = false;
+                this.advanceTimeButton.interactable = true;
+            }
         }
 
         //Setting the text fields to display the correct time
@@ -101,17 +150,21 @@ public class TimePanelUI : MonoBehaviour
             return;
         }
 
-        this.timeOfDay += hoursToAdvance_;
+        //Resetting the current game timer so that players have the maximum amount of time before the next advance
+        this.currentTimer = 0;
 
-        //If the hours are over 24, the day is advanced
-        if(this.timeOfDay >= 24)
-        {
-            this.daysTaken += 1;
-            this.timeOfDay -= 24;
+        //Setting the time of day to the current time after the advance
+        this.timeBeforeTransition = this.timeOfDay;
+        this.timeAfterTransition = this.timeOfDay + hoursToAdvance_;
 
-            //Resetting the current game timer so that players have the maximum amount of time before the next jump
-            this.currentTimer = 0;
-        }
+        //Starting the time transition
+        this.isTimePassing = true;
+
+        //Resetting the current transition time value
+        this.currentTransitionTime = 0;
+
+        //Disabling the advance time button so it can't be pressed during the transition
+        this.advanceTimeButton.interactable = false;
 
         //Calling the unity event
         this.onTimeAdvancedEvent.Invoke();

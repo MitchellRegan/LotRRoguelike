@@ -37,7 +37,7 @@ public class PlayerHealthManager : MonoBehaviour
     private void Awake()
     {
         //Initializes the Delegate Event for the Event Manager
-        this.trackTimePassageEVT = new DelegateEvent<EVTData>(this.trackTimePassageEVT);
+        this.trackTimePassageEVT = new DelegateEvent<EVTData>(this.TrackTimePassage);
     }
 
 
