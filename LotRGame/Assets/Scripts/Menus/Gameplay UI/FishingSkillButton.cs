@@ -1,13 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
+[RequireComponent(typeof(Button))]
 public class FishingSkillButton : MonoBehaviour
 {
+    //Reference to this object's UI button script
+    private Button ourButton;
+
     //The number of hours that pass when this skill is used
     [Range(0,9)]
     public int hoursPassed = 3;
 
+
+
+    //Function called when this object is created
+    private void Awake()
+    {
+        //Getting the reference to this object's button
+        this.ourButton = this.GetComponent<Button>();
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If time is currently passing, this button is disabled
+        this.ourButton.interactable = !TimePanelUI.globalReference.IsTimePassing();
+    }
 
 
 	//Function called externally from UI buttons to roll for fishing skills

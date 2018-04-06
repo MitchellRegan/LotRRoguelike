@@ -26,6 +26,9 @@ public class TimePanelUI : MonoBehaviour
     //The text field that displays the time of day
     public Text timeOfDayText;
 
+    //Bool that determines if we're currently transitioning time
+    private bool isTimePassing = false;
+
     //The UnityEvent that's dispatched when time is advanced
     public UnityEvent onTimeAdvancedEvent;
 
@@ -43,6 +46,13 @@ public class TimePanelUI : MonoBehaviour
         {
             globalReference = this;
         }
+    }
+
+
+    //Function called externally for other scripts to check if time is currently changing
+    public bool IsTimePassing()
+    {
+        return this.isTimePassing;
     }
 
 

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerHealthManager : MonoBehaviour
 {
     //Enum for the different health progressions
-    public enum healthProgressionTypes
+    public enum HealthProgressionTypes
     {
         Strong,
         Sturdy,
@@ -74,7 +74,8 @@ public class PlayerHealthManager : MonoBehaviour
                     if (PartyGroup.group1.charactersInParty[p] != null)
                     {
                         //Finding the amount of health based on the character's health curve
-                        int healthToGiveCharacter = this.GetHealthToAdd(PartyGroup.group1.charactersInParty[p].charPhysState.hPCurveType);
+                        HealthProgressionTypes type = this.FindCharacterHealthProgression(PartyGroup.group1.charactersInParty[p].charPhysState.healthCurveStagesSum);
+                        int healthToGiveCharacter = this.GetHealthToAdd(type);
 
                         //Adding the health to the character's current and maximum values
                         PartyGroup.group1.charactersInParty[p].charPhysState.maxHealth += healthToGiveCharacter;
@@ -86,8 +87,44 @@ public class PlayerHealthManager : MonoBehaviour
     }
 
 
+    //Function called from TrackTimePassage to find a given character's health curve based on their stage sum
+    private HealthProgressionTypes FindCharacterHealthProgression(int stageSum_)
+    {
+        //If the stage sum is below 0 then it's counted as 0
+        if(stageSum_ <= 0)
+        {
+            return HealthProgressionTypes.Feeble;
+        }
+        else if(stageSum_ == 1)
+        {
+            return HealthProgressionTypes.Sickly;
+        }
+        else if (stageSum_ == 2)
+        {
+            return HealthProgressionTypes.Weak;
+        }
+        else if (stageSum_ == 3)
+        {
+            return HealthProgressionTypes.Average;
+        }
+        else if (stageSum_ == 4)
+        {
+            return HealthProgressionTypes.Healthy;
+        }
+        else if (stageSum_ == 5)
+        {
+            return HealthProgressionTypes.Sturdy;
+        }
+        //If the stage sum is above 6 then it's counted as 6
+        else
+        {
+            return HealthProgressionTypes.Strong;
+        }
+    }
+
+
     //Function called from TrackTimePassage to get the amount of health a character will gain
-    private int GetHealthToAdd(healthProgressionTypes type_)
+    private int GetHealthToAdd(HealthProgressionTypes type_)
     {
         //The amount of health to add that is returned
         int healthToAdd = 0;
@@ -117,14 +154,46 @@ public class PlayerHealthManager : MonoBehaviour
         healthToAdd += curveToUse.minHealthGiven;
 
         //Looping through for each die roll for random amount of health
+        int diceResult = 0;
         for(int d = 0; d < curveToUse.diceRolled; ++d)
         {
             //Adding the die roll value to the amount of health to add based on the sides on the die
-            healthToAdd += Random.Range(1, curveToUse.numberOfDiceSides + 1);
+            diceResult += Random.Range(1, curveToUse.numberOfDiceSides + 1);
+        }
+
+        //If we roll twice and take the best result, we roll again
+        if(curveToUse.rollTwiceTakeBest)
+        {
+            int secondRoll = 0;
+            for(int b = 0; b < curveToUse.diceRolled; ++b)
+            {
+                secondRoll += Random.Range(1, curveToUse.numberOfDiceSides + 1);
+            }
+
+            //If this second roll is better than the original dice roll, it becomes the new dice roll value
+            if (diceResult < secondRoll)
+            {
+                diceResult = secondRoll;
+            }
+        }
+        //If we roll twice and take the worst result, we roll again
+        else if(curveToUse.rollTwiceTakeWorst)
+        {
+            int secondRoll = 0;
+            for (int w = 0; w < curveToUse.diceRolled; ++w)
+            {
+                secondRoll += Random.Range(1, curveToUse.numberOfDiceSides + 1);
+            }
+
+            //If this second roll is worse than the original dice roll, it becomes the new dice roll value
+            if(diceResult > secondRoll)
+            {
+                diceResult = secondRoll;
+            }
         }
 
         //returning the total health
-        return healthToAdd;
+        return healthToAdd + diceResult;
     }
 }
 
@@ -134,7 +203,7 @@ public class PlayerHealthManager : MonoBehaviour
 public class HealthCurve
 {
     //The type of progression curve tied to this
-    public PlayerHealthManager.healthProgressionTypes curveType = PlayerHealthManager.healthProgressionTypes.Average;
+    public PlayerHealthManager.HealthProgressionTypes curveType = PlayerHealthManager.HealthProgressionTypes.Average;
 
     //The minimum amount of health that can be added
     public int minHealthGiven = 0;
@@ -149,4 +218,9 @@ public class HealthCurve
 
     //The sides of the dice rolled for random health
     public int numberOfDiceSides = 6;
+
+    //Bool to determine if we roll twice and take the best result
+    public bool rollTwiceTakeBest = false;
+    //Bool to determine if we roll twice and take the worst result
+    public bool rollTwiceTakeWorst = false;
 }
