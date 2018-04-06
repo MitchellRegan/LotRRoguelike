@@ -39,6 +39,23 @@ public class TimePanelUI : MonoBehaviour
     //The current time it's taken during a transition
     private float currentTransitionTime = 0;
 
+    [Space(8)]
+
+    //The object that we rotate to make the sun and moon change positions in the sky
+    public Transform globalLightObject;
+
+    //The light reference for the sun
+    public Light sunLightObj;
+    //The color gradient of the sun as it moves through the day
+    public Gradient sunColors;
+
+    //The light reference for the moon
+    public Light moonLightObj;
+    //The color gradient of the moon as it moves through the night
+    public Gradient moonColors;
+
+    [Space(8)]
+
     //The UnityEvent that's dispatched when time is advanced
     public UnityEvent onTimeAdvancedEvent;
 
@@ -55,6 +72,9 @@ public class TimePanelUI : MonoBehaviour
         else
         {
             globalReference = this;
+
+            //Setting the rotation of the lights
+            this.SetLightPositions(this.timeOfDay * 1f);
         }
     }
 
@@ -107,6 +127,12 @@ public class TimePanelUI : MonoBehaviour
                 //Moving to the next day
                 this.daysTaken += 1;
             }
+
+            //Setting the daylight rotation and colors
+            float daylightTime = this.timeAfterTransition - this.timeBeforeTransition;
+            daylightTime = (this.currentTransitionTime / totalTransitionTime) * daylightTime;
+            daylightTime += this.timeBeforeTransition;
+            this.SetLightPositions(daylightTime);
 
             //If the current transition time is at the total transition time, we stop
             if (this.currentTransitionTime >= totalTransitionTime)
@@ -168,5 +194,21 @@ public class TimePanelUI : MonoBehaviour
 
         //Calling the unity event
         this.onTimeAdvancedEvent.Invoke();
+    }
+
+
+    //Function called from Awake and Update to change the position and color of the lights
+    private void SetLightPositions(float daylightTime_)
+    {
+        //Getting the percent of the day that's passed
+        float dayPercent = (daylightTime_ / 24f);
+
+        //Setting the sun's color based on the day percent
+        this.sunLightObj.color = this.sunColors.Evaluate(dayPercent);
+        //Setting the moon's color based on the day percent
+        this.moonLightObj.color = this.moonColors.Evaluate(dayPercent);
+
+        //Setting the light euler rotation
+        this.globalLightObject.eulerAngles = new Vector3(0, 0, dayPercent * 360);
     }
 }
