@@ -61,6 +61,33 @@ public class TileInfo
     [HideInInspector]
     public List<EncounterBlock> randomEncounterList;
 
+    //The list of resources that can be generated from foraging
+    private List<ResourceBlock> foragingResources;
+
+    //The list of resources that can be generated from fishing
+    private List<ResourceBlock> fishingResources;
+
+    //The list of enemy groups that can be encountered from tracking
+    private List<EncounterBlock> trackingEncounters;
+
+
+    //Getter for the forage resources
+    public List<ResourceBlock> getForagingResources()
+    {
+        return this.foragingResources;
+    }
+
+    //Getter for the fishing resources
+    public List<ResourceBlock> getFishingResources()
+    {
+        return this.fishingResources;
+    }
+
+    //Getter for the tracking encounters
+    public List<EncounterBlock> getTrackingEncounters()
+    {
+        return this.trackingEncounters;
+    }
 
 
     //Empty constructor for this class
@@ -81,6 +108,10 @@ public class TileInfo
         {
             this.connectedTileCoordinates.Add(null);
         }
+        //Initializing the empty list of forage resources, fishing resources, and tracking encounters
+        this.foragingResources = new List<ResourceBlock>();
+        this.fishingResources = new List<ResourceBlock>();
+        this.trackingEncounters = new List<EncounterBlock>();
     }
 
 
@@ -128,7 +159,83 @@ public class TileInfo
 
         //Setting the random encounter chance and encounters
         this.randomEncounterChance = thisTilesRegion_.randomEncounterChance;
-        this.randomEncounterList = thisTilesRegion_.randomEncounterList;
+        this.randomEncounterList = new List<EncounterBlock>();
+        foreach(EncounterBlock encounter in thisTilesRegion_.randomEncounterList)
+        {
+            //Creating a placeholder encounter variable
+            EncounterBlock newEncounter = new EncounterBlock();
+            newEncounter.encounterChance = encounter.encounterChance;
+            newEncounter.encounterEnemies = encounter.encounterEnemies;
+
+            //Adding the placeholder encounter to this tile's encounter list
+            this.randomEncounterList.Add(newEncounter);
+        }
+
+        //Setting the resource list for foraging
+        this.foragingResources = new List<ResourceBlock>();
+        foreach (ResourceBlock forageResource in thisTilesRegion_.foragingResources)
+        {
+            //Seeing if this resource will be spawned on this tile
+            float spawnRoll = Random.Range(0f, 1f);
+
+            //If the spawn roll is under the resource's spawn chance, we add it to this tile
+            if (spawnRoll <= forageResource.spawnChance)
+            {
+                //Creating a placeholder resource block variable
+                ResourceBlock forageR = new ResourceBlock();
+                forageR.skillCheck = forageResource.skillCheck;
+                //Duplicating the list of resources earned
+                forageR.resources = new List<Item>();
+                for(int r = 0; r < forageResource.resources.Count; ++r)
+                {
+                    forageR.resources.Add(forageResource.resources[r]);
+                }
+                //Duplicating the list of resource quantities
+                forageR.resourceQuantities = new List<int>();
+                for(int q = 0; q < forageResource.resourceQuantities.Count; ++q)
+                {
+                    forageR.resourceQuantities.Add(forageResource.resourceQuantities[q]);
+                }
+
+                //Adding the placeholder forage resource to this tile's resource list
+                this.foragingResources.Add(forageR);
+            }
+        }
+
+        //Setting the resource list for fishing
+        this.fishingResources = new List<ResourceBlock>();
+        foreach (ResourceBlock fishResource in thisTilesRegion_.fishingResources)
+        {
+            //Seeing if this resource will be spawned on this tile
+            float spawnRoll = Random.Range(0f, 1f);
+
+            //If the spawn roll is under the resource's spawn chance, we add it to this tile
+            if (spawnRoll <= fishResource.spawnChance)
+            {
+                //Creating a placeholder resource block variable
+                ResourceBlock fishR = new ResourceBlock();
+                fishR.skillCheck = fishResource.skillCheck;
+                fishR.resources = fishResource.resources;
+                fishR.resourceQuantities = fishResource.resourceQuantities;
+
+                //Adding the placeholder fish resource to this tile's resource list
+                this.fishingResources.Add(fishR);
+            }
+        }
+
+        //Setting the encounter list for tracking
+        this.trackingEncounters = new List<EncounterBlock>();
+        foreach(EncounterBlock trackEncounter in thisTilesRegion_.trackingEncounters)
+        {
+            //Creating a placeholder encounter block variable
+            EncounterBlock trackE = new EncounterBlock();
+            trackE.skillCheck = trackEncounter.skillCheck;
+            trackE.encounterChance = trackEncounter.encounterChance;
+            trackE.encounterEnemies = trackEncounter.encounterEnemies;
+
+            //Adding the placeholder track encounter to this tile's encounter list
+            this.trackingEncounters.Add(trackE);
+        }
     }
 
 
@@ -139,6 +246,11 @@ public class TileInfo
         this.regionName = otherTile_.regionName;
         this.type = otherTile_.type;
         this.tileMaterial = otherTile_.tileMaterial;
+
+        //Initializing the lists of forage resources, fishing resources, and tracking encounters
+        this.foragingResources = otherTile_.foragingResources;
+        this.fishingResources = otherTile_.fishingResources;
+        this.trackingEncounters = otherTile_.trackingEncounters;
 
         //Setting this tile's elevation between the its current height and the other tile's height
         this.elevation = (Random.value * (this.elevation - otherTile_.elevation)) + otherTile_.elevation;

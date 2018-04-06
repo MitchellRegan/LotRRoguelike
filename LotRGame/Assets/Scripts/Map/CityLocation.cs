@@ -58,7 +58,7 @@ public class Vendor
     [Space(8)]
 
     //The multipliers for how much markup this vendor sells certain item types
-    public float normalItemMarkupMultiplier = 1.3f
+    public float normalItemMarkupMultiplier = 1.3f;
     public float foodMarkupMultiplier = 1.3f;
     public float armorMarkupMultiplier = 1.3f;
     public float weaponMarkupMultiplier = 1.3f;

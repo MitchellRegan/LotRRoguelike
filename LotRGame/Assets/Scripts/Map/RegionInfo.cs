@@ -54,9 +54,13 @@ public class RegionInfo : MonoBehaviour
 [System.Serializable]
 public class ResourceBlock
 {
-    //The likelihood that this resource block will be chosen
-    [Range(0.01f,1)]
-    public float generationChance = 0.1f;
+    //The chance that this resource will be spawned on any given tile
+    [Range(0.01f, 1f)]
+    public float spawnChance = 0.1f;
+
+    //The skill roll that the player party has to reach to get 
+    [Range(10,200)]
+    public int skillCheck = 10;
 
     //The list of items that are in this resource block and the key is the quantity
     public List<Item> resources;
@@ -70,6 +74,10 @@ public class ResourceBlock
 [System.Serializable]
 public class EncounterBlock
 {
+    //The skill roll that the player party has to reach to encounter
+    [Range(10, 200)]
+    public int skillCheck = 10;
+
     //The likelihood that this encounter block will be chosen
     [Range(0.01f, 1f)]
     public float encounterChance = 0.1f;

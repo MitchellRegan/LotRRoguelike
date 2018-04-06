@@ -13,6 +13,7 @@ public enum Genders { Male, Female, Genderless };
 [RequireComponent(typeof(CombatStats))]
 [RequireComponent(typeof(ActionList))]
 [RequireComponent(typeof(CharacterSprites))]
+[RequireComponent(typeof(PerkList))]
 [System.Serializable]
 public class Character : MonoBehaviour
 {
@@ -47,6 +48,8 @@ public class Character : MonoBehaviour
     [HideInInspector]
     [System.NonSerialized]
     public CharacterSprites charSprites;
+    [System.NonSerialized]
+    public PerkList charPerks;
 
 
     //Function called when this character is created
@@ -60,6 +63,7 @@ public class Character : MonoBehaviour
         this.charCombatStats = this.GetComponent<CombatStats>();
         this.charActionList = this.GetComponent<ActionList>();
         this.charSprites = this.GetComponent<CharacterSprites>();
+        this.charPerks = this.GetComponent<PerkList>();
     }
 
 
@@ -249,17 +253,9 @@ public class Character : MonoBehaviour
             }
         }
         this.charInventory.FindArmorStats();
-        
+
         //Setting the variables in Skill.cs
-        this.charSkills.cooking = saveData_.cooking;
-        this.charSkills.healing = saveData_.healing;
-        this.charSkills.crafting = saveData_.crafting;
-        this.charSkills.foraging = saveData_.foraging;
-        this.charSkills.tracking = saveData_.tracking;
-        this.charSkills.fishing = saveData_.fishing;
-        this.charSkills.climbing = saveData_.climbing;
-        this.charSkills.hiding = saveData_.hiding;
-        this.charSkills.swimming = saveData_.swimming;
+        this.charSkills.LoadSkillValue(saveData_);
         
         //Setting the variables in PhysicalState.cs
         this.charPhysState.maxHealth = saveData_.maxHP;
@@ -281,16 +277,6 @@ public class Character : MonoBehaviour
         this.charCombatStats.startingPositionCol = saveData_.startingCol;
         this.charCombatStats.startingPositionRow = saveData_.startingRow;
         this.charCombatStats.evasion = saveData_.evasion;
-        this.charCombatStats.punching = saveData_.punching;
-        this.charCombatStats.daggers = saveData_.daggers;
-        this.charCombatStats.swords = saveData_.swords;
-        this.charCombatStats.axes = saveData_.axes;
-        this.charCombatStats.spears = saveData_.spears;
-        this.charCombatStats.bows = saveData_.bows;
-        this.charCombatStats.improvised = saveData_.improvised;
-        this.charCombatStats.holyMagic = saveData_.holyMagic;
-        this.charCombatStats.darkMagic = saveData_.darkMagic;
-        this.charCombatStats.natureMagic = saveData_.natureMagic;
 
         this.charCombatStats.combatEffects = new List<Effect>();
         for (int ce = 0; ce < saveData_.combatEffects.Count; ++ce)
@@ -313,6 +299,14 @@ public class Character : MonoBehaviour
         
         //Setting the variables in CharacterSprites.cs
         this.charSprites.allSprites = saveData_.ourSprites;
+
+        //Setting the variables in PerkList.cs
+        this.charPerks.allPerks = new List<Perk>();
+        for(int p = 0; p < saveData_.perkNames.Count; ++p)
+        {
+            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.perkNames[p], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+            this.charPerks.allPerks.Add(objWrapper.objToSave.GetComponent<Perk>());
+        }
     }
 }
 
@@ -346,15 +340,23 @@ public class CharacterSaveData
     public List<string> stackedItems;
 
     //Variables in Skills.cs
-    public int cooking = 0;
-    public int healing = 0;
-    public int crafting = 0;
-    public int foraging = 0;
-    public int tracking = 0;
-    public int fishing = 0;
-    public int climbing = 0;
-    public int hiding = 0;
-    public int swimming = 0;
+    public int unarmed = 0;
+    public int daggers = 0;
+    public int swords = 0;
+    public int mauls = 0;
+    public int poles = 0;
+    public int bows = 0;
+    public int shields = 0;
+    public int arcaneMagic = 0;
+    public int holyMagic = 0;
+    public int darkMagic = 0;
+    public int fireMagic = 0;
+    public int waterMagic = 0;
+    public int windMagic = 0;
+    public int electricMagic = 0;
+    public int stoneMagic = 0;
+    public int survivalist = 0;
+    public int social = 0;
 
     //Variables in PhysicalState.cs
     public int maxHP = 0;
@@ -372,20 +374,10 @@ public class CharacterSaveData
     public float currentEnergy = 1;
 
     //Variables in CombatStats.cs
-    public float currentInitiativeSpeed = 0.01f;
     public int startingCol = 0;
     public int startingRow = 0;
     public int evasion = 10;
-    public int punching = 0;
-    public int daggers = 0;
-    public int swords = 0;
-    public int axes = 0;
-    public int spears = 0;
-    public int bows = 0;
-    public int improvised = 0;
-    public int holyMagic = 0;
-    public int darkMagic = 0;
-    public int natureMagic = 0;
+    public float currentInitiativeSpeed = 0.01f;
     public List<string> combatEffects;
 
     //Variables in ActionList.cs
@@ -394,6 +386,9 @@ public class CharacterSaveData
 
     //Variables in CharacterSprites.cs
     public CharSpritePackage ourSprites;
+
+    //Variables in PerkList.cs
+    public List<string> perkNames;
 
 
     //Constructor for this class
@@ -409,15 +404,23 @@ public class CharacterSaveData
         this.subtypeList = characterToSave_.charRaceTypes.subtypeList;
 
         //Setting variables from Skills.cs
-        this.cooking = characterToSave_.charSkills.cooking;
-        this.healing = characterToSave_.charSkills.healing;
-        this.crafting = characterToSave_.charSkills.crafting;
-        this.foraging = characterToSave_.charSkills.foraging;
-        this.tracking = characterToSave_.charSkills.tracking;
-        this.fishing = characterToSave_.charSkills.fishing;
-        this.climbing = characterToSave_.charSkills.climbing;
-        this.hiding = characterToSave_.charSkills.hiding;
-        this.swimming = characterToSave_.charSkills.swimming;
+        this.unarmed = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Unarmed);
+        this.daggers = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Daggers);
+        this.swords = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Swords);
+        this.mauls = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Mauls);
+        this.poles = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Poles);
+        this.bows = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Bows);
+        this.shields = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Shields);
+        this.arcaneMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.ArcaneMagic);
+        this.holyMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.HolyMagic);
+        this.darkMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.DarkMagic);
+        this.fireMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.FireMagic);
+        this.waterMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.WaterMagic);
+        this.windMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.WindMagic);
+        this.electricMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.ElectricMagic);
+        this.stoneMagic = characterToSave_.charSkills.GetSkillLevelValue(SkillList.StoneMagic);
+        this.survivalist = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Survivalist);
+        this.social = characterToSave_.charSkills.GetSkillLevelValue(SkillList.Social);
 
         //Setting variables from PhysicalState.cs
         this.maxHP = characterToSave_.charPhysState.maxHealth;
@@ -439,16 +442,6 @@ public class CharacterSaveData
         this.startingCol = characterToSave_.charCombatStats.startingPositionCol;
         this.startingRow = characterToSave_.charCombatStats.startingPositionRow;
         this.evasion = characterToSave_.charCombatStats.evasion;
-        this.punching = characterToSave_.charCombatStats.punching;
-        this.daggers = characterToSave_.charCombatStats.daggers;
-        this.swords = characterToSave_.charCombatStats.swords;
-        this.axes = characterToSave_.charCombatStats.axes;
-        this.spears = characterToSave_.charCombatStats.spears;
-        this.bows = characterToSave_.charCombatStats.bows;
-        this.improvised = characterToSave_.charCombatStats.improvised;
-        this.holyMagic = characterToSave_.charCombatStats.holyMagic;
-        this.darkMagic = characterToSave_.charCombatStats.darkMagic;
-        this.natureMagic = characterToSave_.charCombatStats.natureMagic;
 
         this.combatEffects = new List<string>();
         for(int ce = 0; ce < characterToSave_.charCombatStats.combatEffects.Count; ++ce)
@@ -564,6 +557,31 @@ public class CharacterSaveData
             else
             {
                 this.inventorySlots.Add("");
+            }
+        }
+
+        //Looping through all of the character perks to save their object references
+        this.perkNames = new List<string>();
+        for(int p = 0; p < characterToSave_.charPerks.allPerks.Count; ++p)
+        {
+            //Making sure the current perk isn't null
+            if(characterToSave_.charPerks.allPerks[p] != null)
+            {
+                GameObject perkPrefab = null;
+
+                //If the prefab object for this perk is null, we throw an error
+                if(characterToSave_.charPerks.allPerks[p].perkPrefabRoot == null)
+                {
+                    //We throw an exception because the object that we're supposed to save doesn't exist
+                    //throw new System.ArgumentException("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
+                    Debug.Log("CharacterSaveData constructor, The perk prefab root for " + characterToSave_.charPerks.allPerks[p].perkNameID + " doesn't exist! Find out where it came from!");
+                }
+                //If the prefab root object for the perk is not null, we set it as the perkPrefab to save
+                else
+                {
+                    perkPrefab = characterToSave_.charPerks.allPerks[p].perkPrefabRoot;
+                }
+                this.perkNames.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(perkPrefab)));
             }
         }
     }

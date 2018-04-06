@@ -8,25 +8,25 @@ public class ActionList : MonoBehaviour
     //The list of combat actions that this character has by default
     public List<Action> defaultActions;
 
-    //The full list of standard actions this character has
+    //The full list of major actions this character has
     [HideInInspector]
     [System.NonSerialized]
-    public List<Action> standardActions;
+    public List<Action> majorActions;
 
-    //The full list of secondary actions this character has
+    //The full list of minor actions this character has
     [HideInInspector]
     [System.NonSerialized]
-    public List<Action> secondaryActions;
+    public List<Action> minorActions;
 
-    //The full list of quick actions this character has
+    //The full list of fast actions this character has
     [HideInInspector]
     [System.NonSerialized]
-    public List<Action> quickActions;
+    public List<Action> fastActions;
 
-    //The full list of full-round actions this character has
+    //The full list of massive actions this character has
     [HideInInspector]
     [System.NonSerialized]
-    public List<Action> fullRoundActions;
+    public List<Action> massiveActions;
 
     //The list of all spell actions this character can cast
     [HideInInspector]
@@ -68,10 +68,10 @@ public class ActionList : MonoBehaviour
     private void Start()
     {
         //Initializing our lists
-        this.standardActions = new List<Action>();
-        this.secondaryActions = new List<Action>();
-        this.quickActions = new List<Action>();
-        this.fullRoundActions = new List<Action>();
+        this.majorActions = new List<Action>();
+        this.minorActions = new List<Action>();
+        this.fastActions = new List<Action>();
+        this.massiveActions = new List<Action>();
         this.allSpellActions = new List<SpellAction>();
 
         this.rechargingSpells = new List<SpellRecharge>();
@@ -85,10 +85,10 @@ public class ActionList : MonoBehaviour
     public void RefreshActionLists()
     {
         //Clearing our current lists
-        this.standardActions.Clear();
-        this.secondaryActions.Clear();
-        this.quickActions.Clear();
-        this.fullRoundActions.Clear();
+        this.majorActions.Clear();
+        this.minorActions.Clear();
+        this.fastActions.Clear();
+        this.massiveActions.Clear();
         this.allSpellActions.Clear();
 
         //Adding all actions from our default list
@@ -106,17 +106,17 @@ public class ActionList : MonoBehaviour
         //Adding the action to the correct list based on its type
         switch (actToAdd_.type)
         {
-            case Action.ActionType.Standard:
-                this.standardActions.Add(actToAdd_);
+            case Action.ActionType.Major:
+                this.majorActions.Add(actToAdd_);
                 break;
-            case Action.ActionType.Secondary:
-                this.secondaryActions.Add(actToAdd_);
+            case Action.ActionType.Minor:
+                this.minorActions.Add(actToAdd_);
                 break;
-            case Action.ActionType.Quick:
-                this.quickActions.Add(actToAdd_);
+            case Action.ActionType.Fast:
+                this.fastActions.Add(actToAdd_);
                 break;
-            case Action.ActionType.FullRound:
-                this.fullRoundActions.Add(actToAdd_);
+            case Action.ActionType.Massive:
+                this.massiveActions.Add(actToAdd_);
                 break;
         }
     }

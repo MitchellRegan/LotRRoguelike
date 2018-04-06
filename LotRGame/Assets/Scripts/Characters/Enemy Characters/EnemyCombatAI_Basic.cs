@@ -108,7 +108,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         this.moveActionList = new List<MoveAction>();
 
         //Looping through all of the standard actions in our action list
-        foreach (Action stdAct in this.ourCharacter.charActionList.standardActions)
+        foreach (Action stdAct in this.ourCharacter.charActionList.majorActions)
         {
             //If the action is an attack
             if (stdAct.GetComponent<AttackAction>())
@@ -129,7 +129,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the secondary actions in our action list
-        foreach (Action scndAct in this.ourCharacter.charActionList.secondaryActions)
+        foreach (Action scndAct in this.ourCharacter.charActionList.minorActions)
         {
             //If the action is an attack
             if (scndAct.GetComponent<AttackAction>())
@@ -150,7 +150,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the quick actions in our action list
-        foreach (Action qkAct in this.ourCharacter.charActionList.quickActions)
+        foreach (Action qkAct in this.ourCharacter.charActionList.fastActions)
         {
             //If the action is an attack
             if (qkAct.GetComponent<AttackAction>())
@@ -171,7 +171,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //Looping through all of the full round actions in our action list
-        foreach (Action fullAct in this.ourCharacter.charActionList.fullRoundActions)
+        foreach (Action fullAct in this.ourCharacter.charActionList.massiveActions)
         {
             //If the action is an attack
             if (fullAct.GetComponent<AttackAction>())
@@ -612,7 +612,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (addedAct.type)
                         {
-                            case Action.ActionType.Standard:
+                            case Action.ActionType.Major:
                                 standardAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if(highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -622,7 +622,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Secondary:
+                            case Action.ActionType.Minor:
                                 secondaryAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if(highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -632,7 +632,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Quick:
+                            case Action.ActionType.Fast:
                                 quickAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if(highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -642,7 +642,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.FullRound:
+                            case Action.ActionType.Massive:
                                 fullRoundAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if(highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -671,7 +671,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (atkAct.type)
                         {
-                            case Action.ActionType.Standard:
+                            case Action.ActionType.Major:
                                 standardAtkDmg.Add(atkAct, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -681,7 +681,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Secondary:
+                            case Action.ActionType.Minor:
                                 secondaryAtkDmg.Add(atkAct, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -691,7 +691,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Quick:
+                            case Action.ActionType.Fast:
                                 quickAtkDmg.Add(atkAct, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -701,7 +701,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.FullRound:
+                            case Action.ActionType.Massive:
                                 fullRoundAtkDmg.Add(atkAct, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -790,7 +790,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action addedAct in this.behaviorList[0].addedActions)
             {
                 //If the current action is a full round action and is a move action, we're allowed to use full round move actions
-                if(addedAct.type == Action.ActionType.FullRound && addedAct.GetType() == typeof(MoveAction))
+                if(addedAct.type == Action.ActionType.Massive && addedAct.GetType() == typeof(MoveAction))
                 {
                     canUseFullRoundMove = true;
                     break;
@@ -830,21 +830,21 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 switch(mv.type)
                 {
                     //If we're taking a quick move act, we can't make a quick attack act
-                    case Action.ActionType.Quick:
+                    case Action.ActionType.Fast:
                         quickActAvailable = false;
                         break;
                     //If we're taking a secondary move act, we can't make a secondary or full round attack act
-                    case Action.ActionType.Secondary:
+                    case Action.ActionType.Minor:
                         secondaryActAvailable = false;
                         fullRoundActAvailable = false;
                         break;
                     //If we're taking a standard move act, we can't make a standard or full round attack act
-                    case Action.ActionType.Standard:
+                    case Action.ActionType.Major:
                         standardActAvailable = false;
                         fullRoundActAvailable = false;
                         break;
                     //If we're taking a full round move act, we can't make a full round, standard, or secondary attack act
-                    case Action.ActionType.FullRound:
+                    case Action.ActionType.Massive:
                         fullRoundActAvailable = false;
                         standardActAvailable = false;
                         secondaryActAvailable = false;
@@ -879,7 +879,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (addedAct.type)
                         {
-                            case Action.ActionType.Standard:
+                            case Action.ActionType.Major:
                                 standardAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -889,7 +889,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Secondary:
+                            case Action.ActionType.Minor:
                                 secondaryAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -899,7 +899,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Quick:
+                            case Action.ActionType.Fast:
                                 quickAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -909,7 +909,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.FullRound:
+                            case Action.ActionType.Massive:
                                 fullRoundAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -938,7 +938,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (atkAct.type)
                         {
-                            case Action.ActionType.Standard:
+                            case Action.ActionType.Major:
                                 standardAtkDmg.Add(atkAct, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -948,7 +948,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Secondary:
+                            case Action.ActionType.Minor:
                                 secondaryAtkDmg.Add(atkAct, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -958,7 +958,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Quick:
+                            case Action.ActionType.Fast:
                                 quickAtkDmg.Add(atkAct, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -968,7 +968,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.FullRound:
+                            case Action.ActionType.Massive:
                                 fullRoundAtkDmg.Add(atkAct, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -1437,7 +1437,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         foreach (Action aaQ in this.behaviorList[0].addedActions)
         {
             //If the action is a movement action and is a quick action
-            if (aaQ.type == Action.ActionType.Quick && aaQ.GetType() == typeof(MoveAction))
+            if (aaQ.type == Action.ActionType.Fast && aaQ.GetType() == typeof(MoveAction))
             {
                 //If the current quick move action is null or has a lower range, this action becomes the one we use
                 if (quickMoveAct == null || quickMoveAct.range < aaQ.range)
@@ -1461,7 +1461,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach (MoveAction moveAct in this.moveActionList)
             {
                 //If the current move action is a quick action and has a longer range than our current quick action
-                if (moveAct.type == Action.ActionType.Quick && moveAct.range > currentMoveSum)
+                if (moveAct.type == Action.ActionType.Fast && moveAct.range > currentMoveSum)
                 {
                     //This move act becomes the new quick move
                     quickMoveAct = moveAct;
@@ -1483,7 +1483,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action aaS in this.behaviorList[0].addedActions)
             {
                 //If the action is a movement action and is a secondary action
-                if(aaS.type == Action.ActionType.Secondary && aaS.GetType() == typeof(MoveAction))
+                if(aaS.type == Action.ActionType.Minor && aaS.GetType() == typeof(MoveAction))
                 {
                     //If the current secondary move action is null or has a lower range, this action becomes the one we use
                     if(secondaryMoveAct == null || secondaryMoveAct.range < aaS.range)
@@ -1523,7 +1523,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a secondary action and has a longer range than our current secondary action
-                    if(moveAct.type == Action.ActionType.Secondary && secondaryMoveAct == null || moveAct.range > secondaryMoveAct.range)
+                    if(moveAct.type == Action.ActionType.Minor && secondaryMoveAct == null || moveAct.range > secondaryMoveAct.range)
                     {
                         //If the current secondary move act isn't null, we subtract its range from our move sum
                         if(secondaryMoveAct != null)
@@ -1562,7 +1562,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action aaSt in this.behaviorList[0].addedActions)
             {
                 //If the action is a movement action and is a standard action
-                if(aaSt.type == Action.ActionType.Standard && aaSt.GetType() == typeof(MoveAction))
+                if(aaSt.type == Action.ActionType.Major && aaSt.GetType() == typeof(MoveAction))
                 {
                     //If the current standard move action is null or has a lower range, this action becomes the one we use
                     if(standardMoveAct == null || standardMoveAct.range < aaSt.range)
@@ -1620,7 +1620,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a standard action and has a longer range than our current standard action
-                    if(moveAct.type == Action.ActionType.Standard && (standardMoveAct == null || moveAct.range > standardMoveAct.range))
+                    if(moveAct.type == Action.ActionType.Major && (standardMoveAct == null || moveAct.range > standardMoveAct.range))
                     {
                         //If the current standard move act isn't null, we subtract its range from our move sum
                         if(standardMoveAct != null)
@@ -1677,7 +1677,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action aaFr in this.behaviorList[0].addedActions)
             {
                 //If the action is a movement action and is a full round action
-                if(aaFr.type == Action.ActionType.FullRound && aaFr.GetType() == typeof(MoveAction))
+                if(aaFr.type == Action.ActionType.Massive && aaFr.GetType() == typeof(MoveAction))
                 {
                     //If the current full round action is null or has a lower range, this action becomes the one we use
                     if(fullRoundMoveAct == null || fullRoundMoveAct.range < aaFr.range)
@@ -1737,7 +1737,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a full round action and has a longer range than our current full round action
-                    if(moveAct.type == Action.ActionType.FullRound && fullRoundMoveAct == null || moveAct.range > fullRoundMoveAct.range)
+                    if(moveAct.type == Action.ActionType.Massive && fullRoundMoveAct == null || moveAct.range > fullRoundMoveAct.range)
                     {
                         //If the current full round move act isn't null, we subtract its range from our move sum
                         if(fullRoundMoveAct != null)
