@@ -28,30 +28,27 @@ public class CharacterGenerator : MonoBehaviour
 
 
     /* ~~~~~~ SKILLS ~~~~~~*/
-    public Vector2 cooking = new Vector2(10, 50);
-    public Vector2 healing = new Vector2(10, 50);
-    public Vector2 crafting = new Vector2(10, 50);
-
-    public Vector2 foraging = new Vector2(10, 50);
-    public Vector2 tracking = new Vector2(10, 50);
-    public Vector2 fishing = new Vector2(10, 50);
-
-    public Vector2 climbing = new Vector2(10, 50);
-    public Vector2 hiding = new Vector2(10, 50);
-    public Vector2 swimming = new Vector2(10, 50);
+    public Vector2 survivalist = new Vector2(10, 50);
+    public Vector2 social = new Vector2(10, 50);
 
 
     /* ~~~~~~ COMBAT ~~~~~~*/
-    public Vector2 punching = new Vector2(10, 50);
+    public Vector2 unarmed = new Vector2(10, 50);
     public Vector2 daggers = new Vector2(10, 50);
     public Vector2 swords = new Vector2(10, 50);
-    public Vector2 axes = new Vector2(10, 50);
-    public Vector2 spears = new Vector2(10, 50);
+    public Vector2 mauls = new Vector2(10, 50);
+    public Vector2 poles = new Vector2(10, 50);
     public Vector2 bows = new Vector2(10, 50);
-    public Vector2 improvised = new Vector2(10, 50);
+    public Vector2 shields = new Vector2(10, 50);
+
+    public Vector2 arcaneMagic = new Vector2(10, 50);
     public Vector2 holyMagic = new Vector2(10, 50);
     public Vector2 darkMagic = new Vector2(10, 50);
-    public Vector2 natureMagic = new Vector2(10, 50);
+    public Vector2 fireMagic = new Vector2(10, 50);
+    public Vector2 waterMagic = new Vector2(10, 50);
+    public Vector2 windMagic = new Vector2(10, 50);
+    public Vector2 electricMagic = new Vector2(10, 50);
+    public Vector2 stoneMagic = new Vector2(10, 50);
 
     public Vector2 initiative = new Vector2(0.005f, 0.015f);
 
@@ -133,17 +130,25 @@ public class CharacterGenerator : MonoBehaviour
         //Getting the reference to this object's Skills component
         Skills characterSkillsRef = this.GetComponent<Skills>();
 
-        characterSkillsRef.cooking = Mathf.RoundToInt(Random.Range(this.cooking.x, this.cooking.y));
-        characterSkillsRef.healing = Mathf.RoundToInt(Random.Range(this.healing.x, this.healing.y));
-        characterSkillsRef.crafting = Mathf.RoundToInt(Random.Range(this.crafting.x, this.crafting.y));
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Unarmed, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Daggers, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Swords, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Mauls, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Poles, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Bows, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Shields, this.unarmed.x, this.unarmed.y);
 
-        characterSkillsRef.foraging = Mathf.RoundToInt(Random.Range(this.foraging.x, this.foraging.y));
-        characterSkillsRef.tracking = Mathf.RoundToInt(Random.Range(this.tracking.x, this.tracking.y));
-        characterSkillsRef.fishing = Mathf.RoundToInt(Random.Range(this.fishing.x, this.fishing.y));
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.ArcaneMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.HolyMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.DarkMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.FireMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.WaterMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.WindMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.ElectricMagic, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.StoneMagic, this.unarmed.x, this.unarmed.y);
 
-        characterSkillsRef.climbing = Mathf.RoundToInt(Random.Range(this.climbing.x, this.climbing.y));
-        characterSkillsRef.hiding = Mathf.RoundToInt(Random.Range(this.hiding.x, this.hiding.y));
-        characterSkillsRef.swimming = Mathf.RoundToInt(Random.Range(this.swimming.x, this.swimming.y));
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Survivalist, this.unarmed.x, this.unarmed.y);
+        characterSkillsRef.GenerateInitialSkillValue(SkillList.Social, this.unarmed.x, this.unarmed.y);
     }
 
 
@@ -152,18 +157,6 @@ public class CharacterGenerator : MonoBehaviour
     {
         //Getting the reference ot this object's Combat Stats component
         CombatStats characterCombatStatsRef = this.GetComponent<CombatStats>();
-
-        characterCombatStatsRef.punching = Mathf.RoundToInt(Random.Range(this.punching.x, this.punching.y));
-        characterCombatStatsRef.daggers = Mathf.RoundToInt(Random.Range(this.daggers.x, this.daggers.y));
-        characterCombatStatsRef.swords = Mathf.RoundToInt(Random.Range(this.swords.x, this.swords.y));
-        characterCombatStatsRef.axes = Mathf.RoundToInt(Random.Range(this.axes.x, this.axes.y));
-        characterCombatStatsRef.spears = Mathf.RoundToInt(Random.Range(this.spears.x, this.spears.y));
-        characterCombatStatsRef.bows = Mathf.RoundToInt(Random.Range(this.bows.x, this.bows.y));
-        characterCombatStatsRef.improvised = Mathf.RoundToInt(Random.Range(this.improvised.x, this.improvised.y));
-        characterCombatStatsRef.holyMagic = Mathf.RoundToInt(Random.Range(this.holyMagic.x, this.holyMagic.y));
-        characterCombatStatsRef.darkMagic = Mathf.RoundToInt(Random.Range(this.darkMagic.x, this.darkMagic.y));
-        characterCombatStatsRef.natureMagic = Mathf.RoundToInt(Random.Range(this.natureMagic.x, this.natureMagic.y));
-
         //Sets the base initiative
         characterCombatStatsRef.currentInitiativeSpeed = Random.Range(this.initiative.x, this.initiative.y);
     }

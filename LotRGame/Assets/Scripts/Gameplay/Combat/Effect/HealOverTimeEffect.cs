@@ -6,7 +6,7 @@ using UnityEngine;
 public class HealOverTimeEffect : Effect
 {
     //What type of magic this damage counts as
-    public CombatManager.DamageType healType = CombatManager.DamageType.Magic;
+    public CombatManager.DamageType healType = CombatManager.DamageType.Arcane;
 
     //The chance that this effect will happen whenever it's triggered
     [Range(0, 1)]
@@ -110,8 +110,8 @@ public class HealOverTimeEffect : Effect
         //Subtracting any magic resistance from the amount that we're trying to heal
         switch (this.healType)
         {
-            case CombatManager.DamageType.Magic:
-                damagehealed -= this.characterToEffect.charInventory.totalMagicResist;
+            case CombatManager.DamageType.Arcane:
+                damagehealed -= this.characterToEffect.charInventory.totalArcaneResist;
                 break;
             case CombatManager.DamageType.Fire:
                 damagehealed -= this.characterToEffect.charInventory.totalFireResist;
@@ -125,8 +125,8 @@ public class HealOverTimeEffect : Effect
             case CombatManager.DamageType.Wind:
                 damagehealed -= this.characterToEffect.charInventory.totalWindResist;
                 break;
-            case CombatManager.DamageType.Rock:
-                damagehealed -= this.characterToEffect.charInventory.totalRockResist;
+            case CombatManager.DamageType.Stone:
+                damagehealed -= this.characterToEffect.charInventory.totalStoneResist;
                 break;
             case CombatManager.DamageType.Holy:
                 damagehealed -= this.characterToEffect.charInventory.totalHolyResist;

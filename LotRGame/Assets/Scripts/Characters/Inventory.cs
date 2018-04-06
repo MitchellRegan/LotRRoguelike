@@ -11,9 +11,9 @@ public class Inventory : MonoBehaviour
     [HideInInspector]
     public int totalPhysicalArmor = 0;
 
-    //The magic armor total
+    //The arcane armor total
     [HideInInspector]
-    public int totalMagicResist = 0;
+    public int totalArcaneResist = 0;
     //The magic armor total
     [HideInInspector]
     public int totalHolyResist = 0;
@@ -34,7 +34,7 @@ public class Inventory : MonoBehaviour
     public int totalWindResist = 0;
     //The magic armor total
     [HideInInspector]
-    public int totalRockResist = 0;
+    public int totalStoneResist = 0;
 
     //Slots of armor that are currently worn
     public Armor helm = null;
@@ -195,12 +195,12 @@ public class Inventory : MonoBehaviour
         //The sum of the physical armor of equipped gear
         int physicalArmorSum = 0;
         //The sum of the magic resist of equipped gear
-        int magicResistSum = 0;
+        int arcaneResistSum = 0;
         int fireResistSum = 0;
         int waterResistSum = 0;
         int electricResistSum = 0;
         int windResistSum = 0;
-        int rockResistSum = 0;
+        int stoneResistSum = 0;
         int lightResistSum = 0;
         int darkResistSum = 0;
 
@@ -220,12 +220,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.helm.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.helm.physicalDefense;
 
-            magicResistSum += this.helm.magicResist;
+            arcaneResistSum += this.helm.arcaneResist;
             fireResistSum += this.helm.fireResist;
             waterResistSum += this.helm.waterResist;
             electricResistSum += this.helm.electricResist;
             windResistSum += this.helm.windResist;
-            rockResistSum += this.helm.rockResist;
+            stoneResistSum += this.helm.stoneResist;
             lightResistSum += this.helm.lightResist;
             darkResistSum += this.helm.darkResist;
         }
@@ -236,12 +236,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.chestPiece.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.chestPiece.physicalDefense;
 
-            magicResistSum += this.chestPiece.magicResist;
+            arcaneResistSum += this.chestPiece.arcaneResist;
             fireResistSum += this.chestPiece.fireResist;
             waterResistSum += this.chestPiece.waterResist;
             electricResistSum += this.chestPiece.electricResist;
             windResistSum += this.chestPiece.windResist;
-            rockResistSum += this.chestPiece.rockResist;
+            stoneResistSum += this.chestPiece.stoneResist;
             lightResistSum += this.chestPiece.lightResist;
             darkResistSum += this.chestPiece.darkResist;
         }
@@ -252,12 +252,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.leggings.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.leggings.physicalDefense;
 
-            magicResistSum += this.leggings.magicResist;
+            arcaneResistSum += this.leggings.arcaneResist;
             fireResistSum += this.leggings.fireResist;
             waterResistSum += this.leggings.waterResist;
             electricResistSum += this.leggings.electricResist;
             windResistSum += this.leggings.windResist;
-            rockResistSum += this.leggings.rockResist;
+            stoneResistSum += this.leggings.stoneResist;
             lightResistSum += this.leggings.lightResist;
             darkResistSum += this.leggings.darkResist;
         }
@@ -268,12 +268,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.gloves.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.gloves.physicalDefense;
 
-            magicResistSum += this.gloves.magicResist;
+            arcaneResistSum += this.gloves.arcaneResist;
             fireResistSum += this.gloves.fireResist;
             waterResistSum += this.gloves.waterResist;
             electricResistSum += this.gloves.electricResist;
             windResistSum += this.gloves.windResist;
-            rockResistSum += this.gloves.rockResist;
+            stoneResistSum += this.gloves.stoneResist;
             lightResistSum += this.gloves.lightResist;
             darkResistSum += this.gloves.darkResist;
         }
@@ -284,12 +284,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.shoes.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.shoes.physicalDefense;
 
-            magicResistSum += this.shoes.magicResist;
+            arcaneResistSum += this.shoes.arcaneResist;
             fireResistSum += this.shoes.fireResist;
             waterResistSum += this.shoes.waterResist;
             electricResistSum += this.shoes.electricResist;
             windResistSum += this.shoes.windResist;
-            rockResistSum += this.shoes.rockResist;
+            stoneResistSum += this.shoes.stoneResist;
             lightResistSum += this.shoes.lightResist;
             darkResistSum += this.shoes.darkResist;
         }
@@ -300,12 +300,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.cloak.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.cloak.physicalDefense;
 
-            magicResistSum += this.cloak.magicResist;
+            arcaneResistSum += this.cloak.arcaneResist;
             fireResistSum += this.cloak.fireResist;
             waterResistSum += this.cloak.waterResist;
             electricResistSum += this.cloak.electricResist;
             windResistSum += this.cloak.windResist;
-            rockResistSum += this.cloak.rockResist;
+            stoneResistSum += this.cloak.stoneResist;
             lightResistSum += this.cloak.lightResist;
             darkResistSum += this.cloak.darkResist;
         }
@@ -316,12 +316,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.necklace.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.necklace.physicalDefense;
 
-            magicResistSum += this.necklace.magicResist;
+            arcaneResistSum += this.necklace.arcaneResist;
             fireResistSum += this.necklace.fireResist;
             waterResistSum += this.necklace.waterResist;
             electricResistSum += this.necklace.electricResist;
             windResistSum += this.necklace.windResist;
-            rockResistSum += this.necklace.rockResist;
+            stoneResistSum += this.necklace.stoneResist;
             lightResistSum += this.necklace.lightResist;
             darkResistSum += this.necklace.darkResist;
         }
@@ -332,12 +332,12 @@ public class Inventory : MonoBehaviour
             weightSum += this.ring.GetComponent<Item>().kilogramPerUnit;
             physicalArmorSum += this.ring.physicalDefense;
 
-            magicResistSum += this.ring.magicResist;
+            arcaneResistSum += this.ring.arcaneResist;
             fireResistSum += this.ring.fireResist;
             waterResistSum += this.ring.waterResist;
             electricResistSum += this.ring.electricResist;
             windResistSum += this.ring.windResist;
-            rockResistSum += this.ring.rockResist;
+            stoneResistSum += this.ring.stoneResist;
             lightResistSum += this.ring.lightResist;
             darkResistSum += this.ring.darkResist;
         }
@@ -354,12 +354,12 @@ public class Inventory : MonoBehaviour
 
                 physicalArmorSum += rHandArmor.physicalDefense;
 
-                magicResistSum += rHandArmor.magicResist;
+                arcaneResistSum += rHandArmor.arcaneResist;
                 fireResistSum += rHandArmor.fireResist;
                 waterResistSum += rHandArmor.waterResist;
                 electricResistSum += rHandArmor.electricResist;
                 windResistSum += rHandArmor.windResist;
-                rockResistSum += rHandArmor.rockResist;
+                stoneResistSum += rHandArmor.stoneResist;
                 lightResistSum += rHandArmor.lightResist;
                 darkResistSum += rHandArmor.darkResist;
             }
@@ -377,12 +377,12 @@ public class Inventory : MonoBehaviour
 
                 physicalArmorSum += lHandArmor.physicalDefense;
 
-                magicResistSum += lHandArmor.magicResist;
+                arcaneResistSum += lHandArmor.arcaneResist;
                 fireResistSum += lHandArmor.fireResist;
                 waterResistSum += lHandArmor.waterResist;
                 electricResistSum += lHandArmor.electricResist;
                 windResistSum += lHandArmor.windResist;
-                rockResistSum += lHandArmor.rockResist;
+                stoneResistSum += lHandArmor.stoneResist;
                 lightResistSum += lHandArmor.lightResist;
                 darkResistSum += lHandArmor.darkResist;
             }
@@ -392,12 +392,12 @@ public class Inventory : MonoBehaviour
         this.currentWeight = weightSum;
         this.totalPhysicalArmor = physicalArmorSum;
 
-        this.totalMagicResist = magicResistSum;
+        this.totalArcaneResist = arcaneResistSum;
         this.totalFireResist = fireResistSum;
         this.totalWaterResist = waterResistSum;
         this.totalElectricResist = electricResistSum;
         this.totalWindResist = windResistSum;
-        this.totalRockResist = rockResistSum;
+        this.totalStoneResist = stoneResistSum;
         this.totalHolyResist = lightResistSum;
         this.totalDarkResist = darkResistSum;
 

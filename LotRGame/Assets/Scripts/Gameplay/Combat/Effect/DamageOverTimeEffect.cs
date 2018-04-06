@@ -6,7 +6,7 @@ using UnityEngine;
 public class DamageOverTimeEffect : Effect
 {
     //What type of damage this damage counts as
-    public CombatManager.DamageType damageType = CombatManager.DamageType.Magic;
+    public CombatManager.DamageType damageType = CombatManager.DamageType.Arcane;
 
     //The chance that this effect will happen whenever it's triggered
     [Range(0,1)]
@@ -110,8 +110,8 @@ public class DamageOverTimeEffect : Effect
         //Subtracting any magic resistance from the damage that we're trying to deal
         switch(this.damageType)
         {
-            case CombatManager.DamageType.Magic:
-                damageDealt -= this.characterToEffect.charInventory.totalMagicResist;
+            case CombatManager.DamageType.Arcane:
+                damageDealt -= this.characterToEffect.charInventory.totalArcaneResist;
                 break;
             case CombatManager.DamageType.Fire:
                 damageDealt -= this.characterToEffect.charInventory.totalFireResist;
@@ -125,8 +125,8 @@ public class DamageOverTimeEffect : Effect
             case CombatManager.DamageType.Wind:
                 damageDealt -= this.characterToEffect.charInventory.totalWindResist;
                 break;
-            case CombatManager.DamageType.Rock:
-                damageDealt -= this.characterToEffect.charInventory.totalRockResist;
+            case CombatManager.DamageType.Stone:
+                damageDealt -= this.characterToEffect.charInventory.totalStoneResist;
                 break;
             case CombatManager.DamageType.Holy:
                 damageDealt -= this.characterToEffect.charInventory.totalHolyResist;

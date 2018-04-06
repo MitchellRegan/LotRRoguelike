@@ -33,12 +33,12 @@ public class CharacterInventoryUI : MonoBehaviour
     public Text selectedCharacterWallet;
 
     //Selected Character magic resist
-    public Text selectedCharacterResistMagic;
+    public Text selectedCharacterResistArcane;
     public Text selectedCharacterResistFire;
     public Text selectedCharacterResistWater;
     public Text selectedCharacterResistElectric;
     public Text selectedCharacterResistWind;
-    public Text selectedCharacterResistRock;
+    public Text selectedCharacterResistStone;
     public Text selectedCharacterResistLight;
     public Text selectedCharacterResistDark;
 
@@ -165,9 +165,9 @@ public class CharacterInventoryUI : MonoBehaviour
             this.selectedCharacterArmorPhysical.text = "" + this.selectedCharacterInventory.totalPhysicalArmor;
         }
         //Sets magic resist texts
-        if (this.selectedCharacterResistMagic != null)
+        if (this.selectedCharacterResistArcane != null)
         {
-            this.selectedCharacterResistMagic.text = "" + this.selectedCharacterInventory.totalMagicResist;
+            this.selectedCharacterResistArcane.text = "" + this.selectedCharacterInventory.totalArcaneResist;
         }
         if (this.selectedCharacterResistFire != null)
         {
@@ -185,9 +185,9 @@ public class CharacterInventoryUI : MonoBehaviour
         {
             this.selectedCharacterResistWind.text = "" + this.selectedCharacterInventory.totalWindResist;
         }
-        if (this.selectedCharacterResistRock != null)
+        if (this.selectedCharacterResistStone != null)
         {
-            this.selectedCharacterResistRock.text = "" + this.selectedCharacterInventory.totalRockResist;
+            this.selectedCharacterResistStone.text = "" + this.selectedCharacterInventory.totalStoneResist;
         }
         if (this.selectedCharacterResistLight != null)
         {

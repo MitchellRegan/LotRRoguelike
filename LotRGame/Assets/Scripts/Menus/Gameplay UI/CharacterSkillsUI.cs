@@ -12,38 +12,32 @@ public class CharacterSkillsUI : MonoBehaviour
     //Reference to the text field that displays the selected character's name
     public Text nameText;
 
+    [Space(8)]
+
     //Reference to the sliders that display their given skill
-    public Slider cookingSlider;
-    public Slider healingSlider;
-    public Slider craftingSlider;
-
-    [Space(8)]
-
-    public Slider foragingSlider;
-    public Slider trackingSlider;
-    public Slider fishingSlider;
-
-    [Space(8)]
-
-    public Slider climbingSlider;
-    public Slider hidingSlider;
-    public Slider swimmingSlider;
-
-    [Space(8)]
-
-    public Slider punchingSlider;
+    public Slider unarmedSlider;
     public Slider daggerSlider;
     public Slider swordSlider;
-    public Slider axeSlider;
-    public Slider spearSlider;
+    public Slider maulSlider;
+    public Slider poleSlider;
     public Slider bowSlider;
-    public Slider improvisedSlider;
+    public Slider shieldSlider;
 
     [Space(8)]
 
+    public Slider arcaneMagicSlider;
     public Slider holyMagicSlider;
     public Slider darkMagicSlider;
-    public Slider natureMagicSlider;
+    public Slider fireMagicSlider;
+    public Slider waterMagicSlider;
+    public Slider windMagicSlider;
+    public Slider electricMagicSlider;
+    public Slider stoneMagicSlider;
+
+    [Space(8)]
+
+    public Slider survivalistSlider;
+    public Slider socialSlider;
 
 
 
@@ -73,30 +67,26 @@ public class CharacterSkillsUI : MonoBehaviour
     {
         //Setting the name field to display the selected character's name
         this.nameText.text = this.selectedCharacter.firstName + "\n" + this.selectedCharacter.lastName;
+        
+        this.unarmedSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Unarmed);
+        this.daggerSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Daggers);
+        this.swordSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Swords);
+        this.maulSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Mauls);
+        this.poleSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Poles);
+        this.bowSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Bows);
+        this.shieldSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Shields);
 
-        this.cookingSlider.value = this.selectedCharacterSkillList.cooking + this.selectedCharacterSkillList.cookingMod;
-        this.healingSlider.value = this.selectedCharacterSkillList.healing + this.selectedCharacterSkillList.healingMod;
-        this.craftingSlider.value = this.selectedCharacterSkillList.crafting + this.selectedCharacterSkillList.craftingMod;
+        this.arcaneMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.ArcaneMagic);
+        this.holyMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.HolyMagic);
+        this.darkMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.DarkMagic);
+        this.fireMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.FireMagic);
+        this.waterMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.WaterMagic);
+        this.windMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.WindMagic);
+        this.electricMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.ElectricMagic);
+        this.stoneMagicSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.StoneMagic);
 
-        this.foragingSlider.value = this.selectedCharacterSkillList.foraging + this.selectedCharacterSkillList.foragingMod;
-        this.trackingSlider.value = this.selectedCharacterSkillList.tracking + this.selectedCharacterSkillList.trackingMod;
-        this.fishingSlider.value = this.selectedCharacterSkillList.fishing + this.selectedCharacterSkillList.fishingMod;
-
-        this.climbingSlider.value = this.selectedCharacterSkillList.climbing + this.selectedCharacterSkillList.climbingMod;
-        this.hidingSlider.value = this.selectedCharacterSkillList.hiding + this.selectedCharacterSkillList.hidingMod;
-        this.swimmingSlider.value = this.selectedCharacterSkillList.swimming + this.selectedCharacterSkillList.swimmingMod;
-
-        this.punchingSlider.value = this.selectedCharacter.charCombatStats.punching + this.selectedCharacter.charCombatStats.punchingMod;
-        this.daggerSlider.value = this.selectedCharacter.charCombatStats.daggers + this.selectedCharacter.charCombatStats.daggersMod;
-        this.swordSlider.value = this.selectedCharacter.charCombatStats.swords + this.selectedCharacter.charCombatStats.swordsMod;
-        this.axeSlider.value = this.selectedCharacter.charCombatStats.axes + this.selectedCharacter.charCombatStats.axesMod;
-        this.spearSlider.value = this.selectedCharacter.charCombatStats.spears + this.selectedCharacter.charCombatStats.spearsMod;
-        this.bowSlider.value = this.selectedCharacter.charCombatStats.bows + this.selectedCharacter.charCombatStats.bowsMod;
-        this.improvisedSlider.value = this.selectedCharacter.charCombatStats.improvised + this.selectedCharacter.charCombatStats.improvisedMod;
-
-        this.holyMagicSlider.value = this.selectedCharacter.charCombatStats.holyMagic + this.selectedCharacter.charCombatStats.holyMagicMod;
-        this.darkMagicSlider.value = this.selectedCharacter.charCombatStats.darkMagic + this.selectedCharacter.charCombatStats.darkMagicMod;
-        this.natureMagicSlider.value = this.selectedCharacter.charCombatStats.natureMagic + this.selectedCharacter.charCombatStats.natureMagicMod;
+        this.survivalistSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Survivalist);
+        this.socialSlider.value = this.selectedCharacter.charSkills.GetSkillLevelValueWithMod(SkillList.Social);
     }
 
 

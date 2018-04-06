@@ -246,29 +246,25 @@ public class PartyCreator : MonoBehaviour
                 this.newPartyCharacters[c].sex = this.allCharacterCustomizers[c].sex;
 
                 //Adding all of the allocated skill points to the designated skills
-                this.newPartyCharacters[c].charCombatStats.punching += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Punching];
-                this.newPartyCharacters[c].charCombatStats.daggers += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Daggers];
-                this.newPartyCharacters[c].charCombatStats.swords += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swords];
-                this.newPartyCharacters[c].charCombatStats.axes += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Axes];
-                this.newPartyCharacters[c].charCombatStats.spears += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Spears];
-                this.newPartyCharacters[c].charCombatStats.bows += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Bows];
-                this.newPartyCharacters[c].charCombatStats.improvised += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Improvised];
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Unarmed, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Unarmed]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Daggers, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Daggers]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Swords, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swords]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Mauls, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Mauls]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Poles, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Poles]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Bows, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Bows]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Shields, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Shields]);
 
-                this.newPartyCharacters[c].charCombatStats.holyMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.HolyMagic];
-                this.newPartyCharacters[c].charCombatStats.darkMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.DarkMagic];
-                this.newPartyCharacters[c].charCombatStats.natureMagic += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.NatureMagic];
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.ArcaneMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.ArcaneMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.HolyMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.HolyMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.DarkMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.DarkMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.FireMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.FireMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.WaterMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.WaterMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.WindMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.WindMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.ElectricMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.ElectricMagic]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.StoneMagic, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.StoneMagic]);
 
-                this.newPartyCharacters[c].charSkills.cooking += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Cooking];
-                this.newPartyCharacters[c].charSkills.healing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Healing];
-                this.newPartyCharacters[c].charSkills.crafting += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Crafting];
-
-                this.newPartyCharacters[c].charSkills.foraging += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Foraging];
-                this.newPartyCharacters[c].charSkills.tracking += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Tracking];
-                this.newPartyCharacters[c].charSkills.fishing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Fishing];
-
-                this.newPartyCharacters[c].charSkills.climbing += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Climbing];
-                this.newPartyCharacters[c].charSkills.hiding += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Hiding];
-                this.newPartyCharacters[c].charSkills.swimming += this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Swimming];
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Survivalist, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Survivalist]);
+                this.newPartyCharacters[c].charSkills.LevelUpSkill(SkillList.Social, this.allCharacterCustomizers[c].allocatedSkillPoints[SkillList.Social]);
             }
 
 

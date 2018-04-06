@@ -5,7 +5,7 @@ using UnityEngine;
 public class SkillTome : Item
 {
     //The type of skill to increase
-    public SkillList skillToLearn = SkillList.Punching;
+    public SkillList skillToLearn = SkillList.Unarmed;
 
     //The list of skill progressions to use when determining the skill points to add
     public List<SkillTomeProgression> progressionCurves;
@@ -81,7 +81,7 @@ public class SkillTome : Item
         }
 
         //Setting the new character skill value
-        this.SetImprovedSkillLevel(charToLearn_, improvedSkillLevel);
+        this.SetImprovedSkillLevel(charToLearn_, improvedSkillLevel - currentSkillLevel);
     }
 
 
@@ -91,62 +91,60 @@ public class SkillTome : Item
         //Switch statement to go through each skill and get the one that we'll improve
         switch(this.skillToLearn)
         {
-            case SkillList.Punching:
-                return characterRef_.charCombatStats.punching;
+            case SkillList.Unarmed:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Unarmed);
 
             case SkillList.Daggers:
-                return characterRef_.charCombatStats.daggers;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Daggers);
 
             case SkillList.Swords:
-                return characterRef_.charCombatStats.swords;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Swords);
 
-            case SkillList.Axes:
-                return characterRef_.charCombatStats.axes;
+            case SkillList.Mauls:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Mauls);
 
-            case SkillList.Spears:
-                return characterRef_.charCombatStats.spears;
+            case SkillList.Poles:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Poles);
 
             case SkillList.Bows:
-                return characterRef_.charCombatStats.bows;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Bows);
 
-            case SkillList.Improvised:
-                return characterRef_.charCombatStats.improvised;
+            case SkillList.Shields:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Shields);
+
+
+
+            case SkillList.ArcaneMagic:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.ArcaneMagic);
 
             case SkillList.HolyMagic:
-                return characterRef_.charCombatStats.holyMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.HolyMagic);
 
             case SkillList.DarkMagic:
-                return characterRef_.charCombatStats.darkMagic;
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.DarkMagic);
 
-            case SkillList.NatureMagic:
-                return characterRef_.charCombatStats.natureMagic;
+            case SkillList.FireMagic:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.FireMagic);
 
-            case SkillList.Cooking:
-                return characterRef_.charSkills.cooking;
+            case SkillList.WaterMagic:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.WaterMagic);
 
-            case SkillList.Healing:
-                return characterRef_.charSkills.healing;
+            case SkillList.WindMagic:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.WindMagic);
 
-            case SkillList.Crafting:
-                return characterRef_.charSkills.crafting;
+            case SkillList.ElectricMagic:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.ElectricMagic);
 
-            case SkillList.Foraging:
-                return characterRef_.charSkills.foraging;
+            case SkillList.StoneMagic:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.StoneMagic);
 
-            case SkillList.Tracking:
-                return characterRef_.charSkills.tracking;
 
-            case SkillList.Fishing:
-                return characterRef_.charSkills.fishing;
 
-            case SkillList.Climbing:
-                return characterRef_.charSkills.climbing;
+            case SkillList.Survivalist:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Survivalist);
 
-            case SkillList.Hiding:
-                return characterRef_.charSkills.hiding;
-
-            case SkillList.Swimming:
-                return characterRef_.charSkills.swimming;
+            case SkillList.Social:
+                return characterRef_.charSkills.GetSkillLevelValue(SkillList.Social);
 
             default:
                 return 0;
@@ -157,85 +155,87 @@ public class SkillTome : Item
     //Function called from CharacterUseTome to set the player's new skill value
     private void SetImprovedSkillLevel(Character characterRef_, int newSkillLevel_)
     {
-        //Switch statement to go through each skill and get the one that we'll improve
-        switch (this.skillToLearn)
+        //Looping through a number of times that we level up. This is to make sure the character gets all of the skill rewards
+        for(int lvl = 0; lvl < newSkillLevel_; ++lvl)
         {
-            case SkillList.Punching:
-                characterRef_.charCombatStats.punching = newSkillLevel_;
+            characterRef_.charSkills.LevelUpSkill(this.skillToLearn, 1);
+        }
+
+        //Switch statement to go through each skill and get the one that we'll improve
+        /*switch (this.skillToLearn)
+        {
+            case SkillList.Unarmed:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Unarmed, newSkillLevel_);
                 break;
 
             case SkillList.Daggers:
-                characterRef_.charCombatStats.daggers = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Daggers, newSkillLevel_);
                 break;
 
             case SkillList.Swords:
-                characterRef_.charCombatStats.swords = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Swords, newSkillLevel_);
                 break;
 
-            case SkillList.Axes:
-                characterRef_.charCombatStats.axes = newSkillLevel_;
+            case SkillList.Mauls:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Mauls, newSkillLevel_);
                 break;
 
-            case SkillList.Spears:
-                characterRef_.charCombatStats.spears = newSkillLevel_;
+            case SkillList.Poles:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Poles, newSkillLevel_);
                 break;
 
             case SkillList.Bows:
-                characterRef_.charCombatStats.bows = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.Bows, newSkillLevel_);
                 break;
 
-            case SkillList.Improvised:
-                characterRef_.charCombatStats.improvised = newSkillLevel_;
+            case SkillList.Shields:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Shields, newSkillLevel_);
+                break;
+
+
+
+            case SkillList.ArcaneMagic:
+                characterRef_.charSkills.LevelUpSkill(SkillList.ArcaneMagic, newSkillLevel_);
                 break;
 
             case SkillList.HolyMagic:
-                characterRef_.charCombatStats.holyMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.HolyMagic, newSkillLevel_);
                 break;
 
             case SkillList.DarkMagic:
-                characterRef_.charCombatStats.darkMagic = newSkillLevel_;
+                characterRef_.charSkills.LevelUpSkill(SkillList.DarkMagic, newSkillLevel_);
                 break;
 
-            case SkillList.NatureMagic:
-                characterRef_.charCombatStats.natureMagic = newSkillLevel_;
+            case SkillList.FireMagic:
+                characterRef_.charSkills.LevelUpSkill(SkillList.FireMagic, newSkillLevel_);
                 break;
 
-            case SkillList.Cooking:
-                characterRef_.charSkills.cooking = newSkillLevel_;
+            case SkillList.WaterMagic:
+                characterRef_.charSkills.LevelUpSkill(SkillList.WaterMagic, newSkillLevel_);
                 break;
 
-            case SkillList.Healing:
-                characterRef_.charSkills.healing = newSkillLevel_;
+            case SkillList.WindMagic:
+                characterRef_.charSkills.LevelUpSkill(SkillList.WindMagic, newSkillLevel_);
                 break;
 
-            case SkillList.Crafting:
-                characterRef_.charSkills.crafting = newSkillLevel_;
+            case SkillList.ElectricMagic:
+                characterRef_.charSkills.LevelUpSkill(SkillList.ElectricMagic, newSkillLevel_);
                 break;
 
-            case SkillList.Foraging:
-                characterRef_.charSkills.foraging = newSkillLevel_;
+            case SkillList.StoneMagic:
+                characterRef_.charSkills.LevelUpSkill(SkillList.StoneMagic, newSkillLevel_);
                 break;
 
-            case SkillList.Tracking:
-                characterRef_.charSkills.tracking = newSkillLevel_;
+
+
+            case SkillList.Survivalist:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Survivalist, newSkillLevel_);
                 break;
 
-            case SkillList.Fishing:
-                characterRef_.charSkills.fishing = newSkillLevel_;
+            case SkillList.Social:
+                characterRef_.charSkills.LevelUpSkill(SkillList.Social, newSkillLevel_);
                 break;
-
-            case SkillList.Climbing:
-                characterRef_.charSkills.climbing = newSkillLevel_;
-                break;
-
-            case SkillList.Hiding:
-                characterRef_.charSkills.hiding = newSkillLevel_;
-                break;
-
-            case SkillList.Swimming:
-                characterRef_.charSkills.swimming = newSkillLevel_;
-                break;
-        }
+        }*/
     }
 }
 

@@ -81,10 +81,10 @@ public class InstantDamageEffect : Effect
                 }
                 break;
 
-            case CombatManager.DamageType.Rock:
-                if (targetCharacter_.charInventory.totalRockResist > 0)
+            case CombatManager.DamageType.Stone:
+                if (targetCharacter_.charInventory.totalStoneResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalRockResist;
+                    totalDamage -= targetCharacter_.charInventory.totalStoneResist;
                 }
                 break;
 

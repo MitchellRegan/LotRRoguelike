@@ -104,7 +104,7 @@ public class DamageText : MonoBehaviour
             case CombatManager.DamageType.Physical:
                 this.background.color = this.physDamageColor;
                 break;
-            case CombatManager.DamageType.Magic:
+            case CombatManager.DamageType.Arcane:
                 this.background.color = this.magicDamageColor;
                 break;
             case CombatManager.DamageType.Fire:
@@ -119,7 +119,7 @@ public class DamageText : MonoBehaviour
             case CombatManager.DamageType.Wind:
                 this.background.color = this.windDamageColor;
                 break;
-            case CombatManager.DamageType.Rock:
+            case CombatManager.DamageType.Stone:
                 this.background.color = this.rockDamageColor;
                 break;
             case CombatManager.DamageType.Holy:

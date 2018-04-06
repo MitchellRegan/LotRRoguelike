@@ -10,6 +10,10 @@ public class PhysicalState : MonoBehaviour
     //The maximum amount of health this character can have
     public int maxHealth = 100;
 
+    //The type of health progression curve that determines how much health they get
+    //Int lines up with the enum, but makes it easier to get the sum of all modifiers
+    public int healthCurveStagesSum = 3;
+
 
     //If false, this character doesn't require food to survive
     public bool requiresFood = true;
