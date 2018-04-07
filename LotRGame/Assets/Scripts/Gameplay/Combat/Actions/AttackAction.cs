@@ -6,7 +6,7 @@ using UnityEngine;
 public class AttackAction : Action
 {
     //The skill used for determining accuracy
-    public Weapon.WeaponType weaponSkillUsed = Weapon.WeaponType.Unarmed;
+    public SkillList weaponSkillUsed = SkillList.Unarmed;
 
     //Enum that determines how enemy evasion and armor affects the chance of this attack hitting
     public enum attackTouchType { Regular, IgnoreEvasion, IgnoreArmor, IgnoreEvasionAndArmor};
@@ -141,54 +141,7 @@ public class AttackAction : Action
         //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit and adding this attack's accuracy bonus
         int hitRoll = Random.Range(1, 100) + this.accuracyBonus;
         //Adding the correct skill modifier of the acting character to their hit roll
-        switch (this.weaponSkillUsed)
-        {
-            case Weapon.WeaponType.Unarmed:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Unarmed);
-                break;
-            case Weapon.WeaponType.Sword:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Swords);
-                break;
-            case Weapon.WeaponType.Dagger:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Daggers);
-                break;
-            case Weapon.WeaponType.Maul:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Mauls);
-                break;
-            case Weapon.WeaponType.Pole:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Poles);
-                break;
-            case Weapon.WeaponType.Bow:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Bows);
-                break;
-            case Weapon.WeaponType.Shield:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Shields);
-                break;
-            case Weapon.WeaponType.ArcaneMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.ArcaneMagic);
-                break;
-            case Weapon.WeaponType.HolyMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.HolyMagic);
-                break;
-            case Weapon.WeaponType.DarkMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.DarkMagic);
-                break;
-            case Weapon.WeaponType.FireMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.FireMagic);
-                break;
-            case Weapon.WeaponType.WaterMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.WaterMagic);
-                break;
-            case Weapon.WeaponType.WindMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.WindMagic);
-                break;
-            case Weapon.WeaponType.ElectricMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.ElectricMagic);
-                break;
-            case Weapon.WeaponType.StoneMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.StoneMagic);
-                break;
-        }
+        hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(this.weaponSkillUsed);
 
         //Finding the hit target's resistance and subtracting it from the attacker's hit roll
         switch(this.touchType)
@@ -233,8 +186,14 @@ public class AttackAction : Action
                 }
             }
 
+            //Giving the attacking character skill EXP for a miss
+            this.GrantSkillEXP(actingChar, this.weaponSkillUsed, true);
+
             return;
         }
+
+        //Giving the attacking character skill EXP for a hit
+        this.GrantSkillEXP(actingChar, this.weaponSkillUsed, false);
 
         //Checking to see if this attack crits
         int critMultiplier = 1; //Set to 1 in case we don't crit so it won't change anything
@@ -702,6 +661,13 @@ public class AttackAction : Action
                 effectObj.GetComponent<Effect>().TriggerEffect(actingChar_, targetChar, this.timeToCompleteAction);
             }
         }
+    }
+
+
+    //Function inherited from Action.cs to give the acting character skill EXP
+    public override void GrantSkillEXP(Character abilityUser_, SkillList skillUsed_, bool abilityMissed_)
+    {
+        base.GrantSkillEXP(abilityUser_, skillUsed_, abilityMissed_);
     }
 }
 

@@ -382,7 +382,7 @@ public class Skills : MonoBehaviour
                 {
                     this.unarmedEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if(this.unarmedEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.unarmed))
+                    while(this.unarmedEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.unarmed))
                     {
                         this.unarmedEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.unarmed);
                         this.LevelUpSkill(SkillList.Unarmed, 1);
@@ -395,7 +395,7 @@ public class Skills : MonoBehaviour
                 {
                     this.daggersEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.daggersEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.daggers))
+                    while (this.daggersEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.daggers))
                     {
                         this.daggersEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.daggers);
                         this.LevelUpSkill(SkillList.Daggers, 1);
@@ -408,7 +408,7 @@ public class Skills : MonoBehaviour
                 {
                     this.swordsEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.swordsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.swords))
+                    while (this.swordsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.swords))
                     {
                         this.swordsEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.swords);
                         this.LevelUpSkill(SkillList.Swords, 1);
@@ -421,7 +421,7 @@ public class Skills : MonoBehaviour
                 {
                     this.maulsEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.maulsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.mauls))
+                    while (this.maulsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.mauls))
                     {
                         this.maulsEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.mauls);
                         this.LevelUpSkill(SkillList.Mauls, 1);
@@ -434,7 +434,7 @@ public class Skills : MonoBehaviour
                 {
                     this.polesEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.polesEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.poles))
+                    while (this.polesEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.poles))
                     {
                         this.polesEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.poles);
                         this.LevelUpSkill(SkillList.Poles, 1);
@@ -447,7 +447,7 @@ public class Skills : MonoBehaviour
                 {
                     this.bowsEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.bowsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.bows))
+                    while (this.bowsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.bows))
                     {
                         this.bowsEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.bows);
                         this.LevelUpSkill(SkillList.Bows, 1);
@@ -460,7 +460,7 @@ public class Skills : MonoBehaviour
                 {
                     this.shieldsEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.shieldsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.shields))
+                    while (this.shieldsEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.shields))
                     {
                         this.shieldsEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.shields);
                         this.LevelUpSkill(SkillList.Shields, 1);
@@ -474,7 +474,7 @@ public class Skills : MonoBehaviour
                 {
                     this.arcaneMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.arcaneMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.arcaneMagic))
+                    while (this.arcaneMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.arcaneMagic))
                     {
                         this.arcaneMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.arcaneMagic);
                         this.LevelUpSkill(SkillList.ArcaneMagic, 1);
@@ -487,7 +487,7 @@ public class Skills : MonoBehaviour
                 {
                     this.holyMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.holyMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.holyMagic))
+                    while (this.holyMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.holyMagic))
                     {
                         this.holyMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.holyMagic);
                         this.LevelUpSkill(SkillList.HolyMagic, 1);
@@ -500,7 +500,7 @@ public class Skills : MonoBehaviour
                 {
                     this.darkMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.darkMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.darkMagic))
+                    while (this.darkMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.darkMagic))
                     {
                         this.darkMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.darkMagic);
                         this.LevelUpSkill(SkillList.DarkMagic, 1);
@@ -513,7 +513,7 @@ public class Skills : MonoBehaviour
                 {
                     this.fireMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.fireMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.fireMagic))
+                    while (this.fireMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.fireMagic))
                     {
                         this.fireMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.fireMagic);
                         this.LevelUpSkill(SkillList.FireMagic, 1);
@@ -526,7 +526,7 @@ public class Skills : MonoBehaviour
                 {
                     this.waterMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.waterMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.waterMagic))
+                    while (this.waterMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.waterMagic))
                     {
                         this.waterMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.waterMagic);
                         this.LevelUpSkill(SkillList.WaterMagic, 1);
@@ -539,7 +539,7 @@ public class Skills : MonoBehaviour
                 {
                     this.windMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.windMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.windMagic))
+                    while (this.windMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.windMagic))
                     {
                         this.windMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.windMagic);
                         this.LevelUpSkill(SkillList.WindMagic, 1);
@@ -552,7 +552,7 @@ public class Skills : MonoBehaviour
                 {
                     this.electricMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.electricMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.electricMagic))
+                    while (this.electricMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.electricMagic))
                     {
                         this.electricMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.electricMagic);
                         this.LevelUpSkill(SkillList.ElectricMagic, 1);
@@ -565,7 +565,7 @@ public class Skills : MonoBehaviour
                 {
                     this.stoneMagicEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.stoneMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.stoneMagic))
+                    while (this.stoneMagicEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.stoneMagic))
                     {
                         this.stoneMagicEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.stoneMagic);
                         this.LevelUpSkill(SkillList.StoneMagic, 1);
@@ -579,7 +579,7 @@ public class Skills : MonoBehaviour
                 {
                     this.survivalistEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.survivalistEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.survivalist))
+                    while (this.survivalistEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.survivalist))
                     {
                         this.survivalistEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.survivalist);
                         this.LevelUpSkill(SkillList.Survivalist, 1);
@@ -592,7 +592,7 @@ public class Skills : MonoBehaviour
                 {
                     this.socialEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.socialEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.social))
+                    while (this.socialEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.social))
                     {
                         this.socialEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.social);
                         this.LevelUpSkill(SkillList.Social, 1);
@@ -606,7 +606,7 @@ public class Skills : MonoBehaviour
                 {
                     this.socialEXP += expToAdd_;
                     //Checking to see if this skill levels up
-                    if (this.socialEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.social))
+                    while (this.socialEXP >= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.social))
                     {
                         this.socialEXP -= SkillAbilityManager.globalReference.GetEXPRequiredForLevel(this.social);
                         this.LevelUpSkill(SkillList.Social, 1);
