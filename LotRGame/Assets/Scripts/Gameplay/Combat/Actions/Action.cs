@@ -42,6 +42,12 @@ public class Action : MonoBehaviour
     //Function that is overrided by inheriting classes and called from PerformAction to determine the amount of EXP given
     public virtual void GrantSkillEXP(Character abilityUser_, SkillList skillUsed_, bool abilityMissed_)
     {
+        //Making sure the character to give EXP to is a player character. Shouldn't give EXP to enemies
+        if(!PartyGroup.group1.charactersInParty.Contains(abilityUser_))
+        {
+            return;
+        }
+
         //If the ability hits
         if(!abilityMissed_)
         {

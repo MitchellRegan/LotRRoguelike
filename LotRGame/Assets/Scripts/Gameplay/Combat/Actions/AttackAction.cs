@@ -334,6 +334,16 @@ public class AttackAction : Action
         totalDamage += fireDamage + waterDamage + windDamage + electricDamage + stoneDamage;//Adding elemental damage
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
 
+        //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
+        foreach(Perk charPerk in actingChar.charPerks.allPerks)
+        {
+            //If the perk is a damage boosting perk, we get the bonus damage from it
+            if(charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            {
+                totalDamage += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit);
+            }
+        }
+
         //If the attack crit, ALL enemies have their threat increased for 25% of the damage
         if(isCrit)
         {
