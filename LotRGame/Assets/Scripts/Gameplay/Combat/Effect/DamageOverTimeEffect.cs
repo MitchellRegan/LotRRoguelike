@@ -136,6 +136,16 @@ public class DamageOverTimeEffect : Effect
                 break;
         }
 
+        //Looping through the attacking character's perks to see if there's any bonus damage to add to this effect
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            //If the perk is a damage boosting perk, we get the bonus damage from it
+            if (charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            {
+                damageDealt += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+            }
+        }
+
         //Dealing the damage to the effected character
         this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
 

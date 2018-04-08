@@ -8,7 +8,13 @@ public class SkillDamageBoostPerk : Perk
     public SkillList skillToBoost = SkillList.Unarmed;
 
     //Bool for if this perk only works during a crit. If not, it works all the time
-    public bool onlyBoostOnCrit = false;
+    public bool onlyWorksOnCrit = false;
+
+    //Bool for if this perk only works for attack actions (not DoTs or HoTs)
+    public bool onlyWorksOnAttackAct = false;
+
+    //Bool for if this perk only works for DoTs and HoTs
+    public bool onlyWorksOnDoTAndHoT = false;
 
     //Damage multiplier if the attack that we're boosting is a crit
     [Range(1, 10)]
@@ -37,13 +43,25 @@ public class SkillDamageBoostPerk : Perk
 
 
 	//Function called from AttackAction.cs to get the amount of bonus damage this perk awards
-    public int GetDamageBoostAmount(Character perkOwner_, bool isCrit_)
+    public int GetDamageBoostAmount(Character perkOwner_, bool isCrit_, bool isDoTOrHot_)
     {
         //The total amount of bonus damage returned
         int totalDamage = 0;
 
         //If this perk only activates during a crit and the attack didn't crit, nothing happens
-        if(this.onlyBoostOnCrit && !isCrit_)
+        if(this.onlyWorksOnCrit && !isCrit_)
+        {
+            return totalDamage;
+        }
+
+        //If this perk only activates for Attack Actions and the current action isn't, nothing happens
+        if(this.onlyWorksOnAttackAct && isDoTOrHot_)
+        {
+            return totalDamage;
+        }
+
+        //If this perk only activates for DoTs and HoTs and the current action isn't, nothing happens
+        if(this.onlyWorksOnDoTAndHoT && !isDoTOrHot_)
         {
             return totalDamage;
         }

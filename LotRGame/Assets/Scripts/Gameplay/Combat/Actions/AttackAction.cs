@@ -340,7 +340,7 @@ public class AttackAction : Action
             //If the perk is a damage boosting perk, we get the bonus damage from it
             if(charPerk.GetType() == typeof(SkillDamageBoostPerk))
             {
-                totalDamage += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit);
+                totalDamage += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
             }
         }
 

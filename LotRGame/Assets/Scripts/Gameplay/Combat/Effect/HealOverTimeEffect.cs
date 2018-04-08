@@ -136,6 +136,16 @@ public class HealOverTimeEffect : Effect
                 break;
         }
 
+        //Looping through the attacking character's perks to see if there's any bonus healing to add to this effect
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            //If the perk is a damage boosting perk, we get the bonus damage HEALED from it
+            if (charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            {
+                damagehealed += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+            }
+        }
+
         //Healing the damage to the effected character
         this.characterToEffect.charPhysState.HealCharacter(damagehealed);
 
