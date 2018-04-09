@@ -107,6 +107,15 @@ public class HealOverTimeEffect : Effect
             didThisCrit = true;
         }
 
+        //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.healType == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+            {
+                damagehealed += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+            }
+        }
+
         //Subtracting any magic resistance from the amount that we're trying to heal
         switch (this.healType)
         {

@@ -234,42 +234,100 @@ public class AttackAction : Action
                 atkDamage += Random.Range(1, atk.diceSides);
             }
 
+            //Multiplying the damage by the crit multiplier
+            atkDamage = atkDamage * critMultiplier;
+
+            //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+            foreach (Perk charPerk in actingChar.charPerks.allPerks)
+            {
+                //If the perk boosts a damage type that's the same as this damage type, we boost it
+                if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && atk.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+                {
+                    atkDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
+                }
+            }
+
             //Adding the current attack's damage to the correct type
-            switch(atk.type)
+            switch (atk.type)
             {
                 case CombatManager.DamageType.Physical:
-                    physDamage += atkDamage * critMultiplier;
+                    physDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Arcane:
-                    arcaneDamage += atkDamage * critMultiplier;
+                    arcaneDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Holy:
-                    holyDamage += atkDamage * critMultiplier;
+                    holyDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Dark:
-                    darkDamage += atkDamage * critMultiplier;
+                    darkDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Fire:
-                    fireDamage += atkDamage * critMultiplier;
+                    fireDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Water:
-                    waterDamage += atkDamage * critMultiplier;
+                    waterDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Electric:
-                    electricDamage += atkDamage * critMultiplier;
+                    electricDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Wind:
-                    windDamage += atkDamage * critMultiplier;
+                    windDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Stone:
-                    arcaneDamage += atkDamage * critMultiplier;
+                    arcaneDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Pure:
-                    pureDamage += atkDamage * critMultiplier;
+                    pureDamage += atkDamage;
                     break;
             }
         }
+        
+        //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
+        foreach (Perk charPerk in actingChar.charPerks.allPerks)
+        {
+            //If the perk is a damage boosting perk, we get the bonus damage from it
+            if (charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            {
+                int perkDamage = charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
 
+                //Applying the perk's added damage to the correct damage type
+                switch(charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType)
+                {
+                    case CombatManager.DamageType.Physical:
+                        physDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Arcane:
+                        arcaneDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Holy:
+                        holyDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Dark:
+                        darkDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Fire:
+                        fireDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Water:
+                        waterDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Electric:
+                        electricDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Wind:
+                        windDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Stone:
+                        arcaneDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Pure:
+                        pureDamage += perkDamage;
+                        break;
+                }
+            }
+        }
+        
         //Subtracting the defending character's magic resistances 
         if (arcaneDamage > 0)
         {
@@ -341,16 +399,6 @@ public class AttackAction : Action
         totalDamage += fireDamage + waterDamage + windDamage + electricDamage + stoneDamage;//Adding elemental damage
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
         totalDamage += pureDamage;//Adding pure damage
-
-        //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
-        foreach(Perk charPerk in actingChar.charPerks.allPerks)
-        {
-            //If the perk is a damage boosting perk, we get the bonus damage from it
-            if(charPerk.GetType() == typeof(SkillDamageBoostPerk))
-            {
-                totalDamage += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
-            }
-        }
 
         //If the attack crit, ALL enemies have their threat increased for 25% of the damage
         if(isCrit)

@@ -107,8 +107,17 @@ public class DamageOverTimeEffect : Effect
             didThisCrit = true;
         }
 
+        //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.damageType == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+            {
+                damageDealt += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+            }
+        }
+
         //Subtracting any magic resistance from the damage that we're trying to deal
-        switch(this.damageType)
+        switch (this.damageType)
         {
             case CombatManager.DamageType.Arcane:
                 damageDealt -= this.characterToEffect.charInventory.totalArcaneResist;

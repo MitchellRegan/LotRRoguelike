@@ -7,6 +7,9 @@ public class SkillDamageBoostPerk : Perk
     //The skill that this perk is used for
     public SkillList skillToBoost = SkillList.Unarmed;
 
+    //The type of damage that this perk applies
+    public CombatManager.DamageType damageBoostType = CombatManager.DamageType.Physical;
+
     //Bool for if this perk only works during a crit. If not, it works all the time
     public bool onlyWorksOnCrit = false;
 

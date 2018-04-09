@@ -88,20 +88,9 @@ public class PlayerHealthManager : MonoBehaviour
                                 HealthBoostPerk hpBoostPerk = charPerk.GetComponent<HealthBoostPerk>();
                                 //Increasing the health stage
                                 healthStage += hpBoostPerk.healthStageBoost;
-                                //Adding the base amount of bonus health to give
-                                bonusHealthAdded += hpBoostPerk.baseHealthBoostOnIncrease;
 
-                                //Multiplier for the dice rolls to see if they're negative or positive
-                                int diePositiveNegative = 1;
-                                if (hpBoostPerk.dieRollIsNegative)
-                                {
-                                    diePositiveNegative = -1;
-                                }
-                                //Looping through for each health die to roll for random health
-                                for (int d = 0; d < hpBoostPerk.numberOfHealthDiceToRoll; ++d)
-                                {
-                                    bonusHealthAdded += diePositiveNegative * Random.Range(1, hpBoostPerk.healthDiceSideNumber + 1);
-                                }
+                                //Adding the amount of bonus health to give
+                                bonusHealthAdded += hpBoostPerk.GetHealthBoostAmount();
                             }
                         }
 

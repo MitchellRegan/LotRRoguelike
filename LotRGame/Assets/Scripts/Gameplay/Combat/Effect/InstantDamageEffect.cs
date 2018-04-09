@@ -50,6 +50,16 @@ public class InstantDamageEffect : Effect
             totalDamage = totalDamage * this.critMultiplier;
         }
 
+        //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+        foreach(Perk charPerk in usingCharacter_.charPerks.allPerks)
+        {
+            //If the perk boosts a damage type that's the same as this damage type, we boost it
+            if(charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+            {
+                totalDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(usingCharacter_, isCrit, false);
+            }
+        }
+
         //Subtracting the target character's magic resistances
         switch(this.type)
         {
