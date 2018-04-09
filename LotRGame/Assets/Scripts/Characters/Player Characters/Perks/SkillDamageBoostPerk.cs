@@ -34,12 +34,13 @@ public class SkillDamageBoostPerk : Perk
     public float percentDamageMultiplier = 1;
 
     [Space(8)]
-
+    
     //The number of damage dice to roll
     public int numberOfDamageDiceToRoll = 0;
     //The number of sides on the damage dice
     public int damageDiceSideNumber = 6;
-
+    //If this die roll is negative
+    public bool dieRollIsNegative = false;
 
 
 	//Function called from AttackAction.cs to get the amount of bonus damage this perk awards
@@ -74,10 +75,17 @@ public class SkillDamageBoostPerk : Perk
                                         perkOwner_.charSkills.GetSkillLevelValueWithMod(this.skillToBoost) * 
                                         this.percentDamageMultiplier);
 
+        //Multiplier for the dice rolls to see if they're negative or positive
+        int diePositiveNegative = 1;
+        if(this.dieRollIsNegative)
+        {
+            diePositiveNegative = -1;
+        }
+
         //Looping through and adding bonus damage for each damage die
         for(int d = 0; d < this.numberOfDamageDiceToRoll; ++d)
         {
-            totalDamage += Random.Range(1, this.damageDiceSideNumber + 1);
+            totalDamage += diePositiveNegative * Random.Range(1, this.damageDiceSideNumber + 1);
         }
 
 

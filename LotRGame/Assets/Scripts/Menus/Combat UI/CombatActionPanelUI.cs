@@ -378,32 +378,35 @@ public class CombatActionPanelUI : MonoBehaviour
                     //Finding out which type of damage it is
                     switch(atkDetails.damageDealt[a].type)
                     {
-                        case AttackDamage.DamageType.Physical:
+                        case CombatManager.DamageType.Physical:
                             this.selectedPanelDetails.damageText.text += " Physical";
                             break;
-                        case AttackDamage.DamageType.Arcane:
+                        case CombatManager.DamageType.Arcane:
                             this.selectedPanelDetails.damageText.text += " Arcane";
                             break;
-                        case AttackDamage.DamageType.Fire:
+                        case CombatManager.DamageType.Fire:
                             this.selectedPanelDetails.damageText.text += " Fire";
                             break;
-                        case AttackDamage.DamageType.Water:
+                        case CombatManager.DamageType.Water:
                             this.selectedPanelDetails.damageText.text += " Water";
                             break;
-                        case AttackDamage.DamageType.Electric:
+                        case CombatManager.DamageType.Electric:
                             this.selectedPanelDetails.damageText.text += " Electric";
                             break;
-                        case AttackDamage.DamageType.Wind:
+                        case CombatManager.DamageType.Wind:
                             this.selectedPanelDetails.damageText.text += " Wind";
                             break;
-                        case AttackDamage.DamageType.Stone:
+                        case CombatManager.DamageType.Stone:
                             this.selectedPanelDetails.damageText.text += " Stone";
                             break;
-                        case AttackDamage.DamageType.Holy:
+                        case CombatManager.DamageType.Holy:
                             this.selectedPanelDetails.damageText.text += " Holy";
                             break;
-                        case AttackDamage.DamageType.Dark:
+                        case CombatManager.DamageType.Dark:
                             this.selectedPanelDetails.damageText.text += " Dark";
+                            break;
+                        case CombatManager.DamageType.Pure:
+                            this.selectedPanelDetails.damageText.text += " Pure";
                             break;
                         default:
                             this.selectedPanelDetails.damageText.text += " Physical";

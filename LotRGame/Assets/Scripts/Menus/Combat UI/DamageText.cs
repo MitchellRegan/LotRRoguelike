@@ -43,14 +43,15 @@ public class DamageText : MonoBehaviour
 
     //The list of all types of damage and the color that they change this object's text
     public Color physDamageColor = Color.gray;
-    public Color magicDamageColor = Color.gray;
+    public Color arcaneDamageColor = Color.gray;
+    public Color holyDamageColor = Color.gray;
+    public Color darkDamageColor = Color.gray;
     public Color fireDamageColor = Color.gray;
     public Color waterDamageColor = Color.gray;
-    public Color electricDamageColor = Color.gray;
     public Color windDamageColor = Color.gray;
-    public Color rockDamageColor = Color.gray;
-    public Color lightDamageColor = Color.gray;
-    public Color darkDamageColor = Color.gray;
+    public Color electricDamageColor = Color.gray;
+    public Color stoneDamageColor = Color.gray;
+    public Color pureDamageColor = Color.black;
 
 
 
@@ -105,7 +106,13 @@ public class DamageText : MonoBehaviour
                 this.background.color = this.physDamageColor;
                 break;
             case CombatManager.DamageType.Arcane:
-                this.background.color = this.magicDamageColor;
+                this.background.color = this.arcaneDamageColor;
+                break;
+            case CombatManager.DamageType.Holy:
+                this.background.color = this.holyDamageColor;
+                break;
+            case CombatManager.DamageType.Dark:
+                this.background.color = this.darkDamageColor;
                 break;
             case CombatManager.DamageType.Fire:
                 this.background.color = this.fireDamageColor;
@@ -120,13 +127,10 @@ public class DamageText : MonoBehaviour
                 this.background.color = this.windDamageColor;
                 break;
             case CombatManager.DamageType.Stone:
-                this.background.color = this.rockDamageColor;
+                this.background.color = this.stoneDamageColor;
                 break;
-            case CombatManager.DamageType.Holy:
-                this.background.color = this.lightDamageColor;
-                break;
-            case CombatManager.DamageType.Dark:
-                this.background.color = this.darkDamageColor;
+            case CombatManager.DamageType.Pure:
+                this.background.color = this.pureDamageColor;
                 break;
         }
 

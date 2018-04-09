@@ -73,13 +73,45 @@ public class PlayerHealthManager : MonoBehaviour
                     //If the current character slot isn't null, we add health
                     if (PartyGroup.group1.charactersInParty[p] != null)
                     {
-                        //Finding the amount of health based on the character's health curve
-                        HealthProgressionTypes type = this.FindCharacterHealthProgression(PartyGroup.group1.charactersInParty[p].charPhysState.healthCurveStagesSum);
-                        int healthToGiveCharacter = this.GetHealthToAdd(type);
+                        //Int to hold the current character's health stage
+                        int healthStage = PartyGroup.group1.charactersInParty[p].charPhysState.healthCurveStagesSum;
 
+                        //Int to hold the amount of bonus health added
+                        int bonusHealthAdded = 0;
+
+                        //Looping through the character's perks to see if they have any health boost perks
+                        foreach (Perk charPerk in PartyGroup.group1.charactersInParty[p].charPerks.allPerks)
+                        {
+                            //If the current perk is a health boost perk, then we can give the player character more health
+                            if(charPerk.GetType() == typeof(HealthBoostPerk))
+                            {
+                                HealthBoostPerk hpBoostPerk = charPerk.GetComponent<HealthBoostPerk>();
+                                //Increasing the health stage
+                                healthStage += hpBoostPerk.healthStageBoost;
+                                //Adding the base amount of bonus health to give
+                                bonusHealthAdded += hpBoostPerk.baseHealthBoostOnIncrease;
+
+                                //Multiplier for the dice rolls to see if they're negative or positive
+                                int diePositiveNegative = 1;
+                                if (hpBoostPerk.dieRollIsNegative)
+                                {
+                                    diePositiveNegative = -1;
+                                }
+                                //Looping through for each health die to roll for random health
+                                for (int d = 0; d < hpBoostPerk.numberOfHealthDiceToRoll; ++d)
+                                {
+                                    bonusHealthAdded += diePositiveNegative * Random.Range(1, hpBoostPerk.healthDiceSideNumber + 1);
+                                }
+                            }
+                        }
+
+                        //Finding the amount of health based on the character's health curve
+                        HealthProgressionTypes type = this.FindCharacterHealthProgression(healthStage);
+                        int healthToGiveCharacter = this.GetHealthToAdd(type);
+                        
                         //Adding the health to the character's current and maximum values
-                        PartyGroup.group1.charactersInParty[p].charPhysState.maxHealth += healthToGiveCharacter;
-                        PartyGroup.group1.charactersInParty[p].charPhysState.currentHealth += healthToGiveCharacter;
+                        PartyGroup.group1.charactersInParty[p].charPhysState.maxHealth += healthToGiveCharacter + bonusHealthAdded;
+                        PartyGroup.group1.charactersInParty[p].charPhysState.currentHealth += healthToGiveCharacter + bonusHealthAdded;
                     }
                 }
             }

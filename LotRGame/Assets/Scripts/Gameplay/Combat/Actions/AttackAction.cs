@@ -216,6 +216,7 @@ public class AttackAction : Action
         int electricDamage = 0;
         int windDamage = 0;
         int stoneDamage = 0;
+        int pureDamage = 0;
 
         //Looping through each damage type for this attack
         foreach(AttackDamage atk in this.damageDealt)
@@ -236,32 +237,35 @@ public class AttackAction : Action
             //Adding the current attack's damage to the correct type
             switch(atk.type)
             {
-                case AttackDamage.DamageType.Physical:
+                case CombatManager.DamageType.Physical:
                     physDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Arcane:
+                case CombatManager.DamageType.Arcane:
                     arcaneDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Holy:
+                case CombatManager.DamageType.Holy:
                     holyDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Dark:
+                case CombatManager.DamageType.Dark:
                     darkDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Fire:
+                case CombatManager.DamageType.Fire:
                     fireDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Water:
+                case CombatManager.DamageType.Water:
                     waterDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Electric:
+                case CombatManager.DamageType.Electric:
                     electricDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Wind:
+                case CombatManager.DamageType.Wind:
                     windDamage += atkDamage * critMultiplier;
                     break;
-                case AttackDamage.DamageType.Stone:
+                case CombatManager.DamageType.Stone:
                     arcaneDamage += atkDamage * critMultiplier;
+                    break;
+                case CombatManager.DamageType.Pure:
+                    pureDamage += atkDamage * critMultiplier;
                     break;
             }
         }
@@ -328,11 +332,15 @@ public class AttackAction : Action
         defendingChar.charPhysState.DamageCharacter(darkDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
 
+        defendingChar.charPhysState.DamageCharacter(pureDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, pureDamage, CombatManager.DamageType.Pure, targetTile_, isCrit);
+
         //Increasing the threat to the target based on damage dealt
         int totalDamage = 0;
         totalDamage += physDamage + arcaneDamage;//Adding physical and magical damage
         totalDamage += fireDamage + waterDamage + windDamage + electricDamage + stoneDamage;//Adding elemental damage
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
+        totalDamage += pureDamage;//Adding pure damage
 
         //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
         foreach(Perk charPerk in actingChar.charPerks.allPerks)
@@ -686,8 +694,7 @@ public class AttackAction : Action
 public class AttackDamage
 {
     //The type of damage that's inflicted
-    public enum DamageType { Physical, Arcane, Fire, Water, Electric, Wind, Stone, Holy, Dark };
-    public DamageType type = DamageType.Physical;
+    public CombatManager.DamageType type = CombatManager.DamageType.Physical;
 
     //The amount of damage inflicted before dice rolls
     public int baseDamage = 0;

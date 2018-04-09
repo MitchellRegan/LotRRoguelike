@@ -134,6 +134,7 @@ public class HealOverTimeEffect : Effect
             case CombatManager.DamageType.Dark:
                 damagehealed -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
+                //Pure damage type has no resist
         }
 
         //Looping through the attacking character's perks to see if there's any bonus healing to add to this effect
