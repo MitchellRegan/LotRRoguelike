@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class InstantDamageEffect : Effect
+public class InstantHealEffect : Effect
 {
-    //The type of damage that's inflicted
+    //The type of heal that's inflicted
     public CombatManager.DamageType type = CombatManager.DamageType.Physical;
 
-    //The base amount of damage dealt
-    public int baseDamage = 0;
+    //The base amount of heal dealt
+    public int baseHeal = 0;
 
     //The number of dice that are rolled
     public int diceRolled = 1;
@@ -18,97 +18,97 @@ public class InstantDamageEffect : Effect
     public int diceSides = 6;
 
     //The crit chance for this damage
-    [Range(0,1)]
+    [Range(0, 1)]
     public float critChance = 0.1f;
 
-    //The damage multiplier when this crits
+    //The heal multiplier when this crits
     public int critMultiplier = 2;
 
 
 
-    //Overrided function from Effect.cs to trigger this damage effect
+    //Overrided function from Effect.cs to trigger this heal effect
     public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
-        //Int to hold all of the damage for the attack
-        int totalDamage = 0;
+        //Int to hold the heal total for the effect
+        int totalHeal = 0;
 
-        //Adding the base damage
-        totalDamage += this.baseDamage;
+        //Adding the base heal
+        totalHeal += this.baseHeal;
 
         //Looping through each individual die rolled
-        for(int d = 0; d < this.diceRolled; ++d)
+        for (int d = 0; d < this.diceRolled; ++d)
         {
             //Finding the value rolled on the current die
-            totalDamage += Random.Range(1, this.diceSides);
+            totalHeal += Random.Range(1, this.diceSides);
         }
 
         //Rolling to see if this effect crits
         float critRoll = Random.Range(0, 1);
         bool isCrit = false;
-        if(critRoll < this.critChance)
+        if (critRoll < this.critChance)
         {
-            totalDamage = totalDamage * this.critMultiplier;
+            totalHeal = totalHeal * this.critMultiplier;
         }
 
         //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
-        foreach(Perk charPerk in usingCharacter_.charPerks.allPerks)
+        foreach (Perk charPerk in usingCharacter_.charPerks.allPerks)
         {
-            //If the perk boosts a damage type that's the same as this damage type, we boost it
-            if(charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+            //If the perk boosts a damage type that's the same as this damage (heal) type, we boost it
+            if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
             {
-                totalDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(usingCharacter_, isCrit, false);
+                totalHeal += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(usingCharacter_, isCrit, false);
             }
         }
 
         //Subtracting the target character's magic resistances
-        switch(this.type)
+        switch (this.type)
         {
             case CombatManager.DamageType.Fire:
-                if(targetCharacter_.charInventory.totalFireResist > 0)
+                if (targetCharacter_.charInventory.totalFireResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
                 }
                 break;
 
             case CombatManager.DamageType.Water:
                 if (targetCharacter_.charInventory.totalWaterResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalWaterResist;
+                    totalHeal -= targetCharacter_.charInventory.totalWaterResist;
                 }
                 break;
 
             case CombatManager.DamageType.Electric:
                 if (targetCharacter_.charInventory.totalElectricResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalElectricResist;
+                    totalHeal -= targetCharacter_.charInventory.totalElectricResist;
                 }
                 break;
 
             case CombatManager.DamageType.Wind:
                 if (targetCharacter_.charInventory.totalWindResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalWindResist;
+                    totalHeal -= targetCharacter_.charInventory.totalWindResist;
                 }
                 break;
 
             case CombatManager.DamageType.Stone:
                 if (targetCharacter_.charInventory.totalStoneResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalStoneResist;
+                    totalHeal -= targetCharacter_.charInventory.totalStoneResist;
                 }
                 break;
 
             case CombatManager.DamageType.Holy:
                 if (targetCharacter_.charInventory.totalHolyResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
                 }
                 break;
 
             case CombatManager.DamageType.Dark:
                 if (targetCharacter_.charInventory.totalFireResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
                 }
                 break;
         }
@@ -117,30 +117,16 @@ public class InstantDamageEffect : Effect
         CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
 
         //Dealing damage to the target character and telling the combat manager to display how much was dealt
-        targetCharacter_.charPhysState.DamageCharacter(totalDamage);
-        CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
+        targetCharacter_.charPhysState.DamageCharacter(totalHeal);
+        CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalHeal, type, targetCharTile, isCrit);
 
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
 
-
-        //Increasing the threat to the target based on damage dealt
-        //If the attack is a crit, ALL enemies have their threat increased for 25% of the damage
-        if (isCrit)
-        {
-            //Getting 25% of the damage to pass to all enemies
-            int threatForAll = totalDamage / 4;
-            CombatManager.globalReference.ApplyActionThreat(usingCharacter_, null, threatForAll, true);
-
-            //Applying the rest of the threat to the target character
-            CombatManager.globalReference.ApplyActionThreat(usingCharacter_, targetCharacter_, totalDamage - threatForAll, false);
-        }
-        //If the attack wasn't a crit, only the target character takes threat
-        else
-        {
-            CombatManager.globalReference.ApplyActionThreat(usingCharacter_, targetCharacter_, totalDamage, false);
-        }
+        
+        //Applying threat to all enemies based on the amount healed
+        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal, true);
 
         //Destroying this effect once everything is finished up
         Destroy(this.gameObject);

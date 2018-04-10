@@ -37,7 +37,7 @@ public class ModifyThreatEffect : Effect
         //If this effect threatens all enemies
         if(this.threatenAllEnemies)
         {
-            CombatManager.globalReference.ApplyActionThreat(null, this.initialThreatAdded, true);
+            CombatManager.globalReference.ApplyActionThreat(usingCharacter_, null, this.initialThreatAdded, true);
         }
         //If we only threaten the hit character
         else
@@ -76,7 +76,7 @@ public class ModifyThreatEffect : Effect
         //If this threatens all enemies
         if (this.threatenAllEnemies)
         {
-            CombatManager.globalReference.ApplyActionThreat(null, this.threatAddedPerTick, true);
+            CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, this.threatAddedPerTick, true);
 
             //If we have a visual for this effect, we need to spawn it on all of the enemies
             if(this.visualEffect != null)
@@ -116,7 +116,7 @@ public class ModifyThreatEffect : Effect
                 //If this threatens all enemies
                 if (this.threatenAllEnemies)
                 {
-                    CombatManager.globalReference.ApplyActionThreat(null, this.initialThreatAdded * -1, true);
+                    CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, this.initialThreatAdded * -1, true);
                 }
                 //If this threatens only the target
                 else

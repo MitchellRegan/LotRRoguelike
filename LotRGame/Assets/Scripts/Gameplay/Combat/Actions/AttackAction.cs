@@ -405,15 +405,15 @@ public class AttackAction : Action
         {
             //Getting 25% of the damage to pass to all enemies
             int threatForAll = totalDamage / 4;
-            CombatManager.globalReference.ApplyActionThreat(null, threatForAll, true);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, null, threatForAll, true);
 
             //Applying the rest of the threat to the defending character
-            CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage - threatForAll, false);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, totalDamage - threatForAll, false);
         }
         //If the attack wasn't a crit, only the defending character takes threat
         else
         {
-            CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage, false);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, totalDamage, false);
         }
 
         //Creating the visual effect at the target tile if it isn't null

@@ -161,7 +161,7 @@ public class HealOverTimeEffect : Effect
 
 
         //Applying threat to all enemies for the amount that's healed
-        CombatManager.globalReference.ApplyActionThreat(null, damagehealed, true);
+        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damagehealed, true);
         
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);

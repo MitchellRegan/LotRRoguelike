@@ -1199,10 +1199,10 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from Action.cs and Effect.cs when a player character performs an action
-    public void ApplyActionThreat(Character targetCharacter_, int threatToAdd_, bool increaseForAllEnemies_)
+    public void ApplyActionThreat(Character actingCharacter_, Character targetCharacter_, int threatToAdd_, bool increaseForAllEnemies_)
     {
         //If the currently acting character is an enemy, nothing happens. Enemies can't increase their own threat
-        if(this.enemyCharactersInCombat.Contains(this.actingCharacters[0]))
+        if(this.enemyCharactersInCombat.Contains(actingCharacter_))
         {
             return;
         }
@@ -1222,7 +1222,7 @@ public class CombatManager : MonoBehaviour
                         //Making sure they have the EnemyCombatAI component
                         if(enemy.GetComponent<EnemyCombatAI_Basic>())
                         {
-                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                         }
                     }
                 }
@@ -1243,7 +1243,7 @@ public class CombatManager : MonoBehaviour
                         //Making sure they have the EnemyCombatAI component
                         if (enemy.GetComponent<EnemyCombatAI_Basic>())
                         {
-                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                         }
                     }
                 }
@@ -1254,7 +1254,7 @@ public class CombatManager : MonoBehaviour
                 //Making sure the target is alive and has the EnemyCombatAI component first
                 if(targetCharacter_.charPhysState.currentHealth > 0 && targetCharacter_.GetComponent<EnemyCombatAI_Basic>())
                 {
-                    targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                    targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                 }
             }
         }
