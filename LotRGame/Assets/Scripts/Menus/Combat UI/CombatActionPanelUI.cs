@@ -243,8 +243,21 @@ public class CombatActionPanelUI : MonoBehaviour
         else
         {
             MoveAction ourMoveAct = this.selectedAction.GetComponent<MoveAction>();
-            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange, ourMoveAct.ignoreObstacles);
-            tilesToCheckForCharacters = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + 1);
+
+            //Looping through all of the acting character's perks to see if there are any movement boost perks
+            int rangeModifier = 0;
+            foreach(Perk charPerk in actingCharacter.charPerks.allPerks)
+            {
+                //If the current perk is a movement boost perk that applies to this movement's action type, we apply the number of added spaces
+                if(charPerk.GetType() == typeof(MovementBoostPerk) && ourMoveAct.type == charPerk.GetComponent<MovementBoostPerk>().actionTypeToBoost)
+                {
+                    rangeModifier += charPerk.GetComponent<MovementBoostPerk>().addedMovementSpaces;
+                }
+            }
+
+            //Highlighting all tiles in range
+            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + rangeModifier, ourMoveAct.ignoreObstacles);
+            tilesToCheckForCharacters = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + rangeModifier + 1);
         }
 
         //Looping through all tiles in range and hilighting them

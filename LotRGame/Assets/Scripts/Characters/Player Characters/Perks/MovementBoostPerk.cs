@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovementBoostPerk : MonoBehaviour {
+public class MovementBoostPerk : Perk
+{
+    //The number of added movement spaces
+    public int addedMovementSpaces = 0;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    //The type of action that this perk effects
+    public Action.ActionType actionTypeToBoost = Action.ActionType.Minor;
+
+    //NOTE: This is used in CombatActionPanelUI.SelectActionAtIndex
 }
