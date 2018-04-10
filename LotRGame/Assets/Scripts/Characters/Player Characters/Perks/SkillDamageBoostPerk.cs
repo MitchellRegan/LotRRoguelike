@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class SkillDamageBoostPerk : Perk
 {
     //The skill that this perk is used for

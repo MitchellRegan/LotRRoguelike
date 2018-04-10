@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ThreatBoostPerk : MonoBehaviour
 {
     //Damage type to boost threat on

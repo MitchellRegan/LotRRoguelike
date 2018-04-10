@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Perk : MonoBehaviour
 {
     //The prefab object reference that this perk is an instance of

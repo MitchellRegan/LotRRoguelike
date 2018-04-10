@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class HealthBoostPerk : Perk
 {
     //The number of stages that this perk owner's health is modified

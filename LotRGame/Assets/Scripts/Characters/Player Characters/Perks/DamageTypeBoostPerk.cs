@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class DamageTypeBoostPerk : Perk
 {
     //The damage type that this perk boosts
