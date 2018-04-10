@@ -6,7 +6,7 @@ using UnityEngine;
 public class AttackAction : Action
 {
     //The skill used for determining accuracy
-    public Weapon.WeaponType weaponSkillUsed = Weapon.WeaponType.Unarmed;
+    public SkillList weaponSkillUsed = SkillList.Unarmed;
 
     //Enum that determines how enemy evasion and armor affects the chance of this attack hitting
     public enum attackTouchType { Regular, IgnoreEvasion, IgnoreArmor, IgnoreEvasionAndArmor};
@@ -141,63 +141,43 @@ public class AttackAction : Action
         //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit and adding this attack's accuracy bonus
         int hitRoll = Random.Range(1, 100) + this.accuracyBonus;
         //Adding the correct skill modifier of the acting character to their hit roll
-        switch (this.weaponSkillUsed)
+        hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(this.weaponSkillUsed);
+
+        //Looping through the attacking character's perks to see if they have any accuracy boost perks
+        foreach (Perk atkPerk in actingChar.charPerks.allPerks)
         {
-            case Weapon.WeaponType.Unarmed:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Unarmed);
-                break;
-            case Weapon.WeaponType.Sword:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Swords);
-                break;
-            case Weapon.WeaponType.Dagger:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Daggers);
-                break;
-            case Weapon.WeaponType.Maul:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Mauls);
-                break;
-            case Weapon.WeaponType.Pole:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Poles);
-                break;
-            case Weapon.WeaponType.Bow:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Bows);
-                break;
-            case Weapon.WeaponType.Shield:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.Shields);
-                break;
-            case Weapon.WeaponType.ArcaneMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.ArcaneMagic);
-                break;
-            case Weapon.WeaponType.HolyMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.HolyMagic);
-                break;
-            case Weapon.WeaponType.DarkMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.DarkMagic);
-                break;
-            case Weapon.WeaponType.FireMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.FireMagic);
-                break;
-            case Weapon.WeaponType.WaterMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.WaterMagic);
-                break;
-            case Weapon.WeaponType.WindMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.WindMagic);
-                break;
-            case Weapon.WeaponType.ElectricMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.ElectricMagic);
-                break;
-            case Weapon.WeaponType.StoneMagic:
-                hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(SkillList.StoneMagic);
-                break;
+            if (atkPerk.GetType() == typeof(AccuracyBoostPerk))
+            {
+                AccuracyBoostPerk accuracyPerk = atkPerk.GetComponent<AccuracyBoostPerk>();
+                //Making sure the perk either boosts all skill accuracy or the skill that this attack uses
+                if (accuracyPerk.skillAccuracyToBoost == this.weaponSkillUsed || accuracyPerk.boostAllSkillAccuracy)
+                {
+                    hitRoll += accuracyPerk.baseAccuracyBoost;
+                }
+            }
+        }
+
+        //Looping through the defending character's perks to see if they have any evasion boost perks
+        int evasionPerkBoost = 0;
+        foreach(Perk charPerk in defendingChar.charPerks.allPerks)
+        {
+            if(charPerk.GetType() == typeof(EvasionBoostPerk))
+            {
+                evasionPerkBoost += charPerk.GetComponent<EvasionBoostPerk>().evasionBoost;
+            }
         }
 
         //Finding the hit target's resistance and subtracting it from the attacker's hit roll
         switch(this.touchType)
         {
             case attackTouchType.Regular:
-                hitRoll -= (defendingChar.charCombatStats.evasion + defendingChar.charInventory.totalPhysicalArmor);
+                hitRoll -= defendingChar.charCombatStats.evasion;
+                hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
+                hitRoll -= evasionPerkBoost;
                 break;
             case attackTouchType.IgnoreArmor:
                 hitRoll -= defendingChar.charCombatStats.evasion;
+                hitRoll -= evasionPerkBoost;
                 break;
             case attackTouchType.IgnoreEvasion:
                 hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
@@ -233,8 +213,14 @@ public class AttackAction : Action
                 }
             }
 
+            //Giving the attacking character skill EXP for a miss
+            this.GrantSkillEXP(actingChar, this.weaponSkillUsed, true);
+
             return;
         }
+
+        //Giving the attacking character skill EXP for a hit
+        this.GrantSkillEXP(actingChar, this.weaponSkillUsed, false);
 
         //Checking to see if this attack crits
         int critMultiplier = 1; //Set to 1 in case we don't crit so it won't change anything
@@ -257,6 +243,7 @@ public class AttackAction : Action
         int electricDamage = 0;
         int windDamage = 0;
         int stoneDamage = 0;
+        int pureDamage = 0;
 
         //Looping through each damage type for this attack
         foreach(AttackDamage atk in this.damageDealt)
@@ -274,39 +261,100 @@ public class AttackAction : Action
                 atkDamage += Random.Range(1, atk.diceSides);
             }
 
-            //Adding the current attack's damage to the correct type
-            switch(atk.type)
+            //Multiplying the damage by the crit multiplier
+            atkDamage = atkDamage * critMultiplier;
+
+            //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+            foreach (Perk charPerk in actingChar.charPerks.allPerks)
             {
-                case AttackDamage.DamageType.Physical:
-                    physDamage += atkDamage * critMultiplier;
+                //If the perk boosts a damage type that's the same as this damage type, we boost it
+                if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && atk.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+                {
+                    atkDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
+                }
+            }
+
+            //Adding the current attack's damage to the correct type
+            switch (atk.type)
+            {
+                case CombatManager.DamageType.Physical:
+                    physDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Arcane:
-                    arcaneDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Arcane:
+                    arcaneDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Holy:
-                    holyDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Holy:
+                    holyDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Dark:
-                    darkDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Dark:
+                    darkDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Fire:
-                    fireDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Fire:
+                    fireDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Water:
-                    waterDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Water:
+                    waterDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Electric:
-                    electricDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Electric:
+                    electricDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Wind:
-                    windDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Wind:
+                    windDamage += atkDamage;
                     break;
-                case AttackDamage.DamageType.Stone:
-                    arcaneDamage += atkDamage * critMultiplier;
+                case CombatManager.DamageType.Stone:
+                    arcaneDamage += atkDamage;
+                    break;
+                case CombatManager.DamageType.Pure:
+                    pureDamage += atkDamage;
                     break;
             }
         }
+        
+        //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
+        foreach (Perk charPerk in actingChar.charPerks.allPerks)
+        {
+            //If the perk is a damage boosting perk, we get the bonus damage from it
+            if (charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            {
+                int perkDamage = charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
 
+                //Applying the perk's added damage to the correct damage type
+                switch(charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType)
+                {
+                    case CombatManager.DamageType.Physical:
+                        physDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Arcane:
+                        arcaneDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Holy:
+                        holyDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Dark:
+                        darkDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Fire:
+                        fireDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Water:
+                        waterDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Electric:
+                        electricDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Wind:
+                        windDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Stone:
+                        arcaneDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Pure:
+                        pureDamage += perkDamage;
+                        break;
+                }
+            }
+        }
+        
         //Subtracting the defending character's magic resistances 
         if (arcaneDamage > 0)
         {
@@ -369,26 +417,93 @@ public class AttackAction : Action
         defendingChar.charPhysState.DamageCharacter(darkDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
 
+        defendingChar.charPhysState.DamageCharacter(pureDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, pureDamage, CombatManager.DamageType.Pure, targetTile_, isCrit);
+
         //Increasing the threat to the target based on damage dealt
         int totalDamage = 0;
         totalDamage += physDamage + arcaneDamage;//Adding physical and magical damage
         totalDamage += fireDamage + waterDamage + windDamage + electricDamage + stoneDamage;//Adding elemental damage
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
+        totalDamage += pureDamage;//Adding pure damage
+
+        //Looping through the acting character's perks to see if they have any ThreatBoostPerk perks
+        int bonusThreat = 0;
+        foreach(Perk charPerk in actingChar.charPerks.allPerks)
+        {
+            if(charPerk.GetType() == typeof(ThreatBoostPerk))
+            {
+                //Getting the threat boost perk component reference
+                ThreatBoostPerk threatPerk = charPerk.GetComponent<ThreatBoostPerk>();
+
+                //If the threat perk applies to all forms of damage
+                if(threatPerk.threatenAllDamageTypes)
+                {
+                    bonusThreat += threatPerk.GetAddedActionThreat(totalDamage, isCrit, false);
+                }
+                //Otherwise, we check for each damage type
+                else
+                {
+                    switch(threatPerk.damageTypeToThreaten)
+                    {
+                        case CombatManager.DamageType.Physical:
+                            bonusThreat += threatPerk.GetAddedActionThreat(physDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Arcane:
+                            bonusThreat += threatPerk.GetAddedActionThreat(arcaneDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Holy:
+                            bonusThreat += threatPerk.GetAddedActionThreat(holyDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Dark:
+                            bonusThreat += threatPerk.GetAddedActionThreat(darkDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Fire:
+                            bonusThreat += threatPerk.GetAddedActionThreat(fireDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Water:
+                            bonusThreat += threatPerk.GetAddedActionThreat(waterDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Wind:
+                            bonusThreat += threatPerk.GetAddedActionThreat(windDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Electric:
+                            bonusThreat += threatPerk.GetAddedActionThreat(electricDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Stone:
+                            bonusThreat += threatPerk.GetAddedActionThreat(stoneDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Pure:
+                            bonusThreat += threatPerk.GetAddedActionThreat(pureDamage, isCrit, false);
+                            break;
+                    }
+                }
+            }
+        }
 
         //If the attack crit, ALL enemies have their threat increased for 25% of the damage
         if(isCrit)
         {
             //Getting 25% of the damage to pass to all enemies
-            int threatForAll = totalDamage / 4;
-            CombatManager.globalReference.ApplyActionThreat(null, threatForAll, true);
+            int threatForAll = (totalDamage + bonusThreat) / 4;
+            CombatManager.globalReference.ApplyActionThreat(actingChar, null, threatForAll, true);
 
             //Applying the rest of the threat to the defending character
-            CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage - threatForAll, false);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, (totalDamage + bonusThreat) - threatForAll, false);
         }
         //If the attack wasn't a crit, only the defending character takes threat
         else
         {
-            CombatManager.globalReference.ApplyActionThreat(defendingChar, totalDamage, false);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, totalDamage + bonusThreat, false);
         }
 
         //Creating the visual effect at the target tile if it isn't null
@@ -703,6 +818,13 @@ public class AttackAction : Action
             }
         }
     }
+
+
+    //Function inherited from Action.cs to give the acting character skill EXP
+    public override void GrantSkillEXP(Character abilityUser_, SkillList skillUsed_, bool abilityMissed_)
+    {
+        base.GrantSkillEXP(abilityUser_, skillUsed_, abilityMissed_);
+    }
 }
 
 //Class used in AttackAction.cs to determine damage dealt when an attack hits
@@ -710,8 +832,7 @@ public class AttackAction : Action
 public class AttackDamage
 {
     //The type of damage that's inflicted
-    public enum DamageType { Physical, Arcane, Fire, Water, Electric, Wind, Stone, Holy, Dark };
-    public DamageType type = DamageType.Physical;
+    public CombatManager.DamageType type = CombatManager.DamageType.Physical;
 
     //The amount of damage inflicted before dice rolls
     public int baseDamage = 0;

@@ -23,11 +23,40 @@ public class Action : MonoBehaviour
     //The amount of time in seconds that this action takes to be performed
     public float timeToCompleteAction = 3;
 
+    //The amount of skill EXP given when this action is performed sucessfully
+    public int skillEXP = 0;
+
+    //The fraction of EXP given on a missed attack
+    [Range(0, 1)]
+    public static float expPercentOnMiss = 0.25f;
+
 
     
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
     public virtual void PerformAction(CombatTile targetTile_)
     {
         //Nothing here, because regular actions don't do anything.
+    }
+
+
+    //Function that is overrided by inheriting classes and called from PerformAction to determine the amount of EXP given
+    public virtual void GrantSkillEXP(Character abilityUser_, SkillList skillUsed_, bool abilityMissed_)
+    {
+        //Making sure the character to give EXP to is a player character. Shouldn't give EXP to enemies
+        if(!PartyGroup.group1.charactersInParty.Contains(abilityUser_))
+        {
+            return;
+        }
+
+        //If the ability hits
+        if(!abilityMissed_)
+        {
+            abilityUser_.charSkills.AddSkillEXP(skillUsed_, this.skillEXP);
+        }
+        //If the ability misses
+        else
+        {
+            abilityUser_.charSkills.AddSkillEXP(skillUsed_, Mathf.RoundToInt(this.skillEXP * expPercentOnMiss));
+        }
     }
 }

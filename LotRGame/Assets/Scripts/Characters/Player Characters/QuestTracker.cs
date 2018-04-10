@@ -533,6 +533,8 @@ public class Quest
     public List<QuestItemReward> itemRewards;
     //The list of action rewards for completing this quest
     public List<QuestActionReward> actionRewards;
+    //The perk reward for completing this quest
+    public Perk perkReward;
 
 
     //Function called externally to update the amount of time that's passed for our timer

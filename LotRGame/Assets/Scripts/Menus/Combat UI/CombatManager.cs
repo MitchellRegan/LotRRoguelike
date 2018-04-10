@@ -372,6 +372,20 @@ public class CombatManager : MonoBehaviour
             loot.stackSizeMinMax = drop.stackSizeMinMax;
             this.lootTable.Add(loot);
         }
+
+        //Looping through each player character to see if anyone has a ThreatBoostPerk
+        for(int t = 0; t < this.playerCharactersInCombat.Count; ++t)
+        {
+            //Looping through all of the current character's perks
+            foreach(Perk charPerk in this.playerCharactersInCombat[t].charPerks.allPerks)
+            {
+                //If the current perk is a ThreatBoostPerk that works at the start of combat, we boost threat against this character for all enemies
+                if(charPerk.GetType() == typeof(ThreatBoostPerk) && charPerk.GetComponent<ThreatBoostPerk>().increaseThreatAtStartOfCombat)
+                {
+                    this.ApplyActionThreat(this.playerCharactersInCombat[t], null, charPerk.GetComponent<ThreatBoostPerk>().baseThreatToAdd, true);
+                }
+            }
+        }
     }
 
 
@@ -832,7 +846,7 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from AttackAction.PerformAction to show damage dealt to a character at the given tile
-    public enum DamageType { Physical, Arcane, Fire, Water, Electric, Wind, Stone, Holy, Dark };
+    public enum DamageType { Physical, Arcane, Fire, Water, Electric, Wind, Stone, Holy, Dark, Pure };
     public void DisplayDamageDealt(float timeDelay_, int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
     {
         //If the damage dealt was 0, nothing happens
@@ -1005,9 +1019,19 @@ public class CombatManager : MonoBehaviour
             //Making sure the current character isn't dead first
             if (this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
             {
+                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
+                float perkBoost = 0;
+                foreach(Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
+                {
+                    if(charPerk.GetType() == typeof(InitiativeBoostPerk))
+                    {
+                        perkBoost += charPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
+                    }
+                }
+
                 //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
                 //If the character's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
@@ -1032,9 +1056,19 @@ public class CombatManager : MonoBehaviour
             //Making sure the current enemy isn't dead first
             if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
             {
+                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
+                float perkBoost = 0;
+                foreach (Perk enemyPerk in this.playerCharactersInCombat[e].charPerks.allPerks)
+                {
+                    if (enemyPerk.GetType() == typeof(InitiativeBoostPerk))
+                    {
+                        perkBoost += enemyPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
+                    }
+                }
+
                 //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
                 //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
@@ -1199,10 +1233,10 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from Action.cs and Effect.cs when a player character performs an action
-    public void ApplyActionThreat(Character targetCharacter_, int threatToAdd_, bool increaseForAllEnemies_)
+    public void ApplyActionThreat(Character actingCharacter_, Character targetCharacter_, int threatToAdd_, bool increaseForAllEnemies_)
     {
         //If the currently acting character is an enemy, nothing happens. Enemies can't increase their own threat
-        if(this.enemyCharactersInCombat.Contains(this.actingCharacters[0]))
+        if(this.enemyCharactersInCombat.Contains(actingCharacter_))
         {
             return;
         }
@@ -1222,7 +1256,7 @@ public class CombatManager : MonoBehaviour
                         //Making sure they have the EnemyCombatAI component
                         if(enemy.GetComponent<EnemyCombatAI_Basic>())
                         {
-                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                         }
                     }
                 }
@@ -1243,7 +1277,7 @@ public class CombatManager : MonoBehaviour
                         //Making sure they have the EnemyCombatAI component
                         if (enemy.GetComponent<EnemyCombatAI_Basic>())
                         {
-                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                            enemy.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                         }
                     }
                 }
@@ -1254,7 +1288,7 @@ public class CombatManager : MonoBehaviour
                 //Making sure the target is alive and has the EnemyCombatAI component first
                 if(targetCharacter_.charPhysState.currentHealth > 0 && targetCharacter_.GetComponent<EnemyCombatAI_Basic>())
                 {
-                    targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.actingCharacters[0], threatToAdd_);
+                    targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                 }
             }
         }

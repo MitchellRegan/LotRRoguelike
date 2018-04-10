@@ -11,6 +11,9 @@ public class Perk : MonoBehaviour
     //The displayed name of this perk in the character UI
     public string perkNameID;
 
+    //The description of this perk in the character UI
+    public string perkDescription;
+
 
 
 	// Use this for initialization

@@ -107,6 +107,15 @@ public class HealOverTimeEffect : Effect
             didThisCrit = true;
         }
 
+        //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.healType == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+            {
+                damagehealed += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+            }
+        }
+
         //Subtracting any magic resistance from the amount that we're trying to heal
         switch (this.healType)
         {
@@ -134,6 +143,24 @@ public class HealOverTimeEffect : Effect
             case CombatManager.DamageType.Dark:
                 damagehealed -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
+                //Pure damage type has no resist
+        }
+
+        //Looping through the attacking character's perks to see if there's any bonus threat to add to this effect
+        int bonusThreat = 0;
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            //If the perk is a threat boosting perk
+            if (charPerk.GetType() == typeof(ThreatBoostPerk))
+            {
+                ThreatBoostPerk threatPerk = charPerk.GetComponent<ThreatBoostPerk>();
+
+                //If the perk has the same damage type as this HoT or it affects all damage types
+                if (threatPerk.damageTypeToThreaten == this.healType || threatPerk.threatenAllDamageTypes)
+                {
+                    bonusThreat += threatPerk.GetAddedActionThreat(damagehealed, didThisCrit, true);
+                }
+            }
         }
 
         //Healing the damage to the effected character
@@ -141,7 +168,7 @@ public class HealOverTimeEffect : Effect
 
 
         //Applying threat to all enemies for the amount that's healed
-        CombatManager.globalReference.ApplyActionThreat(null, damagehealed, true);
+        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damagehealed + bonusThreat, true);
         
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);

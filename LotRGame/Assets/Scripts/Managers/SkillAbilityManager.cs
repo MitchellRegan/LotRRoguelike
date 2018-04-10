@@ -91,13 +91,10 @@ public class SkillAbilityManager : MonoBehaviour
                 //If the ability reward isn't null
                 if(skillRewards[r].learnedAction != null)
                 {
-                    //If the character's default action list doesn't have the learned action, we give them the new learned action
-                    if(!charThatLeveled_.charActionList.defaultActions.Contains(skillRewards[r].learnedAction))
-                    {
-                        charThatLeveled_.charActionList.defaultActions.Add(skillRewards[r].learnedAction);
-                        //Refreshing the character's action list to make the added action appear
-                        charThatLeveled_.charActionList.RefreshActionLists();
-                    }
+                    //Giving the character the learned action
+                    charThatLeveled_.charActionList.defaultActions.Add(skillRewards[r].learnedAction);
+                    //Refreshing the character's action list to make the added action appear
+                    charThatLeveled_.charActionList.RefreshActionLists();
                 }
 
                 //If the perk reward isn't null

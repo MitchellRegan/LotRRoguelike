@@ -107,8 +107,17 @@ public class DamageOverTimeEffect : Effect
             didThisCrit = true;
         }
 
+        //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.damageType == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
+            {
+                damageDealt += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+            }
+        }
+
         //Subtracting any magic resistance from the damage that we're trying to deal
-        switch(this.damageType)
+        switch (this.damageType)
         {
             case CombatManager.DamageType.Arcane:
                 damageDealt -= this.characterToEffect.charInventory.totalArcaneResist;
@@ -136,13 +145,30 @@ public class DamageOverTimeEffect : Effect
                 break;
         }
 
+        //Looping through the attacking character's perks to see if there's any bonus threat to add to this effect
+        int bonusThreat = 0;
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            //If the perk is a threat boosting perk
+            if (charPerk.GetType() == typeof(ThreatBoostPerk))
+            {
+                ThreatBoostPerk threatPerk = charPerk.GetComponent<ThreatBoostPerk>();
+
+                //If the perk has the same damage type as this DoT or it affects all damage types
+                if(threatPerk.damageTypeToThreaten == this.damageType || threatPerk.threatenAllDamageTypes)
+                {
+                    bonusThreat += threatPerk.GetAddedActionThreat(damageDealt, didThisCrit, true);
+                }
+            }
+        }
+
         //Dealing the damage to the effected character
         this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
 
         //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
         if(this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
         {
-            this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt);
+            this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt + bonusThreat);
         }
 
         //Creating the visual effect for this effect
