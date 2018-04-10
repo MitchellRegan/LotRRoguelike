@@ -1005,9 +1005,19 @@ public class CombatManager : MonoBehaviour
             //Making sure the current character isn't dead first
             if (this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
             {
+                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
+                float perkBoost = 0;
+                foreach(Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
+                {
+                    if(charPerk.GetType() == typeof(InitiativeBoostPerk))
+                    {
+                        perkBoost += charPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
+                    }
+                }
+
                 //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
                 //If the character's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
@@ -1032,9 +1042,19 @@ public class CombatManager : MonoBehaviour
             //Making sure the current enemy isn't dead first
             if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
             {
+                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
+                float perkBoost = 0;
+                foreach (Perk enemyPerk in this.playerCharactersInCombat[e].charPerks.allPerks)
+                {
+                    if (enemyPerk.GetType() == typeof(InitiativeBoostPerk))
+                    {
+                        perkBoost += enemyPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
+                    }
+                }
+
                 //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
 
                 //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
