@@ -143,14 +143,41 @@ public class AttackAction : Action
         //Adding the correct skill modifier of the acting character to their hit roll
         hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(this.weaponSkillUsed);
 
+        //Looping through the attacking character's perks to see if they have any accuracy boost perks
+        foreach (Perk atkPerk in actingChar.charPerks.allPerks)
+        {
+            if (atkPerk.GetType() == typeof(AccuracyBoostPerk))
+            {
+                AccuracyBoostPerk accuracyPerk = atkPerk.GetComponent<AccuracyBoostPerk>();
+                //Making sure the perk either boosts all skill accuracy or the skill that this attack uses
+                if (accuracyPerk.skillAccuracyToBoost == this.weaponSkillUsed || accuracyPerk.boostAllSkillAccuracy)
+                {
+                    hitRoll += accuracyPerk.baseAccuracyBoost;
+                }
+            }
+        }
+
+        //Looping through the defending character's perks to see if they have any evasion boost perks
+        int evasionPerkBoost = 0;
+        foreach(Perk charPerk in defendingChar.charPerks.allPerks)
+        {
+            if(charPerk.GetType() == typeof(EvasionBoostPerk))
+            {
+                evasionPerkBoost += charPerk.GetComponent<EvasionBoostPerk>().evasionBoost;
+            }
+        }
+
         //Finding the hit target's resistance and subtracting it from the attacker's hit roll
         switch(this.touchType)
         {
             case attackTouchType.Regular:
-                hitRoll -= (defendingChar.charCombatStats.evasion + defendingChar.charInventory.totalPhysicalArmor);
+                hitRoll -= defendingChar.charCombatStats.evasion;
+                hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
+                hitRoll -= evasionPerkBoost;
                 break;
             case attackTouchType.IgnoreArmor:
                 hitRoll -= defendingChar.charCombatStats.evasion;
+                hitRoll -= evasionPerkBoost;
                 break;
             case attackTouchType.IgnoreEvasion:
                 hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
