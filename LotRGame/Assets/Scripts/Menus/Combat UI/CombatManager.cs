@@ -372,6 +372,20 @@ public class CombatManager : MonoBehaviour
             loot.stackSizeMinMax = drop.stackSizeMinMax;
             this.lootTable.Add(loot);
         }
+
+        //Looping through each player character to see if anyone has a ThreatBoostPerk
+        for(int t = 0; t < this.playerCharactersInCombat.Count; ++t)
+        {
+            //Looping through all of the current character's perks
+            foreach(Perk charPerk in this.playerCharactersInCombat[t].charPerks.allPerks)
+            {
+                //If the current perk is a ThreatBoostPerk that works at the start of combat, we boost threat against this character for all enemies
+                if(charPerk.GetType() == typeof(ThreatBoostPerk) && charPerk.GetComponent<ThreatBoostPerk>().increaseThreatAtStartOfCombat)
+                {
+                    this.ApplyActionThreat(this.playerCharactersInCombat[t], null, charPerk.GetComponent<ThreatBoostPerk>().baseThreatToAdd, true);
+                }
+            }
+        }
     }
 
 

@@ -400,20 +400,83 @@ public class AttackAction : Action
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
         totalDamage += pureDamage;//Adding pure damage
 
+        //Looping through the acting character's perks to see if they have any ThreatBoostPerk perks
+        int bonusThreat = 0;
+        foreach(Perk charPerk in actingChar.charPerks.allPerks)
+        {
+            if(charPerk.GetType() == typeof(ThreatBoostPerk))
+            {
+                //Getting the threat boost perk component reference
+                ThreatBoostPerk threatPerk = charPerk.GetComponent<ThreatBoostPerk>();
+
+                //If the threat perk applies to all forms of damage
+                if(threatPerk.threatenAllDamageTypes)
+                {
+                    bonusThreat += threatPerk.GetAddedActionThreat(totalDamage, isCrit, false);
+                }
+                //Otherwise, we check for each damage type
+                else
+                {
+                    switch(threatPerk.damageTypeToThreaten)
+                    {
+                        case CombatManager.DamageType.Physical:
+                            bonusThreat += threatPerk.GetAddedActionThreat(physDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Arcane:
+                            bonusThreat += threatPerk.GetAddedActionThreat(arcaneDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Holy:
+                            bonusThreat += threatPerk.GetAddedActionThreat(holyDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Dark:
+                            bonusThreat += threatPerk.GetAddedActionThreat(darkDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Fire:
+                            bonusThreat += threatPerk.GetAddedActionThreat(fireDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Water:
+                            bonusThreat += threatPerk.GetAddedActionThreat(waterDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Wind:
+                            bonusThreat += threatPerk.GetAddedActionThreat(windDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Electric:
+                            bonusThreat += threatPerk.GetAddedActionThreat(electricDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Stone:
+                            bonusThreat += threatPerk.GetAddedActionThreat(stoneDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Pure:
+                            bonusThreat += threatPerk.GetAddedActionThreat(pureDamage, isCrit, false);
+                            break;
+                    }
+                }
+            }
+        }
+
         //If the attack crit, ALL enemies have their threat increased for 25% of the damage
         if(isCrit)
         {
             //Getting 25% of the damage to pass to all enemies
-            int threatForAll = totalDamage / 4;
+            int threatForAll = (totalDamage + bonusThreat) / 4;
             CombatManager.globalReference.ApplyActionThreat(actingChar, null, threatForAll, true);
 
             //Applying the rest of the threat to the defending character
-            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, totalDamage - threatForAll, false);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, (totalDamage + bonusThreat) - threatForAll, false);
         }
         //If the attack wasn't a crit, only the defending character takes threat
         else
         {
-            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, totalDamage, false);
+            CombatManager.globalReference.ApplyActionThreat(actingChar, defendingChar, totalDamage + bonusThreat, false);
         }
 
         //Creating the visual effect at the target tile if it isn't null

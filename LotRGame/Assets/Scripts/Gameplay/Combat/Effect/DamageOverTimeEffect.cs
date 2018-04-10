@@ -145,13 +145,20 @@ public class DamageOverTimeEffect : Effect
                 break;
         }
 
-        //Looping through the attacking character's perks to see if there's any bonus damage to add to this effect
+        //Looping through the attacking character's perks to see if there's any bonus threat to add to this effect
+        int bonusThreat = 0;
         foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
         {
-            //If the perk is a damage boosting perk, we get the bonus damage from it
-            if (charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            //If the perk is a threat boosting perk
+            if (charPerk.GetType() == typeof(ThreatBoostPerk))
             {
-                damageDealt += charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+                ThreatBoostPerk threatPerk = charPerk.GetComponent<ThreatBoostPerk>();
+
+                //If the perk has the same damage type as this DoT or it affects all damage types
+                if(threatPerk.damageTypeToThreaten == this.damageType || threatPerk.threatenAllDamageTypes)
+                {
+                    bonusThreat += threatPerk.GetAddedActionThreat(damageDealt, didThisCrit, true);
+                }
             }
         }
 
@@ -161,7 +168,7 @@ public class DamageOverTimeEffect : Effect
         //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
         if(this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
         {
-            this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt);
+            this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt + bonusThreat);
         }
 
         //Creating the visual effect for this effect

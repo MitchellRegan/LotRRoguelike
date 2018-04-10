@@ -113,6 +113,23 @@ public class InstantHealEffect : Effect
                 break;
         }
 
+        //Looping through the attacking character's perks to see if there's any bonus threat to add to this effect
+        int bonusThreat = 0;
+        foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
+        {
+            //If the perk is a threat boosting perk
+            if (charPerk.GetType() == typeof(ThreatBoostPerk))
+            {
+                ThreatBoostPerk threatPerk = charPerk.GetComponent<ThreatBoostPerk>();
+
+                //If the perk has the same damage type as this effect or it affects all damage types
+                if (threatPerk.damageTypeToThreaten == this.type || threatPerk.threatenAllDamageTypes)
+                {
+                    bonusThreat += threatPerk.GetAddedActionThreat(totalHeal, isCrit, false);
+                }
+            }
+        }
+
         //Finding the combat tile that the target character is on
         CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
 
@@ -126,7 +143,7 @@ public class InstantHealEffect : Effect
 
         
         //Applying threat to all enemies based on the amount healed
-        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal, true);
+        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal + bonusThreat, true);
 
         //Destroying this effect once everything is finished up
         Destroy(this.gameObject);
