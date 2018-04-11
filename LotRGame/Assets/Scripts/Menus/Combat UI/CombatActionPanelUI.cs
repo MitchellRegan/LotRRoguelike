@@ -427,9 +427,6 @@ public class CombatActionPanelUI : MonoBehaviour
                         case CombatManager.DamageType.Nature:
                             this.selectedPanelDetails.damageText.text += " Nature";
                             break;
-                        default:
-                            this.selectedPanelDetails.damageText.text += " Physical";
-                            break;
                     }
                 }
 

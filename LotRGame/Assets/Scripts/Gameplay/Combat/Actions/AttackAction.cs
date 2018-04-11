@@ -157,13 +157,28 @@ public class AttackAction : Action
             }
         }
 
-        //Looping through the defending character's perks to see if they have any evasion boost perks
+        //Looping through the defending character's perks to see if they have any armor or evasion boost perks
         int evasionPerkBoost = 0;
+        int armorPerkBoost = 0;
         foreach(Perk charPerk in defendingChar.charPerks.allPerks)
         {
-            if(charPerk.GetType() == typeof(EvasionBoostPerk))
+            if (charPerk.GetType() == typeof(EvasionBoostPerk))
             {
-                evasionPerkBoost += charPerk.GetComponent<EvasionBoostPerk>().evasionBoost;
+                EvasionBoostPerk evasionPerk = charPerk.GetComponent<EvasionBoostPerk>();
+                //Making sure the perk boosts evasion against this type of attack
+                if (evasionPerk.blocksAllSkills || evasionPerk.skillToBlock == this.weaponSkillUsed)
+                {
+                    evasionPerkBoost += charPerk.GetComponent<EvasionBoostPerk>().evasionBoost;
+                }
+            }
+            else if (charPerk.GetType() == typeof(ArmorBoostPerk))
+            {
+                ArmorBoostPerk armorPerk = charPerk.GetComponent<ArmorBoostPerk>();
+                //Making sure the perk boosts armor against this type of attack
+                if (armorPerk.blocksAllSkills || armorPerk.skillToBlock == this.weaponSkillUsed)
+                {
+                    armorPerkBoost += armorPerk.armorBoost;
+                }
             }
         }
 
@@ -174,6 +189,7 @@ public class AttackAction : Action
                 hitRoll -= defendingChar.charCombatStats.evasion;
                 hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
                 hitRoll -= evasionPerkBoost;
+                hitRoll -= armorPerkBoost;
                 break;
             case attackTouchType.IgnoreArmor:
                 hitRoll -= defendingChar.charCombatStats.evasion;
@@ -181,6 +197,7 @@ public class AttackAction : Action
                 break;
             case attackTouchType.IgnoreEvasion:
                 hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
+                hitRoll -= armorPerkBoost;
                 break;
             case attackTouchType.IgnoreEvasionAndArmor:
                 //Nothing is subtracted

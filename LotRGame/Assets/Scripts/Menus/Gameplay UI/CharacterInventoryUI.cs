@@ -40,7 +40,7 @@ public class CharacterInventoryUI : MonoBehaviour
     public Text selectedCharacterResistWater;
     public Text selectedCharacterResistElectric;
     public Text selectedCharacterResistWind;
-    public Text selectedCharacterResistLight;
+    public Text selectedCharacterResistHoly;
     public Text selectedCharacterResistDark;
     public Text selectedCharacterResistNature;
 
@@ -195,9 +195,9 @@ public class CharacterInventoryUI : MonoBehaviour
         {
             this.selectedCharacterResistWind.text = "" + this.selectedCharacterInventory.totalWindResist;
         }
-        if (this.selectedCharacterResistLight != null)
+        if (this.selectedCharacterResistHoly != null)
         {
-            this.selectedCharacterResistLight.text = "" + this.selectedCharacterInventory.totalHolyResist;
+            this.selectedCharacterResistHoly.text = "" + this.selectedCharacterInventory.totalHolyResist;
         }
         if (this.selectedCharacterResistDark != null)
         {
