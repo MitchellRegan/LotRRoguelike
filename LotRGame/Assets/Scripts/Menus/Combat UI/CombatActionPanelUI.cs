@@ -391,8 +391,14 @@ public class CombatActionPanelUI : MonoBehaviour
                     //Finding out which type of damage it is
                     switch(atkDetails.damageDealt[a].type)
                     {
-                        case CombatManager.DamageType.Physical:
-                            this.selectedPanelDetails.damageText.text += " Physical";
+                        case CombatManager.DamageType.Slashing:
+                            this.selectedPanelDetails.damageText.text += " Slashing";
+                            break;
+                        case CombatManager.DamageType.Stabbing:
+                            this.selectedPanelDetails.damageText.text += " Stabbing";
+                            break;
+                        case CombatManager.DamageType.Crushing:
+                            this.selectedPanelDetails.damageText.text += " Crushing";
                             break;
                         case CombatManager.DamageType.Arcane:
                             this.selectedPanelDetails.damageText.text += " Arcane";
@@ -409,9 +415,6 @@ public class CombatActionPanelUI : MonoBehaviour
                         case CombatManager.DamageType.Wind:
                             this.selectedPanelDetails.damageText.text += " Wind";
                             break;
-                        case CombatManager.DamageType.Stone:
-                            this.selectedPanelDetails.damageText.text += " Stone";
-                            break;
                         case CombatManager.DamageType.Holy:
                             this.selectedPanelDetails.damageText.text += " Holy";
                             break;
@@ -420,6 +423,9 @@ public class CombatActionPanelUI : MonoBehaviour
                             break;
                         case CombatManager.DamageType.Pure:
                             this.selectedPanelDetails.damageText.text += " Pure";
+                            break;
+                        case CombatManager.DamageType.Nature:
+                            this.selectedPanelDetails.damageText.text += " Nature";
                             break;
                         default:
                             this.selectedPanelDetails.damageText.text += " Physical";

@@ -6,7 +6,7 @@ using UnityEngine;
 public class InstantHealEffect : Effect
 {
     //The type of heal that's inflicted
-    public CombatManager.DamageType type = CombatManager.DamageType.Physical;
+    public CombatManager.DamageType type = CombatManager.DamageType.Holy;
 
     //The base amount of heal dealt
     public int baseHeal = 0;
@@ -63,6 +63,27 @@ public class InstantHealEffect : Effect
         //Subtracting the target character's magic resistances
         switch (this.type)
         {
+            case CombatManager.DamageType.Slashing:
+                if (targetCharacter_.charInventory.totalSlashingArmor > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalSlashingArmor;
+                }
+                break;
+
+            case CombatManager.DamageType.Stabbing:
+                if (targetCharacter_.charInventory.totalStabbingArmor > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalStabbingArmor;
+                }
+                break;
+
+            case CombatManager.DamageType.Crushing:
+                if (targetCharacter_.charInventory.totalCrushingArmor > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalCrushingArmor;
+                }
+                break;
+
             case CombatManager.DamageType.Fire:
                 if (targetCharacter_.charInventory.totalFireResist > 0)
                 {
@@ -91,24 +112,31 @@ public class InstantHealEffect : Effect
                 }
                 break;
 
-            case CombatManager.DamageType.Stone:
-                if (targetCharacter_.charInventory.totalStoneResist > 0)
+            case CombatManager.DamageType.Nature:
+                if (targetCharacter_.charInventory.totalNatureResist > 0)
                 {
-                    totalHeal -= targetCharacter_.charInventory.totalStoneResist;
+                    totalHeal -= targetCharacter_.charInventory.totalNatureResist;
+                }
+                break;
+
+            case CombatManager.DamageType.Arcane:
+                if (targetCharacter_.charInventory.totalArcaneResist > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalArcaneResist;
                 }
                 break;
 
             case CombatManager.DamageType.Holy:
                 if (targetCharacter_.charInventory.totalHolyResist > 0)
                 {
-                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalHolyResist;
                 }
                 break;
 
             case CombatManager.DamageType.Dark:
-                if (targetCharacter_.charInventory.totalFireResist > 0)
+                if (targetCharacter_.charInventory.totalDarkResist > 0)
                 {
-                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalDarkResist;
                 }
                 break;
         }

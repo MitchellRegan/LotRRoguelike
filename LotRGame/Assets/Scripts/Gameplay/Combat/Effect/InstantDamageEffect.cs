@@ -6,7 +6,7 @@ using UnityEngine;
 public class InstantDamageEffect : Effect
 {
     //The type of damage that's inflicted
-    public CombatManager.DamageType type = CombatManager.DamageType.Physical;
+    public CombatManager.DamageType type = CombatManager.DamageType.Slashing;
 
     //The base amount of damage dealt
     public int baseDamage = 0;
@@ -60,9 +60,30 @@ public class InstantDamageEffect : Effect
             }
         }
 
-        //Subtracting the target character's magic resistances
+        //Subtracting the target character's armor resist and magic resistances
         switch(this.type)
         {
+            case CombatManager.DamageType.Slashing:
+                if (targetCharacter_.charInventory.totalSlashingArmor > 0)
+                {
+                    totalDamage -= targetCharacter_.charInventory.totalSlashingArmor;
+                }
+                break;
+
+            case CombatManager.DamageType.Stabbing:
+                if (targetCharacter_.charInventory.totalStabbingArmor > 0)
+                {
+                    totalDamage -= targetCharacter_.charInventory.totalStabbingArmor;
+                }
+                break;
+
+            case CombatManager.DamageType.Crushing:
+                if (targetCharacter_.charInventory.totalCrushingArmor > 0)
+                {
+                    totalDamage -= targetCharacter_.charInventory.totalCrushingArmor;
+                }
+                break;
+
             case CombatManager.DamageType.Fire:
                 if(targetCharacter_.charInventory.totalFireResist > 0)
                 {
@@ -91,24 +112,31 @@ public class InstantDamageEffect : Effect
                 }
                 break;
 
-            case CombatManager.DamageType.Stone:
-                if (targetCharacter_.charInventory.totalStoneResist > 0)
+            case CombatManager.DamageType.Nature:
+                if (targetCharacter_.charInventory.totalNatureResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalStoneResist;
+                    totalDamage -= targetCharacter_.charInventory.totalNatureResist;
+                }
+                break;
+
+            case CombatManager.DamageType.Arcane:
+                if (targetCharacter_.charInventory.totalArcaneResist > 0)
+                {
+                    totalDamage -= targetCharacter_.charInventory.totalArcaneResist;
                 }
                 break;
 
             case CombatManager.DamageType.Holy:
                 if (targetCharacter_.charInventory.totalHolyResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalFireResist;
+                    totalDamage -= targetCharacter_.charInventory.totalHolyResist;
                 }
                 break;
 
             case CombatManager.DamageType.Dark:
-                if (targetCharacter_.charInventory.totalFireResist > 0)
+                if (targetCharacter_.charInventory.totalDarkResist > 0)
                 {
-                    totalDamage -= targetCharacter_.charInventory.totalFireResist;
+                    totalDamage -= targetCharacter_.charInventory.totalDarkResist;
                 }
                 break;
         }

@@ -234,7 +234,9 @@ public class AttackAction : Action
         }
 
         //The total amount of damage for each type that will be dealt with this attack
-        int physDamage = 0;
+        int slashingDamage = 0;
+        int stabbingDamage = 0;
+        int crushingDamage = 0;
         int arcaneDamage = 0;
         int holyDamage = 0;
         int darkDamage = 0;
@@ -242,8 +244,8 @@ public class AttackAction : Action
         int waterDamage = 0;
         int electricDamage = 0;
         int windDamage = 0;
-        int stoneDamage = 0;
         int pureDamage = 0;
+        int natureDamage = 0;
 
         //Looping through each damage type for this attack
         foreach(AttackDamage atk in this.damageDealt)
@@ -277,8 +279,14 @@ public class AttackAction : Action
             //Adding the current attack's damage to the correct type
             switch (atk.type)
             {
-                case CombatManager.DamageType.Physical:
-                    physDamage += atkDamage;
+                case CombatManager.DamageType.Slashing:
+                    slashingDamage += atkDamage;
+                    break;
+                case CombatManager.DamageType.Stabbing:
+                    stabbingDamage += atkDamage;
+                    break;
+                case CombatManager.DamageType.Crushing:
+                    crushingDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Arcane:
                     arcaneDamage += atkDamage;
@@ -301,12 +309,13 @@ public class AttackAction : Action
                 case CombatManager.DamageType.Wind:
                     windDamage += atkDamage;
                     break;
-                case CombatManager.DamageType.Stone:
-                    arcaneDamage += atkDamage;
+                case CombatManager.DamageType.Nature:
+                    natureDamage += atkDamage;
                     break;
                 case CombatManager.DamageType.Pure:
                     pureDamage += atkDamage;
                     break;
+
             }
         }
         
@@ -321,8 +330,14 @@ public class AttackAction : Action
                 //Applying the perk's added damage to the correct damage type
                 switch(charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType)
                 {
-                    case CombatManager.DamageType.Physical:
-                        physDamage += perkDamage;
+                    case CombatManager.DamageType.Slashing:
+                        slashingDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Stabbing:
+                        stabbingDamage += perkDamage;
+                        break;
+                    case CombatManager.DamageType.Crushing:
+                        crushingDamage += perkDamage;
                         break;
                     case CombatManager.DamageType.Arcane:
                         arcaneDamage += perkDamage;
@@ -345,8 +360,8 @@ public class AttackAction : Action
                     case CombatManager.DamageType.Wind:
                         windDamage += perkDamage;
                         break;
-                    case CombatManager.DamageType.Stone:
-                        arcaneDamage += perkDamage;
+                    case CombatManager.DamageType.Nature:
+                        natureDamage += perkDamage;
                         break;
                     case CombatManager.DamageType.Pure:
                         pureDamage += perkDamage;
@@ -355,6 +370,20 @@ public class AttackAction : Action
             }
         }
         
+        //Subtracking the defending character's physical armor resistances
+        if(slashingDamage > 0)
+        {
+            slashingDamage -= defendingChar.charInventory.totalSlashingArmor;
+        }
+        if(stabbingDamage > 0)
+        {
+            stabbingDamage -= defendingChar.charInventory.totalStabbingArmor;
+        }
+        if(crushingDamage > 0)
+        {
+            crushingDamage -= defendingChar.charInventory.totalCrushingArmor;
+        }
+
         //Subtracting the defending character's magic resistances 
         if (arcaneDamage > 0)
         {
@@ -376,9 +405,9 @@ public class AttackAction : Action
         {
             windDamage -= defendingChar.charInventory.totalWindResist;
         }
-        if (stoneDamage > 0)
+        if (natureDamage > 0)
         {
-            stoneDamage -= defendingChar.charInventory.totalStoneResist;
+            natureDamage -= defendingChar.charInventory.totalNatureResist;
         }
         if (holyDamage > 0)
         {
@@ -390,8 +419,14 @@ public class AttackAction : Action
         }
 
         //Dealing damage to the defending character and telling the combat manager to display how much was dealt
-        defendingChar.charPhysState.DamageCharacter(physDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, physDamage, CombatManager.DamageType.Physical, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(slashingDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, slashingDamage, CombatManager.DamageType.Slashing, targetTile_, isCrit);
+
+        defendingChar.charPhysState.DamageCharacter(stabbingDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, stabbingDamage, CombatManager.DamageType.Stabbing, targetTile_, isCrit);
+
+        defendingChar.charPhysState.DamageCharacter(crushingDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, crushingDamage, CombatManager.DamageType.Crushing, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(arcaneDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, arcaneDamage, CombatManager.DamageType.Arcane, targetTile_, isCrit);
@@ -408,8 +443,8 @@ public class AttackAction : Action
         defendingChar.charPhysState.DamageCharacter(electricDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, electricDamage, CombatManager.DamageType.Electric, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(stoneDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, stoneDamage, CombatManager.DamageType.Stone, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(natureDamage);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, natureDamage, CombatManager.DamageType.Nature, targetTile_, isCrit);
 
         defendingChar.charPhysState.DamageCharacter(holyDamage);
         CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, holyDamage, CombatManager.DamageType.Holy, targetTile_, isCrit);
@@ -422,10 +457,10 @@ public class AttackAction : Action
 
         //Increasing the threat to the target based on damage dealt
         int totalDamage = 0;
-        totalDamage += physDamage + arcaneDamage;//Adding physical and magical damage
-        totalDamage += fireDamage + waterDamage + windDamage + electricDamage + stoneDamage;//Adding elemental damage
+        totalDamage += slashingDamage + stabbingDamage + crushingDamage;//Adding physical damage
+        totalDamage += fireDamage + waterDamage + windDamage + electricDamage + natureDamage;//Adding elemental damage
         totalDamage += holyDamage + darkDamage;//Adding light/dark damage
-        totalDamage += pureDamage;//Adding pure damage
+        totalDamage += arcaneDamage + pureDamage;//Adding arcane and pure damage
 
         //Looping through the acting character's perks to see if they have any ThreatBoostPerk perks
         int bonusThreat = 0;
@@ -446,8 +481,16 @@ public class AttackAction : Action
                 {
                     switch(threatPerk.damageTypeToThreaten)
                     {
-                        case CombatManager.DamageType.Physical:
-                            bonusThreat += threatPerk.GetAddedActionThreat(physDamage, isCrit, false);
+                        case CombatManager.DamageType.Slashing:
+                            bonusThreat += threatPerk.GetAddedActionThreat(slashingDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Stabbing:
+                            bonusThreat += threatPerk.GetAddedActionThreat(stabbingDamage, isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Crushing:
+                            bonusThreat += threatPerk.GetAddedActionThreat(crushingDamage, isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Arcane:
@@ -478,8 +521,8 @@ public class AttackAction : Action
                             bonusThreat += threatPerk.GetAddedActionThreat(electricDamage, isCrit, false);
                             break;
 
-                        case CombatManager.DamageType.Stone:
-                            bonusThreat += threatPerk.GetAddedActionThreat(stoneDamage, isCrit, false);
+                        case CombatManager.DamageType.Nature:
+                            bonusThreat += threatPerk.GetAddedActionThreat(natureDamage, isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Pure:
@@ -832,7 +875,7 @@ public class AttackAction : Action
 public class AttackDamage
 {
     //The type of damage that's inflicted
-    public CombatManager.DamageType type = CombatManager.DamageType.Physical;
+    public CombatManager.DamageType type = CombatManager.DamageType.Slashing;
 
     //The amount of damage inflicted before dice rolls
     public int baseDamage = 0;

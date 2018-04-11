@@ -134,8 +134,8 @@ public class DamageOverTimeEffect : Effect
             case CombatManager.DamageType.Wind:
                 damageDealt -= this.characterToEffect.charInventory.totalWindResist;
                 break;
-            case CombatManager.DamageType.Stone:
-                damageDealt -= this.characterToEffect.charInventory.totalStoneResist;
+            case CombatManager.DamageType.Nature:
+                damageDealt -= this.characterToEffect.charInventory.totalNatureResist;
                 break;
             case CombatManager.DamageType.Holy:
                 damageDealt -= this.characterToEffect.charInventory.totalHolyResist;

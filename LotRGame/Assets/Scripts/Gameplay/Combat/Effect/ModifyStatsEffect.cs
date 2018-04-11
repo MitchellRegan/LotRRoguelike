@@ -346,16 +346,44 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Armor
-                case StatModifier.StatName.Armor:
+                case StatModifier.StatName.SlashingArmor:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charInventory.totalPhysicalArmor += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalSlashingArmor += Mathf.RoundToInt(mod.amountToChange);
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charInventory.totalPhysicalArmor -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalSlashingArmor -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Armor
+                case StatModifier.StatName.StabbingArmor:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalStabbingArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalStabbingArmor -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Armor
+                case StatModifier.StatName.CrushingArmor:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalCrushingArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalCrushingArmor -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
 
@@ -457,17 +485,17 @@ public class ModifyStatsEffect : Effect
                     }
                     break;
 
-                //Rock resist
-                case StatModifier.StatName.RockResist:
+                //Nature resist
+                case StatModifier.StatName.NatureResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charInventory.totalStoneResist += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalNatureResist += Mathf.RoundToInt(mod.amountToChange);
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charInventory.totalStoneResist -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalNatureResist -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
             }
@@ -591,6 +619,7 @@ public class StatModifier
         Energy,
 
         Initiative,
+        Accuracy,
         Evasion,
 
         Unarmed,
@@ -610,7 +639,9 @@ public class StatModifier
         ElectricMagic,
         StoneMagic,
 
-        Armor,
+        SlashingArmor,
+        StabbingArmor,
+        CrushingArmor,
         ArcaneResist,
         HolyResist,
         DarkResist,
@@ -618,7 +649,7 @@ public class StatModifier
         WaterResist,
         WindResist,
         ElectricResist,
-        RockResist
+        NatureResist
     }
 
     //Enum for which stat this modifier changes

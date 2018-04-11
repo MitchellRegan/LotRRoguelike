@@ -134,8 +134,8 @@ public class HealOverTimeEffect : Effect
             case CombatManager.DamageType.Wind:
                 damagehealed -= this.characterToEffect.charInventory.totalWindResist;
                 break;
-            case CombatManager.DamageType.Stone:
-                damagehealed -= this.characterToEffect.charInventory.totalStoneResist;
+            case CombatManager.DamageType.Nature:
+                damagehealed -= this.characterToEffect.charInventory.totalNatureResist;
                 break;
             case CombatManager.DamageType.Holy:
                 damagehealed -= this.characterToEffect.charInventory.totalHolyResist;
