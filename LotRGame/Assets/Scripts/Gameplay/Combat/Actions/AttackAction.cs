@@ -250,22 +250,34 @@ public class AttackAction : Action
             isCrit = true;
         }
 
-        //The total amount of damage for each type that will be dealt with this attack
-        int slashingDamage = 0;
-        int stabbingDamage = 0;
-        int crushingDamage = 0;
-        int arcaneDamage = 0;
-        int holyDamage = 0;
-        int darkDamage = 0;
-        int fireDamage = 0;
-        int waterDamage = 0;
-        int electricDamage = 0;
-        int windDamage = 0;
-        int pureDamage = 0;
-        int natureDamage = 0;
+        //Dictionary for the total amount of damage for each type that will be dealt with this attack
+        Dictionary<CombatManager.DamageType, int> damageTypeTotalDamage = new Dictionary<CombatManager.DamageType, int>();
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Slashing, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Stabbing, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Crushing, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Arcane, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Holy, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Dark, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Fire, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Water, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Wind, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Electric, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Nature, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Pure, 0);
+
+        //dictionary for if all of the spell damage types for if the damage is completely negated
+        Dictionary<CombatManager.DamageType, SpellResistTypes> spellResistDictionary = new Dictionary<CombatManager.DamageType, SpellResistTypes>();
+        spellResistDictionary.Add(CombatManager.DamageType.Arcane, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Holy, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Dark, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Fire, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Water, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Wind, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Electric, SpellResistTypes.Normal);
+        spellResistDictionary.Add(CombatManager.DamageType.Nature, SpellResistTypes.Normal);
 
         //Looping through each damage type for this attack
-        foreach(AttackDamage atk in this.damageDealt)
+        foreach (AttackDamage atk in this.damageDealt)
         {
             //Int to hold all of the damage for the current attack
             int atkDamage = 0;
@@ -293,47 +305,39 @@ public class AttackAction : Action
                 }
             }
 
-            //Adding the current attack's damage to the correct type
-            switch (atk.type)
+            //Looping through the defending character's perks to see if they have any spell resist or absorb perks
+            foreach (Perk defPerk in defendingChar.charPerks.allPerks)
             {
-                case CombatManager.DamageType.Slashing:
-                    slashingDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Stabbing:
-                    stabbingDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Crushing:
-                    crushingDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Arcane:
-                    arcaneDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Holy:
-                    holyDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Dark:
-                    darkDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Fire:
-                    fireDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Water:
-                    waterDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Electric:
-                    electricDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Wind:
-                    windDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Nature:
-                    natureDamage += atkDamage;
-                    break;
-                case CombatManager.DamageType.Pure:
-                    pureDamage += atkDamage;
-                    break;
+                if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
+                {
+                    SpellResistAbsorbPerk resistPerk = defPerk.GetComponent<SpellResistAbsorbPerk>();
 
+                    //Checking to see if the current damage type is the same as this spell resist perk
+                    if(resistPerk.typeToResist == atk.type)
+                    {
+                        //Checking to see if the damage is negated entirely
+                        if(resistPerk.negateAllDamage)
+                        {
+                            spellResistDictionary[atk.type] = SpellResistTypes.Negate;
+                        }
+                        //Checking to see if the damage is absorbed to heal the target
+                        else if(resistPerk.absorbDamage)
+                        {
+                            spellResistDictionary[atk.type] = SpellResistTypes.Absorb;
+                            //Applying the damage reduction so the defender isn't healed as much
+                            damageTypeTotalDamage[atk.type] -= resistPerk.GetSpellResistAmount(defendingChar, isCrit, false);
+                        }
+                        //Otherwise we just get the amount that it normally resists
+                        else
+                        {
+                            damageTypeTotalDamage[atk.type] -= resistPerk.GetSpellResistAmount(defendingChar, isCrit, false);
+                        }
+                    }
+                }
             }
+
+            //Adding the current attack's damage to the correct type
+            damageTypeTotalDamage[atk.type] += atkDamage;
         }
         
         //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
@@ -345,139 +349,222 @@ public class AttackAction : Action
                 int perkDamage = charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
 
                 //Applying the perk's added damage to the correct damage type
-                switch(charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType)
-                {
-                    case CombatManager.DamageType.Slashing:
-                        slashingDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Stabbing:
-                        stabbingDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Crushing:
-                        crushingDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Arcane:
-                        arcaneDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Holy:
-                        holyDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Dark:
-                        darkDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Fire:
-                        fireDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Water:
-                        waterDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Electric:
-                        electricDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Wind:
-                        windDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Nature:
-                        natureDamage += perkDamage;
-                        break;
-                    case CombatManager.DamageType.Pure:
-                        pureDamage += perkDamage;
-                        break;
-                }
+                damageTypeTotalDamage[charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType] += perkDamage;
             }
         }
         
+        
         //Subtracking the defending character's physical armor resistances
-        if(slashingDamage > 0)
+        if(damageTypeTotalDamage[CombatManager.DamageType.Slashing] > 0)
         {
-            slashingDamage -= defendingChar.charInventory.totalSlashingArmor;
+            damageTypeTotalDamage[CombatManager.DamageType.Slashing] -= defendingChar.charInventory.totalSlashingArmor;
         }
-        if(stabbingDamage > 0)
+        if(damageTypeTotalDamage[CombatManager.DamageType.Stabbing] > 0)
         {
-            stabbingDamage -= defendingChar.charInventory.totalStabbingArmor;
+            damageTypeTotalDamage[CombatManager.DamageType.Stabbing] -= defendingChar.charInventory.totalStabbingArmor;
         }
-        if(crushingDamage > 0)
+        if(damageTypeTotalDamage[CombatManager.DamageType.Crushing] > 0)
         {
-            crushingDamage -= defendingChar.charInventory.totalCrushingArmor;
+            damageTypeTotalDamage[CombatManager.DamageType.Crushing] -= defendingChar.charInventory.totalCrushingArmor;
         }
 
         //Subtracting the defending character's magic resistances 
-        if (arcaneDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Arcane] > 0)
         {
-            arcaneDamage -= defendingChar.charInventory.totalArcaneResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Arcane] -= defendingChar.charInventory.totalArcaneResist;
         }
-        if(fireDamage > 0)
+        if(damageTypeTotalDamage[CombatManager.DamageType.Fire] > 0)
         {
-            fireDamage -= defendingChar.charInventory.totalFireResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Fire] -= defendingChar.charInventory.totalFireResist;
         }
-        if (waterDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Water] > 0)
         {
-            waterDamage -= defendingChar.charInventory.totalWaterResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Water] -= defendingChar.charInventory.totalWaterResist;
         }
-        if (electricDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Electric] > 0)
         {
-            electricDamage -= defendingChar.charInventory.totalElectricResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Electric] -= defendingChar.charInventory.totalElectricResist;
         }
-        if (windDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Wind] > 0)
         {
-            windDamage -= defendingChar.charInventory.totalWindResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Wind] -= defendingChar.charInventory.totalWindResist;
         }
-        if (natureDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Nature] > 0)
         {
-            natureDamage -= defendingChar.charInventory.totalNatureResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Nature] -= defendingChar.charInventory.totalNatureResist;
         }
-        if (holyDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Holy] > 0)
         {
-            holyDamage -= defendingChar.charInventory.totalHolyResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Holy] -= defendingChar.charInventory.totalHolyResist;
         }
-        if (darkDamage > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Pure] > 0)
         {
-            darkDamage -= defendingChar.charInventory.totalDarkResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Pure] -= defendingChar.charInventory.totalDarkResist;
         }
 
         //Dealing damage to the defending character and telling the combat manager to display how much was dealt
-        defendingChar.charPhysState.DamageCharacter(slashingDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, slashingDamage, CombatManager.DamageType.Slashing, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Slashing]);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Slashing], CombatManager.DamageType.Slashing, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(stabbingDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, stabbingDamage, CombatManager.DamageType.Stabbing, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Stabbing]);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Stabbing], CombatManager.DamageType.Stabbing, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(crushingDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, crushingDamage, CombatManager.DamageType.Crushing, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Crushing]);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Crushing], CombatManager.DamageType.Crushing, targetTile_, isCrit);
 
-        defendingChar.charPhysState.DamageCharacter(arcaneDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, arcaneDamage, CombatManager.DamageType.Arcane, targetTile_, isCrit);
+        //Dealing spell damage tot he defending character based on their spell resist types
+        if (spellResistDictionary[CombatManager.DamageType.Arcane] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Arcane]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Arcane], CombatManager.DamageType.Arcane, targetTile_, isCrit);
+        }
+        else if(spellResistDictionary[CombatManager.DamageType.Arcane] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Arcane]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Arcane], CombatManager.DamageType.Arcane, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Arcane] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Arcane, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Arcane] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(fireDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, fireDamage, CombatManager.DamageType.Fire, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Fire] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Fire]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Fire], CombatManager.DamageType.Fire, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Fire] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Fire]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Fire], CombatManager.DamageType.Fire, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Fire] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Fire, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Fire] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(waterDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, waterDamage, CombatManager.DamageType.Water, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Water] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Water]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Water], CombatManager.DamageType.Water, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Water] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Water]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Water], CombatManager.DamageType.Water, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Water] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Water, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Water] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(windDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, windDamage, CombatManager.DamageType.Wind, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Wind] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Wind]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Wind], CombatManager.DamageType.Wind, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Wind] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Wind]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Wind], CombatManager.DamageType.Wind, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Wind] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Wind, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Wind] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(electricDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, electricDamage, CombatManager.DamageType.Electric, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Electric] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Electric]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Electric], CombatManager.DamageType.Electric, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Electric] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Electric]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Electric], CombatManager.DamageType.Electric, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Electric] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Electric, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Electric] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(natureDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, natureDamage, CombatManager.DamageType.Nature, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Nature] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Nature]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Nature], CombatManager.DamageType.Nature, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Nature] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Nature]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Nature], CombatManager.DamageType.Nature, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Nature] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Nature, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Nature] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(holyDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, holyDamage, CombatManager.DamageType.Holy, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Holy] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Holy]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Holy], CombatManager.DamageType.Holy, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Holy] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Holy]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Holy], CombatManager.DamageType.Holy, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Holy] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Holy, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Holy] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(darkDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, darkDamage, CombatManager.DamageType.Dark, targetTile_, isCrit);
+        if (spellResistDictionary[CombatManager.DamageType.Dark] == SpellResistTypes.Normal)
+        {
+            defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Dark]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Dark], CombatManager.DamageType.Dark, targetTile_, isCrit);
+        }
+        else if (spellResistDictionary[CombatManager.DamageType.Dark] == SpellResistTypes.Absorb)
+        {
+            defendingChar.charPhysState.HealCharacter(damageTypeTotalDamage[CombatManager.DamageType.Dark]);
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Dark], CombatManager.DamageType.Dark, targetTile_, isCrit, true);
+            damageTypeTotalDamage[CombatManager.DamageType.Dark] = 0;
+        }
+        else
+        {
+            CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, 0, CombatManager.DamageType.Dark, targetTile_, isCrit);
+            damageTypeTotalDamage[CombatManager.DamageType.Dark] = 0;
+        }
 
-        defendingChar.charPhysState.DamageCharacter(pureDamage);
-        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, pureDamage, CombatManager.DamageType.Pure, targetTile_, isCrit);
+        defendingChar.charPhysState.DamageCharacter(damageTypeTotalDamage[CombatManager.DamageType.Pure]);
+        CombatManager.globalReference.DisplayDamageDealt(this.timeToCompleteAction, damageTypeTotalDamage[CombatManager.DamageType.Pure], CombatManager.DamageType.Pure, targetTile_, isCrit);
 
         //Increasing the threat to the target based on damage dealt
-        int totalDamage = 0;
-        totalDamage += slashingDamage + stabbingDamage + crushingDamage;//Adding physical damage
-        totalDamage += fireDamage + waterDamage + windDamage + electricDamage + natureDamage;//Adding elemental damage
-        totalDamage += holyDamage + darkDamage;//Adding light/dark damage
-        totalDamage += arcaneDamage + pureDamage;//Adding arcane and pure damage
+        int totalDamage = damageTypeTotalDamage[CombatManager.DamageType.Slashing] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Stabbing] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Crushing] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Arcane] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Holy] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Dark] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Fire] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Water] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Wind] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Electric] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Nature] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Pure];
 
         //Looping through the acting character's perks to see if they have any ThreatBoostPerk perks
         int bonusThreat = 0;
@@ -499,51 +586,51 @@ public class AttackAction : Action
                     switch(threatPerk.damageTypeToThreaten)
                     {
                         case CombatManager.DamageType.Slashing:
-                            bonusThreat += threatPerk.GetAddedActionThreat(slashingDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Slashing], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Stabbing:
-                            bonusThreat += threatPerk.GetAddedActionThreat(stabbingDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Stabbing], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Crushing:
-                            bonusThreat += threatPerk.GetAddedActionThreat(crushingDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Crushing], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Arcane:
-                            bonusThreat += threatPerk.GetAddedActionThreat(arcaneDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Arcane], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Holy:
-                            bonusThreat += threatPerk.GetAddedActionThreat(holyDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Holy], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Dark:
-                            bonusThreat += threatPerk.GetAddedActionThreat(darkDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Dark], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Fire:
-                            bonusThreat += threatPerk.GetAddedActionThreat(fireDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Fire], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Water:
-                            bonusThreat += threatPerk.GetAddedActionThreat(waterDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Water], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Wind:
-                            bonusThreat += threatPerk.GetAddedActionThreat(windDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Wind], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Electric:
-                            bonusThreat += threatPerk.GetAddedActionThreat(electricDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Electric], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Nature:
-                            bonusThreat += threatPerk.GetAddedActionThreat(natureDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Nature], isCrit, false);
                             break;
 
                         case CombatManager.DamageType.Pure:
-                            bonusThreat += threatPerk.GetAddedActionThreat(pureDamage, isCrit, false);
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Pure], isCrit, false);
                             break;
                     }
                 }
@@ -886,6 +973,9 @@ public class AttackAction : Action
         base.GrantSkillEXP(abilityUser_, skillUsed_, abilityMissed_);
     }
 }
+
+//Enum for the different spell resist types. Normal is taking damage, negate is taking 0 damage, absorb is healing
+enum SpellResistTypes { Normal, Negate, Absorb };
 
 //Class used in AttackAction.cs to determine damage dealt when an attack hits
 [System.Serializable]
