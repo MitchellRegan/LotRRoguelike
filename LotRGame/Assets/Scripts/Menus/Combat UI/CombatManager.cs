@@ -373,7 +373,7 @@ public class CombatManager : MonoBehaviour
             this.lootTable.Add(loot);
         }
 
-        //Looping through each player character to see if anyone has a ThreatBoostPerk
+        //Looping through each player character to see if anyone has a Threat Boost perk or perk to start combat with an effect
         for(int t = 0; t < this.playerCharactersInCombat.Count; ++t)
         {
             //Looping through all of the current character's perks
@@ -383,6 +383,20 @@ public class CombatManager : MonoBehaviour
                 if(charPerk.GetType() == typeof(ThreatBoostPerk) && charPerk.GetComponent<ThreatBoostPerk>().increaseThreatAtStartOfCombat)
                 {
                     this.ApplyActionThreat(this.playerCharactersInCombat[t], null, charPerk.GetComponent<ThreatBoostPerk>().baseThreatToAdd, true);
+                }
+                //If the current perk is a StartCombatWithEffectPerk, we check to see if the effect will be actiavted
+                else if(charPerk.GetType() == typeof(StartCombatWithEffectPerk))
+                {
+                    StartCombatWithEffectPerk effectPerk = charPerk.GetComponent<StartCombatWithEffectPerk>();
+
+                    //Getting a random % roll to see if it's at the application chance
+                    float randomRoll = Random.Range(0, 1);
+                    if(randomRoll <= effectPerk.chanceToApplyEffect)
+                    {
+                        //Creating a new instance of the effect object prefab and triggering its effect
+                        GameObject effectObj = Instantiate(effectPerk.effectToStartWith.gameObject, new Vector3(), new Quaternion());
+                        effectObj.GetComponent<Effect>().TriggerEffect(this.playerCharactersInCombat[t], this.playerCharactersInCombat[t]);
+                    }
                 }
             }
         }
