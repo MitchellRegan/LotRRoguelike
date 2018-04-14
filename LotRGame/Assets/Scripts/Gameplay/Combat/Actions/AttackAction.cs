@@ -318,7 +318,11 @@ public class AttackAction : Action
                         //Checking to see if the damage is negated entirely
                         if(resistPerk.negateAllDamage)
                         {
-                            spellResistDictionary[atk.type] = SpellResistTypes.Negate;
+                            //If the resist type for this spell isn't on absorb, we can negate it. ALWAYS have preference to absorb because it heals
+                            if (spellResistDictionary[atk.type] != SpellResistTypes.Absorb)
+                            {
+                                spellResistDictionary[atk.type] = SpellResistTypes.Negate;
+                            }
                         }
                         //Checking to see if the damage is absorbed to heal the target
                         else if(resistPerk.absorbDamage)
