@@ -14,7 +14,7 @@ public class AttackAction : Action
 
     //The percent chance that this attack will crit
     [Range(0, 1)]
-    public float critChance = 0.2f;
+    public float critChance = 0.05f;
 
     //The damage multiplier applied when this weapon crits
     public int critMultiplier = 2;
