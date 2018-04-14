@@ -1024,8 +1024,8 @@ public class AttackEffect
     //Enum that determines who is effected
     public enum EffectedTargets
     {
-        Attacker,//The person making the attack
         Defender,//The person being hit by the attack
+        Attacker,//The person making the attack
         EnemiesOnly,//Hits all enemies in the radius and ignores allies
         EnemiesExceptDefender,//Hits all enemies, but doesn't include the defender
         AlliesOnly,//Hits all allies in the radius and ignores enemies
@@ -1034,5 +1034,5 @@ public class AttackEffect
     };
 
     //The type of targets that are effected
-    public EffectedTargets effectedTargets = EffectedTargets.Everyone;
+    public EffectedTargets effectedTargets = EffectedTargets.Defender;
 }

@@ -22,7 +22,7 @@ public class InstantHealEffect : Effect
     public float critChance = 0.1f;
 
     //The heal multiplier when this crits
-    public int critMultiplier = 2;
+    public float critMultiplier = 2;
 
 
 
@@ -47,7 +47,7 @@ public class InstantHealEffect : Effect
         bool isCrit = false;
         if (critRoll < this.critChance)
         {
-            totalHeal = totalHeal * this.critMultiplier;
+            totalHeal = Mathf.RoundToInt(totalHeal * this.critMultiplier);
         }
 
         //Looping through the perks of the character that used this ability to see if they have any damage type boost perks

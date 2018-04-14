@@ -498,6 +498,20 @@ public class ModifyStatsEffect : Effect
                         this.characterToEffect.charInventory.totalNatureResist -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
+
+                //Armor
+                case StatModifier.StatName.Armor:
+                    //If we're adding the modifier
+                    if(addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalPhysicalArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalPhysicalArmor -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
             }
         }
 
@@ -649,7 +663,9 @@ public class StatModifier
         WaterResist,
         WindResist,
         ElectricResist,
-        NatureResist
+        NatureResist,
+
+        Armor //Different from Slashing, Stabbing, and Crushing armor. This effects hit chance
     }
 
     //Enum for which stat this modifier changes

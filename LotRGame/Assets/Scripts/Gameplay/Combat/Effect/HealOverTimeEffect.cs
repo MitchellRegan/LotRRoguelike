@@ -31,6 +31,10 @@ public class HealOverTimeEffect : Effect
     //If true, this effect won't go away on its own, so it doesn't tick down
     public bool unlimitedTicks = false;
 
+    //The amount of times that this effect can stack on the same target
+    [Range(1, 10)]
+    public int maxStackSize = 1;
+
     [Space(9)]
 
     //If true, this effect ticks as soon as the effected character's turn begins
@@ -50,16 +54,33 @@ public class HealOverTimeEffect : Effect
     //Function inherited from Effect.cs to trigger this effect. Sets the target as the healed character
     public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
-        //Checking the targeted character to make sure this effect isn't already applied to them
+        //Reference to the effect that's got the least number of ticks left
+        HealOverTimeEffect lowestTickEffect = null;
+
+        //Checking the targeted character to see if this effect is already applied to them and how many stacks
+        int stackSize = 0;
         foreach (Effect e in targetCharacter_.charCombatStats.combatEffects)
         {
             //If we find a version of this effect already on the target
             if (e.effectName == this.effectName)
             {
-                //We refresh the duration of the effect on the target to the max number of ticks
-                e.GetComponent<HealOverTimeEffect>().ticksLeft = Mathf.RoundToInt(this.numberOfTicksRange.y);
-                //And then we destroy this effect's game object
-                Destroy(this.gameObject);
+                //We increase the current count for the number of stacks found
+                stackSize += 1;
+
+                //If the current effect's number of ticks is less than the current lowest tick effect or if the current lowest doesn't exist, this becomes the lowest
+                if (lowestTickEffect == null || e.GetComponent<HealOverTimeEffect>().ticksLeft < lowestTickEffect.ticksLeft)
+                {
+                    lowestTickEffect = e.GetComponent<HealOverTimeEffect>();
+                }
+
+                //If the stack size found is higher than this effect's max stack size, we just refresh the ticks on the effect with the lowest
+                if (stackSize >= this.maxStackSize)
+                {
+                    //We refresh the duration of the effect on the target to the max number of ticks
+                    lowestTickEffect.ticksLeft = Mathf.RoundToInt(this.numberOfTicksRange.y);
+                    //And then we destroy this effect's game object
+                    Destroy(this.gameObject);
+                }
             }
         }
 
