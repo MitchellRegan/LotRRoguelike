@@ -139,71 +139,8 @@ public class AttackAction : Action
         }
 
         //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit and adding this attack's accuracy bonus
-        int hitRoll = Random.Range(1, 100) + this.accuracyBonus;
-        //Adding the correct skill modifier of the acting character to their hit roll
-        hitRoll += actingChar.charSkills.GetSkillLevelValueWithMod(this.weaponSkillUsed);
-
-        //Looping through the attacking character's perks to see if they have any accuracy boost perks
-        foreach (Perk atkPerk in actingChar.charPerks.allPerks)
-        {
-            if (atkPerk.GetType() == typeof(AccuracyBoostPerk))
-            {
-                AccuracyBoostPerk accuracyPerk = atkPerk.GetComponent<AccuracyBoostPerk>();
-                //Making sure the perk either boosts all skill accuracy or the skill that this attack uses
-                if (accuracyPerk.skillAccuracyToBoost == this.weaponSkillUsed || accuracyPerk.boostAllSkillAccuracy)
-                {
-                    hitRoll += accuracyPerk.baseAccuracyBoost;
-                }
-            }
-        }
-
-        //Looping through the defending character's perks to see if they have any armor or evasion boost perks
-        int evasionPerkBoost = 0;
-        int armorPerkBoost = 0;
-        foreach(Perk charPerk in defendingChar.charPerks.allPerks)
-        {
-            if (charPerk.GetType() == typeof(EvasionBoostPerk))
-            {
-                EvasionBoostPerk evasionPerk = charPerk.GetComponent<EvasionBoostPerk>();
-                //Making sure the perk boosts evasion against this type of attack
-                if (evasionPerk.blocksAllSkills || evasionPerk.skillToBlock == this.weaponSkillUsed)
-                {
-                    evasionPerkBoost += charPerk.GetComponent<EvasionBoostPerk>().evasionBoost;
-                }
-            }
-            else if (charPerk.GetType() == typeof(ArmorBoostPerk))
-            {
-                ArmorBoostPerk armorPerk = charPerk.GetComponent<ArmorBoostPerk>();
-                //Making sure the perk boosts armor against this type of attack
-                if (armorPerk.blocksAllSkills || armorPerk.skillToBlock == this.weaponSkillUsed)
-                {
-                    armorPerkBoost += armorPerk.armorBoost;
-                }
-            }
-        }
-
-        //Finding the hit target's resistance and subtracting it from the attacker's hit roll
-        switch(this.touchType)
-        {
-            case attackTouchType.Regular:
-                hitRoll -= defendingChar.charCombatStats.evasion;
-                hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
-                hitRoll -= evasionPerkBoost;
-                hitRoll -= armorPerkBoost;
-                break;
-            case attackTouchType.IgnoreArmor:
-                hitRoll -= defendingChar.charCombatStats.evasion;
-                hitRoll -= evasionPerkBoost;
-                break;
-            case attackTouchType.IgnoreEvasion:
-                hitRoll -= defendingChar.charInventory.totalPhysicalArmor;
-                hitRoll -= armorPerkBoost;
-                break;
-            case attackTouchType.IgnoreEvasionAndArmor:
-                //Nothing is subtracted
-                break;
-        }
-
+        int hitRoll = this.FindAttackRoll(actingChar, defendingChar);
+        
         //If the hit roll is still above 66%, they hit. If not, the attack misses
         if(hitRoll <= 66)
         {
@@ -705,6 +642,87 @@ public class AttackAction : Action
     }
 
 
+    //Function called from PerformAction and TriggerEffect to return an attack roll value
+    private int FindAttackRoll(Character actingChar_, Character defendingChar_)
+    {
+        //Int to hold the total attack roll
+        int hitRoll = 0;
+
+        //Rolling a random number between 1 and 100
+        hitRoll += Random.Range(0, 100) + 1;
+
+        //Adding this action's accuracy bonus
+        hitRoll += this.accuracyBonus;
+
+        //Adding the correct skill modifier of the acting character to their hit roll
+        hitRoll += actingChar_.charSkills.GetSkillLevelValueWithMod(this.weaponSkillUsed);
+
+        //Looping through the attacking character's perks to see if they have any accuracy boost perks
+        foreach (Perk atkPerk in actingChar_.charPerks.allPerks)
+        {
+            if (atkPerk.GetType() == typeof(AccuracyBoostPerk))
+            {
+                AccuracyBoostPerk accuracyPerk = atkPerk.GetComponent<AccuracyBoostPerk>();
+                //Making sure the perk either boosts all skill accuracy or the skill that this attack uses
+                if (accuracyPerk.skillAccuracyToBoost == this.weaponSkillUsed || accuracyPerk.boostAllSkillAccuracy)
+                {
+                    hitRoll += accuracyPerk.baseAccuracyBoost;
+                }
+            }
+        }
+
+        //Looping through the defending character's perks to see if they have any armor or evasion boost perks
+        int evasionPerkBoost = 0;
+        int armorPerkBoost = 0;
+        foreach (Perk charPerk in defendingChar_.charPerks.allPerks)
+        {
+            if (charPerk.GetType() == typeof(EvasionBoostPerk))
+            {
+                EvasionBoostPerk evasionPerk = charPerk.GetComponent<EvasionBoostPerk>();
+                //Making sure the perk boosts evasion against this type of attack
+                if (evasionPerk.blocksAllSkills || evasionPerk.skillToBlock == this.weaponSkillUsed)
+                {
+                    evasionPerkBoost += charPerk.GetComponent<EvasionBoostPerk>().evasionBoost;
+                }
+            }
+            else if (charPerk.GetType() == typeof(ArmorBoostPerk))
+            {
+                ArmorBoostPerk armorPerk = charPerk.GetComponent<ArmorBoostPerk>();
+                //Making sure the perk boosts armor against this type of attack
+                if (armorPerk.blocksAllSkills || armorPerk.skillToBlock == this.weaponSkillUsed)
+                {
+                    armorPerkBoost += armorPerk.armorBoost;
+                }
+            }
+        }
+
+        //Finding the hit target's resistance and subtracting it from the attacker's hit roll
+        switch (this.touchType)
+        {
+            case attackTouchType.Regular:
+                hitRoll -= defendingChar_.charCombatStats.evasion;
+                hitRoll -= defendingChar_.charInventory.totalPhysicalArmor;
+                hitRoll -= evasionPerkBoost;
+                hitRoll -= armorPerkBoost;
+                break;
+            case attackTouchType.IgnoreArmor:
+                hitRoll -= defendingChar_.charCombatStats.evasion;
+                hitRoll -= evasionPerkBoost;
+                break;
+            case attackTouchType.IgnoreEvasion:
+                hitRoll -= defendingChar_.charInventory.totalPhysicalArmor;
+                hitRoll -= armorPerkBoost;
+                break;
+            case attackTouchType.IgnoreEvasionAndArmor:
+                //Nothing is subtracted
+                break;
+        }
+
+        //Returning the total hit roll
+        return hitRoll;
+    }
+
+
     //Function called when an effect is triggered
     private void TriggerEffect(AttackEffect effectToTrigger_, CombatTile targetTile_, Character actingChar_)
     {
@@ -957,15 +975,33 @@ public class AttackAction : Action
         //Looping through all of the filtered targets in the list
         foreach (Character targetChar in targets)
         {
-            //Rolling to see if the effect hits the target or not
-            float effectRoll = Random.Range(0, 1);
-
-            //If the roll is less than the effect chance, it was sucessful
-            if (effectRoll < effectToTrigger_.effectChance)
+            //If the effect requires an additional hit chance, we need to roll for it
+            bool effectHit = true;
+            if(effectToTrigger_.requireSecondHitRoll)
             {
-                //Creating an instance of the effect object prefab and triggering it's effect
-                GameObject effectObj = Instantiate(effectToTrigger_.effectToApply.gameObject, new Vector3(), new Quaternion());
-                effectObj.GetComponent<Effect>().TriggerEffect(actingChar_, targetChar, this.timeToCompleteAction);
+                //Rolling to see if we hit
+                int hitRoll = this.FindAttackRoll(actingChar_, targetChar);
+
+                //If the hit roll is below the required amount, the effect doesn't hit
+                if(hitRoll <= 66)
+                {
+                    effectHit = false;
+                }
+            }
+
+            //If the effect hit
+            if (effectHit)
+            {
+                //Rolling to see if the effect hits the target or not
+                float effectRoll = Random.Range(0, 1);
+
+                //If the roll is less than the effect chance, it was sucessful
+                if (effectRoll < effectToTrigger_.effectChance)
+                {
+                    //Creating an instance of the effect object prefab and triggering it's effect
+                    GameObject effectObj = Instantiate(effectToTrigger_.effectToApply.gameObject, new Vector3(), new Quaternion());
+                    effectObj.GetComponent<Effect>().TriggerEffect(actingChar_, targetChar, this.timeToCompleteAction);
+                }
             }
         }
     }
@@ -1006,6 +1042,9 @@ public class AttackEffect
 
     //If true, this effect only happens if the attack lands. If false, it will happen even if the initial attack misses
     public bool requireHit = true;
+
+    //Bool where if true, this attack effect requires a separate roll to see if it hits
+    public bool requireSecondHitRoll = false;
 
     //The percent chance that the effect on hit will proc
     [Range(0, 1)]
