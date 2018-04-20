@@ -164,9 +164,23 @@ public class CombatActionPanelUI : MonoBehaviour
             //If there are still actions to display, we display them
             if(b < actionsToShow_.Count)
             {
-                this.actionButtons[b].nameText.text = actionsToShow_[b].actionName;
-                this.actionButtons[b].descriptionText.text = actionsToShow_[b].actionDescription;
-                this.actionButtons[b].buttonComponent.interactable = true;
+                //Checking to see if the current action is a weapon action
+                if (this.actionButtons[b].GetType() == typeof(WeaponAction))
+                {
+                    WeaponAction wpAct = actionsToShow_[b] as WeaponAction;
+                    //If this weapon action can't be used, we need to reduce the current action count by 1
+                    if(!wpAct.CanCharacterUseAction(CombatManager.globalReference.actingCharacters[0]))
+                    {
+                        b -= 1;
+                    }
+                }
+                //If the action isn't a weapon action, we can display it normally
+                else
+                {
+                    this.actionButtons[b].nameText.text = actionsToShow_[b].actionName;
+                    this.actionButtons[b].descriptionText.text = actionsToShow_[b].actionDescription;
+                    this.actionButtons[b].buttonComponent.interactable = true;
+                }
             }
             //If there are no more actions to display, the rest of the buttons are disabled
             else

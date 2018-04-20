@@ -6,6 +6,9 @@ using UnityEngine;
 [System.Serializable]
 public class Weapon : MonoBehaviour
 {
+    //The type of skill this weapon mainly uses. Only used in checks for WeaponAction.cs
+    public SkillList weaponType = SkillList.Daggers;
+
     //Enum for the number of hands it takes to wield a given weapon
     public enum WeaponSize { OneHand, TwoHands };
     //How many hands it takes to wield this weapon
