@@ -34,6 +34,11 @@ public class WeaponAction : AttackAction
                         canUse = true;
                     }
                 }
+                //If the main hand is empty and this action is for unarmed skills, they can use it
+                else if(this.weaponSkillUsed == SkillList.Unarmed)
+                {
+                    canUse = true;
+                }
                 break;
 
             case WeaponHand.OffHand:
@@ -41,6 +46,16 @@ public class WeaponAction : AttackAction
                 if (charToCheck_.charInventory.leftHand != null)
                 {
                     if (charToCheck_.charInventory.leftHand.weaponType == this.weaponSkillUsed)
+                    {
+                        canUse = true;
+                    }
+                }
+                //If the off hand is empty and this action is for unarmed skills
+                else if(this.weaponSkillUsed == SkillList.Unarmed)
+                {
+                    //Making sure the main hand weapon isn't holding a 2-handed weapon
+                    if(charToCheck_.charInventory.rightHand == null || 
+                        charToCheck_.charInventory.rightHand.size == Weapon.WeaponSize.OneHand)
                     {
                         canUse = true;
                     }
@@ -58,10 +73,26 @@ public class WeaponAction : AttackAction
                         break;
                     }
                 }
+                //If the main hand is empty and this action is for unarmed skills, they can use it
+                else if (this.weaponSkillUsed == SkillList.Unarmed)
+                {
+                    canUse = true;
+                    break;
+                }
                 //Checking the character's off hand weapon to see if it matches our weapon skill type
                 if (charToCheck_.charInventory.leftHand != null)
                 {
                     if (charToCheck_.charInventory.leftHand.weaponType == this.weaponSkillUsed)
+                    {
+                        canUse = true;
+                    }
+                }
+                //If the off hand is empty and this action is for unarmed skills
+                else if (this.weaponSkillUsed == SkillList.Unarmed)
+                {
+                    //Making sure the main hand weapon isn't holding a 2-handed weapon
+                    if (charToCheck_.charInventory.rightHand == null ||
+                        charToCheck_.charInventory.rightHand.size == Weapon.WeaponSize.OneHand)
                     {
                         canUse = true;
                     }
@@ -77,9 +108,24 @@ public class WeaponAction : AttackAction
                         canUse = true;
                     }
                 }
+                else if(this.weaponSkillUsed == SkillList.Unarmed)
+                {
+                    //Making sure both hands aren't holding anything
+                    if(charToCheck_.charInventory.rightHand == null && charToCheck_.charInventory.leftHand == null)
+                    {
+                        canUse = true;
+                    }
+                }
                 break;
         }
 
         return canUse;
+    }
+
+
+    //Function inherited from AttackAction.cs and called from CombatManager.cs so we can attack a target
+    public override void PerformAction(CombatTile targetTile_)
+    {
+        base.PerformAction(targetTile_);
     }
 }

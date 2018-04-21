@@ -137,6 +137,31 @@ public class HealOverTimeEffect : Effect
             }
         }
 
+        //Looping through the defending character's perks to see if they have any spell resist or absorb perks
+        SpellResistTypes magicResistType = SpellResistTypes.Normal;
+        foreach (Perk defPerk in this.characterToEffect.charPerks.allPerks)
+        {
+            if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
+            {
+                SpellResistAbsorbPerk resistPerk = defPerk.GetComponent<SpellResistAbsorbPerk>();
+
+                //Checking to see if the current heal type is the same as this spell resist perk
+                if (resistPerk.typeToResist == this.healType)
+                {
+                    //Checking to see if the heal is negated entirely
+                    if (resistPerk.negateAllDamage)
+                    {
+                        magicResistType = SpellResistTypes.Negate;
+                    }
+                    //Otherwise we just get the amount that it normally resists
+                    else
+                    {
+                        damagehealed -= resistPerk.GetSpellResistAmount(this.characterToEffect, didThisCrit, false);
+                    }
+                }
+            }
+        }
+
         //Subtracting any magic resistance from the amount that we're trying to heal
         switch (this.healType)
         {
@@ -184,9 +209,23 @@ public class HealOverTimeEffect : Effect
             }
         }
 
-        //Healing the damage to the effected character
-        this.characterToEffect.charPhysState.HealCharacter(damagehealed);
+        //If the heal was negated completely
+        if(magicResistType == SpellResistTypes.Negate)
+        {
+            //Telling the combat manager to display that no damage was healed
+            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, 0, this.healType, healedCharTile, didThisCrit, true);
+        }
+        //Otherwise, the heal happens normally
+        else
+        {
+            //Healing the damage to the effected character
+            this.characterToEffect.charPhysState.HealCharacter(damagehealed);
 
+            //Telling the combat manager to display the damage healed
+            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, damagehealed, this.healType, healedCharTile, didThisCrit, true);
+        }
 
         //Applying threat to all enemies for the amount that's healed
         CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damagehealed + bonusThreat, true);
@@ -194,10 +233,6 @@ public class HealOverTimeEffect : Effect
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
-
-        //Telling the combat manager to display the damage healed
-        CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
-        CombatManager.globalReference.DisplayDamageDealt(0, damagehealed, this.healType, healedCharTile, didThisCrit, true);
 
         //If this effect isn't unlimited, we need to reduce the ticks remaining
         if (!this.unlimitedTicks)

@@ -60,6 +60,31 @@ public class InstantHealEffect : Effect
             }
         }
 
+        //Looping through the defending character's perks to see if they have any spell resist or absorb perks
+        SpellResistTypes magicResistType = SpellResistTypes.Normal;
+        foreach (Perk defPerk in this.characterToEffect.charPerks.allPerks)
+        {
+            if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
+            {
+                SpellResistAbsorbPerk resistPerk = defPerk.GetComponent<SpellResistAbsorbPerk>();
+
+                //Checking to see if the current heal type is the same as this spell resist perk
+                if (resistPerk.typeToResist == this.type)
+                {
+                    //Checking to see if the heal is negated entirely
+                    if (resistPerk.negateAllDamage)
+                    {
+                        magicResistType = SpellResistTypes.Negate;
+                    }
+                    //Otherwise we just get the amount that it normally resists
+                    else
+                    {
+                        totalHeal -= resistPerk.GetSpellResistAmount(this.characterToEffect, isCrit, false);
+                    }
+                }
+            }
+        }
+
         //Subtracting the target character's magic resistances
         switch (this.type)
         {
@@ -161,9 +186,23 @@ public class InstantHealEffect : Effect
         //Finding the combat tile that the target character is on
         CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
 
-        //Dealing damage to the target character and telling the combat manager to display how much was dealt
-        targetCharacter_.charPhysState.DamageCharacter(totalHeal);
-        CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalHeal, type, targetCharTile, isCrit);
+        //If the heal was negated completely
+        if (magicResistType == SpellResistTypes.Negate)
+        {
+            //Telling the combat manager to display that no damage was healed
+            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, 0, this.type, healedCharTile, isCrit, true);
+        }
+        //Otherwise, the heal happens normally
+        else
+        {
+            //Healing the damage to the effected character
+            this.characterToEffect.charPhysState.HealCharacter(totalHeal);
+
+            //Telling the combat manager to display the damage healed
+            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, totalHeal, this.type, healedCharTile, isCrit, true);
+        }
 
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);

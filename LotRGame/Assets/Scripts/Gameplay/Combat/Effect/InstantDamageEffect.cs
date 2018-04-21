@@ -60,8 +60,44 @@ public class InstantDamageEffect : Effect
             }
         }
 
+        //Looping through the defending character's perks to see if they have any spell resist or absorb perks
+        SpellResistTypes magicResistType = SpellResistTypes.Normal;
+        foreach (Perk defPerk in this.characterToEffect.charPerks.allPerks)
+        {
+            if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
+            {
+                SpellResistAbsorbPerk resistPerk = defPerk.GetComponent<SpellResistAbsorbPerk>();
+
+                //Checking to see if the current damage type is the same as this spell resist perk
+                if (resistPerk.typeToResist == this.type)
+                {
+                    //Checking to see if the damage is negated entirely
+                    if (resistPerk.negateAllDamage)
+                    {
+                        //If the resist type for this spell isn't on absorb, we can negate it. ALWAYS have preference to absorb because it heals
+                        if (magicResistType != SpellResistTypes.Absorb)
+                        {
+                            magicResistType = SpellResistTypes.Negate;
+                        }
+                    }
+                    //Checking to see if the damage is absorbed to heal the target
+                    else if (resistPerk.absorbDamage)
+                    {
+                        magicResistType = SpellResistTypes.Absorb;
+                        //Applying the damage reduction so the defender isn't healed as much
+                        totalDamage -= resistPerk.GetSpellResistAmount(this.characterToEffect, isCrit, false);
+                    }
+                    //Otherwise we just get the amount that it normally resists
+                    else
+                    {
+                        totalDamage -= resistPerk.GetSpellResistAmount(this.characterToEffect, isCrit, false);
+                    }
+                }
+            }
+        }
+
         //Subtracting the target character's armor resist and magic resistances
-        switch(this.type)
+        switch (this.type)
         {
             case CombatManager.DamageType.Slashing:
                 if (targetCharacter_.charInventory.totalSlashingArmor > 0)
@@ -161,9 +197,26 @@ public class InstantDamageEffect : Effect
         //Finding the combat tile that the target character is on
         CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
 
-        //Dealing damage to the target character and telling the combat manager to display how much was dealt
-        targetCharacter_.charPhysState.DamageCharacter(totalDamage);
-        CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
+        //If the damage was dealt normally
+        if (magicResistType == SpellResistTypes.Normal)
+        {
+            //Dealing damage to the target character and telling the combat manager to display how much was dealt
+            targetCharacter_.charPhysState.DamageCharacter(totalDamage);
+            CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
+        }
+        //If the damage was negated completely
+        else if(magicResistType == SpellResistTypes.Negate)
+        {
+            //Telling the combat manager to display no damage dealt
+            CombatManager.globalReference.DisplayDamageDealt(timeDelay_, 0, type, targetCharTile, isCrit);
+        }
+        //If the damage was abosrbed and healed the character
+        else if(magicResistType == SpellResistTypes.Absorb)
+        {
+            //Telling the combat manager to display the damage healed
+            targetCharacter_.charPhysState.HealCharacter(totalDamage);
+            CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit, true);
+        }
 
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);

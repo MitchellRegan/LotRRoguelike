@@ -137,6 +137,42 @@ public class DamageOverTimeEffect : Effect
             }
         }
 
+        //Looping through the defending character's perks to see if they have any spell resist or absorb perks
+        SpellResistTypes magicResistType = SpellResistTypes.Normal;
+        foreach (Perk defPerk in this.characterToEffect.charPerks.allPerks)
+        {
+            if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
+            {
+                SpellResistAbsorbPerk resistPerk = defPerk.GetComponent<SpellResistAbsorbPerk>();
+
+                //Checking to see if the current damage type is the same as this spell resist perk
+                if (resistPerk.typeToResist == this.damageType)
+                {
+                    //Checking to see if the damage is negated entirely
+                    if (resistPerk.negateAllDamage)
+                    {
+                        //If the resist type for this spell isn't on absorb, we can negate it. ALWAYS have preference to absorb because it heals
+                        if (magicResistType != SpellResistTypes.Absorb)
+                        {
+                            magicResistType = SpellResistTypes.Negate;
+                        }
+                    }
+                    //Checking to see if the damage is absorbed to heal the target
+                    else if (resistPerk.absorbDamage)
+                    {
+                        magicResistType = SpellResistTypes.Absorb;
+                        //Applying the damage reduction so the defender isn't healed as much
+                        damageDealt -= resistPerk.GetSpellResistAmount(this.characterToEffect, didThisCrit, false);
+                    }
+                    //Otherwise we just get the amount that it normally resists
+                    else
+                    {
+                        damageDealt -= resistPerk.GetSpellResistAmount(this.characterToEffect, didThisCrit, false);
+                    }
+                }
+            }
+        }
+
         //Subtracting any magic resistance from the damage that we're trying to deal
         switch (this.damageType)
         {
@@ -183,8 +219,33 @@ public class DamageOverTimeEffect : Effect
             }
         }
 
-        //Dealing the damage to the effected character
-        this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
+        //If the damage was dealt normally
+        if (magicResistType == SpellResistTypes.Normal)
+        {
+            //Dealing the damage to the effected character
+            this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
+
+            //Telling the combat manager to display the damage dealt
+            CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
+        }
+        //If the damage was negated completely
+        else if(magicResistType == SpellResistTypes.Negate)
+        {
+            //Telling the combat manager to display no damage dealt
+            CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, 0, this.damageType, damagedCharTile, didThisCrit);
+        }
+        //If the damage was absorbed and healed the character
+        else if(magicResistType == SpellResistTypes.Absorb)
+        {
+            //Healing the damage to the effected character
+            this.characterToEffect.charPhysState.HealCharacter(damageDealt);
+
+            //Telling the combat manager to display the damage healed
+            CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit, true);
+        }
 
         //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
         if(this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
@@ -195,10 +256,6 @@ public class DamageOverTimeEffect : Effect
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
-
-        //Telling the combat manager to display the damage dealt
-        CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
-        CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
 
         //If this effect isn't unlimited, we need to reduce the ticks remaining
         if(!this.unlimitedTicks)
