@@ -55,6 +55,7 @@ public class DamageText : MonoBehaviour
     public Color stoneDamageColor = Color.gray;
     public Color pureDamageColor = Color.black;
     public Color natureDamageColor = Color.black;
+    public Color bleedDamageColor = Color.red;
 
 
 
@@ -140,6 +141,9 @@ public class DamageText : MonoBehaviour
                 break;
             case CombatManager.DamageType.Nature:
                 this.background.color = this.natureDamageColor;
+                break;
+            case CombatManager.DamageType.Bleed:
+                this.background.color = this.bleedDamageColor;
                 break;
         }
 

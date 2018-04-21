@@ -24,27 +24,30 @@ public class Inventory : MonoBehaviour
     //The arcane armor total
     [HideInInspector]
     public int totalArcaneResist = 0;
-    //The magic armor total
+    //The holy armor total
     [HideInInspector]
     public int totalHolyResist = 0;
-    //The magic armor total
+    //The dark armor total
     [HideInInspector]
     public int totalDarkResist = 0;
-    //The magic armor total
+    //The fire armor total
     [HideInInspector]
     public int totalFireResist = 0;
-    //The magic armor total
+    //The water armor total
     [HideInInspector]
     public int totalWaterResist = 0;
-    //The magic armor total
+    //The electric armor total
     [HideInInspector]
     public int totalElectricResist = 0;
-    //The magic armor total
+    //The wind armor total
     [HideInInspector]
     public int totalWindResist = 0;
-    //The magic armor total
+    //The nature armor total
     [HideInInspector]
     public int totalNatureResist = 0;
+    //The bleed armor total
+    [HideInInspector]
+    public int totalBleedResist = 0;
 
     //Slots of armor that are currently worn
     public Armor helm = null;
@@ -216,6 +219,7 @@ public class Inventory : MonoBehaviour
         int lightResistSum = 0;
         int darkResistSum = 0;
         int natureResistSum = 0;
+        int bleedResistSum = 0;
 
         //Looping through each inventory slot
         for (int s = 0; s < this.itemSlots.Count; ++s)
@@ -244,6 +248,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.helm.lightResist;
             darkResistSum += this.helm.darkResist;
             natureResistSum += this.helm.natureResist;
+
+            bleedResistSum += this.helm.bleedDefense;
         }
 
         //Getting the weight for the chest slot if it isn't empty
@@ -263,6 +269,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.chestPiece.lightResist;
             darkResistSum += this.chestPiece.darkResist;
             natureResistSum += this.chestPiece.natureResist;
+
+            bleedResistSum += this.chestPiece.bleedDefense;
         }
 
         //Getting the weight for the leg slot if it isn't empty
@@ -282,6 +290,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.leggings.lightResist;
             darkResistSum += this.leggings.darkResist;
             natureResistSum += this.leggings.natureResist;
+
+            bleedResistSum += this.leggings.bleedDefense;
         }
 
         //Getting the weight for the glove slot if it isn't empty
@@ -301,6 +311,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.gloves.lightResist;
             darkResistSum += this.gloves.darkResist;
             natureResistSum += this.gloves.natureResist;
+
+            bleedResistSum += this.gloves.bleedDefense;
         }
 
         //Getting the weight for the shoe slot if it isn't empty
@@ -320,6 +332,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.shoes.lightResist;
             darkResistSum += this.shoes.darkResist;
             natureResistSum += this.shoes.natureResist;
+
+            bleedResistSum += this.shoes.bleedDefense;
         }
 
         //Getting the weight for the cloak slot if it isn't empty
@@ -339,6 +353,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.cloak.lightResist;
             darkResistSum += this.cloak.darkResist;
             natureResistSum += this.cloak.natureResist;
+
+            bleedResistSum += this.cloak.bleedDefense;
         }
 
         //Getting the weight for the necklace slot if it isn't empty
@@ -358,6 +374,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.necklace.lightResist;
             darkResistSum += this.necklace.darkResist;
             natureResistSum += this.necklace.natureResist;
+
+            bleedResistSum += this.necklace.bleedDefense;
         }
 
         //Getting the weight for the ring slot if it isn't empty
@@ -377,6 +395,8 @@ public class Inventory : MonoBehaviour
             lightResistSum += this.ring.lightResist;
             darkResistSum += this.ring.darkResist;
             natureResistSum += this.ring.natureResist;
+
+            bleedResistSum += this.ring.bleedDefense;
         }
 
         //Getting the weight for the right hand slot if it isn't empty
@@ -403,6 +423,8 @@ public class Inventory : MonoBehaviour
                 lightResistSum += rHandArmor.lightResist;
                 darkResistSum += rHandArmor.darkResist;
                 natureResistSum += rHandArmor.natureResist;
+
+                bleedResistSum += rHandArmor.bleedDefense;
             }
         }
 
@@ -430,6 +452,8 @@ public class Inventory : MonoBehaviour
                 lightResistSum += lHandArmor.lightResist;
                 darkResistSum += lHandArmor.darkResist;
                 natureResistSum += lHandArmor.natureResist;
+
+                bleedResistSum += lHandArmor.bleedDefense;
             }
         }
 
@@ -448,6 +472,8 @@ public class Inventory : MonoBehaviour
         this.totalHolyResist = lightResistSum;
         this.totalDarkResist = darkResistSum;
         this.totalNatureResist = natureResistSum;
+
+        this.totalBleedResist = bleedResistSum;
 
         //If the character that this component is on is a player character
         if (CharacterManager.globalReference != null && CharacterManager.globalReference.selectedGroup != null &&

@@ -164,6 +164,13 @@ public class InstantHealEffect : Effect
                     totalHeal -= targetCharacter_.charInventory.totalDarkResist;
                 }
                 break;
+
+            case CombatManager.DamageType.Bleed:
+                if(targetCharacter_.charInventory.totalBleedResist > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalBleedResist;
+                }
+                break;
         }
 
         //Looping through the attacking character's perks to see if there's any bonus threat to add to this effect

@@ -135,7 +135,7 @@ public class SpellResistAbsorbPerk : Perk
 
             //If the type isn't any of those other magic types, we return a skill that will be ignored
             default:
-                return SkillList.Unarmed;
+                return SkillList.Swords;
         }
     }
 }

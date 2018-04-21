@@ -45,6 +45,9 @@ public class Armor : MonoBehaviour
     //Damage blocked from nature attacks
     public int natureResist = 0;
 
+    //Damage blocked from bleed attacks
+    public int bleedDefense = 0;
+
     [Space(8)]
 
     //Bool that determines if this piece of armor replaces the character sprite or if it covers it

@@ -201,6 +201,7 @@ public class AttackAction : Action
         damageTypeTotalDamage.Add(CombatManager.DamageType.Electric, 0);
         damageTypeTotalDamage.Add(CombatManager.DamageType.Nature, 0);
         damageTypeTotalDamage.Add(CombatManager.DamageType.Pure, 0);
+        damageTypeTotalDamage.Add(CombatManager.DamageType.Bleed, 0);
 
         //dictionary for if all of the spell damage types for if the damage is completely negated
         Dictionary<CombatManager.DamageType, SpellResistTypes> spellResistDictionary = new Dictionary<CombatManager.DamageType, SpellResistTypes>();
@@ -338,9 +339,13 @@ public class AttackAction : Action
         {
             damageTypeTotalDamage[CombatManager.DamageType.Holy] -= defendingChar.charInventory.totalHolyResist;
         }
-        if (damageTypeTotalDamage[CombatManager.DamageType.Pure] > 0)
+        if (damageTypeTotalDamage[CombatManager.DamageType.Dark] > 0)
         {
-            damageTypeTotalDamage[CombatManager.DamageType.Pure] -= defendingChar.charInventory.totalDarkResist;
+            damageTypeTotalDamage[CombatManager.DamageType.Dark] -= defendingChar.charInventory.totalDarkResist;
+        }
+        if(damageTypeTotalDamage[CombatManager.DamageType.Bleed] > 0)
+        {
+            damageTypeTotalDamage[CombatManager.DamageType.Bleed] -= defendingChar.charInventory.totalBleedResist;
         }
 
         //Dealing damage to the defending character and telling the combat manager to display how much was dealt
@@ -505,7 +510,8 @@ public class AttackAction : Action
                         damageTypeTotalDamage[CombatManager.DamageType.Wind] +
                         damageTypeTotalDamage[CombatManager.DamageType.Electric] +
                         damageTypeTotalDamage[CombatManager.DamageType.Nature] +
-                        damageTypeTotalDamage[CombatManager.DamageType.Pure];
+                        damageTypeTotalDamage[CombatManager.DamageType.Pure] +
+                        damageTypeTotalDamage[CombatManager.DamageType.Bleed];
 
         //Looping through the acting character's perks to see if they have any ThreatBoostPerk perks
         int bonusThreat = 0;
@@ -572,6 +578,10 @@ public class AttackAction : Action
 
                         case CombatManager.DamageType.Pure:
                             bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Pure], isCrit, false);
+                            break;
+
+                        case CombatManager.DamageType.Bleed:
+                            bonusThreat += threatPerk.GetAddedActionThreat(damageTypeTotalDamage[CombatManager.DamageType.Bleed], isCrit, false);
                             break;
                     }
                 }
