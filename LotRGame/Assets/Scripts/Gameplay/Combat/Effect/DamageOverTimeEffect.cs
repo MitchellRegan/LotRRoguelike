@@ -228,6 +228,32 @@ public class DamageOverTimeEffect : Effect
             //Telling the combat manager to display the damage dealt
             CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
+
+            //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
+            if (this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //If the character who cast this effect is a player character, we make the enemies hate that character
+                if (!this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+                {
+                    //If the attack didn't crit
+                    if (!didThisCrit)
+                    {
+                        //Applying threat to the targeted character
+                        this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt + bonusThreat);
+                    }
+                    //If the attack did crit, we boost threat against all enemies by 25%
+                    else
+                    {
+                        //Finding the bonus amount of threat that's applied to all enemies
+                        int boostedThreat = damageDealt + bonusThreat;
+                        boostedThreat = Mathf.RoundToInt(boostedThreat * 0.25f);
+                        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, boostedThreat, true);
+
+                        //Applying the rest of the threat to the target character
+                        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, this.characterToEffect, damageDealt + bonusThreat - boostedThreat, false);
+                    }
+                }
+            }
         }
         //If the damage was negated completely
         else if(magicResistType == SpellResistTypes.Negate)
@@ -245,12 +271,13 @@ public class DamageOverTimeEffect : Effect
             //Telling the combat manager to display the damage healed
             CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit, true);
-        }
 
-        //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
-        if(this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
-        {
-            this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt + bonusThreat);
+            //If the caster of this effect and the target are player characters, we increase the threat for the character who put this effect on them
+            if (!this.characterToEffect.GetComponent<EnemyCombatAI_Basic>() && !this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //Applying threat to all enemies for the amount that's healed
+                CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damageDealt + bonusThreat, true);
+            }
         }
 
         //Creating the visual effect for this effect

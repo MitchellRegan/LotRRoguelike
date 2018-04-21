@@ -203,6 +203,32 @@ public class InstantDamageEffect : Effect
             //Dealing damage to the target character and telling the combat manager to display how much was dealt
             targetCharacter_.charPhysState.DamageCharacter(totalDamage);
             CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit);
+
+            //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
+            if (this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //If the character who cast this effect is a player character, we increase threat against the caster
+                if (!this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+                {
+                    //If the attack didn't crit
+                    if (!isCrit)
+                    {
+                        //Applying threat to the targeted character
+                        this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, totalDamage + bonusThreat);
+                    }
+                    //If the attack did crit, we boost threat against all enemies by 25%
+                    else
+                    {
+                        //Finding the bonus amount of threat that's applied to all enemies
+                        int boostedThreat = totalDamage + bonusThreat;
+                        boostedThreat = Mathf.RoundToInt(boostedThreat * 0.25f);
+                        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, boostedThreat, true);
+
+                        //Applying the rest of the threat to the target character
+                        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, this.characterToEffect, totalDamage + bonusThreat - boostedThreat, false);
+                    }
+                }
+            }
         }
         //If the damage was negated completely
         else if(magicResistType == SpellResistTypes.Negate)
@@ -216,6 +242,13 @@ public class InstantDamageEffect : Effect
             //Telling the combat manager to display the damage healed
             targetCharacter_.charPhysState.HealCharacter(totalDamage);
             CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalDamage, type, targetCharTile, isCrit, true);
+
+            //If the caster of this effect and the target are player characters, we increase the threat for the character who put this effect on them
+            if (!this.characterToEffect.GetComponent<EnemyCombatAI_Basic>() && !this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //Applying threat to all enemies for the amount that's healed
+                CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalDamage + bonusThreat, true);
+            }
         }
 
         //Creating the visual effect for this effect

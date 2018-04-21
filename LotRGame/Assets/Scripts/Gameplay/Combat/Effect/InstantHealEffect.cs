@@ -202,15 +202,22 @@ public class InstantHealEffect : Effect
             //Telling the combat manager to display the damage healed
             CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, totalHeal, this.type, healedCharTile, isCrit, true);
+
+            //If the acting character is a player character, we need to increase the threat against them
+            if (!this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //If this character DOESN'T have the EnemyCombatAI component, we increase the threat for the character who put this effect on
+                if (!this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
+                {
+                    //Applying threat to all enemies based on the amount healed
+                    CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal + bonusThreat, true);
+                }
+            }
         }
 
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
-
-        
-        //Applying threat to all enemies based on the amount healed
-        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal + bonusThreat, true);
 
         //Destroying this effect once everything is finished up
         Destroy(this.gameObject);

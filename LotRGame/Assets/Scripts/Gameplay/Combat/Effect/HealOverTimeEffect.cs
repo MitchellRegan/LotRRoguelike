@@ -225,10 +225,14 @@ public class HealOverTimeEffect : Effect
             //Telling the combat manager to display the damage healed
             CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, damagehealed, this.healType, healedCharTile, didThisCrit, true);
-        }
 
-        //Applying threat to all enemies for the amount that's healed
-        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damagehealed + bonusThreat, true);
+            //If the target character and the character who cast this effect are player characters, we need to increase threat
+            if (!this.characterToEffect.GetComponent<EnemyCombatAI_Basic>() && !this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //Applying threat to all enemies for the amount that's healed
+                CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damagehealed + bonusThreat, true);
+            }
+        }
         
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
