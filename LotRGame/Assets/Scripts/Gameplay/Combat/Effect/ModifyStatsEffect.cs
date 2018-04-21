@@ -387,7 +387,7 @@ public class ModifyStatsEffect : Effect
                     }
                     break;
 
-                //Magic resist
+                //Arcane resist
                 case StatModifier.StatName.ArcaneResist:
                     //If we're adding the modifier
                     if (addingChanges_)
@@ -496,6 +496,20 @@ public class ModifyStatsEffect : Effect
                     else
                     {
                         this.characterToEffect.charInventory.totalNatureResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Bleed resist
+                case StatModifier.StatName.BleedResist:
+                    //If we're adding the modifier
+                    if(addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalBleedResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalBleedResist -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
 
@@ -664,6 +678,7 @@ public class StatModifier
         WindResist,
         ElectricResist,
         NatureResist,
+        BleedResist,
 
         Armor //Different from Slashing, Stabbing, and Crushing armor. This effects hit chance
     }
