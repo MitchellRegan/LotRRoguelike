@@ -23,7 +23,7 @@ public class DamageOverTimeEffect : Effect
     public int critMultiplier = 2;
 
     //The range for the number of times this effect activates before it goes away
-    public Vector2 numberOfTicksRange = new Vector2(5, 10);
+    public int numberOfTicks = 3;
     //The number of remaining ticks before this effect goes away
     [HideInInspector]
     public int ticksLeft = 1;
@@ -37,8 +37,15 @@ public class DamageOverTimeEffect : Effect
 
     [Space(9)]
 
+    //If true, this effect ticks down during the time that player initiative is filling up
+    public bool tickOnRealTime = true;
+    //If this ticks on real time, this is the amount of time it takes between ticks
+    public float timeBetweenTicks = 1;
+    //The current amount of time that's passed between ticks
+    private float currentTickTime = 0;
+
     //If true, this effect ticks as soon as the effected character's turn begins
-    public bool tickOnStartOfTurn = true;
+    public bool tickOnStartOfTurn = false;
 
     //If true, this effect ticks as soon as the effected character's turn ends
     public bool tickOnEndOfTurn = false;
@@ -77,7 +84,7 @@ public class DamageOverTimeEffect : Effect
                 if (stackSize >= this.maxStackSize)
                 {
                     //We refresh the duration of the effect on the target to the max number of ticks
-                    lowestTickEffect.ticksLeft = Mathf.RoundToInt(this.numberOfTicksRange.y);
+                    lowestTickEffect.ticksLeft = this.numberOfTicks;
                     //And then we destroy this effect's game object
                     Destroy(this.gameObject);
                 }
@@ -93,7 +100,7 @@ public class DamageOverTimeEffect : Effect
         //Determining how many ticks this effect will have (if it's not unlimited that is)
         if(!this.unlimitedTicks)
         {
-            this.ticksLeft = Mathf.RoundToInt(Random.Range(this.numberOfTicksRange.x, this.numberOfTicksRange.y));
+            this.ticksLeft = this.numberOfTicks;
         }
     }
 
@@ -293,6 +300,30 @@ public class DamageOverTimeEffect : Effect
             if(this.ticksLeft <= 0)
             {
                 this.RemoveEffect();
+            }
+        }
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If this effect ticks while player initiative is building
+        if(this.tickOnRealTime)
+        {
+            //We can only track our timer when the combat manager is increasing initiative
+            if(CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            {
+                //Increasing our tick timer
+                this.currentTickTime += Time.deltaTime;
+
+                //If the timer is above the tick time, we damage the target
+                if(this.currentTickTime >= this.timeBetweenTicks)
+                {
+                    //Resetting the timer and damaging the target character
+                    this.currentTickTime -= this.timeBetweenTicks;
+                    this.DamageCharacter();
+                }
             }
         }
     }
