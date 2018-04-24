@@ -45,7 +45,7 @@ public class HealOverTimeEffect : Effect
     private float currentTickTime = 0;
 
     //If true, this effect ticks as soon as the effected character's turn begins
-    public bool tickOnStartOfTurn = true;
+    public bool tickOnStartOfTurn = false;
 
     //If true, this effect ticks as soon as the effected character's turn ends
     public bool tickOnEndOfTurn = false;

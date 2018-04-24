@@ -6,7 +6,7 @@ using UnityEngine;
 public class ModifyStatsEffect : Effect
 {
     //The number of times this effects activates before it goes away
-    public int numberOfTicks = 3;
+    public int numberOfTicks = 1;
     //The number of remaining ticks before this effect goes away
     [HideInInspector]
     public int ticksLeft = 1;
@@ -19,12 +19,12 @@ public class ModifyStatsEffect : Effect
     //If true, this effect ticks down during the time that player initiative is filling up
     public bool tickOnRealTime = true;
     //If this ticks on real time, this is the amount of time it takes between ticks
-    public float timeBetweenTicks = 1;
+    public float timeBetweenTicks = 10;
     //The current amount of time that's passed between ticks
     private float currentTickTime = 0;
 
     //If true, this effect ticks as soon as the effected character's turn begins
-    public bool tickOnStartOfTurn = true;
+    public bool tickOnStartOfTurn = false;
 
     //If true, this effect ticks as soon as the effected character's turn ends
     public bool tickOnEndOfTurn = false;
