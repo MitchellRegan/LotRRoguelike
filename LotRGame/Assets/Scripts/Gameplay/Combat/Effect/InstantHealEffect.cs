@@ -6,7 +6,7 @@ using UnityEngine;
 public class InstantHealEffect : Effect
 {
     //The type of heal that's inflicted
-    public CombatManager.DamageType type = CombatManager.DamageType.Physical;
+    public CombatManager.DamageType type = CombatManager.DamageType.Holy;
 
     //The base amount of heal dealt
     public int baseHeal = 0;
@@ -22,7 +22,7 @@ public class InstantHealEffect : Effect
     public float critChance = 0.1f;
 
     //The heal multiplier when this crits
-    public int critMultiplier = 2;
+    public float critMultiplier = 2;
 
 
 
@@ -47,7 +47,7 @@ public class InstantHealEffect : Effect
         bool isCrit = false;
         if (critRoll < this.critChance)
         {
-            totalHeal = totalHeal * this.critMultiplier;
+            totalHeal = Mathf.RoundToInt(totalHeal * this.critMultiplier);
         }
 
         //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
@@ -60,9 +60,55 @@ public class InstantHealEffect : Effect
             }
         }
 
+        //Looping through the defending character's perks to see if they have any spell resist or absorb perks
+        SpellResistTypes magicResistType = SpellResistTypes.Normal;
+        foreach (Perk defPerk in this.characterToEffect.charPerks.allPerks)
+        {
+            if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
+            {
+                SpellResistAbsorbPerk resistPerk = defPerk.GetComponent<SpellResistAbsorbPerk>();
+
+                //Checking to see if the current heal type is the same as this spell resist perk
+                if (resistPerk.typeToResist == this.type)
+                {
+                    //Checking to see if the heal is negated entirely
+                    if (resistPerk.negateAllDamage)
+                    {
+                        magicResistType = SpellResistTypes.Negate;
+                    }
+                    //Otherwise we just get the amount that it normally resists
+                    else
+                    {
+                        totalHeal -= resistPerk.GetSpellResistAmount(this.characterToEffect, isCrit, false);
+                    }
+                }
+            }
+        }
+
         //Subtracting the target character's magic resistances
         switch (this.type)
         {
+            case CombatManager.DamageType.Slashing:
+                if (targetCharacter_.charInventory.totalSlashingArmor > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalSlashingArmor;
+                }
+                break;
+
+            case CombatManager.DamageType.Stabbing:
+                if (targetCharacter_.charInventory.totalStabbingArmor > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalStabbingArmor;
+                }
+                break;
+
+            case CombatManager.DamageType.Crushing:
+                if (targetCharacter_.charInventory.totalCrushingArmor > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalCrushingArmor;
+                }
+                break;
+
             case CombatManager.DamageType.Fire:
                 if (targetCharacter_.charInventory.totalFireResist > 0)
                 {
@@ -91,24 +137,38 @@ public class InstantHealEffect : Effect
                 }
                 break;
 
-            case CombatManager.DamageType.Stone:
-                if (targetCharacter_.charInventory.totalStoneResist > 0)
+            case CombatManager.DamageType.Nature:
+                if (targetCharacter_.charInventory.totalNatureResist > 0)
                 {
-                    totalHeal -= targetCharacter_.charInventory.totalStoneResist;
+                    totalHeal -= targetCharacter_.charInventory.totalNatureResist;
+                }
+                break;
+
+            case CombatManager.DamageType.Arcane:
+                if (targetCharacter_.charInventory.totalArcaneResist > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalArcaneResist;
                 }
                 break;
 
             case CombatManager.DamageType.Holy:
                 if (targetCharacter_.charInventory.totalHolyResist > 0)
                 {
-                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalHolyResist;
                 }
                 break;
 
             case CombatManager.DamageType.Dark:
-                if (targetCharacter_.charInventory.totalFireResist > 0)
+                if (targetCharacter_.charInventory.totalDarkResist > 0)
                 {
-                    totalHeal -= targetCharacter_.charInventory.totalFireResist;
+                    totalHeal -= targetCharacter_.charInventory.totalDarkResist;
+                }
+                break;
+
+            case CombatManager.DamageType.Bleed:
+                if(targetCharacter_.charInventory.totalBleedResist > 0)
+                {
+                    totalHeal -= targetCharacter_.charInventory.totalBleedResist;
                 }
                 break;
         }
@@ -133,17 +193,38 @@ public class InstantHealEffect : Effect
         //Finding the combat tile that the target character is on
         CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
 
-        //Dealing damage to the target character and telling the combat manager to display how much was dealt
-        targetCharacter_.charPhysState.DamageCharacter(totalHeal);
-        CombatManager.globalReference.DisplayDamageDealt(timeDelay_, totalHeal, type, targetCharTile, isCrit);
+        //If the heal was negated completely
+        if (magicResistType == SpellResistTypes.Negate)
+        {
+            //Telling the combat manager to display that no damage was healed
+            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, 0, this.type, healedCharTile, isCrit, true);
+        }
+        //Otherwise, the heal happens normally
+        else
+        {
+            //Healing the damage to the effected character
+            this.characterToEffect.charPhysState.HealCharacter(totalHeal);
+
+            //Telling the combat manager to display the damage healed
+            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatManager.globalReference.DisplayDamageDealt(0, totalHeal, this.type, healedCharTile, isCrit, true);
+
+            //If the acting character is a player character, we need to increase the threat against them
+            if (!this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
+            {
+                //If this character DOESN'T have the EnemyCombatAI component, we increase the threat for the character who put this effect on
+                if (!this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
+                {
+                    //Applying threat to all enemies based on the amount healed
+                    CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal + bonusThreat, true);
+                }
+            }
+        }
 
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
         this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
-
-        
-        //Applying threat to all enemies based on the amount healed
-        CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, totalHeal + bonusThreat, true);
 
         //Destroying this effect once everything is finished up
         Destroy(this.gameObject);

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ThreatBoostPerk : MonoBehaviour
 {
     //Damage type to boost threat on
-    public CombatManager.DamageType damageTypeToThreaten = CombatManager.DamageType.Physical;
+    public CombatManager.DamageType damageTypeToThreaten = CombatManager.DamageType.Slashing;
 
     //Bool for if this perk only works during a crit. If not, it works all the time
     public bool onlyWorksOnCrit = false;

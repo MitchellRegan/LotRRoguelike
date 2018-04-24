@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class MovementBoostPerk : Perk
 {
     //The number of added movement spaces

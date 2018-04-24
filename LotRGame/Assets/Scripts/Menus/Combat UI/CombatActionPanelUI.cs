@@ -164,9 +164,23 @@ public class CombatActionPanelUI : MonoBehaviour
             //If there are still actions to display, we display them
             if(b < actionsToShow_.Count)
             {
-                this.actionButtons[b].nameText.text = actionsToShow_[b].actionName;
-                this.actionButtons[b].descriptionText.text = actionsToShow_[b].actionDescription;
-                this.actionButtons[b].buttonComponent.interactable = true;
+                //Checking to see if the current action is a weapon action
+                if (this.actionButtons[b].GetType() == typeof(WeaponAction))
+                {
+                    WeaponAction wpAct = actionsToShow_[b] as WeaponAction;
+                    //If this weapon action can't be used, we need to reduce the current action count by 1
+                    if(!wpAct.CanCharacterUseAction(CombatManager.globalReference.actingCharacters[0]))
+                    {
+                        b -= 1;
+                    }
+                }
+                //If the action isn't a weapon action, we can display it normally
+                else
+                {
+                    this.actionButtons[b].nameText.text = actionsToShow_[b].actionName;
+                    this.actionButtons[b].descriptionText.text = actionsToShow_[b].actionDescription;
+                    this.actionButtons[b].buttonComponent.interactable = true;
+                }
             }
             //If there are no more actions to display, the rest of the buttons are disabled
             else
@@ -391,8 +405,14 @@ public class CombatActionPanelUI : MonoBehaviour
                     //Finding out which type of damage it is
                     switch(atkDetails.damageDealt[a].type)
                     {
-                        case CombatManager.DamageType.Physical:
-                            this.selectedPanelDetails.damageText.text += " Physical";
+                        case CombatManager.DamageType.Slashing:
+                            this.selectedPanelDetails.damageText.text += " Slashing";
+                            break;
+                        case CombatManager.DamageType.Stabbing:
+                            this.selectedPanelDetails.damageText.text += " Stabbing";
+                            break;
+                        case CombatManager.DamageType.Crushing:
+                            this.selectedPanelDetails.damageText.text += " Crushing";
                             break;
                         case CombatManager.DamageType.Arcane:
                             this.selectedPanelDetails.damageText.text += " Arcane";
@@ -409,9 +429,6 @@ public class CombatActionPanelUI : MonoBehaviour
                         case CombatManager.DamageType.Wind:
                             this.selectedPanelDetails.damageText.text += " Wind";
                             break;
-                        case CombatManager.DamageType.Stone:
-                            this.selectedPanelDetails.damageText.text += " Stone";
-                            break;
                         case CombatManager.DamageType.Holy:
                             this.selectedPanelDetails.damageText.text += " Holy";
                             break;
@@ -421,8 +438,11 @@ public class CombatActionPanelUI : MonoBehaviour
                         case CombatManager.DamageType.Pure:
                             this.selectedPanelDetails.damageText.text += " Pure";
                             break;
-                        default:
-                            this.selectedPanelDetails.damageText.text += " Physical";
+                        case CombatManager.DamageType.Nature:
+                            this.selectedPanelDetails.damageText.text += " Nature";
+                            break;
+                        case CombatManager.DamageType.Bleed:
+                            this.selectedPanelDetails.damageText.text += " Bleed";
                             break;
                     }
                 }

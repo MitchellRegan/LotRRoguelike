@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class DamageTypeBoostPerk : Perk
 {
     //The damage type that this perk boosts
-    public CombatManager.DamageType damageTypeToBoost = CombatManager.DamageType.Physical;
+    public CombatManager.DamageType damageTypeToBoost = CombatManager.DamageType.Slashing;
 
     //Bool for if this perk only works during a crit. If not it works all the time
     public bool onlyWorksOnCrit = false;

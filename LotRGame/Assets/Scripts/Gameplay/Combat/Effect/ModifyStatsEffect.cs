@@ -5,8 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class ModifyStatsEffect : Effect
 {
-    //The range for the number of times this effects activates before it goes away
-    public Vector2 numberOfTicksRange = new Vector2(5, 10);
+    //The number of times this effects activates before it goes away
+    public int numberOfTicks = 1;
     //The number of remaining ticks before this effect goes away
     [HideInInspector]
     public int ticksLeft = 1;
@@ -16,8 +16,15 @@ public class ModifyStatsEffect : Effect
 
     [Space(9)]
 
+    //If true, this effect ticks down during the time that player initiative is filling up
+    public bool tickOnRealTime = true;
+    //If this ticks on real time, this is the amount of time it takes between ticks
+    public float timeBetweenTicks = 10;
+    //The current amount of time that's passed between ticks
+    private float currentTickTime = 0;
+
     //If true, this effect ticks as soon as the effected character's turn begins
-    public bool tickOnStartOfTurn = true;
+    public bool tickOnStartOfTurn = false;
 
     //If true, this effect ticks as soon as the effected character's turn ends
     public bool tickOnEndOfTurn = false;
@@ -43,7 +50,7 @@ public class ModifyStatsEffect : Effect
             if(e.effectName == this.effectName)
             {
                 //We refresh the duration of the effect on the target to the max number of ticks
-                e.GetComponent<ModifyStatsEffect>().ticksLeft = Mathf.RoundToInt(this.numberOfTicksRange.y);
+                e.GetComponent<ModifyStatsEffect>().ticksLeft = this.numberOfTicks;
                 //And then we destroy this effect's game object
                 Destroy(this.gameObject);
             }
@@ -58,7 +65,7 @@ public class ModifyStatsEffect : Effect
         //Determining how many ticks this effect will have if it's not unlimited
         if(!this.unlimitedTicks)
         {
-            this.ticksLeft = Mathf.RoundToInt(Random.Range(this.numberOfTicksRange.x, this.numberOfTicksRange.y));
+            this.ticksLeft = this.numberOfTicks;
         }
 
         //Applying the stat changes
@@ -346,20 +353,48 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Armor
-                case StatModifier.StatName.Armor:
+                case StatModifier.StatName.SlashingArmor:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charInventory.totalPhysicalArmor += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalSlashingArmor += Mathf.RoundToInt(mod.amountToChange);
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charInventory.totalPhysicalArmor -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalSlashingArmor -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
 
-                //Magic resist
+                //Armor
+                case StatModifier.StatName.StabbingArmor:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalStabbingArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalStabbingArmor -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Armor
+                case StatModifier.StatName.CrushingArmor:
+                    //If we're adding the modifier
+                    if (addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalCrushingArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalCrushingArmor -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Arcane resist
                 case StatModifier.StatName.ArcaneResist:
                     //If we're adding the modifier
                     if (addingChanges_)
@@ -457,17 +492,45 @@ public class ModifyStatsEffect : Effect
                     }
                     break;
 
-                //Rock resist
-                case StatModifier.StatName.RockResist:
+                //Nature resist
+                case StatModifier.StatName.NatureResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
-                        this.characterToEffect.charInventory.totalStoneResist += Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalNatureResist += Mathf.RoundToInt(mod.amountToChange);
                     }
                     //If we're removing the modifier
                     else
                     {
-                        this.characterToEffect.charInventory.totalStoneResist -= Mathf.RoundToInt(mod.amountToChange);
+                        this.characterToEffect.charInventory.totalNatureResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Bleed resist
+                case StatModifier.StatName.BleedResist:
+                    //If we're adding the modifier
+                    if(addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalBleedResist += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalBleedResist -= Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    break;
+
+                //Armor
+                case StatModifier.StatName.Armor:
+                    //If we're adding the modifier
+                    if(addingChanges_)
+                    {
+                        this.characterToEffect.charInventory.totalPhysicalArmor += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charInventory.totalPhysicalArmor -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
             }
@@ -479,6 +542,41 @@ public class ModifyStatsEffect : Effect
             //Creating the visual effect for this effect
             CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
             this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+        }
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If this effect ticks while player initiative is building
+        if (this.tickOnRealTime)
+        {
+            //We can only track our timer when the combat manager is increasing initiative
+            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            {
+                //Increasing our tick timer
+                this.currentTickTime += Time.deltaTime;
+
+                //If the timer is above the tick time, we reset the timer
+                if (this.currentTickTime >= this.timeBetweenTicks)
+                {
+                    //Resetting the timer
+                    this.currentTickTime -= this.timeBetweenTicks;
+
+                    //If this effect doesn't last forever
+                    if (!this.unlimitedTicks)
+                    {
+                        this.ticksLeft -= 1;
+
+                        //If we're out of ticks, we remove this effect
+                        if (this.ticksLeft <= 0)
+                        {
+                            this.RemoveEffect();
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -591,6 +689,7 @@ public class StatModifier
         Energy,
 
         Initiative,
+        Accuracy,
         Evasion,
 
         Unarmed,
@@ -610,7 +709,9 @@ public class StatModifier
         ElectricMagic,
         StoneMagic,
 
-        Armor,
+        SlashingArmor,
+        StabbingArmor,
+        CrushingArmor,
         ArcaneResist,
         HolyResist,
         DarkResist,
@@ -618,7 +719,10 @@ public class StatModifier
         WaterResist,
         WindResist,
         ElectricResist,
-        RockResist
+        NatureResist,
+        BleedResist,
+
+        Armor //Different from Slashing, Stabbing, and Crushing armor. This effects hit chance
     }
 
     //Enum for which stat this modifier changes

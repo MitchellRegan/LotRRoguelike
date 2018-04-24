@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class AccuracyBoostPerk : Perk
 {
     //The type of skill that this perk boosts accuracy for

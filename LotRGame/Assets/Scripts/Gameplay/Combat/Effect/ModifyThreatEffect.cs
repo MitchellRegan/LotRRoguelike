@@ -16,18 +16,25 @@ public class ModifyThreatEffect : Effect
 
     [Space(8)]
 
-    //The range for the number of turns this effect activates before it goes away
-    public Vector2 numberofTicksRange = new Vector2(5, 5);
+    //The number of turns this effect activates before it goes away
+    public int numberofTicks = 3;
     //The number of remaining ticks left
     [HideInInspector]
     public int ticksLeft = 1;
 
     [Space(8)]
 
+    //If true, this effect ticks down during the time that player initiative is filling up
+    public bool tickOnRealTime = true;
+    //If this ticks on real time, this is the amount of time it takes between ticks
+    public float timeBetweenTicks = 1;
+    //The current amount of time that's passed between ticks
+    private float currentTickTime = 0;
+
     //If true, this effect ticks as soon as the effected character's turn begins
     public bool tickOnStartOfTurn = false;
     //If true, this effect ticks as soon as the effected character's turn ends
-    public bool tickOnEndOfTurn = true;
+    public bool tickOnEndOfTurn = false;
 
 
 
@@ -55,7 +62,7 @@ public class ModifyThreatEffect : Effect
         }
 
         //If the max number of ticks this effect can have is 0, we'll immediately destroy this
-        if (this.numberofTicksRange.y <= 0)
+        if (this.numberofTicks <= 0)
         {
             this.RemoveEffect();
             return;
@@ -63,7 +70,7 @@ public class ModifyThreatEffect : Effect
         //If this effect lasts for a while, we find out how long
         else
         {
-            this.ticksLeft = Mathf.RoundToInt(Random.Range(this.numberofTicksRange.x, this.numberofTicksRange.y));
+            this.ticksLeft = this.numberofTicks;
             this.characterToEffect = targetCharacter_;
             this.characterWhoTriggered = usingCharacter_;
         }
@@ -127,6 +134,30 @@ public class ModifyThreatEffect : Effect
 
             //removing this effect
             this.RemoveEffect();
+        }
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If this effect ticks while player initiative is building
+        if (this.tickOnRealTime)
+        {
+            //We can only track our timer when the combat manager is increasing initiative
+            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            {
+                //Increasing our tick timer
+                this.currentTickTime += Time.deltaTime;
+
+                //If the timer is above the tick time, we threaten the target
+                if (this.currentTickTime >= this.timeBetweenTicks)
+                {
+                    //Resetting the timer and threatening the target character
+                    this.currentTickTime -= this.timeBetweenTicks;
+                    this.ThreatenCharacter();
+                }
+            }
         }
     }
 
