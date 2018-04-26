@@ -40,6 +40,9 @@ public class ActionList : MonoBehaviour
     //Delegate void that's tied to the time advance event so we can recharge spells
     private DelegateEvent<EVTData> rechargeSpellsEVT;
 
+    //List of actions that are cooling down
+    public List<ActionCooldown> actionCooldowns;
+
 
 
     //Function called when this object is created
@@ -47,6 +50,9 @@ public class ActionList : MonoBehaviour
     {
         //Initializes the Delegate Event for the Event manager
         this.rechargeSpellsEVT = new DelegateEvent<EVTData>(this.RechargeSpells);
+
+        //Initializing the empty list of action cooldowns
+        this.actionCooldowns = new List<ActionCooldown>();
     }
 
 
@@ -153,35 +159,39 @@ public class ActionList : MonoBehaviour
     private void SortWeaponActions()
     {
         //Making sure this object has an inventory component first
-        if(!this.GetComponent<Inventory>())
+        if(!this.GetComponent<Inventory>() || !this.GetComponent<Character>())
         {
             return;
         }
-
+        
         Inventory ourInventory = this.GetComponent<Inventory>();
 
         //Checking the right hand to see if there's a weapon equipped
         if(ourInventory.rightHand != null)
         {
             //Adding each action to our lists
-            foreach (AttackAction action in ourInventory.rightHand.attackList)
+            foreach (Action action in ourInventory.rightHand.specialActionList)
             {
-                //If the action is a spell, we need to check if it's recharging
-                if (action.gameObject.GetComponent<SpellAction>())
+                //If this action isn't cooling down
+                if (!this.IsActionOnCooldown(action))
                 {
-                    //If there are more spell charges than recharging, this spell is added to the actions list
-                    if (this.CanAddSpellToList(action.gameObject.GetComponent<SpellAction>()))
+                    //If the action is a spell, we need to check if it's recharging
+                    if (action.gameObject.GetComponent<SpellAction>())
+                    {
+                        //If there are more spell charges than recharging, this spell is added to the actions list
+                        if (this.CanAddSpellToList(action.gameObject.GetComponent<SpellAction>()))
+                        {
+                            this.AddActionToList(action);
+                        }
+
+                        //Adding this spell to the list of all spell actions
+                        this.allSpellActions.Add(action.gameObject.GetComponent<SpellAction>());
+                    }
+                    //If it's not a spell, it's added to the action list normally
+                    else
                     {
                         this.AddActionToList(action);
                     }
-
-                    //Adding this spell to the list of all spell actions
-                    this.allSpellActions.Add(action.gameObject.GetComponent<SpellAction>());
-                }
-                //If it's not a spell, it's added to the action list normally
-                else
-                {
-                    this.AddActionToList(action);
                 }
             }
         }
@@ -189,24 +199,28 @@ public class ActionList : MonoBehaviour
         if(ourInventory.leftHand != null)
         {
             //Adding each action to our lists
-            foreach(AttackAction action in ourInventory.leftHand.attackList)
+            foreach(Action action in ourInventory.leftHand.specialActionList)
             {
-                //If the action is a spell, we need to check if it's recharging
-                if (action.gameObject.GetComponent<SpellAction>())
+                //If this action isn't cooling down
+                if (!this.IsActionOnCooldown(action))
                 {
-                    //If there are more spell charges than recharging, this spell is added to the actions list
-                    if (this.CanAddSpellToList(action.gameObject.GetComponent<SpellAction>()))
+                    //If the action is a spell, we need to check if it's recharging
+                    if (action.gameObject.GetComponent<SpellAction>())
+                    {
+                        //If there are more spell charges than recharging, this spell is added to the actions list
+                        if (this.CanAddSpellToList(action.gameObject.GetComponent<SpellAction>()))
+                        {
+                            this.AddActionToList(action);
+                        }
+
+                        //Adding this spell to the list of all spell actions
+                        this.allSpellActions.Add(action.gameObject.GetComponent<SpellAction>());
+                    }
+                    //If it's not a spell, it's added to the action list normally
+                    else
                     {
                         this.AddActionToList(action);
                     }
-
-                    //Adding this spell to the list of all spell actions
-                    this.allSpellActions.Add(action.gameObject.GetComponent<SpellAction>());
-                }
-                //If it's not a spell, it's added to the action list normally
-                else
-                {
-                    this.AddActionToList(action);
                 }
             }
         }
@@ -483,6 +497,43 @@ public class ActionList : MonoBehaviour
         //If we make it out of the loop without finding the action, we return false
         return false;
     }
+
+    
+    //Function called externally from ActionList.cs to check if an attack is cooling down
+    public bool IsActionOnCooldown(Action actionToCheck_)
+    {
+        //Looping through each action that's cooling down to see if any are the action we're checking
+        foreach (ActionCooldown ac in this.actionCooldowns)
+        {
+            //If the action is the same as one that's cooling down, we return true
+            if (actionToCheck_ == ac.actionCoolingDown)
+            {
+                return true;
+            }
+        }
+
+        //If we make it through the loop, that means the action isn't cooling down
+        return false;
+    }
+
+
+    //Function called from CombatManager.cs to reduce the cooldown time for any actions that are cooling down
+    public void ReduceCooldowns(float timeToReduce_)
+    {
+        //Looping through all of our cooldown actions
+        for (int acd = 0; acd < this.actionCooldowns.Count; ++acd)
+        {
+            //Reducing the cooldown's remaining time
+            this.actionCooldowns[acd].remainingCooldownTime -= timeToReduce_;
+
+            //If the remaining time is at 0, we remove it from the cooldowns list
+            if (this.actionCooldowns[acd].remainingCooldownTime <= 0)
+            {
+                this.actionCooldowns.RemoveAt(acd);
+                acd -= 1;
+            }
+        }
+    }
 }
 
 //Class used in ActionList.cs to handle recharging spells
@@ -499,5 +550,22 @@ public class SpellRecharge
     {
         this.spellThatsCharging = spell_;
         this.hoursRemaining = hours_;
+    }
+}
+
+//Class used in ActionList.cs to track each type of ability this character has used and remaining cooldown time
+public class ActionCooldown
+{
+    //The action that's cooling down
+    public Action actionCoolingDown;
+    //The remaining time left on the cooldown
+    public float remainingCooldownTime = 0;
+
+
+    //Constructor function for this class
+    public ActionCooldown(Action actionCoolingDown_, float cooldownTime_)
+    {
+        this.actionCoolingDown = actionCoolingDown_;
+        this.remainingCooldownTime = cooldownTime_;
     }
 }

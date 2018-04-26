@@ -14,8 +14,14 @@ public class Weapon : MonoBehaviour
     //How many hands it takes to wield this weapon
     public WeaponSize size = WeaponSize.OneHand;
 
-    //The list of attack actions that this weapon can perform
-    public List<AttackAction> attackList;
+    //The base attack damage for this weapon
+    public AttackDamage weaponDamage;
+
+    //The list of effects that this weapon can have when attacking
+    public List<AttackEffect> weaponEffects;
+
+    //The list of actions that this weapon can perform
+    public List<Action> specialActionList;
 
     [Space(8)]
 

@@ -41,6 +41,9 @@ public class AttackAction : Action
     //Function inherited from Action.cs and called from CombatManager.cs so we can attack a target
     public override void PerformAction(CombatTile targetTile_)
     {
+        //Calling the base function to start the cooldown time
+        base.PerformAction(targetTile_);
+
         //Reference to the character performing this attack
         Character actingChar = CombatManager.globalReference.actingCharacters[0];
         //Reference to the character that's being attacked

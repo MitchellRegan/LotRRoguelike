@@ -1033,6 +1033,9 @@ public class CombatManager : MonoBehaviour
             //Making sure the current character isn't dead first
             if (this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
             {
+                //Reducing the character's action cooldown times
+                this.playerCharactersInCombat[p].charActionList.ReduceCooldowns(Time.deltaTime);
+
                 //Looping through the character's perk list to see if they have any InitiativeBoostPerks
                 float perkBoost = 0;
                 foreach(Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
@@ -1070,6 +1073,9 @@ public class CombatManager : MonoBehaviour
             //Making sure the current enemy isn't dead first
             if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
             {
+                //Reducing the character's action cooldown times
+                this.enemyCharactersInCombat[e].charActionList.ReduceCooldowns(Time.deltaTime);
+
                 //Looping through the character's perk list to see if they have any InitiativeBoostPerks
                 float perkBoost = 0;
                 foreach (Perk enemyPerk in this.playerCharactersInCombat[e].charPerks.allPerks)

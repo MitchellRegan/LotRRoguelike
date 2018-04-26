@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class WeaponAction : AttackAction
 {
-    //Enum for the hand that this weapon attack requires
+    //Enum for the hand that this weapon attack requires the used weapon to be in
     public enum WeaponHand
     {
         MainHand,//Required weapon needs to be in the main hand
         OffHand,//Required weapon needs to be in the off hand
         OneHand,//Required weapon can be in the main OR off hand as long as it's 1-handed
-        TwoHand//Required weapon needs to be 2-handed
+        TwoHand,//Required weapon needs to be 2-handed
+        DualWeild//Required weapons need to be in both hands
     };
     public WeaponHand requiredWeaponHand = WeaponHand.OneHand;
+
+    //The amount of real world time this action takes to recharge while initiative is increasing
+    public float rechargeTime = 1;
 
 
 
@@ -112,6 +116,25 @@ public class WeaponAction : AttackAction
                 {
                     //Making sure both hands aren't holding anything
                     if(charToCheck_.charInventory.rightHand == null && charToCheck_.charInventory.leftHand == null)
+                    {
+                        canUse = true;
+                    }
+                }
+                break;
+
+            case WeaponHand.DualWeild:
+                //If this weapon skill is unarmed, we need to make sure the character isn't holding anything
+                if(this.weaponSkillUsed == SkillList.Unarmed)
+                {
+                    if(charToCheck_.charInventory.rightHand == null && charToCheck_.charInventory.leftHand == null)
+                    {
+                        canUse = true;
+                    }
+                }
+                //If the weapon skill isn't unarmed, we need to make sure the character is holding the correct weapons in both hands
+                else if(charToCheck_.charInventory.rightHand != null && charToCheck_.charInventory.leftHand != null)
+                {
+                    if(charToCheck_.charInventory.rightHand.weaponType == this.weaponSkillUsed && charToCheck_.charInventory.leftHand.weaponType == this.weaponSkillUsed)
                     {
                         canUse = true;
                     }
