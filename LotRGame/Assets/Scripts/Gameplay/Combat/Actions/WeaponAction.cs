@@ -15,8 +15,14 @@ public class WeaponAction : AttackAction
     };
     public WeaponHand requiredWeaponHand = WeaponHand.OneHand;
 
-    //The amount of real world time this action takes to recharge while initiative is increasing
-    public float rechargeTime = 1;
+    //The number of times this attack hits
+    public int numberOfHits = 1;
+
+    //The amount of damage added to the weapon's damage
+    public int addedDamage = 0;
+
+    //The multiplier for the weapon damage before added damage
+    public float damageMultiplier = 1;
 
 
 
@@ -149,6 +155,6 @@ public class WeaponAction : AttackAction
     //Function inherited from AttackAction.cs and called from CombatManager.cs so we can attack a target
     public override void PerformAction(CombatTile targetTile_)
     {
-        base.PerformAction(targetTile_);
+        base.PerformAction(targetTile_);.
     }
 }
