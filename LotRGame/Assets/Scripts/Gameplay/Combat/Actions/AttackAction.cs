@@ -42,7 +42,7 @@ public class AttackAction : Action
     public override void PerformAction(CombatTile targetTile_)
     {
         //Calling the base function to start the cooldown time
-        base.PerformAction(targetTile_);
+        this.BeginActionCooldown();
 
         //Reference to the character performing this attack
         Character actingChar = CombatManager.globalReference.actingCharacters[0];
@@ -347,7 +347,7 @@ public class AttackAction : Action
 
 
     //Function called from PerformAction and TriggerEffect to return an attack roll value
-    private int FindAttackRoll(Character actingChar_, Character defendingChar_)
+    public virtual int FindAttackRoll(Character actingChar_, Character defendingChar_)
     {
         //Int to hold the total attack roll
         int hitRoll = 0;
@@ -428,7 +428,7 @@ public class AttackAction : Action
 
 
     //Function called when an effect is triggered
-    private void TriggerEffect(AttackEffect effectToTrigger_, CombatTile targetTile_, Character actingChar_)
+    public virtual void TriggerEffect(AttackEffect effectToTrigger_, CombatTile targetTile_, Character actingChar_)
     {
         //Finding all targets within this effect's radius
         List<Character> targets = this.FindCharactersInAttackRange(targetTile_, effectToTrigger_.effectRadius);

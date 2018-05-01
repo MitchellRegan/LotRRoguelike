@@ -38,8 +38,15 @@ public class Action : MonoBehaviour
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
     public virtual void PerformAction(CombatTile targetTile_)
     {
+        //Nothing here because the inheriting classes act differently
+    }
+
+
+    //Function that is overrided by inheriting classes to begin this action's cooldown time
+    public virtual void BeginActionCooldown()
+    {
         //Adding this action to the acting character's recharge list if the cooldown time is above 0
-        if(this.cooldownTime > 0)
+        if (this.cooldownTime > 0)
         {
             //Creating a new action cooldown class for this action
             ActionCooldown acd = new ActionCooldown(this, this.cooldownTime);
