@@ -1066,36 +1066,36 @@ public class CombatManager : MonoBehaviour
             }
         }
 
-
+        
         //Looping through each enemy character
-        for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
+        for (int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
         {
             //Making sure the current enemy isn't dead first
             if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
             {
                 //Reducing the character's action cooldown times
                 this.enemyCharactersInCombat[e].charActionList.ReduceCooldowns(Time.deltaTime);
-
+                
                 //Looping through the character's perk list to see if they have any InitiativeBoostPerks
                 float perkBoost = 0;
-                foreach (Perk enemyPerk in this.playerCharactersInCombat[e].charPerks.allPerks)
+                foreach (Perk enemyPerk in this.enemyCharactersInCombat[e].charPerks.allPerks)
                 {
                     if (enemyPerk.GetType() == typeof(InitiativeBoostPerk))
                     {
                         perkBoost += enemyPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
                     }
                 }
-
+                
                 //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
                 float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
-
+                
                 //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
                 {
                     initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
                 }
-
+                
                 this.enemyInitiativeSliders[e].initiativeSlider.value += initiativeToAdd;
 
                 //If the slider is filled, this character is added to the acting character list
@@ -1111,7 +1111,7 @@ public class CombatManager : MonoBehaviour
         }
         
         //If there are any characters in the acting Characters list, the state changes so we stop updating initiative meters
-        if(this.actingCharacters.Count != 0)
+        if (this.actingCharacters.Count != 0)
         {
             this.SetWaitTime(1, combatState.SelectAction);
         }
