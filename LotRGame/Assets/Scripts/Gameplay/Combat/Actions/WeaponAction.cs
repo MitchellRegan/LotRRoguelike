@@ -229,8 +229,8 @@ public class WeaponAction : AttackAction
         //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit and adding this attack's accuracy bonus
         int hitRoll = this.FindAttackRoll(actingChar, defendingChar);
 
-        //If the hit roll is still above 66%, they hit. If not, the attack misses
-        if (hitRoll <= 66)
+        //If the hit roll is still above 50%, they hit. If not, the attack misses
+        if (hitRoll <= 50)
         {
             //If there are no attack damage rolls (like if the attack was just to inflict an effect) the "Miss" text isn't shown
             if (this.damageDealt.Count > 0)

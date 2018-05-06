@@ -18,9 +18,9 @@ public enum Genders { Male, Female, Genderless };
 public class Character : MonoBehaviour
 {
     //This character's first name
-    public string firstName = "Generic";
+    public string firstName = "";
     //This character's last name
-    public string lastName = "McPersonface";
+    public string lastName = "";
 
     //This character's gender
     public Genders sex = Genders.Male;

@@ -326,7 +326,8 @@ public class CharacterSpriteBase : MonoBehaviour
                 //If we didn't find the correct sprite view
                 else
                 {
-                    throw new System.Exception("ERROR! CharacterSpriteBase.SetSpriteImages, No valid body type for chestpiece");
+                    Debug.LogError("ERROR! CharacterSpriteBase.SetSpriteImages, No valid body type for chestpiece");
+                    //throw new System.Exception("ERROR! CharacterSpriteBase.SetSpriteImages, No valid body type for chestpiece");
                 }
             }
             //If there's no chestpiece, we set them to empty

@@ -48,6 +48,14 @@ public class ActionList : MonoBehaviour
     //Function called when this object is created
     private void Awake()
     {
+        //Initializing our lists
+        this.majorActions = new List<Action>();
+        this.minorActions = new List<Action>();
+        this.fastActions = new List<Action>();
+        this.massiveActions = new List<Action>();
+        this.allSpellActions = new List<SpellAction>();
+        this.rechargingSpells = new List<SpellRecharge>();
+
         //Initializes the Delegate Event for the Event manager
         this.rechargeSpellsEVT = new DelegateEvent<EVTData>(this.RechargeSpells);
 
@@ -73,15 +81,6 @@ public class ActionList : MonoBehaviour
     //Function called on the first frame this character exists
     private void Start()
     {
-        //Initializing our lists
-        this.majorActions = new List<Action>();
-        this.minorActions = new List<Action>();
-        this.fastActions = new List<Action>();
-        this.massiveActions = new List<Action>();
-        this.allSpellActions = new List<SpellAction>();
-
-        this.rechargingSpells = new List<SpellRecharge>();
-
         //Finding all available actions
         this.RefreshActionLists();
     }
@@ -91,11 +90,50 @@ public class ActionList : MonoBehaviour
     public void RefreshActionLists()
     {
         //Clearing our current lists
-        this.majorActions.Clear();
-        this.minorActions.Clear();
-        this.fastActions.Clear();
-        this.massiveActions.Clear();
-        this.allSpellActions.Clear();
+        if (this.majorActions == null)
+        {
+            this.majorActions = new List<Action>();
+        }
+        else
+        {
+            this.majorActions.Clear();
+        }
+
+        if (this.minorActions == null)
+        {
+            this.minorActions = new List<Action>();
+        }
+        else
+        {
+            this.minorActions.Clear();
+        }
+
+        if (this.fastActions == null)
+        {
+            this.fastActions = new List<Action>();
+        }
+        else
+        {
+            this.fastActions.Clear();
+        }
+
+        if (this.massiveActions == null)
+        {
+            this.massiveActions = new List<Action>();
+        }
+        else
+        {
+            this.massiveActions.Clear();
+        }
+
+        if (this.allSpellActions == null)
+        {
+            this.allSpellActions = new List<SpellAction>();
+        }
+        else
+        {
+            this.allSpellActions.Clear();
+        }
 
         //Adding all actions from our default list
         this.SortDefaultActions();
