@@ -135,6 +135,11 @@ public class ActionList : MonoBehaviour
             this.allSpellActions.Clear();
         }
 
+        if(this.actionCooldowns == null)
+        {
+            this.actionCooldowns = new List<ActionCooldown>();
+        }
+
         //Adding all actions from our default list
         this.SortDefaultActions();
         //Adding all actions from our equipped weapons
@@ -172,22 +177,26 @@ public class ActionList : MonoBehaviour
         //Looping through each default action so we can sort it to the correct list
         foreach (Action currentAction in this.defaultActions)
         {
-            //If the action is a spell, we need to check if it's recharging
-            if (currentAction.gameObject.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(currentAction))
             {
-                //If there are more spell charges than recharging, this spell is added to the actions list
-                if(this.CanAddSpellToList(currentAction.gameObject.GetComponent<SpellAction>()))
+                //If the action is a spell, we need to check if it's recharging
+                if (currentAction.gameObject.GetComponent<SpellAction>())
+                {
+                    //If there are more spell charges than recharging, this spell is added to the actions list
+                    if (this.CanAddSpellToList(currentAction.gameObject.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(currentAction);
+                    }
+
+                    //Adding this spell to the list of all spell actions
+                    this.allSpellActions.Add(currentAction.gameObject.GetComponent<SpellAction>());
+                }
+                //If it's not a spell, it's added to the action list normally
+                else
                 {
                     this.AddActionToList(currentAction);
                 }
-
-                //Adding this spell to the list of all spell actions
-                this.allSpellActions.Add(currentAction.gameObject.GetComponent<SpellAction>());
-            }
-            //If it's not a spell, it's added to the action list normally
-            else
-            {
-                this.AddActionToList(currentAction);
             }
         }
     }
@@ -279,162 +288,194 @@ public class ActionList : MonoBehaviour
         //Searching each slot of equipped armor to see if they have an action 
         if(ourInventory.helm != null && ourInventory.helm.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.helm.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.helm.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if(this.CanAddSpellToList(ourInventory.helm.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.helm.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.helm.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.helm.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.helm.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.helm.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.helm.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.helm.GetComponent<Action>());
             }
         }
         if (ourInventory.chestPiece != null && ourInventory.chestPiece.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.chestPiece.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.chestPiece.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.chestPiece.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.chestPiece.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.chestPiece.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.chestPiece.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.chestPiece.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.chestPiece.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.chestPiece.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.chestPiece.GetComponent<Action>());
             }
         }
         if (ourInventory.leggings != null && ourInventory.leggings.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.leggings.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.leggings.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.leggings.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.leggings.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.leggings.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.leggings.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.leggings.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.leggings.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.leggings.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.leggings.GetComponent<Action>());
             }
         }
         if (ourInventory.shoes != null && ourInventory.shoes.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.shoes.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.shoes.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.shoes.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.shoes.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.shoes.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.shoes.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.shoes.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.shoes.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.shoes.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.shoes.GetComponent<Action>());
             }
         }
         if (ourInventory.gloves != null && ourInventory.gloves.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.gloves.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.gloves.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.gloves.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.gloves.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.gloves.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.gloves.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.gloves.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.gloves.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.gloves.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.gloves.GetComponent<Action>());
             }
         }
         if (ourInventory.necklace != null && ourInventory.necklace.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.necklace.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.necklace.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.necklace.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.necklace.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.necklace.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.necklace.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.necklace.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.necklace.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.necklace.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.necklace.GetComponent<Action>());
             }
         }
         if (ourInventory.cloak != null && ourInventory.cloak.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.cloak.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.cloak.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.cloak.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.cloak.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.cloak.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.cloak.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.cloak.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.cloak.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.cloak.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.cloak.GetComponent<Action>());
             }
         }
         if (ourInventory.ring != null && ourInventory.ring.GetComponent<Action>())
         {
-            //Checking to see if the action is a spell action
-            if (ourInventory.ring.GetComponent<SpellAction>())
+            //Making sure the action isn't currently cooling down
+            if (!this.IsActionOnCooldown(ourInventory.ring.GetComponent<Action>()))
             {
-                //Checking to see if it can be added to the list
-                if (this.CanAddSpellToList(ourInventory.ring.GetComponent<SpellAction>()))
+                //Checking to see if the action is a spell action
+                if (ourInventory.ring.GetComponent<SpellAction>())
+                {
+                    //Checking to see if it can be added to the list
+                    if (this.CanAddSpellToList(ourInventory.ring.GetComponent<SpellAction>()))
+                    {
+                        this.AddActionToList(ourInventory.ring.GetComponent<Action>());
+                    }
+
+                    //Adding the spell to the list of all spell actions
+                    this.allSpellActions.Add(ourInventory.ring.GetComponent<SpellAction>());
+                }
+                //If not a spell, it's added normally
+                else
                 {
                     this.AddActionToList(ourInventory.ring.GetComponent<Action>());
                 }
-
-                //Adding the spell to the list of all spell actions
-                this.allSpellActions.Add(ourInventory.ring.GetComponent<SpellAction>());
-            }
-            //If not a spell, it's added normally
-            else
-            {
-                this.AddActionToList(ourInventory.ring.GetComponent<Action>());
             }
         }
     }
@@ -543,13 +584,17 @@ public class ActionList : MonoBehaviour
         //Looping through each action that's cooling down to see if any are the action we're checking
         foreach (ActionCooldown ac in this.actionCooldowns)
         {
-            //If the action is the same as one that's cooling down, we return true
-            if (actionToCheck_ == ac.actionCoolingDown)
+            //Making sure the name strings for the compared actions are the same length
+            if (actionToCheck_.actionName.Length == ac.actionCoolingDown.actionName.Length)
             {
-                return true;
+                //If the action is the same as one that's cooling down, we return true
+                if (actionToCheck_.actionName == ac.actionCoolingDown.actionName)
+                {
+                    return true;
+                }
             }
         }
-
+        
         //If we make it through the loop, that means the action isn't cooling down
         return false;
     }
@@ -563,7 +608,7 @@ public class ActionList : MonoBehaviour
         {
             //Reducing the cooldown's remaining time
             this.actionCooldowns[acd].remainingCooldownTime -= timeToReduce_;
-
+            
             //If the remaining time is at 0, we remove it from the cooldowns list
             if (this.actionCooldowns[acd].remainingCooldownTime <= 0)
             {
