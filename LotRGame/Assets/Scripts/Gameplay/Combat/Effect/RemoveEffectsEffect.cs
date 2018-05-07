@@ -24,6 +24,9 @@ public class RemoveEffectsEffect : Effect
     };
     public EffectTypeToRemove typeToRemove = EffectTypeToRemove.Any;
 
+    //Bool for if this effect ignores the designated damage type
+    public bool ignoreSelectedDamageType = false;
+
     //The damage type to remove if removing DoTType or HoTType
     public CombatManager.DamageType doTHoTType = CombatManager.DamageType.Arcane;
 
@@ -32,6 +35,10 @@ public class RemoveEffectsEffect : Effect
     //Function inherited from Effect.cs to trigger this effect
     public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
+        //Setting the character references for the attacking and defending characters
+        this.characterToEffect = targetCharacter_;
+        this.characterWhoTriggered = usingCharacter_;
+
         //The list of effects that we remove
         List<Effect> removedEffects = new List<Effect>();
 
@@ -41,6 +48,7 @@ public class RemoveEffectsEffect : Effect
             //If the effect can be removed, we add it to our list to remove
             if(this.CanEffectBeRemoved(targetCharacter_.charCombatStats.combatEffects[e]))
             {
+                Debug.Log("Removing " + targetCharacter_.charCombatStats.combatEffects[e].effectName + " from " + targetCharacter_.firstName);
                 removedEffects.Add(targetCharacter_.charCombatStats.combatEffects[e]);
 
                 //If the number of removed effects has reached the max amount we can remove, we break the loop
@@ -48,6 +56,10 @@ public class RemoveEffectsEffect : Effect
                 {
                     break;
                 }
+            }
+            else
+            {
+                Debug.Log("NOT removing " + targetCharacter_.charCombatStats.combatEffects[e].effectName);
             }
         }
 
@@ -116,7 +128,13 @@ public class RemoveEffectsEffect : Effect
                 //If the effect is damage over time, we need to check if the damage type matches
                 if (effectToCheck_.GetType() == typeof(DamageOverTimeEffect))
                 {
-                    if (effectToCheck_.GetComponent<DamageOverTimeEffect>().damageType == this.doTHoTType)
+                    //If we ignore a specific damage type and the DoT isn't that type then we remove
+                    if(this.ignoreSelectedDamageType && effectToCheck_.GetComponent<DamageOverTimeEffect>().damageType != this.doTHoTType)
+                    {
+                        canRemove = true;
+                    }
+                    //If the effect's damage type is the same as the damage type we remove
+                    else if (effectToCheck_.GetComponent<DamageOverTimeEffect>().damageType == this.doTHoTType)
                     {
                         canRemove = true;
                     }
@@ -135,7 +153,13 @@ public class RemoveEffectsEffect : Effect
                 //If the effect is heal over time, we need to check if the damage type matches
                 if (effectToCheck_.GetType() == typeof(HealOverTimeEffect))
                 {
-                    if (effectToCheck_.GetComponent<HealOverTimeEffect>().healType == this.doTHoTType)
+                    //If we ignore a specific damage type, and the HoT isn't that type then we remove
+                    if(this.ignoreSelectedDamageType && effectToCheck_.GetComponent<HealOverTimeEffect>().healType != this.doTHoTType)
+                    {
+                        canRemove = true;
+                    }
+                    //If the effect's damage type is the same as the damage type we remove
+                    else if (effectToCheck_.GetComponent<HealOverTimeEffect>().healType == this.doTHoTType)
                     {
                         canRemove = true;
                     }

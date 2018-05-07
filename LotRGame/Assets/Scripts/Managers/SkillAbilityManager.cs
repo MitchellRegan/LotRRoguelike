@@ -78,8 +78,7 @@ public class SkillAbilityManager : MonoBehaviour
     {
         //Getting the reference the correct skill ability reward lists
         List<SkillAbilityReward> skillRewards = this.getSkillRewardList(skillToCheck_);
-
-        Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Check Char Skill For New Ability, START: " + charThatLeveled_.charActionList.defaultActions.Count);
+        
         //Looping through all of the skill rewards to see if the character has them
         for(int r = 0; r < skillRewards.Count; ++r)
         {
@@ -106,7 +105,6 @@ public class SkillAbilityManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Check Char Skill For New Ability, END: " + charThatLeveled_.charActionList.defaultActions.Count);
     }
 
 
