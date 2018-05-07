@@ -29,6 +29,10 @@ public class InstantDamageEffect : Effect
     //Overrided function from Effect.cs to trigger this damage effect
     public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
+        //Setting the character references of who is attacking and who is being attacked
+        this.characterToEffect = targetCharacter_;
+        this.characterWhoTriggered = usingCharacter_;
+
         //Int to hold all of the damage for the attack
         int totalDamage = 0;
 
@@ -62,7 +66,7 @@ public class InstantDamageEffect : Effect
 
         //Looping through the defending character's perks to see if they have any spell resist or absorb perks
         SpellResistTypes magicResistType = SpellResistTypes.Normal;
-        foreach (Perk defPerk in this.characterToEffect.charPerks.allPerks)
+        foreach (Perk defPerk in targetCharacter_.charPerks.allPerks)
         {
             if (defPerk.GetType() == typeof(SpellResistAbsorbPerk))
             {
