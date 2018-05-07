@@ -192,7 +192,16 @@ public class ActionList : MonoBehaviour
                     //Adding this spell to the list of all spell actions
                     this.allSpellActions.Add(currentAction.gameObject.GetComponent<SpellAction>());
                 }
-                //If it's not a spell, it's added to the action list normally
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if(currentAction.GetType() == typeof(WeaponAction))
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if(currentAction.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(currentAction);
+                    }
+                }
+                //If it's not a spell or weapon action, it's added to the action list normally
                 else
                 {
                     this.AddActionToList(currentAction);
@@ -234,6 +243,15 @@ public class ActionList : MonoBehaviour
                         //Adding this spell to the list of all spell actions
                         this.allSpellActions.Add(action.gameObject.GetComponent<SpellAction>());
                     }
+                    //If the action is a weapon action, we need to check if the action can be used by this character right now
+                    else if (action.GetType() == typeof(WeaponAction))
+                    {
+                        //If this character has the right weapon to use the action, it's added to the action list
+                        if (action.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                        {
+                            this.AddActionToList(action);
+                        }
+                    }
                     //If it's not a spell, it's added to the action list normally
                     else
                     {
@@ -262,6 +280,15 @@ public class ActionList : MonoBehaviour
 
                         //Adding this spell to the list of all spell actions
                         this.allSpellActions.Add(action.gameObject.GetComponent<SpellAction>());
+                    }
+                    //If the action is a weapon action, we need to check if the action can be used by this character right now
+                    else if (action.GetType() == typeof(WeaponAction))
+                    {
+                        //If this character has the right weapon to use the action, it's added to the action list
+                        if (action.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                        {
+                            this.AddActionToList(action);
+                        }
                     }
                     //If it's not a spell, it's added to the action list normally
                     else
@@ -303,6 +330,15 @@ public class ActionList : MonoBehaviour
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.helm.GetComponent<SpellAction>());
                 }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.helm.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.helm.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.helm.GetComponent<Action>());
+                    }
+                }
                 //If not a spell, it's added normally
                 else
                 {
@@ -326,6 +362,15 @@ public class ActionList : MonoBehaviour
 
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.chestPiece.GetComponent<SpellAction>());
+                }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.chestPiece.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.chestPiece.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.chestPiece.GetComponent<Action>());
+                    }
                 }
                 //If not a spell, it's added normally
                 else
@@ -351,6 +396,15 @@ public class ActionList : MonoBehaviour
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.leggings.GetComponent<SpellAction>());
                 }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.leggings.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.leggings.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.leggings.GetComponent<Action>());
+                    }
+                }
                 //If not a spell, it's added normally
                 else
                 {
@@ -374,6 +428,15 @@ public class ActionList : MonoBehaviour
 
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.shoes.GetComponent<SpellAction>());
+                }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.shoes.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.shoes.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.shoes.GetComponent<Action>());
+                    }
                 }
                 //If not a spell, it's added normally
                 else
@@ -399,6 +462,15 @@ public class ActionList : MonoBehaviour
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.gloves.GetComponent<SpellAction>());
                 }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.gloves.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.gloves.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.gloves.GetComponent<Action>());
+                    }
+                }
                 //If not a spell, it's added normally
                 else
                 {
@@ -422,6 +494,15 @@ public class ActionList : MonoBehaviour
 
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.necklace.GetComponent<SpellAction>());
+                }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.necklace.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.necklace.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.necklace.GetComponent<Action>());
+                    }
                 }
                 //If not a spell, it's added normally
                 else
@@ -447,6 +528,15 @@ public class ActionList : MonoBehaviour
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.cloak.GetComponent<SpellAction>());
                 }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.cloak.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.cloak.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.cloak.GetComponent<Action>());
+                    }
+                }
                 //If not a spell, it's added normally
                 else
                 {
@@ -470,6 +560,15 @@ public class ActionList : MonoBehaviour
 
                     //Adding the spell to the list of all spell actions
                     this.allSpellActions.Add(ourInventory.ring.GetComponent<SpellAction>());
+                }
+                //If the action is a weapon action, we need to check if the action can be used by this character right now
+                else if (ourInventory.ring.GetComponent<WeaponAction>())
+                {
+                    //If this character has the right weapon to use the action, it's added to the action list
+                    if (ourInventory.ring.GetComponent<WeaponAction>().CanCharacterUseAction(this.GetComponent<Character>()))
+                    {
+                        this.AddActionToList(ourInventory.ring.GetComponent<Action>());
+                    }
                 }
                 //If not a spell, it's added normally
                 else
