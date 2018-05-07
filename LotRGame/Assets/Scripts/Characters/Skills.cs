@@ -396,14 +396,9 @@ public class Skills : MonoBehaviour
     //Function called externally to add EXP to a given skill
     public void AddSkillEXP(SkillList skillToLevel_, int expToAdd_)
     {
-        //Ints to track the skill's current level and the level it is after adding exp
-        int currentSkillLevel = 0;
-        int newSkillLevel = 0;
-
         switch (skillToLevel_)
         {
             case SkillList.Unarmed:
-                currentSkillLevel = this.unarmed;
                 if (this.unarmed < 100)
                 {
                     this.unarmedEXP += expToAdd_;
@@ -414,11 +409,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Unarmed, 1);
                     }
                 }
-                newSkillLevel = this.unarmed;
                 break;
 
             case SkillList.Daggers:
-                currentSkillLevel = this.daggers;
                 if (this.daggers < 100)
                 {
                     this.daggersEXP += expToAdd_;
@@ -429,11 +422,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Daggers, 1);
                     }
                 }
-                newSkillLevel = this.daggers;
                 break;
 
             case SkillList.Swords:
-                currentSkillLevel = this.swords;
                 if (this.swords < 100)
                 {
                     this.swordsEXP += expToAdd_;
@@ -444,11 +435,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Swords, 1);
                     }
                 }
-                newSkillLevel = this.swords;
                 break;
 
             case SkillList.Mauls:
-                currentSkillLevel = this.mauls;
                 if (this.mauls < 100)
                 {
                     this.maulsEXP += expToAdd_;
@@ -459,11 +448,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Mauls, 1);
                     }
                 }
-                newSkillLevel = this.mauls;
                 break;
 
             case SkillList.Poles:
-                currentSkillLevel = this.poles;
                 if (this.poles < 100)
                 {
                     this.polesEXP += expToAdd_;
@@ -474,11 +461,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Poles, 1);
                     }
                 }
-                newSkillLevel = this.poles;
                 break;
 
             case SkillList.Bows:
-                currentSkillLevel = this.bows;
                 if (this.bows < 100)
                 {
                     this.bowsEXP += expToAdd_;
@@ -489,11 +474,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Bows, 1);
                     }
                 }
-                newSkillLevel = this.bows;
                 break;
 
             case SkillList.Shields:
-                currentSkillLevel = this.shields;
                 if (this.shields < 100)
                 {
                     this.shieldsEXP += expToAdd_;
@@ -504,12 +487,10 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Shields, 1);
                     }
                 }
-                newSkillLevel = this.shields;
                 break;
 
 
             case SkillList.ArcaneMagic:
-                currentSkillLevel = this.arcaneMagic;
                 if (this.arcaneMagic < 100)
                 {
                     this.arcaneMagicEXP += expToAdd_;
@@ -520,11 +501,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.ArcaneMagic, 1);
                     }
                 }
-                newSkillLevel = this.arcaneMagic;
                 break;
 
             case SkillList.HolyMagic:
-                currentSkillLevel = this.holyMagic;
                 if (this.holyMagic < 100)
                 {
                     this.holyMagicEXP += expToAdd_;
@@ -535,11 +514,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.HolyMagic, 1);
                     }
                 }
-                newSkillLevel = this.holyMagic;
                 break;
 
             case SkillList.DarkMagic:
-                currentSkillLevel = this.darkMagic;
                 if (this.darkMagic < 100)
                 {
                     this.darkMagicEXP += expToAdd_;
@@ -550,11 +527,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.DarkMagic, 1);
                     }
                 }
-                newSkillLevel = this.darkMagic;
                 break;
 
             case SkillList.FireMagic:
-                currentSkillLevel = this.fireMagic;
                 if (this.fireMagic < 100)
                 {
                     this.fireMagicEXP += expToAdd_;
@@ -565,11 +540,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.FireMagic, 1);
                     }
                 }
-                newSkillLevel = this.fireMagic;
                 break;
 
             case SkillList.WaterMagic:
-                currentSkillLevel = this.waterMagic;
                 if (this.waterMagic < 100)
                 {
                     this.waterMagicEXP += expToAdd_;
@@ -580,11 +553,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.WaterMagic, 1);
                     }
                 }
-                newSkillLevel = this.waterMagic;
                 break;
 
             case SkillList.WindMagic:
-                currentSkillLevel = this.windMagic;
                 if (this.windMagic < 100)
                 {
                     this.windMagicEXP += expToAdd_;
@@ -595,11 +566,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.WindMagic, 1);
                     }
                 }
-                newSkillLevel = this.windMagic;
                 break;
 
             case SkillList.ElectricMagic:
-                currentSkillLevel = this.electricMagic;
                 if (this.electricMagic < 100)
                 {
                     this.electricMagicEXP += expToAdd_;
@@ -610,11 +579,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.ElectricMagic, 1);
                     }
                 }
-                newSkillLevel = this.electricMagic;
                 break;
 
             case SkillList.StoneMagic:
-                currentSkillLevel = this.stoneMagic;
                 if (this.stoneMagic < 100)
                 {
                     this.stoneMagicEXP += expToAdd_;
@@ -625,12 +592,10 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.StoneMagic, 1);
                     }
                 }
-                newSkillLevel = this.stoneMagic;
                 break;
 
 
             case SkillList.Survivalist:
-                currentSkillLevel = this.survivalist;
                 if (this.survivalist < 100)
                 {
                     this.survivalistEXP += expToAdd_;
@@ -641,11 +606,9 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Survivalist, 1);
                     }
                 }
-                newSkillLevel = this.survivalist;
                 break;
 
             case SkillList.Social:
-                currentSkillLevel = this.social;
                 if (this.social < 100)
                 {
                     this.socialEXP += expToAdd_;
@@ -656,12 +619,10 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Social, 1);
                     }
                 }
-                newSkillLevel = this.social;
                 break;
 
 
             default:
-                currentSkillLevel = this.social;
                 if (this.social < 100)
                 {
                     this.socialEXP += expToAdd_;
@@ -672,14 +633,7 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Social, 1);
                     }
                 }
-                newSkillLevel = this.social;
                 break;
-        }
-
-        //If the skill has gone up, we make sure we check for any skill rewards for the leveled up skill
-        if (newSkillLevel > currentSkillLevel)
-        {
-            SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_, currentSkillLevel, newSkillLevel);
         }
     }
 
