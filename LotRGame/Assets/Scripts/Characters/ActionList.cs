@@ -139,7 +139,7 @@ public class ActionList : MonoBehaviour
         {
             this.actionCooldowns = new List<ActionCooldown>();
         }
-
+        
         //Adding all actions from our default list
         this.SortDefaultActions();
         //Adding all actions from our equipped weapons
@@ -156,16 +156,28 @@ public class ActionList : MonoBehaviour
         switch (actToAdd_.type)
         {
             case Action.ActionType.Major:
-                this.majorActions.Add(actToAdd_);
+                if (!this.majorActions.Contains(actToAdd_))
+                {
+                    this.majorActions.Add(actToAdd_);
+                }
                 break;
             case Action.ActionType.Minor:
-                this.minorActions.Add(actToAdd_);
+                if (!this.minorActions.Contains(actToAdd_))
+                {
+                    this.minorActions.Add(actToAdd_);
+                }
                 break;
             case Action.ActionType.Fast:
-                this.fastActions.Add(actToAdd_);
+                if (!this.fastActions.Contains(actToAdd_))
+                {
+                    this.fastActions.Add(actToAdd_);
+                }
                 break;
             case Action.ActionType.Massive:
-                this.massiveActions.Add(actToAdd_);
+                if (!this.massiveActions.Contains(actToAdd_))
+                {
+                    this.massiveActions.Add(actToAdd_);
+                }
                 break;
         }
     }

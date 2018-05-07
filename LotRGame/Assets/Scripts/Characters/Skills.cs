@@ -131,86 +131,107 @@ public class Skills : MonoBehaviour
     //Function called from CharacterGenerator.cs to set this character's initial skill values within random bounds
     public void GenerateInitialSkillValue(SkillList skillToSet_, float min_, float max_)
     {
+        //Int to hold the level that the skill is generated at
+        int skillLevel = 0;
+
         switch (skillToSet_)
         {
             case SkillList.Unarmed:
                 this.unarmed = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.unarmed;
                 break;
 
             case SkillList.Daggers:
                 this.daggers = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.daggers;
                 break;
 
             case SkillList.Swords:
                 this.swords = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.swords;
                 break;
 
             case SkillList.Mauls:
                 this.mauls = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.mauls;
                 break;
 
             case SkillList.Poles:
                 this.poles = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.poles;
                 break;
 
             case SkillList.Bows:
                 this.bows = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.bows;
                 break;
 
             case SkillList.Shields:
                 this.shields = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.shields;
                 break;
 
 
             case SkillList.ArcaneMagic:
                 this.arcaneMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.arcaneMagic;
                 break;
 
             case SkillList.HolyMagic:
                 this.holyMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.holyMagic;
                 break;
 
             case SkillList.DarkMagic:
                 this.darkMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.darkMagic;
                 break;
 
             case SkillList.FireMagic:
                 this.fireMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.fireMagic;
                 break;
 
             case SkillList.WaterMagic:
                 this.waterMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.waterMagic;
                 break;
 
             case SkillList.WindMagic:
                 this.windMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.windMagic;
                 break;
 
             case SkillList.ElectricMagic:
                 this.electricMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.electricMagic;
                 break;
 
             case SkillList.StoneMagic:
                 this.stoneMagic = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.stoneMagic;
                 break;
 
 
             case SkillList.Survivalist:
                 this.survivalist = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.survivalist;
                 break;
 
             case SkillList.Social:
                 this.social = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.social;
                 break;
 
 
             default:
                 this.social = Mathf.RoundToInt(Random.Range(min_, max_));
+                skillLevel = this.social;
                 break;
         }
 
         //Making sure we check for any skill rewards for the leveled up skill
-        SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToSet_);
+        SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToSet_, 0, skillLevel);
     }
 
 
@@ -375,9 +396,14 @@ public class Skills : MonoBehaviour
     //Function called externally to add EXP to a given skill
     public void AddSkillEXP(SkillList skillToLevel_, int expToAdd_)
     {
+        //Ints to track the skill's current level and the level it is after adding exp
+        int currentSkillLevel = 0;
+        int newSkillLevel = 0;
+
         switch (skillToLevel_)
         {
             case SkillList.Unarmed:
+                currentSkillLevel = this.unarmed;
                 if (this.unarmed < 100)
                 {
                     this.unarmedEXP += expToAdd_;
@@ -388,9 +414,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Unarmed, 1);
                     }
                 }
+                newSkillLevel = this.unarmed;
                 break;
 
             case SkillList.Daggers:
+                currentSkillLevel = this.daggers;
                 if (this.daggers < 100)
                 {
                     this.daggersEXP += expToAdd_;
@@ -401,9 +429,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Daggers, 1);
                     }
                 }
+                newSkillLevel = this.daggers;
                 break;
 
             case SkillList.Swords:
+                currentSkillLevel = this.swords;
                 if (this.swords < 100)
                 {
                     this.swordsEXP += expToAdd_;
@@ -414,9 +444,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Swords, 1);
                     }
                 }
+                newSkillLevel = this.swords;
                 break;
 
             case SkillList.Mauls:
+                currentSkillLevel = this.mauls;
                 if (this.mauls < 100)
                 {
                     this.maulsEXP += expToAdd_;
@@ -427,9 +459,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Mauls, 1);
                     }
                 }
+                newSkillLevel = this.mauls;
                 break;
 
             case SkillList.Poles:
+                currentSkillLevel = this.poles;
                 if (this.poles < 100)
                 {
                     this.polesEXP += expToAdd_;
@@ -440,9 +474,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Poles, 1);
                     }
                 }
+                newSkillLevel = this.poles;
                 break;
 
             case SkillList.Bows:
+                currentSkillLevel = this.bows;
                 if (this.bows < 100)
                 {
                     this.bowsEXP += expToAdd_;
@@ -453,9 +489,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Bows, 1);
                     }
                 }
+                newSkillLevel = this.bows;
                 break;
 
             case SkillList.Shields:
+                currentSkillLevel = this.shields;
                 if (this.shields < 100)
                 {
                     this.shieldsEXP += expToAdd_;
@@ -466,10 +504,12 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Shields, 1);
                     }
                 }
+                newSkillLevel = this.shields;
                 break;
 
 
             case SkillList.ArcaneMagic:
+                currentSkillLevel = this.arcaneMagic;
                 if (this.arcaneMagic < 100)
                 {
                     this.arcaneMagicEXP += expToAdd_;
@@ -480,9 +520,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.ArcaneMagic, 1);
                     }
                 }
+                newSkillLevel = this.arcaneMagic;
                 break;
 
             case SkillList.HolyMagic:
+                currentSkillLevel = this.holyMagic;
                 if (this.holyMagic < 100)
                 {
                     this.holyMagicEXP += expToAdd_;
@@ -493,9 +535,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.HolyMagic, 1);
                     }
                 }
+                newSkillLevel = this.holyMagic;
                 break;
 
             case SkillList.DarkMagic:
+                currentSkillLevel = this.darkMagic;
                 if (this.darkMagic < 100)
                 {
                     this.darkMagicEXP += expToAdd_;
@@ -506,9 +550,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.DarkMagic, 1);
                     }
                 }
+                newSkillLevel = this.darkMagic;
                 break;
 
             case SkillList.FireMagic:
+                currentSkillLevel = this.fireMagic;
                 if (this.fireMagic < 100)
                 {
                     this.fireMagicEXP += expToAdd_;
@@ -519,9 +565,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.FireMagic, 1);
                     }
                 }
+                newSkillLevel = this.fireMagic;
                 break;
 
             case SkillList.WaterMagic:
+                currentSkillLevel = this.waterMagic;
                 if (this.waterMagic < 100)
                 {
                     this.waterMagicEXP += expToAdd_;
@@ -532,9 +580,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.WaterMagic, 1);
                     }
                 }
+                newSkillLevel = this.waterMagic;
                 break;
 
             case SkillList.WindMagic:
+                currentSkillLevel = this.windMagic;
                 if (this.windMagic < 100)
                 {
                     this.windMagicEXP += expToAdd_;
@@ -545,9 +595,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.WindMagic, 1);
                     }
                 }
+                newSkillLevel = this.windMagic;
                 break;
 
             case SkillList.ElectricMagic:
+                currentSkillLevel = this.electricMagic;
                 if (this.electricMagic < 100)
                 {
                     this.electricMagicEXP += expToAdd_;
@@ -558,9 +610,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.ElectricMagic, 1);
                     }
                 }
+                newSkillLevel = this.electricMagic;
                 break;
 
             case SkillList.StoneMagic:
+                currentSkillLevel = this.stoneMagic;
                 if (this.stoneMagic < 100)
                 {
                     this.stoneMagicEXP += expToAdd_;
@@ -571,10 +625,12 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.StoneMagic, 1);
                     }
                 }
+                newSkillLevel = this.stoneMagic;
                 break;
 
 
             case SkillList.Survivalist:
+                currentSkillLevel = this.survivalist;
                 if (this.survivalist < 100)
                 {
                     this.survivalistEXP += expToAdd_;
@@ -585,9 +641,11 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Survivalist, 1);
                     }
                 }
+                newSkillLevel = this.survivalist;
                 break;
 
             case SkillList.Social:
+                currentSkillLevel = this.social;
                 if (this.social < 100)
                 {
                     this.socialEXP += expToAdd_;
@@ -598,10 +656,12 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Social, 1);
                     }
                 }
+                newSkillLevel = this.social;
                 break;
 
 
             default:
+                currentSkillLevel = this.social;
                 if (this.social < 100)
                 {
                     this.socialEXP += expToAdd_;
@@ -612,169 +672,216 @@ public class Skills : MonoBehaviour
                         this.LevelUpSkill(SkillList.Social, 1);
                     }
                 }
+                newSkillLevel = this.social;
                 break;
         }
 
-        //Making sure we check for any skill rewards for the leveled up skill
-        SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_);
+        //If the skill has gone up, we make sure we check for any skill rewards for the leveled up skill
+        if (newSkillLevel > currentSkillLevel)
+        {
+            SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_, currentSkillLevel, newSkillLevel);
+        }
     }
 
 
     //Function called externally from PartyCreator.cs and SkillTome.cs to add levels to this character
     public void LevelUpSkill(SkillList skillToLevel_, int levelsToAdd_)
     {
+        //Ints to track the skill's current level and the level it is after adding exp
+        int currentSkillLevel = 0;
+        int newSkillLevel = 0;
+
         switch (skillToLevel_)
         {
             case SkillList.Unarmed:
+                currentSkillLevel = this.unarmed;
                 this.unarmed += levelsToAdd_;
                 if (this.unarmed > 100)
                 {
                     this.unarmed = 100;
                 }
+                newSkillLevel = this.unarmed;
                 break;
 
             case SkillList.Daggers:
+                currentSkillLevel = this.daggers;
                 this.daggers += levelsToAdd_;
                 if (this.daggers > 100)
                 {
                     this.daggers = 100;
                 }
+                newSkillLevel = this.daggers;
                 break;
 
             case SkillList.Swords:
+                currentSkillLevel = this.swords;
                 this.swords += levelsToAdd_;
                 if (this.swords > 100)
                 {
                     this.swords = 100;
                 }
+                newSkillLevel = this.swords;
                 break;
 
             case SkillList.Mauls:
+                currentSkillLevel = this.mauls;
                 this.mauls += levelsToAdd_;
                 if (this.mauls > 100)
                 {
                     this.mauls = 100;
                 }
+                newSkillLevel = this.mauls;
                 break;
 
             case SkillList.Poles:
+                currentSkillLevel = this.poles;
                 this.poles += levelsToAdd_;
                 if (this.poles > 100)
                 {
                     this.poles = 100;
                 }
+                newSkillLevel = this.poles;
                 break;
 
             case SkillList.Bows:
+                currentSkillLevel = this.bows;
                 this.bows += levelsToAdd_;
                 if (this.bows > 100)
                 {
                     this.bows = 100;
                 }
+                newSkillLevel = this.bows;
                 break;
 
             case SkillList.Shields:
+                currentSkillLevel = this.shields;
                 this.shields += levelsToAdd_;
                 if (this.shields > 100)
                 {
                     this.shields = 100;
                 }
+                newSkillLevel = this.shields;
                 break;
 
 
             case SkillList.ArcaneMagic:
+                currentSkillLevel = this.arcaneMagic;
                 this.arcaneMagic += levelsToAdd_;
                 if (this.arcaneMagic > 100)
                 {
                     this.arcaneMagic = 100;
                 }
+                newSkillLevel = this.arcaneMagic;
                 break;
 
             case SkillList.HolyMagic:
+                currentSkillLevel = this.holyMagic;
                 this.holyMagic += levelsToAdd_;
                 if (this.holyMagic > 100)
                 {
                     this.holyMagic = 100;
                 }
+                newSkillLevel = this.holyMagic;
                 break;
 
             case SkillList.DarkMagic:
+                currentSkillLevel = this.darkMagic;
                 this.darkMagic += levelsToAdd_;
                 if (this.darkMagic > 100)
                 {
                     this.darkMagic = 100;
                 }
+                newSkillLevel = this.darkMagic;
                 break;
 
             case SkillList.FireMagic:
+                currentSkillLevel = this.fireMagic;
                 this.fireMagic += levelsToAdd_;
                 if (this.fireMagic > 100)
                 {
                     this.fireMagic = 100;
                 }
+                newSkillLevel = this.fireMagic;
                 break;
 
             case SkillList.WaterMagic:
+                currentSkillLevel = this.waterMagic;
                 this.waterMagic += levelsToAdd_;
                 if (this.waterMagic > 100)
                 {
                     this.waterMagic = 100;
                 }
+                newSkillLevel = this.waterMagic;
                 break;
 
             case SkillList.WindMagic:
+                currentSkillLevel = this.windMagic;
                 this.windMagic += levelsToAdd_;
                 if (this.windMagic > 100)
                 {
                     this.windMagic = 100;
                 }
+                newSkillLevel = this.windMagic;
                 break;
 
             case SkillList.ElectricMagic:
+                currentSkillLevel = this.electricMagic;
                 this.electricMagic += levelsToAdd_;
                 if (this.electricMagic > 100)
                 {
                     this.electricMagic = 100;
                 }
+                newSkillLevel = this.electricMagic;
                 break;
 
             case SkillList.StoneMagic:
+                currentSkillLevel = this.stoneMagic;
                 this.stoneMagic += levelsToAdd_;
                 if (this.stoneMagic > 100)
                 {
                     this.stoneMagic = 100;
                 }
+                newSkillLevel = this.stoneMagic;
                 break;
 
 
             case SkillList.Survivalist:
+                currentSkillLevel = this.survivalist;
                 this.survivalist += levelsToAdd_;
                 if (this.survivalist > 100)
                 {
                     this.survivalist = 100;
                 }
+                newSkillLevel = this.survivalist;
                 break;
 
             case SkillList.Social:
+                currentSkillLevel = this.social;
                 this.social += levelsToAdd_;
                 if (this.social > 100)
                 {
                     this.social = 100;
                 }
+                newSkillLevel = this.social;
                 break;
 
 
             default:
+                currentSkillLevel = this.social;
                 this.social += levelsToAdd_;
                 if(this.social > 100)
                 {
                     this.social = 100;
                 }
+                newSkillLevel = this.social;
                 break;
         }
 
-        //Making sure we check for any skill rewards for the leveled up skill
-        SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_);
+        //If the skill has gone up, we make sure we check for any skill rewards for the leveled up skill
+        if (newSkillLevel > currentSkillLevel)
+        {
+            SkillAbilityManager.globalReference.CheckCharacterSkillForNewAbility(this.GetComponent<Character>(), skillToLevel_, currentSkillLevel, newSkillLevel);
+        }
         //Also checking to see if there are any class combination rewards tied to this skill
         ClassCombinationManager.globalReference.CheckForClassCombinationRewards(this.GetComponent<Character>(), skillToLevel_);
     }

@@ -26,7 +26,7 @@ public class WeaponAction : AttackAction
 
 
 
-	//Function called from CombatActionPanelUI.cs to check if this action can be used
+	//Function called from CombatActionPanelUI.cs and ActionList.cs to check if this action can be used
     public bool CanCharacterUseAction(Character charToCheck_)
     {
         //Bool to return
@@ -225,7 +225,7 @@ public class WeaponAction : AttackAction
 
             return;
         }
-
+        
         //Before calculating damage, we need to find out if this attack hit. We start by rolling 1d100 to hit and adding this attack's accuracy bonus
         int hitRoll = this.FindAttackRoll(actingChar, defendingChar);
 
@@ -356,7 +356,7 @@ public class WeaponAction : AttackAction
                 //Adding the current attack's damage to the correct type
                 damageTypeTotalDamage[atk.type] += atkDamage;
             }
-
+            
             //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
             foreach (Perk charPerk in actingChar.charPerks.allPerks)
             {
