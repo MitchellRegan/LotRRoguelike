@@ -48,7 +48,6 @@ public class RemoveEffectsEffect : Effect
             //If the effect can be removed, we add it to our list to remove
             if(this.CanEffectBeRemoved(targetCharacter_.charCombatStats.combatEffects[e]))
             {
-                Debug.Log("Removing " + targetCharacter_.charCombatStats.combatEffects[e].effectName + " from " + targetCharacter_.firstName);
                 removedEffects.Add(targetCharacter_.charCombatStats.combatEffects[e]);
 
                 //If the number of removed effects has reached the max amount we can remove, we break the loop
@@ -56,10 +55,6 @@ public class RemoveEffectsEffect : Effect
                 {
                     break;
                 }
-            }
-            else
-            {
-                Debug.Log("NOT removing " + targetCharacter_.charCombatStats.combatEffects[e].effectName);
             }
         }
 
