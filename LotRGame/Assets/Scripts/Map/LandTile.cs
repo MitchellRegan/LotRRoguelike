@@ -18,6 +18,7 @@ public class LandTile : MonoBehaviour
     private void Start()
     {
         this.HilightThisTile(false);
+        this.AngleMeshVerts();
     }
 
 
@@ -128,6 +129,202 @@ public class LandTile : MonoBehaviour
         else
         {
             this.GetComponent<MeshRenderer>().materials[0].color = new Color(0.5f, 0.5f, 0.5f, 1);
+        }
+    }
+
+
+    //Function called from Start to move our mesh's verts to angle toward the adjacent tiles
+    private void AngleMeshVerts()
+    {
+        //Getting the reference to our mesh and the vert array
+        MeshFilter ourMesh = this.GetComponent<MeshFilter>();
+        Vector3[] vertices = ourMesh.mesh.vertices;
+
+        //Our object's global transform position
+        Vector3 ourPos = this.transform.position;
+
+        //1 = East
+        float eastHeight = this.FindTileHeight(TileDirections.Northeast) - this.tileReference.elevation;
+        eastHeight += this.FindTileHeight(TileDirections.Southeast) - this.tileReference.elevation;
+        eastHeight = eastHeight / 3;
+        vertices[1].Set(vertices[1].x, vertices[1].y + eastHeight, vertices[1].z);
+
+        //2 = South East
+        float southeastHeight = this.FindTileHeight(TileDirections.South) - this.tileReference.elevation;
+        southeastHeight += this.FindTileHeight(TileDirections.Southeast) - this.tileReference.elevation;
+        southeastHeight = southeastHeight / 3;
+        vertices[2].Set(vertices[2].x, vertices[2].y + southeastHeight, vertices[2].z);
+
+        //3 = South West
+        float southwestHeight = this.FindTileHeight(TileDirections.South) - this.tileReference.elevation;
+        southwestHeight += this.FindTileHeight(TileDirections.Southwest) - this.tileReference.elevation;
+        southwestHeight = southwestHeight / 3;
+        vertices[3].Set(vertices[3].x, vertices[3].y + southwestHeight, vertices[3].z);
+
+        //4 = North East
+        float northeastHeight = this.FindTileHeight(TileDirections.North) - this.tileReference.elevation;
+        northeastHeight += this.FindTileHeight(TileDirections.Northeast) - this.tileReference.elevation;
+        northeastHeight = northeastHeight / 3;
+        vertices[4].Set(vertices[4].x, vertices[4].y + northeastHeight, vertices[4].z);
+
+        //5 = North West
+        float northwestHeight = this.FindTileHeight(TileDirections.North) - this.tileReference.elevation;
+        northwestHeight += this.FindTileHeight(TileDirections.Northwest) - this.tileReference.elevation;
+        northwestHeight = northwestHeight / 3;
+        vertices[5].Set(vertices[5].x, vertices[5].y + northwestHeight, vertices[5].z);
+
+        //6 = West
+        float westHeight = this.FindTileHeight(TileDirections.Northwest) - this.tileReference.elevation;
+        westHeight += this.FindTileHeight(TileDirections.Southwest) - this.tileReference.elevation;
+        westHeight = westHeight / 3;
+        vertices[6].Set(vertices[6].x, vertices[6].y + westHeight, vertices[6].z);
+        
+        
+        //Setting the mesh's verts to the changed array
+        ourMesh.mesh.vertices = vertices;
+    }
+
+
+    //Function called from AngleMeshVerts to get the height of the tile in a direction relative to this tile
+    private enum TileDirections { North, Northeast, Southeast, South, Southwest, Northwest };
+    private float FindTileHeight(TileDirections direction)
+    {
+        //Reference to the tile that we get the height for
+        TileInfo foundTile = null;
+
+        //Switch statement for the direction we need to check
+        switch(direction)
+        {
+            case TileDirections.North:
+                //Looping through all of the connected tiles in our tile
+                foreach(TileInfo connection in this.tileReference.connectedTiles)
+                {
+                    //Making sure the tile isn't null
+                    if(connection != null)
+                    {
+                        //If the tile has a higher Z coord and the X coord is the same, then it's the tile we're looking for
+                        if(connection.tilePosition.z > this.tileReference.tilePosition.z)
+                        {
+                            if(Mathf.Round(connection.tilePosition.x) == Mathf.Round(this.tileReference.tilePosition.x))
+                            {
+                                foundTile = connection;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case TileDirections.Northeast:
+                //Looping through all of the connected tiles in our tile
+                foreach (TileInfo connection in this.tileReference.connectedTiles)
+                {
+                    //Making sure the tile isn't null
+                    if (connection != null)
+                    {
+                        //If the tile has a higher Z and X coord, then it's the tile we're looking for
+                        if (connection.tilePosition.z > this.tileReference.tilePosition.z)
+                        {
+                            if (connection.tilePosition.x > this.tileReference.tilePosition.x)
+                            {
+                                foundTile = connection;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case TileDirections.Southeast:
+                //Looping through all of the connected tiles in our tile
+                foreach (TileInfo connection in this.tileReference.connectedTiles)
+                {
+                    //Making sure the tile isn't null
+                    if (connection != null)
+                    {
+                        //If the tile has a lower Z coord and a higher X coord, then it's the tile we're looking for
+                        if (connection.tilePosition.z < this.tileReference.tilePosition.z)
+                        {
+                            if (connection.tilePosition.x > this.tileReference.tilePosition.x)
+                            {
+                                foundTile = connection;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case TileDirections.South:
+                //Looping through all of the connected tiles in our tile
+                foreach (TileInfo connection in this.tileReference.connectedTiles)
+                {
+                    //Making sure the tile isn't null
+                    if (connection != null)
+                    {
+                        //If the tile has a lower Z coord and the X coord is the same, then it's the tile we're looking for
+                        if (connection.tilePosition.z < this.tileReference.tilePosition.z)
+                        {
+                            if (Mathf.Round(connection.tilePosition.x) == Mathf.Round(this.tileReference.tilePosition.x))
+                            {
+                                foundTile = connection;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case TileDirections.Southwest:
+                //Looping through all of the connected tiles in our tile
+                foreach (TileInfo connection in this.tileReference.connectedTiles)
+                {
+                    //Making sure the tile isn't null
+                    if (connection != null)
+                    {
+                        //If the tile has a lower Z coord and a lower X coord, then it's the tile we're looking for
+                        if (connection.tilePosition.z < this.tileReference.tilePosition.z)
+                        {
+                            if (connection.tilePosition.x < this.tileReference.tilePosition.x)
+                            {
+                                foundTile = connection;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case TileDirections.Northwest:
+                //Looping through all of the connected tiles in our tile
+                foreach (TileInfo connection in this.tileReference.connectedTiles)
+                {
+                    //Making sure the tile isn't null
+                    if (connection != null)
+                    {
+                        //If the tile has a higher Z and lower X coord, then it's the tile we're looking for
+                        if (connection.tilePosition.z > this.tileReference.tilePosition.z)
+                        {
+                            if (connection.tilePosition.x < this.tileReference.tilePosition.x)
+                            {
+                                foundTile = connection;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+
+        //If the found tile is still null, we return 0 for the height
+        if(foundTile == null)
+        {
+            return 0;
+        }
+        //Otherwise we return the tile's elevation
+        else
+        {
+            return foundTile.elevation;
         }
     }
 }
