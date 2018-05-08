@@ -12,12 +12,23 @@ public class LandTile : MonoBehaviour
     [HideInInspector]
     public TileInfo tileReference;
 
+    //Bool where if true, this tile is animating to come into frame. Set to TRUE on creation
+    private bool isAnimating = true;
+
+    //The starting Y position of the tile when created
+    public float startingYPos = -20;
+
+    //The interpolation speed that this tile moves toward the base elevation
+    [Range(0.2f, 0.99f)]
+    public float animationInterpSpeed = 0.8f;
+
     
 
     //Function called on initialization
     private void Start()
     {
         this.HilightThisTile(false);
+        this.transform.position = new Vector3(this.transform.position.x, this.startingYPos, this.transform.position.z);
         this.AngleMeshVerts();
     }
 
@@ -88,6 +99,24 @@ public class LandTile : MonoBehaviour
     //Function called every frame
     private void Update()
     {
+        //If this tile is animating, we interpolate to the correct tile height
+        if(this.isAnimating)
+        {
+            //Finding the difference in elevation from where we are and where we need to be
+            float yDiff = this.tileReference.elevation - this.transform.position.y;
+            //Multiplying that difference by our interpolation speed
+            yDiff *= this.animationInterpSpeed;
+
+            //And adding the result to our current Y position to move up
+            this.transform.position += new Vector3(0, yDiff, 0);
+
+            //If our current Y position is the correct elevation, we're done animating
+            if(this.transform.position.y == this.tileReference.elevation)
+            {
+                this.isAnimating = false;
+            }
+        }
+
         //If this tile isn't selected, nothing happens
         if (LandTile.selectedTile != this)
         {
