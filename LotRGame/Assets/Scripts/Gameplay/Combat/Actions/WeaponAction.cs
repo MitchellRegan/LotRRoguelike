@@ -37,7 +37,7 @@ public class WeaponAction : AttackAction
         {
             case WeaponHand.MainHand:
                 //Checking the character's main hand weapon to see if it matches our weapon skill type
-                if(charToCheck_.charInventory.rightHand != null)
+                if (charToCheck_.charInventory.rightHand != null)
                 {
                     if(charToCheck_.charInventory.rightHand.weaponType == this.weaponSkillUsed)
                     {
