@@ -22,6 +22,8 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
 
     //The default color of this sprite
     public Color defaultColor = Color.grey;
+    //The color to hold the color of the panel before it was highlighted
+    private Color placeholderColor = Color.black;
     //The color of this sprite when highlighted
     public Color highlightColor = Color.white;
 
@@ -48,7 +50,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
             if(CombatTile.mouseOverTile == null || CombatTile.mouseOverTile.objectOnThisTile == null)
             {
                 this.currentlyHighlighted = false;
-                this.ourImage.color = this.defaultColor;
+                this.ourImage.color = this.placeholderColor;
             }
             //If the current combat tile has an object on it, we have to check if it's a character
             else if(CombatTile.mouseOverTile.objectOnThisTile.GetComponent<Character>())
@@ -60,7 +62,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                     if (CombatTile.mouseOverTile.objectOnThisTile != CombatManager.globalReference.playerCharactersInCombat[this.characterIndex].gameObject)
                     {
                         this.currentlyHighlighted = false;
-                        this.ourImage.color = this.defaultColor;
+                        this.ourImage.color = this.placeholderColor;
                     }
                 }
                 //If this panel is for enemy characters
@@ -70,7 +72,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                     if(CombatTile.mouseOverTile.objectOnThisTile != CombatManager.globalReference.enemyCharactersInCombat[this.characterIndex].gameObject)
                     {
                         this.currentlyHighlighted = false;
-                        this.ourImage.color = this.defaultColor;
+                        this.ourImage.color = this.placeholderColor;
                     }
                 }
             }
@@ -90,6 +92,17 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                         //If the player is the one we track, we're highlighted
                         if (CombatTile.mouseOverTile.objectOnThisTile == CombatManager.globalReference.playerCharactersInCombat[this.characterIndex].gameObject)
                         {
+                            //If this panel's color isn't our default color, we store it as the placeholder
+                            if(this.ourImage.color != this.defaultColor)
+                            {
+                                this.placeholderColor = this.ourImage.color;
+                            }
+                            //Otherwise we just store the default color
+                            else
+                            {
+                                this.placeholderColor = this.defaultColor;
+                            }
+
                             this.currentlyHighlighted = true;
                             this.ourImage.color = this.highlightColor;
                         }
@@ -100,6 +113,17 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                         //If the enemy is the one we track, we're highlighted
                         if (CombatTile.mouseOverTile.objectOnThisTile == CombatManager.globalReference.enemyCharactersInCombat[this.characterIndex].gameObject)
                         {
+                            //If this panel's color isn't our default color, we store it as the placeholder
+                            if (this.ourImage.color != this.defaultColor)
+                            {
+                                this.placeholderColor = this.ourImage.color;
+                            }
+                            //Otherwise we just store the default color
+                            else
+                            {
+                                this.placeholderColor = this.defaultColor;
+                            }
+
                             this.currentlyHighlighted = true;
                             this.ourImage.color = this.highlightColor;
                         }
