@@ -151,13 +151,45 @@ public class AttackAction : Action
         this.GrantSkillEXP(actingChar, this.weaponSkillUsed, false);
 
         //Checking to see if this attack crits
-        int critMultiplier = 1; //Set to 1 in case we don't crit so it won't change anything
+        float critMultiplier = 1; //Set to 1 in case we don't crit so it won't change anything
         float critRoll = Random.Range(0, 1);
         bool isCrit = false;
+
+        //Float for the bonus damage multiplier from perks
+        float critMultiplierBoost = 0;
+
+        //Looping through all of the acting character's perks to see if they have perks for crit chance or multiplier
+        foreach (Perk charPerk in actingChar.charPerks.allPerks)
+        {
+            //If the current perk increases crit chance, we need to see if it applies to this attack
+            if(charPerk.GetType() == typeof(CritChanceBoostPerk))
+            {
+                CritChanceBoostPerk critPerk = charPerk.GetComponent<CritChanceBoostPerk>();
+
+                //If the perk applies to this attack's required skill check
+                if(critPerk.boostAllSkills || critPerk.skillCritToBoost == this.weaponSkillUsed)
+                {
+                    //Subtracting this perk's crit chance boost from the roll (since we're looking for lower numbers)
+                    critRoll -= critPerk.critChanceBoost;
+                }
+            }
+            //If the current perk increases crit damage multipliers, we see if it applies to this attack
+            else if (charPerk.GetType() == typeof(CritMultiplierPerk))
+            {
+                CritMultiplierPerk critPerk = charPerk.GetComponent<CritMultiplierPerk>();
+
+                //If the perk applies to this attack's required skill check
+                if (critPerk.boostAllSkills || critPerk.skillCritToBoost == this.weaponSkillUsed)
+                {
+                    critMultiplierBoost += critPerk.critMultiplierBoost;
+                }
+            }
+        }
+
         //If the crit roll is below the crit chance, the attack crits and we change the multiplier
         if(critRoll < this.critChance)
         {
-            critMultiplier = this.critMultiplier;
+            critMultiplier = this.critMultiplier + critMultiplierBoost;
             isCrit = true;
         }
 
@@ -187,7 +219,7 @@ public class AttackAction : Action
             }
 
             //Multiplying the damage by the crit multiplier
-            atkDamage = atkDamage * critMultiplier;
+            atkDamage = Mathf.RoundToInt(atkDamage * critMultiplier);
 
             //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
             foreach (Perk charPerk in actingChar.charPerks.allPerks)

@@ -268,13 +268,52 @@ public class WeaponAction : AttackAction
         for (int h = 0; h < this.numberOfHits; ++h)
         {
             //Checking to see if this attack crits
-            int critMultiplier = 1; //Set to 1 in case we don't crit so it won't change anything
+            float critMultiplier = 1; //Set to 1 in case we don't crit so it won't change anything
             float critRoll = Random.Range(0, 1);
             bool isCrit = false;
+
+            //Float for the bonus damage multiplier from perks
+            float critMultiplierBoost = 0;
+
+            //Looping through all of the acting character's perks to see if they have perks for crit chance or multiplier
+            foreach (Perk charPerk in actingChar.charPerks.allPerks)
+            {
+                //If the current perk increases crit chance, we need to see if it applies to this attack
+                if (charPerk.GetType() == typeof(CritChanceBoostPerk))
+                {
+                    CritChanceBoostPerk critPerk = charPerk.GetComponent<CritChanceBoostPerk>();
+
+                    //If the perk applies to this attack's required skill check
+                    if (critPerk.boostAllSkills || critPerk.skillCritToBoost == this.weaponSkillUsed)
+                    {
+                        //If the perk applies to any kind of weapon size or the size requirement matches this action's required size, we increase the crit chance
+                        if(critPerk.noSizeRequirement || critPerk.weaponSizeRequirement == this.requiredWeaponHand)
+                        {
+                            critRoll -= critPerk.critChanceBoost;
+                        }
+                    }
+                }
+                //If the current perk increases crit damage multipliers, we see if it applies to this attack
+                else if(charPerk.GetType() == typeof(CritMultiplierPerk))
+                {
+                    CritMultiplierPerk critPerk = charPerk.GetComponent<CritMultiplierPerk>();
+
+                    //If the perk applies to this attack's required skill check
+                    if(critPerk.boostAllSkills || critPerk.skillCritToBoost == this.weaponSkillUsed)
+                    {
+                        //If the perk applies to any kind of weapon size or the size requirement matches this action's required size, we increase the crit chance
+                        if (critPerk.noSizeRequirement || critPerk.weaponSizeRequirement == this.requiredWeaponHand)
+                        {
+                            critMultiplierBoost += critPerk.critMultiplierBoost;
+                        }
+                    }
+                }
+            }
+
             //If the crit roll is below the crit chance, the attack crits and we change the multiplier
             if (critRoll < this.critChance)
             {
-                critMultiplier = this.critMultiplier;
+                critMultiplier = this.critMultiplier + critMultiplierBoost;
                 isCrit = true;
             }
 
@@ -306,7 +345,7 @@ public class WeaponAction : AttackAction
                 }
 
                 //Multiplying the damage by the crit multiplier
-                atkDamage = atkDamage * critMultiplier;
+                atkDamage = Mathf.RoundToInt(atkDamage * critMultiplier);
 
                 //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
                 foreach (Perk charPerk in actingChar.charPerks.allPerks)
