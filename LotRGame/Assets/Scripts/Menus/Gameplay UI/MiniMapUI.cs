@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 [RequireComponent(typeof(Image))]
 public class MiniMapUI : MonoBehaviour
@@ -24,7 +25,7 @@ public class MiniMapUI : MonoBehaviour
 
 
 	// Use this for initialization
-	private void Awake ()
+	private void Start ()
     {
         //Setting the global reference to this component if one doesn't already exist
 		if(globalReference == null)
@@ -39,7 +40,28 @@ public class MiniMapUI : MonoBehaviour
 
         //Getting the reference to this object's sprite renderer
         this.ourSprite = this.GetComponent<Image>();
-	}
+
+
+        Debug.Log(GameData.globalReference.saveFolder);
+        Debug.Log(Application.persistentDataPath + GameData.globalReference.saveFolder);
+        //Getting the file path for this game's map image
+        string mapFilePath = Application.persistentDataPath + GameData.globalReference.saveFolder + "/Map.png";
+
+        //Creating a new Texture to hold the loaded map image
+        Texture2D mapTexture;
+        byte[] mapFileData;
+
+        //As long as we have the correct file directory the file will load and fill in the texture
+        if(File.Exists(mapFilePath))
+        {
+            mapFileData = File.ReadAllBytes(mapFilePath);
+            mapTexture = new Texture2D(2, 2);
+            mapTexture.LoadImage(mapFileData);
+
+            //Setting the new texture for our image texture
+            this.ourSprite.sprite = mapTexture;
+        }
+    }
 	
 
 	// Update is called once per frame
@@ -68,16 +90,16 @@ public class MiniMapUI : MonoBehaviour
                 //Getting the rect transform component for this game object
                 RectTransform ourRect = this.GetComponent<RectTransform>();
 
-                Debug.Log("This is where the minimap is having problems");
+                /*Debug.Log("This is where the minimap is having problems");
                 Debug.Log("Col/Row: " + newTileColRow.col + ", " + newTileColRow.row);
                 Debug.Log("Tile 0,0 pos: " + CreateTileGrid.globalReference.tileGrid[0][0].tilePosition + ", tile type: " + CreateTileGrid.globalReference.tileGrid[0][0].type);
                 Debug.Log("Opposite corner: " + CreateTileGrid.globalReference.tileGrid[CreateTileGrid.globalReference.tileGrid.Count - 1][CreateTileGrid.globalReference.tileGrid[0].Count - 1].tilePosition + ", tile type: " + CreateTileGrid.globalReference.tileGrid[CreateTileGrid.globalReference.tileGrid.Count - 1][CreateTileGrid.globalReference.tileGrid[0].Count - 1].type);
-                //Finding the map offset
+                *///Finding the map offset
                 float xOffset = this.mapShiftOnMove * newTileColRow.col;
                 float yOffset = this.mapShiftOnMove * newTileColRow.row;
 
                 //Setting the position based on the offsets
-                ourRect.localPosition = new Vector3(-xOffset, -yOffset, 0);
+                ourRect.localPosition = new Vector3(-yOffset, -xOffset, 0);
             }
         }
 	}

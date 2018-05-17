@@ -1434,7 +1434,7 @@ public class CreateTileGrid : MonoBehaviour
         string saveFolder = GameData.globalReference.saveFolder;
         
         //Writing the file to the desktop
-        System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "/Map" + mapNameExtras_ + ".png", bytes);
+        System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "/Map.png", bytes);
     }
 
     
