@@ -210,5 +210,8 @@ public class TimePanelUI : MonoBehaviour
 
         //Setting the light euler rotation
         this.globalLightObject.eulerAngles = new Vector3(0, 0, dayPercent * 360);
+
+        //Setting the lights to be at the same location as the player party
+        this.globalLightObject.position = PartyGroup.group1.transform.position;
     }
 }
