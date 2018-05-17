@@ -20,6 +20,9 @@ public class Action : MonoBehaviour
     public enum ActionType { Major, Minor, Fast, Massive };
     public ActionType type = ActionType.Major;
 
+    //The amount of time this action takes to cooldown after use
+    public float cooldownTime = 1;
+
     //The amount of time in seconds that this action takes to be performed
     public float timeToCompleteAction = 3;
 
@@ -35,7 +38,21 @@ public class Action : MonoBehaviour
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
     public virtual void PerformAction(CombatTile targetTile_)
     {
-        //Nothing here, because regular actions don't do anything.
+        //Nothing here because the inheriting classes act differently
+    }
+
+
+    //Function that is overrided by inheriting classes to begin this action's cooldown time
+    public virtual void BeginActionCooldown()
+    {
+        //Adding this action to the acting character's recharge list if the cooldown time is above 0
+        if (this.cooldownTime > 0)
+        {
+            //Creating a new action cooldown class for this action
+            ActionCooldown acd = new ActionCooldown(this, this.cooldownTime);
+
+            CombatManager.globalReference.actingCharacters[0].charActionList.actionCooldowns.Add(acd);
+        }
     }
 
 

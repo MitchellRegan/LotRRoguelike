@@ -29,6 +29,10 @@ public class InstantHealEffect : Effect
     //Overrided function from Effect.cs to trigger this heal effect
     public override void TriggerEffect(Character usingCharacter_, Character targetCharacter_, float timeDelay_ = 0)
     {
+        //Setting the character references of who is attacking and who is being attacked
+        this.characterToEffect = targetCharacter_;
+        this.characterWhoTriggered = usingCharacter_;
+
         //Int to hold the heal total for the effect
         int totalHeal = 0;
 
