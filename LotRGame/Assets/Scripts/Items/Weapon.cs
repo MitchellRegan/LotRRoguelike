@@ -6,16 +6,22 @@ using UnityEngine;
 [System.Serializable]
 public class Weapon : MonoBehaviour
 {
-    //Enum for different types of weapons
-    public enum WeaponType {Unarmed, Sword, Dagger, Maul, Pole, Bow, Shield, ArcaneMagic, HolyMagic, DarkMagic, FireMagic, WaterMagic, WindMagic, ElectricMagic, StoneMagic};
+    //The type of skill this weapon mainly uses. Only used in checks for WeaponAction.cs
+    public SkillList weaponType = SkillList.Daggers;
 
     //Enum for the number of hands it takes to wield a given weapon
     public enum WeaponSize { OneHand, TwoHands };
     //How many hands it takes to wield this weapon
     public WeaponSize size = WeaponSize.OneHand;
 
-    //The list of attack actions that this weapon can perform
-    public List<AttackAction> attackList;
+    //The base attack damage for this weapon
+    public AttackDamage weaponDamage;
+
+    //The list of effects that this weapon can have when attacking
+    public List<AttackEffect> weaponEffects;
+
+    //The list of actions that this weapon can perform
+    public List<Action> specialActionList;
 
     [Space(8)]
 

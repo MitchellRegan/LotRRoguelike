@@ -42,15 +42,20 @@ public class DamageText : MonoBehaviour
     public int critDamageFontSize = 26;
 
     //The list of all types of damage and the color that they change this object's text
-    public Color physDamageColor = Color.gray;
-    public Color magicDamageColor = Color.gray;
+    public Color slashDamageColor = Color.gray;
+    public Color stabDamageColor = Color.gray;
+    public Color crushDamageColor = Color.gray;
+    public Color arcaneDamageColor = Color.gray;
+    public Color holyDamageColor = Color.gray;
+    public Color darkDamageColor = Color.gray;
     public Color fireDamageColor = Color.gray;
     public Color waterDamageColor = Color.gray;
-    public Color electricDamageColor = Color.gray;
     public Color windDamageColor = Color.gray;
-    public Color rockDamageColor = Color.gray;
-    public Color lightDamageColor = Color.gray;
-    public Color darkDamageColor = Color.gray;
+    public Color electricDamageColor = Color.gray;
+    public Color stoneDamageColor = Color.gray;
+    public Color pureDamageColor = Color.black;
+    public Color natureDamageColor = Color.black;
+    public Color bleedDamageColor = Color.red;
 
 
 
@@ -101,11 +106,23 @@ public class DamageText : MonoBehaviour
         //Setting the color of the text based on the damage type
         switch(type_)
         {
-            case CombatManager.DamageType.Physical:
-                this.background.color = this.physDamageColor;
+            case CombatManager.DamageType.Slashing:
+                this.background.color = this.slashDamageColor;
+                break;
+            case CombatManager.DamageType.Stabbing:
+                this.background.color = this.stabDamageColor;
+                break;
+            case CombatManager.DamageType.Crushing:
+                this.background.color = this.crushDamageColor;
                 break;
             case CombatManager.DamageType.Arcane:
-                this.background.color = this.magicDamageColor;
+                this.background.color = this.arcaneDamageColor;
+                break;
+            case CombatManager.DamageType.Holy:
+                this.background.color = this.holyDamageColor;
+                break;
+            case CombatManager.DamageType.Dark:
+                this.background.color = this.darkDamageColor;
                 break;
             case CombatManager.DamageType.Fire:
                 this.background.color = this.fireDamageColor;
@@ -119,14 +136,14 @@ public class DamageText : MonoBehaviour
             case CombatManager.DamageType.Wind:
                 this.background.color = this.windDamageColor;
                 break;
-            case CombatManager.DamageType.Stone:
-                this.background.color = this.rockDamageColor;
+            case CombatManager.DamageType.Pure:
+                this.background.color = this.pureDamageColor;
                 break;
-            case CombatManager.DamageType.Holy:
-                this.background.color = this.lightDamageColor;
+            case CombatManager.DamageType.Nature:
+                this.background.color = this.natureDamageColor;
                 break;
-            case CombatManager.DamageType.Dark:
-                this.background.color = this.darkDamageColor;
+            case CombatManager.DamageType.Bleed:
+                this.background.color = this.bleedDamageColor;
                 break;
         }
 

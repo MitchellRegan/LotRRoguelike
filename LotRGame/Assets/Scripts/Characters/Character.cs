@@ -18,9 +18,9 @@ public enum Genders { Male, Female, Genderless };
 public class Character : MonoBehaviour
 {
     //This character's first name
-    public string firstName = "Generic";
+    public string firstName = "";
     //This character's last name
-    public string lastName = "McPersonface";
+    public string lastName = "";
 
     //This character's gender
     public Genders sex = Genders.Male;
@@ -276,6 +276,7 @@ public class Character : MonoBehaviour
         this.charCombatStats.currentInitiativeSpeed = saveData_.currentInitiativeSpeed;
         this.charCombatStats.startingPositionCol = saveData_.startingCol;
         this.charCombatStats.startingPositionRow = saveData_.startingRow;
+        this.charCombatStats.accuracy = saveData_.accuracy;
         this.charCombatStats.evasion = saveData_.evasion;
 
         this.charCombatStats.combatEffects = new List<Effect>();
@@ -376,6 +377,7 @@ public class CharacterSaveData
     //Variables in CombatStats.cs
     public int startingCol = 0;
     public int startingRow = 0;
+    public int accuracy = 0;
     public int evasion = 10;
     public float currentInitiativeSpeed = 0.01f;
     public List<string> combatEffects;
@@ -441,6 +443,7 @@ public class CharacterSaveData
         this.currentInitiativeSpeed = characterToSave_.charCombatStats.currentInitiativeSpeed;
         this.startingCol = characterToSave_.charCombatStats.startingPositionCol;
         this.startingRow = characterToSave_.charCombatStats.startingPositionRow;
+        this.accuracy = characterToSave_.charCombatStats.accuracy;
         this.evasion = characterToSave_.charCombatStats.evasion;
 
         this.combatEffects = new List<string>();

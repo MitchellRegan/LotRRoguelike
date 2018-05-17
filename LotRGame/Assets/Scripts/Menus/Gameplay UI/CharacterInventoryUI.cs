@@ -28,7 +28,9 @@ public class CharacterInventoryUI : MonoBehaviour
     //Selected Character's weight
     public Text selectedCharacterWeight;
     //Selected Character's physical armor
-    public Text selectedCharacterArmorPhysical;
+    public Text selectedCharacterArmorSlashing;
+    public Text selectedCharacterArmorStabbing;
+    public Text selectedCharacterArmorCrushing;
     //Selected Character's money
     public Text selectedCharacterWallet;
 
@@ -38,9 +40,9 @@ public class CharacterInventoryUI : MonoBehaviour
     public Text selectedCharacterResistWater;
     public Text selectedCharacterResistElectric;
     public Text selectedCharacterResistWind;
-    public Text selectedCharacterResistStone;
-    public Text selectedCharacterResistLight;
+    public Text selectedCharacterResistHoly;
     public Text selectedCharacterResistDark;
+    public Text selectedCharacterResistNature;
 
     //Selected Character equipped items
     public Image head;
@@ -160,9 +162,17 @@ public class CharacterInventoryUI : MonoBehaviour
         }
 
         //Sets the armor text
-        if (this.selectedCharacterArmorPhysical != null)
+        if (this.selectedCharacterArmorSlashing != null)
         {
-            this.selectedCharacterArmorPhysical.text = "" + this.selectedCharacterInventory.totalPhysicalArmor;
+            this.selectedCharacterArmorSlashing.text = "" + this.selectedCharacterInventory.totalSlashingArmor;
+        }
+        if (this.selectedCharacterArmorStabbing != null)
+        {
+            this.selectedCharacterArmorStabbing.text = "" + this.selectedCharacterInventory.totalStabbingArmor;
+        }
+        if (this.selectedCharacterArmorCrushing != null)
+        {
+            this.selectedCharacterArmorCrushing.text = "" + this.selectedCharacterInventory.totalCrushingArmor;
         }
         //Sets magic resist texts
         if (this.selectedCharacterResistArcane != null)
@@ -185,17 +195,17 @@ public class CharacterInventoryUI : MonoBehaviour
         {
             this.selectedCharacterResistWind.text = "" + this.selectedCharacterInventory.totalWindResist;
         }
-        if (this.selectedCharacterResistStone != null)
+        if (this.selectedCharacterResistHoly != null)
         {
-            this.selectedCharacterResistStone.text = "" + this.selectedCharacterInventory.totalStoneResist;
-        }
-        if (this.selectedCharacterResistLight != null)
-        {
-            this.selectedCharacterResistLight.text = "" + this.selectedCharacterInventory.totalHolyResist;
+            this.selectedCharacterResistHoly.text = "" + this.selectedCharacterInventory.totalHolyResist;
         }
         if (this.selectedCharacterResistDark != null)
         {
             this.selectedCharacterResistDark.text = "" + this.selectedCharacterInventory.totalDarkResist;
+        }
+        if (this.selectedCharacterResistNature != null)
+        {
+            this.selectedCharacterResistNature.text = "" + this.selectedCharacterInventory.totalNatureResist;
         }
 
         //If this inventory displays a character and their armor

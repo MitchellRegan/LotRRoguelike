@@ -42,8 +42,11 @@ public class MoveAction : Action
     //Function inherited from Action.cs
     public override void PerformAction(CombatTile targetTile_)
     {
+        //Calling the base function to start the cooldown time
+        base.PerformAction(targetTile_);
+
         //If the acting character is an enemy, we need to set the movement path since we're not mousing over tiles
-        if(CombatManager.globalReference.enemyCharactersInCombat.Contains(this.actingCharacter))
+        if (CombatManager.globalReference.enemyCharactersInCombat.Contains(this.actingCharacter))
         {
             this.movementPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], targetTile_, true, true);
         }

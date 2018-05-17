@@ -14,6 +14,13 @@ public class Armor : MonoBehaviour
     //Amount reduced from the hit roll of whoever attacks the character wearing this
     public int physicalDefense = 0;
 
+    //Damage blocked from slashing attacks
+    public int slashingDefense = 0;
+    //Damage blocked from stabbing attacks
+    public int stabbingDefense = 0;
+    //Damage blocked from crushing attacks
+    public int crushingDefense = 0;
+
     //Damage blocked from arcane damage
     public int arcaneResist = 0;
 
@@ -35,8 +42,11 @@ public class Armor : MonoBehaviour
     //Damage blocked from wind attacks
     public int windResist = 0;
 
-    //Damage blocked from stone attacks
-    public int stoneResist = 0;
+    //Damage blocked from nature attacks
+    public int natureResist = 0;
+
+    //Damage blocked from bleed attacks
+    public int bleedDefense = 0;
 
     [Space(8)]
 

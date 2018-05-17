@@ -1385,7 +1385,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                             //Starting with the average of the damage per tick
                             int dotDmgAvg = Mathf.RoundToInt(dotEft.damagePerTickRange.x + dotEft.damagePerTickRange.y) / 2;
                             //Multiplying the damage by the average number of ticks
-                            dotDmgAvg *= (Mathf.RoundToInt(dotEft.numberOfTicksRange.x + dotEft.numberOfTicksRange.y) / 2);
+                            dotDmgAvg *= dotEft.numberOfTicks;
                             //Multiplying by the chance to trigger
                             dotDmgAvg = Mathf.RoundToInt(dotDmgAvg * dotEft.chanceToTrigger);
 

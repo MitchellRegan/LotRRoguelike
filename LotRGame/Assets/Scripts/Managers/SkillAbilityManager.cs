@@ -74,37 +74,31 @@ public class SkillAbilityManager : MonoBehaviour
 
 
     //Function called externally to check a given character's skills to see if they get any new abilities
-    public void CheckCharacterSkillForNewAbility(Character charThatLeveled_, SkillList skillToCheck_)
+    public void CheckCharacterSkillForNewAbility(Character charThatLeveled_, SkillList skillToCheck_, int startingLevel_, int newLevel_)
     {
-        //Getting the level that the character's given skill is at
-        int currentSkillLevel = this.getCharacterSkillLevel(charThatLeveled_, skillToCheck_);
-
         //Getting the reference the correct skill ability reward lists
         List<SkillAbilityReward> skillRewards = this.getSkillRewardList(skillToCheck_);
         
         //Looping through all of the skill rewards to see if the character has them
         for(int r = 0; r < skillRewards.Count; ++r)
         {
-            //If the current skill reward's level is less than or equal to the character's current skill level, we see if the character already has it
-            if(skillRewards[r].levelReached <= currentSkillLevel)
+            //If the current skill reward's level is between the starting and new skill levels, we see if the character already has it
+            if(skillRewards[r].levelReached > startingLevel_ && skillRewards[r].levelReached <= newLevel_)
             {
                 //If the ability reward isn't null
                 if(skillRewards[r].learnedAction != null)
                 {
-                    //If the character's default action list doesn't have the learned action, we give them the new learned action
-                    if(!charThatLeveled_.charActionList.defaultActions.Contains(skillRewards[r].learnedAction))
-                    {
-                        charThatLeveled_.charActionList.defaultActions.Add(skillRewards[r].learnedAction);
-                        //Refreshing the character's action list to make the added action appear
-                        charThatLeveled_.charActionList.RefreshActionLists();
-                    }
+                    //Giving the character the learned action
+                    charThatLeveled_.charActionList.defaultActions.Add(skillRewards[r].learnedAction);
+                    //Refreshing the character's action list to make the added action appear
+                    charThatLeveled_.charActionList.RefreshActionLists();
                 }
 
                 //If the perk reward isn't null
                 if(skillRewards[r].gainedPerk != null)
                 {
                     //If the character's perk list doesn't have the learned perk, we give them the new learned perk
-                    if(!charThatLeveled_.charPerks.allPerks.Contains(skillRewards[r].gainedPerk))
+                    if (!charThatLeveled_.charPerks.allPerks.Contains(skillRewards[r].gainedPerk))
                     {
                         charThatLeveled_.charPerks.allPerks.Add(skillRewards[r].gainedPerk);
                     }

@@ -27,7 +27,11 @@ public class CombatStats : MonoBehaviour
     [HideInInspector]
     public int gridPositionRow = 0;
 
-    //How skilled this character is at avoiding physical attacks. Directly counters weapon skills (below)
+    //How skilled this character is at hitting targets. Directly counters evasion
+    [Range(0, 50)]
+    public int accuracy = 0;
+
+    //How skilled this character is at avoiding physical attacks. Directly counters weapon skills and accuracy
     [Range(0, 50)]
     public int evasion = 10;
     
@@ -128,4 +132,5 @@ public class CombatStats : MonoBehaviour
             }
         }
     }
+
 }
