@@ -25,7 +25,15 @@ public class RegionNameDisplay : MonoBehaviour
 	// Update is called once per frame
 	private void Update ()
     {
-        //Setting our text to read the name of the region that our party is currently on
-        this.ourText.text = this.partyMovement.currentTile.regionName;
+        //If the player party's tile decoration object is a map location, we read out the location name
+        if (this.partyMovement.currentTile.decorationModel != null && this.partyMovement.currentTile.decorationModel.GetComponent<MapLocation>())
+        {
+            this.ourText.text = this.partyMovement.currentTile.decorationModel.GetComponent<MapLocation>().locationName;
+        }
+        //Otherwise we set our text to read the name of the region that our party is currently on
+        else
+        {
+            this.ourText.text = this.partyMovement.currentTile.regionName;
+        }
 	}
 }
