@@ -29,7 +29,12 @@ public class LandTile : MonoBehaviour
     {
         this.HilightThisTile(false);
         this.transform.position = new Vector3(this.transform.position.x, this.startingYPos, this.transform.position.z);
-        this.AngleMeshVerts();
+
+        //If this land tile isn't for water, we change our mesh verts to align with nearby tiles
+        if (this.tileReference.type != LandType.Ocean && this.tileReference.type != LandType.River)
+        {
+            this.AngleMeshVerts();
+        }
     }
 
 
