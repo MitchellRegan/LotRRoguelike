@@ -180,9 +180,6 @@ public class CreateTileGrid : MonoBehaviour
 
             //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
             CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
-
-            //Telling the Mini Map to load our map texture
-            MiniMapUI.globalReference.SetMapTexture(Application.persistentDataPath + GameData.globalReference.saveFolder + "/Map" + this.numberOfStepLoops + ".png");
         }
     }
 
