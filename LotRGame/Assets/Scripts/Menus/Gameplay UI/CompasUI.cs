@@ -7,6 +7,6 @@ public class CompasUI : MonoBehaviour
 	// Update is called once per frame
 	private void Update ()
     {
-        this.transform.eulerAngles = new Vector3(0, 0, OrbitCamera.directionFacing);
+        this.transform.localEulerAngles = new Vector3(0, 0, OrbitCamera.directionFacing);
 	}
 }

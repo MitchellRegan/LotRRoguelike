@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 [RequireComponent(typeof(Image))]
 public class MiniMapUI : MonoBehaviour
@@ -24,7 +25,7 @@ public class MiniMapUI : MonoBehaviour
 
 
 	// Use this for initialization
-	private void Awake ()
+	private void Start ()
     {
         //Setting the global reference to this component if one doesn't already exist
 		if(globalReference == null)
@@ -39,7 +40,32 @@ public class MiniMapUI : MonoBehaviour
 
         //Getting the reference to this object's sprite renderer
         this.ourSprite = this.GetComponent<Image>();
-	}
+        
+
+        //Getting the file path for this game's map image
+        string mapFilePath = Application.persistentDataPath + GameData.globalReference.saveFolder + "/Map.png";
+
+        //As long as we have the correct file directory the file will load and fill in the texture
+        if(File.Exists(mapFilePath))
+        {
+            //Loading the map png file as a new texture
+            byte[] mapFileData = File.ReadAllBytes(mapFilePath);
+            Texture2D mapTexture = new Texture2D(2, 2);
+            mapTexture.LoadImage(mapFileData);
+
+            //Creating a new sprite from the map texture to set as our object's sprite
+            Sprite mapSprite = new Sprite();
+            mapSprite = Sprite.Create(mapTexture, new Rect(0, 0, mapTexture.width, mapTexture.height), new Vector2(0, 0));
+            this.ourSprite.sprite = mapSprite;
+
+            //Resizing our sprite size
+            this.ourSprite.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, mapTexture.height * this.mapShiftOnMove);
+            this.ourSprite.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mapTexture.width * this.mapShiftOnMove);
+
+            //Setting the starting position of the image
+
+        }
+    }
 	
 
 	// Update is called once per frame
@@ -51,6 +77,14 @@ public class MiniMapUI : MonoBehaviour
             return;
         }
 
+        //Positioning the map to the correct location
+        this.RepositionMap();
+	}
+
+
+    //Function called from Update to shift the map based on the player party's current location
+    private void RepositionMap()
+    {
         //Finding the selected party's tile so we know where the map should show
         TileInfo partyTile = CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile;
 
@@ -68,49 +102,12 @@ public class MiniMapUI : MonoBehaviour
                 //Getting the rect transform component for this game object
                 RectTransform ourRect = this.GetComponent<RectTransform>();
 
-                Debug.Log("This is where the minimap is having problems");
-                Debug.Log("Col/Row: " + newTileColRow.col + ", " + newTileColRow.row);
-                Debug.Log("Tile 0,0 pos: " + CreateTileGrid.globalReference.tileGrid[0][0].tilePosition + ", tile type: " + CreateTileGrid.globalReference.tileGrid[0][0].type);
-                Debug.Log("Opposite corner: " + CreateTileGrid.globalReference.tileGrid[CreateTileGrid.globalReference.tileGrid.Count - 1][CreateTileGrid.globalReference.tileGrid[0].Count - 1].tilePosition + ", tile type: " + CreateTileGrid.globalReference.tileGrid[CreateTileGrid.globalReference.tileGrid.Count - 1][CreateTileGrid.globalReference.tileGrid[0].Count - 1].type);
-                //Finding the map offset
-                float xOffset = this.mapShiftOnMove * newTileColRow.col;
-                float yOffset = this.mapShiftOnMove * newTileColRow.row;
-
-                //Setting the position based on the offsets
-                ourRect.localPosition = new Vector3(-xOffset, -yOffset, 0);
+                //Setting the pivot position based on the offsets
+                ourRect.pivot = new Vector2((newTileColRow.col * 1f) / (CreateTileGrid.globalReference.cols * 1f),
+                                  (newTileColRow.row * 1f) / (CreateTileGrid.globalReference.rows * 1f));
+                //Re-centering the map sprite so that our pivot position is now at 0,0 in the middle of the minimap
+                ourRect.localPosition = new Vector3();
             }
         }
-	}
-
-
-    //Function called externally from CreateTileGrid.Start when the map is loaded
-    public void SetMapTexture(string spriteImagePath_)
-    {
-        //Making sure the file exists
-        if(!System.IO.File.Exists(spriteImagePath_))
-        {
-            Debug.LogError("Map Sprite is null. Path given: " + spriteImagePath_);
-            this.gameObject.SetActive(false);
-            return;
-        }
-
-        //Creating variables to hold the loaded file data
-        Texture2D spriteTexture;
-        byte[] fileData;
-
-        //Loading the file data to create a new texture
-        fileData = System.IO.File.ReadAllBytes(spriteImagePath_);
-        spriteTexture = new Texture2D(2, 2);
-        spriteTexture.LoadImage(fileData);
-        spriteTexture.filterMode = FilterMode.Point;
-
-        //Creating a new sprite based on the loaded texture
-        this.ourSprite.sprite = Sprite.Create(spriteTexture, new Rect(0, 0, spriteTexture.width, spriteTexture.height), new Vector2(0, 0), 100f);
-        
-        //Scaling this sprite image based on the pixel resolution of the sprite
-        RectTransform ourRect = this.GetComponent<RectTransform>();
-        ourRect.localScale = new Vector3(this.ourSprite.sprite.texture.width * this.pixelSizeOnScreen,
-                                         this.ourSprite.sprite.texture.height * this.pixelSizeOnScreen,
-                                         1);
     }
 }
