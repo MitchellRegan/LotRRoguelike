@@ -391,7 +391,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                             float netStatChange = 0;
                             //Looping through all of the stat changes
                             ModifyStatsEffect mse = combatEffect.GetComponent<ModifyStatsEffect>();
-                            foreach(StatModifier change in mse.StatChanges)
+                            foreach(StatModifier change in mse.statChanges)
                             {
                                 //If the change isn't for initiative, the value is added normally
                                 if(change.modifiedStat != StatModifier.StatName.Initiative)
@@ -444,7 +444,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                     float netStatChange = 0;
                                     //Looping through all of the stat changes
                                     ModifyStatsEffect mse = combatEffect.GetComponent<ModifyStatsEffect>();
-                                    foreach (StatModifier change in mse.StatChanges)
+                                    foreach (StatModifier change in mse.statChanges)
                                     {
                                         //If the change isn't for initiative, the value is added normally
                                         if (change.modifiedStat != StatModifier.StatName.Initiative)
