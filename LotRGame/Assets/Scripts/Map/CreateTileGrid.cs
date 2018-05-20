@@ -180,9 +180,6 @@ public class CreateTileGrid : MonoBehaviour
 
             //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
             CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
-
-            //Telling the Mini Map to load our map texture
-            MiniMapUI.globalReference.SetMapTexture(Application.persistentDataPath + GameData.globalReference.saveFolder + "/Map" + this.numberOfStepLoops + ".png");
         }
     }
 
@@ -224,7 +221,7 @@ public class CreateTileGrid : MonoBehaviour
         //Setting all of the map locations for each region, like cities and dungeons
         this.CreateMapLocations();
         
-        //Looping through to each region in the very easy regions
+        //Looping through to each region in the very easy regions to find a starting tile for the player group
         foreach (RegionInfo ver in this.veryEasyRegions)
         {
             //Looping through each city tile until we find one that matches this region
@@ -991,7 +988,7 @@ public class CreateTileGrid : MonoBehaviour
         playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_, false);
 
         //Looping through all of the children for the GameData object to get the created characters
-        foreach(Character t in GameData.globalReference.transform.GetComponentsInChildren<Character>())
+        foreach (Character t in GameData.globalReference.transform.GetComponentsInChildren<Character>())
         {
             playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(t.GetComponent<Character>());
         }
@@ -1007,15 +1004,15 @@ public class CreateTileGrid : MonoBehaviour
             playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar1.GetComponent<Character>());
             playerParty1.GetComponent<PartyGroup>().AddCharacterToGroup(startChar2.GetComponent<Character>());
         }
-        
+
         //Setting the character manager to be selecting the player party 1
         CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
 
         //Creating the test enemy and adding them to a tile next to the start tile
         int connectedTileIndex = 0;
-        for(int c = 0; c < startTile_.connectedTiles.Count; ++c)
+        for (int c = 0; c < startTile_.connectedTiles.Count; ++c)
         {
-            if(startTile_.connectedTiles[c] != null)
+            if (startTile_.connectedTiles[c] != null)
             {
                 connectedTileIndex = c;
                 break;
@@ -1023,32 +1020,39 @@ public class CreateTileGrid : MonoBehaviour
         }
 
         //Creating the enemy encounter
-        CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex]);
-
+        if (this.testEnemyEncounter != null)
+        {
+            CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex]);
+        }
 
         int connectedTileIndex2 = connectedTileIndex;
-        for(int c2 = connectedTileIndex + 1; c2 < startTile_.connectedTiles.Count; ++ c2)
+        for (int c2 = connectedTileIndex + 1; c2 < startTile_.connectedTiles.Count; ++c2)
         {
-            if(startTile_.connectedTiles[c2] != null)
+            if (startTile_.connectedTiles[c2] != null)
             {
                 connectedTileIndex2 = c2;
             }
         }
 
         //Creating the enemy encounter
-        CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex2]);
-
+        if (this.testEnemyEncounter != null)
+        {
+            CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex2]);
+        }
 
         int connectedTileIndex3 = connectedTileIndex2;
-        for(int c3 = connectedTileIndex2 + 1; c3 < startTile_.connectedTiles.Count; ++c3)
+        for (int c3 = connectedTileIndex2 + 1; c3 < startTile_.connectedTiles.Count; ++c3)
         {
-            if(startTile_.connectedTiles[c3] != null)
+            if (startTile_.connectedTiles[c3] != null)
             {
                 connectedTileIndex3 = c3;
             }
         }
         //Creating the enemy encounter
-        CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex3]);
+        if (this.testEnemyEncounter != null)
+        {
+            CharacterManager.globalReference.CreateEnemyEncounter(this.testEnemyEncounter.GetComponent<EnemyEncounter>(), startTile_.connectedTiles[connectedTileIndex3]);
+        }
     }
 
 
@@ -1321,6 +1325,7 @@ public class CreateTileGrid : MonoBehaviour
             {
                 GameObject decor = Instantiate(newTile.decorationModel, tileMesh.transform.position, new Quaternion());
                 decor.transform.SetParent(tileMesh.transform);
+                decor.transform.eulerAngles = new Vector3(0, newTile.decorationRotation, 0);
             }
         }
     }
@@ -1426,7 +1431,7 @@ public class CreateTileGrid : MonoBehaviour
         string saveFolder = GameData.globalReference.saveFolder;
         
         //Writing the file to the desktop
-        System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "/Map" + mapNameExtras_ + ".png", bytes);
+        System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "/Map.png", bytes);
     }
 
     

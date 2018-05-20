@@ -242,10 +242,74 @@ public class TileInfo
     //Function called externally through PathfindingAlgorithms.cs in StepOutRegionEdge. Sets this tile's info based on another tile
     public void SetTileBasedOnAnotherTile(TileInfo otherTile_)
     {
-        //Setting the tile's name, type, and texture to be the same as the other tile
+        //Looping through each of the very easy regions in the CreateTileGrid.cs prefab for the other tile's region
+        foreach(RegionInfo veRegion in CreateTileGrid.globalReference.veryEasyRegions)
+        {
+            //If the region's type and name matches the other tile, then we use that region to define this one
+            if(veRegion.environmentType == otherTile_.type && veRegion.regionName == otherTile_.regionName)
+            {
+                this.SetTileBasedOnRegion(veRegion);
+                return;
+            }
+        }
+        //Looping through each of the easy regions in the CreateTileGrid.cs prefab for the other tile's region
+        foreach (RegionInfo eRegion in CreateTileGrid.globalReference.easyRegions)
+        {
+            //If the region's type and name matches the other tile, then we use that region to define this one
+            if (eRegion.environmentType == otherTile_.type && eRegion.regionName == otherTile_.regionName)
+            {
+                this.SetTileBasedOnRegion(eRegion);
+                return;
+            }
+        }
+        //Looping through each of the medium regions in the CreateTileGrid.cs prefab for the other tile's region
+        foreach (RegionInfo mRegion in CreateTileGrid.globalReference.mediumRegions)
+        {
+            //If the region's type and name matches the other tile, then we use that region to define this one
+            if (mRegion.environmentType == otherTile_.type && mRegion.regionName == otherTile_.regionName)
+            {
+                this.SetTileBasedOnRegion(mRegion);
+                return;
+            }
+        }
+        //Looping through each of the hard regions in the CreateTileGrid.cs prefab for the other tile's region
+        foreach (RegionInfo hRegion in CreateTileGrid.globalReference.hardRegions)
+        {
+            //If the region's type and name matches the other tile, then we use that region to define this one
+            if (hRegion.environmentType == otherTile_.type && hRegion.regionName == otherTile_.regionName)
+            {
+                this.SetTileBasedOnRegion(hRegion);
+                return;
+            }
+        }
+        //Looping through each of the very hard regions in the CreateTileGrid.cs prefab for the other tile's region
+        foreach (RegionInfo vhRegion in CreateTileGrid.globalReference.veryHardRegions)
+        {
+            //If the region's type and name matches the other tile, then we use that region to define this one
+            if (vhRegion.environmentType == otherTile_.type && vhRegion.regionName == otherTile_.regionName)
+            {
+                this.SetTileBasedOnRegion(vhRegion);
+                return;
+            }
+        }
+        //Looping through each of the very hard regions in the CreateTileGrid.cs prefab for the other tile's region
+        foreach (RegionInfo fRegion in CreateTileGrid.globalReference.finalRegions)
+        {
+            //If the region's type and name matches the other tile, then we use that region to define this one
+            if (fRegion.environmentType == otherTile_.type && fRegion.regionName == otherTile_.regionName)
+            {
+                this.SetTileBasedOnRegion(fRegion);
+                return;
+            }
+        }
+
+        //If we couldn't find the region prefab, we set the tile's name, type, and texture to be the same as the other tile
         this.regionName = otherTile_.regionName;
         this.type = otherTile_.type;
         this.tileMaterial = otherTile_.tileMaterial;
+
+        //Clearing this tile's current decoration model
+        this.decorationModel = null;
 
         //Initializing the lists of forage resources, fishing resources, and tracking encounters
         this.foragingResources = otherTile_.foragingResources;

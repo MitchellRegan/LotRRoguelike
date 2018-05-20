@@ -765,6 +765,9 @@ public class PathfindingAlgorithms : MonoBehaviour
                         //If the connected tile is from a different region from this edge tile
                         if (connection.regionName != edgeTile.regionName)
                         {
+                            //Clearing the tile decoration on the current tile connection
+                            connection.decorationModel = null;
+
                             //We change the connected tile to be in this edge tile's region
                             connection.SetTileBasedOnAnotherTile(edgeTile);
 
