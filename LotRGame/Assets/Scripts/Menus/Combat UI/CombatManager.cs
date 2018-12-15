@@ -9,6 +9,9 @@ public class CombatManager : MonoBehaviour
     //Static reference to this combat manager
     public static CombatManager globalReference;
 
+    //The value that attacking characters must reach after all combat modifiers to hit their opponent. Used in AttackAction and WeaponAction
+    public const int baseHitDC = 20;
+
     //Enum for the state of this combat manager to decide what to do on update
     public enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
     public combatState currentState = combatState.Wait;

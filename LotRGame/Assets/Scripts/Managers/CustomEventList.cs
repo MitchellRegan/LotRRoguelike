@@ -6,6 +6,7 @@ using System.Collections;
 //Class that's sent through all of our custom events as an argument. Contains an instance of all custom classes
 public class EVTData
 {
+    public LevelUpEVT levelUp = null;
     public UISoundCueEVT soundCue = null;
     public UIMusicCueEVT musicCue = null;
     public SoundCutoutEVT soundCutout = null;
@@ -15,6 +16,13 @@ public class EVTData
     public PromptQuestEVT promptQuest = null;
 }
 
+
+//Event data used to level up player characters at different time intervals
+public class LevelUpEVT
+{
+    //The level that player characters have just reached
+    public int levelNumber = 1;
+}
 
 //Event data used when a UI element needs to play a sound
 public class UISoundCueEVT
