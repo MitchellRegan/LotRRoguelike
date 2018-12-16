@@ -47,7 +47,8 @@ public class PhysicalState : MonoBehaviour
     //Delegate event that listens for Level Up events
     private DelegateEvent<EVTData> levelUpListener;
     //Array to hold this character's health curve value for each level up
-    private int[] healthCurveLevels = new int[4] { 0, 0, 0, 0 };
+    [HideInInspector]
+    public int[] healthCurveLevels = new int[4] { 0, 0, 0, 0 };
     
 
 
