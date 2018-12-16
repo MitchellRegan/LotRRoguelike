@@ -61,6 +61,8 @@ public class PhysicalState : MonoBehaviour
         this.currentWater = this.maxWater;
         this.currentSleep = this.maxSleep;
 
+        healthCurveLevels = new int[4] {0,0,0,0};
+
         this.CalculateEnergyLevel();
 
         //Setting the event delegate to trigger

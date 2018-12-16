@@ -15,6 +15,9 @@ public class TimePanelUI : MonoBehaviour
     public int daysTaken = 0;
     //The time of day it is
     public int timeOfDay = 12;
+    //The time of day that a new game starts at
+    [Range(0,23)]
+    public int startingTimeOfDay = 12;
 
     //The amount of game time that is elapsed before the game advances on its own
     public float gameTimeBeforeHoursAdvance = 120;
@@ -72,6 +75,9 @@ public class TimePanelUI : MonoBehaviour
         else
         {
             globalReference = this;
+
+            //Setting the time of day
+            this.timeOfDay = this.startingTimeOfDay;
 
             //Setting the rotation of the lights
             this.SetLightPositions(this.timeOfDay * 1f);

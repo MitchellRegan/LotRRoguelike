@@ -62,6 +62,8 @@ public class LevelUpManager : MonoBehaviour
             //Increasing the player character levels
             this.characterLevel += 1;
 
+            Debug.Log("LevelUpManager.TrackTimePassage: Current Character Level: " + this.characterLevel);
+
             //Looping through each player character to level up
             for(int c = 0; c < PartyGroup.group1.charactersInParty.Count; ++c)
             {
@@ -70,13 +72,14 @@ public class LevelUpManager : MonoBehaviour
                     //Finding the character's current health curve and bonus health
                     int[] currentCurve = new int[2];
                     currentCurve = this.FindCharacterHealthCurve(PartyGroup.group1.charactersInParty[c]);
-
+                    
                     //Setting the character's curve for this level
                     PartyGroup.group1.charactersInParty[c].charPhysState.healthCurveLevels[this.characterLevel % 4] = currentCurve[0];
 
                     //If this level was a health boost level, we increase their level
                     if (this.characterLevel % 4 == 0)
                     {
+                        Debug.Log("LevelUpManager.TrackTimePassage: Health Boost!");
                         this.BoostCharacterHealth(PartyGroup.group1.charactersInParty[c], currentCurve[1]);
                     }
                 }
@@ -103,16 +106,81 @@ public class LevelUpManager : MonoBehaviour
 
         //Getting the total amount of in-game time that has passed for this playthrough
         float totalDays = TimePanelUI.globalReference.daysTaken;
-        .
+
+        //Subtracting the first few hours since the game doesn't start at midnight and level ups happen at noon
+        /*if (TimePanelUI.globalReference.startingTimeOfDay < 12)
+        {
+            totalDays -= ((12 - TimePanelUI.globalReference.startingTimeOfDay) * 1.0f) / 24.0f;
+        }
+        else if(TimePanelUI.globalReference.startingTimeOfDay > 12)
+        {
+            totalDays += ((TimePanelUI.globalReference.startingTimeOfDay - 12) * 1.0f) / 24.0f;
+        }*/
+
+        //Adding the fraction of a day based on the hours passed
+        //If the time of day is before noon, we add the 12 hours from the previous day from noon to midnight
+        if (TimePanelUI.globalReference.timeOfDay < 12)
+        {
+            totalDays += ((TimePanelUI.globalReference.timeOfDay - 12) * 1.0f) / 24.0f;
+        }
+        //If the time of day is after noon, we only add all of the hours after 12 since noon is when we level
+        else if(TimePanelUI.globalReference.timeOfDay > 12)
+        {
+            totalDays += ((TimePanelUI.globalReference.timeOfDay - 12) * 1.0f) / 24.0f;
+        }
 
         //Looping through each level curve prior to the one we're on now to find the number of days that have passed under them
         for (int t = 0; t < (this.levelCurves.Count - 1); ++t)
         {
-            //Subtracting the total number of days that passed under this previous level curve
-            totalDays -= levelCurves[t].daysToLevel * levelCurves[t].maxLevelForCurve;
+            //If the current level is greater than the max level for the current level curve we subtract all of the time spent under that curve
+            if (this.characterLevel > this.levelCurves[t].maxLevelForCurve)
+            {
+                //If we're looking at the first curve, we ignore the first level since characters start at lvl 1 not 0
+                if (t == 0)
+                {
+                    //Subtracting the total number of days that passed under this previous level curve
+                    totalDays -= levelCurves[t].daysToLevel * (levelCurves[t].maxLevelForCurve - 1);
+                }
+                else
+                {
+                    //Subtracting the total number of days that passed under this previous level curve
+                    totalDays -= levelCurves[t].daysToLevel * levelCurves[t].maxLevelForCurve;
+                }
+            }
+            //When we find the level curve that we're currently in
+            else
+            {
+                //Finding the number of levels we've already spent during this level curve
+                int levelsInCurve = this.characterLevel;
+                //If we're not in the first level curve we subtract the number of levels since we moved from the previous curve
+                if (t > 0)
+                {
+                    levelsInCurve -= levelCurves[t - 1].maxLevelForCurve;
+                }
+                //If we are in the first level curve, we disregard the first level
+                else if(t == 0)
+                {
+                    levelsInCurve -= 1;
+                }
+
+                //Subtracting the total number of days that passed under this curve
+                totalDays -= levelsInCurve * levelCurves[t].daysToLevel;
+                
+                //If the number of days remaining is enough to level up for this curve
+                if (totalDays >= levelCurves[t].daysToLevel)
+                {
+                    //We return true to say it's time to level up
+                    return true;
+                }
+                //Otherwise it isn't time to level up
+                else
+                {
+                    return false;
+                }
+            }
         }
-        .
-        //Otherwise it isn't time to level up
+
+        //If somehow the code gets to this point (which it shouldn't) we return false
         return false;
     }
 
@@ -160,15 +228,6 @@ public class LevelUpManager : MonoBehaviour
     //Function called from TrackTimePassage to increase a given character's max health
     private void BoostCharacterHealth(Character character_, int bonusHealth_)
     {
-        //Getting the total number of dice to roll
-        int strong = 0;
-        int sturdy = 0;
-        int healthy = 0;
-        int average = 0;
-        int weak = 0;
-        int sickly = 0;
-        int feeble = 0;
-
         //The total health value
         int hpTotal = 0;
 
@@ -181,95 +240,67 @@ public class LevelUpManager : MonoBehaviour
             switch (character_.charPhysState.healthCurveLevels[l])
             {
                 case 7://strong
-                    ++strong;
+                    //Rolling 2d12 and taking the higher roll
+                    int strongRoll1 = Random.Range(1, 13);
+                    int strongRoll2 = Random.Range(1, 13);
+
+                    if (strongRoll1 > strongRoll2)
+                    {
+                        hpTotal += strongRoll1;
+                    }
+                    else
+                    {
+                        hpTotal += strongRoll2;
+                    }
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Strong");
                     break;
 
                 case 6://sturdy
-                    ++sturdy;
+                    hpTotal += Random.Range(1, 13);
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Sturdy");
                     break;
 
                 case 5://healthy
-                    ++healthy;
+                    hpTotal += Random.Range(1, 11);
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Healthy");
                     break;
 
                 case 4://average
-                    ++average;
+                    hpTotal += Random.Range(1, 9);
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Average");
                     break;
 
                 case 3://weak
-                    ++weak;
+                    hpTotal += Random.Range(1, 7);
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Weak");
                     break;
 
                 case 2://sickly
-                    ++sickly;
+                    hpTotal += Random.Range(1, 5);
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Sickly");
                     break;
 
                 case 1://feeble
-                    ++feeble;
+                    //Rolling 2d4 and taking the lower roll
+                    int feebleRoll1 = Random.Range(1, 5);
+                    int feebleRoll2 = Random.Range(1, 5);
+
+                    if (feebleRoll1 < feebleRoll2)
+                    {
+                        hpTotal += feebleRoll1;
+                    }
+                    else
+                    {
+                        hpTotal += feebleRoll2;
+                    }
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", Feeble");
                     break;
 
                 default://Below 1 or above 7, this causes problems
-                        //Not adding any health to the total, and reducing the number to divide by
+                    //Not adding any health to the total, and reducing the number to divide by
                     --numberToDivideBy;
+                    Debug.Log(character_.firstName + " " + character_.lastName + ", INVALID!!!!!!");
                     break;
-            }
-        }
-
-        //Rolling dice for each strong curve
-        if (strong > 0)
-        {
-            //Rolling 2d12 and taking the higher roll
-            int roll1 = Random.Range(1, 13);
-            int roll2 = Random.Range(1, 13);
-
-            if (roll1 > roll2)
-            {
-                hpTotal += (roll1 * strong);
-            }
-            else
-            {
-                hpTotal += (roll2 * strong);
-            }
-        }
-        //Rolling dice for each sturdy curve
-        if (sturdy > 0)
-        {
-            hpTotal += (Random.Range(1, 13) * sturdy);
-        }
-        //Rolling dice for each healthy curve
-        if (healthy > 0)
-        {
-            hpTotal += (Random.Range(1, 11) * healthy);
-        }
-        //Rolling dice for each average curve
-        if (average > 0)
-        {
-            hpTotal += (Random.Range(1, 9) * average);
-        }
-        //Rolling dice for each weak curve
-        if (weak > 0)
-        {
-            hpTotal += (Random.Range(1, 7) * weak);
-        }
-        //Rolling dice for each sickly curve
-        if (sickly > 0)
-        {
-            hpTotal += (Random.Range(1, 5) * sickly);
-        }
-        //Rolling dice for each feeble curve
-        if (feeble > 0)
-        {
-            //Rolling 2d4 and taking the lower roll
-            int roll1 = Random.Range(1, 5);
-            int roll2 = Random.Range(1, 5);
-
-            if (roll1 < roll2)
-            {
-                hpTotal += (roll1 * feeble);
-            }
-            else
-            {
-                hpTotal += (roll2 * feeble);
             }
         }
 
@@ -278,10 +309,14 @@ public class LevelUpManager : MonoBehaviour
 
         //Adding any bonus health to this total
         hpTotal += bonusHealth_;
+        
+        Debug.Log(character_.firstName + " " + character_.lastName + ", Health to add: " + hpTotal + ", Current Max HP: " + character_.charPhysState.maxHealth);
 
         //Increasing the character's max health and current health by the new hp amount
         character_.charPhysState.maxHealth += hpTotal;
         character_.charPhysState.currentHealth += hpTotal;
+
+        Debug.Log(character_.firstName + " " + character_.lastName + ", New Max HP: " + character_.charPhysState.maxHealth);
 
         //Clearing the health curves for the past 4 levels
         character_.charPhysState.healthCurveLevels[0] = 0;
