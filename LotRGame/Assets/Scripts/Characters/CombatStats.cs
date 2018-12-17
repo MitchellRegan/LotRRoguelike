@@ -61,14 +61,6 @@ public class CombatStats : MonoBehaviour
         {
             ourGroup = PartyGroup.group1;
         }
-        else if(PartyGroup.group2 != null && PartyGroup.group2.charactersInParty.Contains(this.GetComponent<Character>()))
-        {
-            ourGroup = PartyGroup.group2;
-        }
-        else if(PartyGroup.group3 != null && PartyGroup.group3.charactersInParty.Contains(this.GetComponent<Character>()))
-        {
-            ourGroup = PartyGroup.group3;
-        }
         //If no party group contains this character, nothing happens
         else
         {

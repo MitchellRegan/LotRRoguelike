@@ -140,48 +140,32 @@ public class CharacterManager : MonoBehaviour
     }
 
 
-    //Selects the party group based on the number given
-    public void SelectPartyGroup(int groupNumber_)
+    //Function called externally to select a character at the given index
+    public void SelectCharacterAtIndex(int index_)
     {
-        //The party group that we'll be setting as the selected group
-        PartyGroup newGroup;
-
-        //Sets the selected group
-        switch(groupNumber_)
+        //Making sure the index is valid
+        if (index_ > 0 && index_ < PartyGroup.group1.charactersInParty.Count)
         {
-            case 1:
-                newGroup = PartyGroup.group1;
-                break;
-            case 2:
-                newGroup = PartyGroup.group2;
-                break;
-            case 3:
-                newGroup = PartyGroup.group3;
-                break;
-            default:
-                newGroup = PartyGroup.group1;
-                break;
-        }
-
-        //Looping through each character index in the selected party and setting the first one we find to the selected character
-        Character charToSelect = null;
-        foreach(Character charSlot in newGroup.charactersInParty)
-        {
-            if(charSlot != null)
+            //Making sure the character at the given index isn't null
+            if (PartyGroup.group1.charactersInParty[index_] != null)
             {
-                charToSelect = charSlot;
-                break;
+                this.selectedCharacter = PartyGroup.group1.charactersInParty[index_];
+            }
+            //If the index is null
+            else
+            {
+                //We loop until we find the first non-null character and select it
+                for(int c = 0; c < PartyGroup.group1.charactersInParty.Count; ++c)
+                {
+                    if(PartyGroup.group1.charactersInParty[c] != null)
+                    {
+                        this.selectedCharacter = PartyGroup.group1.charactersInParty[c];
+                    }
+                }
             }
         }
-
-        //If the selected character is null, that means there wasn't a character in the party, so we stick with the party we have
-        if(charToSelect != null)
-        {
-            this.selectedGroup = newGroup;
-            this.selectedCharacter = charToSelect;
-        }
     }
-
+    
 
     //Function called externally to select the next character in line in the party group
     public void SelectNextCharacter()

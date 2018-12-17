@@ -165,18 +165,7 @@ public class CreateTileGrid : MonoBehaviour
             SaveLoadManager.globalReference.LoadPlayerProgress(GameData.globalReference.saveFolder);
 
             //Setting the selected group
-            if (PartyGroup.group1 != null)
-            {
-                CharacterManager.globalReference.selectedGroup = PartyGroup.group1;
-            }
-            else if(PartyGroup.group2 != null)
-            {
-                CharacterManager.globalReference.selectedGroup = PartyGroup.group2;
-            }
-            else
-            {
-                CharacterManager.globalReference.selectedGroup = PartyGroup.group3;
-            }
+            CharacterManager.globalReference.selectedGroup = PartyGroup.group1;
 
             //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
             CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
