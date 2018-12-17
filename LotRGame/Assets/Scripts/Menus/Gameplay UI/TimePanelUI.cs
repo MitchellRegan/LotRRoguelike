@@ -57,11 +57,6 @@ public class TimePanelUI : MonoBehaviour
     //The color gradient of the moon as it moves through the night
     public Gradient moonColors;
 
-    [Space(8)]
-
-    //The UnityEvent that's dispatched when time is advanced
-    public UnityEvent onTimeAdvancedEvent;
-
 
 
     //Function called when this object is initialized
@@ -199,7 +194,9 @@ public class TimePanelUI : MonoBehaviour
         this.advanceTimeButton.interactable = false;
 
         //Calling the unity event
-        this.onTimeAdvancedEvent.Invoke();
+        EVTData timeData = new EVTData();
+        timeData.timePassed = new TimePassedEVT(this.daysTaken, this.timeOfDay, hoursToAdvance_);
+        EventManager.TriggerEvent(TimePassedEVT.eventName, timeData);
     }
 
 

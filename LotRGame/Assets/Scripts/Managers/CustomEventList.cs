@@ -6,7 +6,7 @@ using System.Collections;
 //Class that's sent through all of our custom events as an argument. Contains an instance of all custom classes
 public class EVTData
 {
-    public LevelUpEVT levelUp = null;
+    public TimePassedEVT timePassed = null;
     public UISoundCueEVT soundCue = null;
     public UIMusicCueEVT musicCue = null;
     public SoundCutoutEVT soundCutout = null;
@@ -17,11 +17,26 @@ public class EVTData
 }
 
 
-//Event data used to level up player characters at different time intervals
-public class LevelUpEVT
+//Event data used to pass time
+public class TimePassedEVT
 {
-    //The level that player characters have just reached
-    public int levelNumber = 1;
+    //The name used to call this event from the event manager
+    public static string eventName = "Advance Time";
+
+    //The total number of days that have passed
+    public int days = 0;
+    //The time of day when the event was called
+    public int timeOfDay = 0;
+    //The amount of time that will pass during this event
+    public int timePassed = 0;
+
+    //Public constructor for this class
+    public TimePassedEVT(int days_, int timeOfDay_, int timePassed_)
+    {
+        this.days = days_;
+        this.timeOfDay = timeOfDay_;
+        this.timePassed = timePassed_;
+    }
 }
 
 //Event data used when a UI element needs to play a sound

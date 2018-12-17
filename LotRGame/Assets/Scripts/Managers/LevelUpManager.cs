@@ -42,14 +42,14 @@ public class LevelUpManager : MonoBehaviour
     //Function called when this component is enabled
     private void OnEnable()
     {
-        EventManager.StartListening("Advance Time", this.trackTimePassageEVT);
+        EventManager.StartListening(TimePassedEVT.eventName, this.trackTimePassageEVT);
     }
 
 
     //Function called when this component is disabled
     private void OnDisable()
     {
-        EventManager.StopListening("Advance Time", this.trackTimePassageEVT);
+        EventManager.StopListening(TimePassedEVT.eventName, this.trackTimePassageEVT);
     }
 
 
@@ -299,7 +299,6 @@ public class LevelUpManager : MonoBehaviour
                 default://Below 1 or above 7, this causes problems
                     //Not adding any health to the total, and reducing the number to divide by
                     --numberToDivideBy;
-                    Debug.Log(character_.firstName + " " + character_.lastName + ", INVALID!!!!!!");
                     break;
             }
         }
@@ -310,13 +309,9 @@ public class LevelUpManager : MonoBehaviour
         //Adding any bonus health to this total
         hpTotal += bonusHealth_;
         
-        Debug.Log(character_.firstName + " " + character_.lastName + ", Health to add: " + hpTotal + ", Current Max HP: " + character_.charPhysState.maxHealth);
-
         //Increasing the character's max health and current health by the new hp amount
         character_.charPhysState.maxHealth += hpTotal;
         character_.charPhysState.currentHealth += hpTotal;
-
-        Debug.Log(character_.firstName + " " + character_.lastName + ", New Max HP: " + character_.charPhysState.maxHealth);
 
         //Clearing the health curves for the past 4 levels
         character_.charPhysState.healthCurveLevels[0] = 0;
