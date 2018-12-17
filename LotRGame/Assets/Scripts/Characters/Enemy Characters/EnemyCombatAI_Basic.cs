@@ -391,7 +391,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                             float netStatChange = 0;
                             //Looping through all of the stat changes
                             ModifyStatsEffect mse = combatEffect.GetComponent<ModifyStatsEffect>();
-                            foreach(StatModifier change in mse.StatChanges)
+                            foreach(StatModifier change in mse.statChanges)
                             {
                                 //If the change isn't for initiative, the value is added normally
                                 if(change.modifiedStat != StatModifier.StatName.Initiative)
@@ -444,7 +444,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                     float netStatChange = 0;
                                     //Looping through all of the stat changes
                                     ModifyStatsEffect mse = combatEffect.GetComponent<ModifyStatsEffect>();
-                                    foreach (StatModifier change in mse.StatChanges)
+                                    foreach (StatModifier change in mse.statChanges)
                                     {
                                         //If the change isn't for initiative, the value is added normally
                                         if (change.modifiedStat != StatModifier.StatName.Initiative)
@@ -573,6 +573,22 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     {
         //Find which character to attack
         this.FindPlayerTarget();
+
+        /*  If passive
+         *      -
+         *  
+         *  If terrified
+         *      - Loop through all move actions to find furthest distance
+         *      - loop through all tiles in movement range
+         *          - track best tile and furthest distance sum
+         *          - for each tile, pathfind distance to all player characters
+         *          - add the sum of tiles from each player character
+         *              - if this tile has a higher sum than the previous best
+         *                  - replace the current best tile and furthest distance
+         *              - if the furthest distance is still 0 (can't move)
+         *                  - switch state to hostile
+         * 
+         */
         
 
         //Finding the distance this enemy is from the target

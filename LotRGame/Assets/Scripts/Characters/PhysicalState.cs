@@ -44,6 +44,10 @@ public class PhysicalState : MonoBehaviour
     //The maximum amount of energy this character can have
     public float maxEnergy = 1;
     
+    //Array to hold this character's health curve value for each level up
+    [HideInInspector]
+    public int[] healthCurveLevels = new int[4] { 0, 0, 0, 0 };
+    
 
 
 
@@ -54,6 +58,8 @@ public class PhysicalState : MonoBehaviour
         this.currentFood = this.maxFood;
         this.currentWater = this.maxWater;
         this.currentSleep = this.maxSleep;
+
+        healthCurveLevels = new int[4] {0,0,0,0};
 
         this.CalculateEnergyLevel();
     }

@@ -271,6 +271,8 @@ public class Character : MonoBehaviour
         this.charPhysState.currentSleep = saveData_.currentSleep;
         this.charPhysState.maxEnergy = saveData_.maxEnergy;
         this.charPhysState.currentEnergy = saveData_.currentEnergy;
+        this.charPhysState.healthCurveStagesSum = saveData_.healthStage;
+        this.charPhysState.healthCurveLevels = saveData_.healthCurveLevels;
 
         //Setting the variables in CombatStats.cs
         this.charCombatStats.currentInitiativeSpeed = saveData_.currentInitiativeSpeed;
@@ -373,6 +375,8 @@ public class CharacterSaveData
     public bool requireSleep = true;
     public float maxEnergy = 1;
     public float currentEnergy = 1;
+    public int healthStage = 3;
+    public int[] healthCurveLevels = new int[4];
 
     //Variables in CombatStats.cs
     public int startingCol = 0;
@@ -438,6 +442,8 @@ public class CharacterSaveData
         this.requireSleep = characterToSave_.charPhysState.requiresSleep;
         this.maxEnergy = characterToSave_.charPhysState.maxEnergy;
         this.currentEnergy = characterToSave_.charPhysState.currentEnergy;
+        this.healthStage = characterToSave_.charPhysState.healthCurveStagesSum;
+        this.healthCurveLevels = characterToSave_.charPhysState.healthCurveLevels;
 
         //Setting variables from CombatStats.cs
         this.currentInitiativeSpeed = characterToSave_.charCombatStats.currentInitiativeSpeed;

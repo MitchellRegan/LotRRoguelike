@@ -203,7 +203,7 @@ public class RemoveEffectsEffect : Effect
         float netBenefit = 0;
 
         //Looping through each stat modifier in the effect
-        foreach(StatModifier mod in effectToCheck_.StatChanges)
+        foreach(StatModifier mod in effectToCheck_.statChanges)
         {
             //Since the initiative mod is small, we have to multiply it before it's bonus is added
             if(mod.modifiedStat == StatModifier.StatName.Initiative)

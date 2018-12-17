@@ -15,6 +15,9 @@ public class TimePanelUI : MonoBehaviour
     public int daysTaken = 0;
     //The time of day it is
     public int timeOfDay = 12;
+    //The time of day that a new game starts at
+    [Range(0,23)]
+    public int startingTimeOfDay = 12;
 
     //The amount of game time that is elapsed before the game advances on its own
     public float gameTimeBeforeHoursAdvance = 120;
@@ -54,11 +57,6 @@ public class TimePanelUI : MonoBehaviour
     //The color gradient of the moon as it moves through the night
     public Gradient moonColors;
 
-    [Space(8)]
-
-    //The UnityEvent that's dispatched when time is advanced
-    public UnityEvent onTimeAdvancedEvent;
-
 
 
     //Function called when this object is initialized
@@ -72,6 +70,9 @@ public class TimePanelUI : MonoBehaviour
         else
         {
             globalReference = this;
+
+            //Setting the time of day
+            this.timeOfDay = this.startingTimeOfDay;
 
             //Setting the rotation of the lights
             this.SetLightPositions(this.timeOfDay * 1f);
@@ -193,7 +194,9 @@ public class TimePanelUI : MonoBehaviour
         this.advanceTimeButton.interactable = false;
 
         //Calling the unity event
-        this.onTimeAdvancedEvent.Invoke();
+        EVTData timeData = new EVTData();
+        timeData.timePassed = new TimePassedEVT(this.daysTaken, this.timeOfDay, hoursToAdvance_);
+        EventManager.TriggerEvent(TimePassedEVT.eventName, timeData);
     }
 
 

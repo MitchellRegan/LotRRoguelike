@@ -368,7 +368,7 @@ public class SaveLoadManager : MonoBehaviour
         this.CheckSaveDirectory(GameData.globalReference.saveFolder);
         
         //Creating a new PlayerProgress class that we'll save
-        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
+        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
         //Serializing the current progress
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
@@ -407,6 +407,9 @@ public class SaveLoadManager : MonoBehaviour
         //Setting the TimePanelUI.cs variables
         TimePanelUI.globalReference.daysTaken = loadedProgress.daysTaken;
         TimePanelUI.globalReference.timeOfDay = loadedProgress.timeOfDay;
+
+        //Setting the LevelUpManager.cs variable
+        LevelUpManager.globalReference.characterLevel = loadedProgress.characterLevel;
         
         //Setting the PartyGroup.cs static references
         if (loadedProgress.partyGroup1 != null)
@@ -592,6 +595,9 @@ public class PlayerProgress
     public int daysTaken = 0;
     public int timeOfDay = 0;
 
+    //Variables from LevelUpManager.cs
+    public int characterLevel = 0;
+
     //Variables for the PartyGroup.cs
     public PartySaveData partyGroup1 = null;
     public PartySaveData partyGroup2 = null;
@@ -608,7 +614,7 @@ public class PlayerProgress
 
 
     //Constructor function for this class
-    public PlayerProgress(GameData gameData_, TimePanelUI timePanel_, CharacterManager charManager_, QuestTracker questTracker_)
+    public PlayerProgress(GameData gameData_, TimePanelUI timePanel_, LevelUpManager levelUpManager_, CharacterManager charManager_, QuestTracker questTracker_)
     {
         //Setting the GameData.cs variables
         this.difficulty = gameData_.currentDifficulty;
@@ -619,6 +625,9 @@ public class PlayerProgress
         //Setting the TimePanelUI.cs variables
         this.daysTaken = timePanel_.daysTaken;
         this.timeOfDay = timePanel_.timeOfDay;
+
+        //Setting the LevelUpManager variable
+        this.characterLevel = levelUpManager_.characterLevel;
 
         //Setting the PartyGroup.cs variables
         if (PartyGroup.group1 != null)

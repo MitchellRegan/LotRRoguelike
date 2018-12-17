@@ -36,7 +36,7 @@ public class ModifyStatsEffect : Effect
     public bool tickOnMove = false;
 
     //The list of stat modifiers that are applied
-    public List<StatModifier> StatChanges;
+    public List<StatModifier> statChanges;
 
 
 
@@ -77,7 +77,7 @@ public class ModifyStatsEffect : Effect
     private void ApplyStatChanges(bool addingChanges_)
     {
         //Looping through each stat modifier that this effect applies
-        foreach(StatModifier mod in this.StatChanges)
+        foreach(StatModifier mod in this.statChanges)
         {
             switch(mod.modifiedStat)
             {
@@ -124,6 +124,20 @@ public class ModifyStatsEffect : Effect
                     else
                     {
                         this.characterToEffect.charCombatStats.initiativeMod -= mod.amountToChange;
+                    }
+                    break;
+
+                //Increasing the target character's combat accuracy
+                case StatModifier.StatName.Accuracy:
+                    //If we're adding the modifier
+                    if(addingChanges_)
+                    {
+                        this.characterToEffect.charCombatStats.accuracy += Mathf.RoundToInt(mod.amountToChange);
+                    }
+                    //If we're removing the modifier
+                    else
+                    {
+                        this.characterToEffect.charCombatStats.accuracy -= Mathf.RoundToInt(mod.amountToChange);
                     }
                     break;
 
