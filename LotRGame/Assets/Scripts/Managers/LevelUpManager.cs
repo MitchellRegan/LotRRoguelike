@@ -175,8 +175,6 @@ public class LevelUpManager : MonoBehaviour
                 //Subtracting the total number of days that passed under this curve
                 totalDays -= levelsInCurve * levelCurves[t].daysToLevel;
 
-                Debug.Log("LUM: Total days since last level: " + totalDays + ", Days needed: " + levelCurves[t].daysToLevel);
-
                 //If the number of days remaining is enough to level up for this curve
                 if (totalDays >= levelCurves[t].daysToLevel)
                 {
