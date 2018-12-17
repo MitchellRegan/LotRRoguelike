@@ -8,9 +8,9 @@ public class LevelUpManager : MonoBehaviour
     public static LevelUpManager globalReference;
 
     //The current character level
-    [Range(1, 100)]
+    [Range(0, 100)]
     [HideInInspector]
-    int characterLevel = 1;
+    int characterLevel = 0;
 
     //The different curves for level progressions
     public List<LevelUpCurve> levelCurves;
@@ -57,7 +57,7 @@ public class LevelUpManager : MonoBehaviour
     private void TrackTimePassage(EVTData data_)
     {
         //If it's time to level up
-        if(this.IsItTimeToLevelUp())
+        if(this.IsItTimeToLevelUp(data_.timePassed))
         {
             //Increasing the player character levels
             this.characterLevel += 1;
@@ -89,8 +89,15 @@ public class LevelUpManager : MonoBehaviour
 
 
     //Function called from TrackTimePassage to find out if it's time to level up the player characters
-    private bool IsItTimeToLevelUp()
+    private bool IsItTimeToLevelUp(TimePassedEVT data_)
     {
+        //Making sure the TimePassedEVT data given isn't null
+        if(data_ == null)
+        {
+            Debug.LogError("ERROR! LevelUpManager.IsItTimeToLevelUp: TimePassedEVT data given is NULL");
+            return false;
+        }
+
         //Looping through each level up curve to find the one that applies to the current character levels
         int currentCurveIndex = 0;
         for(int i = 0; i < this.levelCurves.Count; ++i)
@@ -105,7 +112,14 @@ public class LevelUpManager : MonoBehaviour
         }
 
         //Getting the total amount of in-game time that has passed for this playthrough
-        float totalDays = TimePanelUI.globalReference.daysTaken;
+        float totalDays = data_.days;
+        float timeOfDay = data_.timeOfDay + data_.timePassed;
+        //If the time of day goes past midnight we correct the time
+        if(timeOfDay >= 24)
+        {
+            totalDays += 1;
+            timeOfDay -= 24;
+        }
 
         //Subtracting the first few hours since the game doesn't start at midnight and level ups happen at noon
         /*if (TimePanelUI.globalReference.startingTimeOfDay < 12)
@@ -119,14 +133,14 @@ public class LevelUpManager : MonoBehaviour
 
         //Adding the fraction of a day based on the hours passed
         //If the time of day is before noon, we add the 12 hours from the previous day from noon to midnight
-        if (TimePanelUI.globalReference.timeOfDay < 12)
+        if (timeOfDay < 12)
         {
-            totalDays += ((TimePanelUI.globalReference.timeOfDay - 12) * 1.0f) / 24.0f;
+            totalDays += ((timeOfDay - 12) * 1.0f) / 24.0f;
         }
         //If the time of day is after noon, we only add all of the hours after 12 since noon is when we level
-        else if(TimePanelUI.globalReference.timeOfDay > 12)
+        else if(timeOfDay > 12)
         {
-            totalDays += ((TimePanelUI.globalReference.timeOfDay - 12) * 1.0f) / 24.0f;
+            totalDays += ((timeOfDay - 12) * 1.0f) / 24.0f;
         }
 
         //Looping through each level curve prior to the one we're on now to find the number of days that have passed under them
@@ -139,7 +153,7 @@ public class LevelUpManager : MonoBehaviour
                 if (t == 0)
                 {
                     //Subtracting the total number of days that passed under this previous level curve
-                    totalDays -= levelCurves[t].daysToLevel * (levelCurves[t].maxLevelForCurve - 1);
+                    totalDays -= levelCurves[t].daysToLevel * (levelCurves[t].maxLevelForCurve);
                 }
                 else
                 {
@@ -157,15 +171,12 @@ public class LevelUpManager : MonoBehaviour
                 {
                     levelsInCurve -= levelCurves[t - 1].maxLevelForCurve;
                 }
-                //If we are in the first level curve, we disregard the first level
-                else if(t == 0)
-                {
-                    levelsInCurve -= 1;
-                }
 
                 //Subtracting the total number of days that passed under this curve
                 totalDays -= levelsInCurve * levelCurves[t].daysToLevel;
-                
+
+                Debug.Log("LUM: Total days since last level: " + totalDays + ", Days needed: " + levelCurves[t].daysToLevel);
+
                 //If the number of days remaining is enough to level up for this curve
                 if (totalDays >= levelCurves[t].daysToLevel)
                 {
