@@ -20,8 +20,8 @@ public class EVTData
 //Event data used to pass time
 public class TimePassedEVT
 {
-    //The name used to call this event from the event manager
-    public static string eventName = "Advance Time";
+    //The num used to call this event from the event manager
+    public static byte eventNum = 255;
 
     //The total number of days that have passed
     public int days = 0;
@@ -39,9 +39,13 @@ public class TimePassedEVT
     }
 }
 
+
 //Event data used when a UI element needs to play a sound
 public class UISoundCueEVT
 {
+    //The num used to call this event from the event manager
+    public static byte eventNum = 254;
+
     //The sound audio clip that will be played
     public AudioClip soundToPlay = null;
     //The volume of the sound
@@ -59,6 +63,9 @@ public class UISoundCueEVT
 //Event data used when a UI element needs to play music
 public class UIMusicCueEVT
 {
+    //The num used to call this event from the event manager
+    public static byte eventNum = 253;
+
     //The music audio clip that will be played
     public AudioClip musicToPlay = null;
     //The volume of the music
@@ -76,6 +83,9 @@ public class UIMusicCueEVT
 //used when the sound cuts out after an impactful sound cue
 public class SoundCutoutEVT
 {
+    //The num used to call this event from the event manager
+    public static byte eventNum = 252;
+
     //how long the cutout lasts
     public float stopDuration = 0;
     //How long it takes for sounds to return to normal levels again
@@ -106,6 +116,9 @@ public class SoundCutoutEVT
 //Event data used when we transition to a new scene
 public class SceneTransitionEVT
 {
+    //The num used to call this event from the event manager
+    public static byte eventNum = 251;
+
     //The name of the scene to switch to
     public string newSceneName = "";
     //The amount of time it takes to transition to the new scene
@@ -123,8 +136,8 @@ public class SceneTransitionEVT
 //Event data when we transition to and from the combat screen
 public class CombatTransitionEVT
 {
-    //The name used to call this event from the event manager
-    public static string eventName = "Combat Transition";
+    //The num used to call this event from the event manager
+    public static byte eventNum = 250;
 
     //The amount of time it takes to fade to black
     public float fadeToBlackTime = 1;
@@ -150,8 +163,8 @@ public class CombatTransitionEVT
 //Event data when we start a screen shake
 public class ScreenShakeEVT
 {
-    //The name used to call this event from the event manager
-    public static string eventName = "Screen Shake";
+    //The num used to call this event from the event manager
+    public static byte eventNum = 249;
 
     //The amount of time that the screen will shake once triggered
     public float screenShakeDuration = 1;
@@ -174,8 +187,8 @@ public class ScreenShakeEVT
 //Event data when we prompt a quest in QuestPromptUI.cs
 public class PromptQuestEVT
 {
-    //The name used to call this event from the event manager
-    public static string eventName = "Prompt Quest";
+    //The num used to call this event from the event manager
+    public static byte eventNum = 248;
 
     //The quest giver that we're going to display info about
     public Quest questToPrompt;
