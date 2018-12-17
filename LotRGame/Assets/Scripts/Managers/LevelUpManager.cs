@@ -10,7 +10,7 @@ public class LevelUpManager : MonoBehaviour
     //The current character level
     [Range(0, 100)]
     [HideInInspector]
-    int characterLevel = 0;
+    public int characterLevel = 0;
 
     //The different curves for level progressions
     public List<LevelUpCurve> levelCurves;
