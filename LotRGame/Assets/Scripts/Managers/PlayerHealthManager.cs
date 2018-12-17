@@ -44,14 +44,14 @@ public class PlayerHealthManager : MonoBehaviour
     //Function called when this component is enabled
     private void OnEnable()
     {
-        EventManager.StartListening("Advance Time", this.trackTimePassageEVT);
+        EventManager.StartListening(TimePassedEVT.eventNum, this.trackTimePassageEVT);
     }
 
 
     //Function called when this component is disabled
     private void OnDisable()
     {
-        EventManager.StopListening("Advance Time", this.trackTimePassageEVT);
+        EventManager.StopListening(TimePassedEVT.eventNum, this.trackTimePassageEVT);
     }
 
 

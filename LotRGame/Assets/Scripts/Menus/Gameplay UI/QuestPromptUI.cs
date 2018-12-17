@@ -46,7 +46,7 @@ public class QuestPromptUI : MonoBehaviour
     private void OnEnable()
     {
         //Telling the Event Manager to listen for our delegate
-        EventManager.StartListening(PromptQuestEVT.eventName, this.displayPromptEVT);
+        EventManager.StartListening(PromptQuestEVT.eventNum, this.displayPromptEVT);
     }
 
 
@@ -54,7 +54,7 @@ public class QuestPromptUI : MonoBehaviour
     private void OnDisable()
     {
         //Telling the Event Manager to stop listening for our delegate
-        EventManager.StopListening(PromptQuestEVT.eventName, this.displayPromptEVT);
+        EventManager.StopListening(PromptQuestEVT.eventNum, this.displayPromptEVT);
     }
 
 

@@ -224,7 +224,7 @@ public class SoundManager : MonoBehaviour
     //Function called internally to update all ExtraSoundEmitterSettings.cs scripts to use the new manager settings
     private void DispatchSoundChangeEvt()
     {
-        EventManager.TriggerEvent("SoundSettingsChanged");
+        EventManager.TriggerEvent(ChangeSoundSettings.eventNum);
     }
 }
 

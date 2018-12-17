@@ -199,3 +199,11 @@ public class PromptQuestEVT
         this.questToPrompt = questToPrompt_;
     }
 }
+
+
+//Event data when we change the sound settings
+public class ChangeSoundSettings
+{
+    //The num used to call this event from the event manager
+    public static byte eventNum = 247;
+}

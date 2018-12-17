@@ -67,14 +67,14 @@ public class ActionList : MonoBehaviour
     //Function called when this component is enabled to tell the event manager to listen for this delegate event's trigger
     private void OnEnable()
     {
-        EventManager.StartListening("Advance Time", this.rechargeSpellsEVT);
+        EventManager.StartListening(TimePassedEVT.eventNum, this.rechargeSpellsEVT);
     }
 
 
     //Function called when this component is disabled to tell the event manager to stop listenening for this delegate event's trigger
     private void OnDisable()
     {
-        EventManager.StopListening("Advance Time", this.rechargeSpellsEVT);
+        EventManager.StopListening(TimePassedEVT.eventNum, this.rechargeSpellsEVT);
     }
 
 
