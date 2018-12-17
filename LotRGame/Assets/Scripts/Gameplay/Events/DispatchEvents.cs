@@ -4,29 +4,29 @@ using UnityEngine;
 
 public class DispatchEvents : MonoBehaviour
 {
-    //List of event names that can be dispatched to the Event Manager
-    public List<string> eventNamesToDispatch;
+    //List of event nums that can be dispatched to the Event Manager
+    public List<byte> eventNumsToDispatch;
 
 
-    //Public function called externally. Dispatches a blank event to the Event Manager using the name of the index given
+    //Public function called externally. Dispatches a blank event to the Event Manager using the num of the index given
     public void DispatchEvent(int nameIndex_)
     {
         Debug.Log(this.gameObject.name + " Dispatch Events");
         //Making sure that the index is valid
-        if (this.eventNamesToDispatch.Count < nameIndex_ && nameIndex_ >= 0)
+        if (this.eventNumsToDispatch.Count < nameIndex_ && nameIndex_ >= 0)
         {
             Debug.Log("Dispatch worked?");
-            EventManager.TriggerEvent(this.eventNamesToDispatch[nameIndex_]);
+            EventManager.TriggerEvent(this.eventNumsToDispatch[nameIndex_]);
         }
     }
 
 
-    //Public function called externally. Dispatches multiple blank events to the Event Manager using all event names
+    //Public function called externally. Dispatches multiple blank events to the Event Manager using all event nums
     public void DispatchAllEvents()
     {
-        foreach (string name in this.eventNamesToDispatch)
+        foreach (byte num in this.eventNumsToDispatch)
         {
-            EventManager.TriggerEvent(name);
+            EventManager.TriggerEvent(num);
         }
     }
 }

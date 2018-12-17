@@ -5,11 +5,11 @@ using UnityEngine.Events;
 
 public class ReceiveEvent : MonoBehaviour
 {
-    //Name of the event dispatched from the EventManager that triggers the UnityEvents
-    public string eventNameToListenFor;
-    //List of UnityEvents triggered from the Event Name To Listen For
+    //Num of the event dispatched from the EventManager that triggers the UnityEvents
+    public byte eventNumToListenFor;
+    //List of UnityEvents triggered from the Event num To Listen For
     public List<UnityEvent> eventsOnReceive;
-    //Delegate event that listens for the correct event name
+    //Delegate event that listens for the correct event num
     private DelegateEvent<EVTData> customListener;
 
 
@@ -21,17 +21,17 @@ public class ReceiveEvent : MonoBehaviour
     }
 
 
-    //Tells the EventManager to listen for our event name
+    //Tells the EventManager to listen for our event num
     private void OnEnable()
     {
-        EventManager.StartListening(this.eventNameToListenFor, this.customListener);
+        EventManager.StartListening(this.eventNumToListenFor, this.customListener);
     }
 
 
-    //Tells the EventManager to stop listening for our event name
+    //Tells the EventManager to stop listening for our event num
     private void OnDisable()
     {
-        EventManager.StopListening(this.eventNameToListenFor, this.customListener);
+        EventManager.StopListening(this.eventNumToListenFor, this.customListener);
     }
 
 

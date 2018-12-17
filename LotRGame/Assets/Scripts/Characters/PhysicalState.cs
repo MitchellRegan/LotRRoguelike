@@ -66,10 +66,10 @@ public class PhysicalState : MonoBehaviour
 
 
     //Function called externally when time is advanced. This is used to lower this character's physical state over time
-    public void OnTimeAdvanced()
+    public void OnTimeAdvanced(int timePassed_)
     {
         //Finding the percentage of a day that's passed
-        float daysPassed = (TimePanelUI.globalReference.hoursAdvancedPerUpdate * 1f) / 24f;
+        float daysPassed = (timePassed_ * 1f) / 24f;
 
         //Doesn't lower hunger if this character doesn't eat
         if (this.requiresFood)

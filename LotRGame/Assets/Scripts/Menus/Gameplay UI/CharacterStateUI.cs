@@ -30,7 +30,17 @@ public class CharacterStateUI : MonoBehaviour
     public Slider energySlider;
     public Text energyValueText;
 
+    //Delegate event that listens for TimePassingEVT events
+    private DelegateEvent<EVTData> advanceTimeListener;
 
+
+
+    //Function called when this object is created
+    public void Awake()
+    {
+        //Setting the event delegate
+        this.advanceTimeListener = new DelegateEvent<EVTData>(this.UpdateTextAndSliders);
+    }
 
     //Function called when this component is enabled
     public void OnEnable()
@@ -40,12 +50,22 @@ public class CharacterStateUI : MonoBehaviour
         this.selectedCharacterState = this.selectedCharacter.charPhysState;
 
         //Updating the sliders
-        this.UpdateTextAndSliders();
+        this.UpdateTextAndSliders(new EVTData());
+
+        //Telling the EventManager.cs to listen for time passing events
+        EventManager.StartListening(TimePassedEVT.eventNum, this.advanceTimeListener);
+    }
+
+
+    //Telling the EventManager.cs to stop listening for time passing events
+    private void OnDisable()
+    {
+        EventManager.StopListening(TimePassedEVT.eventNum, this.advanceTimeListener);
     }
 
 
     //Function used to update all of the sliders and text fields to the character's current values
-    public void UpdateTextAndSliders()
+    public void UpdateTextAndSliders(EVTData data_)
     {
         //Setting the name field to display the selected character's name
         this.nameText.text = this.selectedCharacter.firstName + "\n" + this.selectedCharacter.lastName;
@@ -67,7 +87,7 @@ public class CharacterStateUI : MonoBehaviour
         this.selectedCharacterState = this.selectedCharacter.charPhysState;
 
         //Updating the sliders
-        this.UpdateTextAndSliders();
+        this.UpdateTextAndSliders(new EVTData());
     }
 
 
@@ -82,7 +102,7 @@ public class CharacterStateUI : MonoBehaviour
         this.selectedCharacterState = this.selectedCharacter.charPhysState;
 
         //Updating the sliders
-        this.UpdateTextAndSliders();
+        this.UpdateTextAndSliders(new EVTData());
     }
 
 
@@ -100,7 +120,7 @@ public class CharacterStateUI : MonoBehaviour
         this.selectedCharacterState = this.selectedCharacter.GetComponent<PhysicalState>();
 
         //Updating the sliders for the new character
-        this.UpdateTextAndSliders();
+        this.UpdateTextAndSliders(new EVTData());
     }
 
 
