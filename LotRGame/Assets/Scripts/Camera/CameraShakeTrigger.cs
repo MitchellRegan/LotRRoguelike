@@ -29,7 +29,7 @@ public class CameraShakeTrigger : MonoBehaviour
             EVTData shakeEVT = new EVTData();
             shakeEVT.screenShake = new ScreenShakeEVT(this.screenShakeDuration, this.screenShakePower, this.screenShakeCurve);
             //Dispatching the event data to the Event Manager
-            EventManager.TriggerEvent(ScreenShakeEVT.eventName, shakeEVT);
+            EventManager.TriggerEvent(ScreenShakeEVT.eventNum, shakeEVT);
             //Disabling this component so we don't keep triggering the shake
             this.enabled = false;
         }

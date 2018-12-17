@@ -47,14 +47,14 @@ public class CameraShake : MonoBehaviour
     //Function called when this component is enabled
     private void OnEnable()
     {
-        EventManager.StartListening(ScreenShakeEVT.eventName, this.startShakeEVT);
+        EventManager.StartListening(ScreenShakeEVT.eventNum, this.startShakeEVT);
     }
 
 
     //Function called when this component is disabled
     private void OnDisable()
     {
-        EventManager.StopListening(ScreenShakeEVT.eventName, this.startShakeEVT);
+        EventManager.StopListening(ScreenShakeEVT.eventNum, this.startShakeEVT);
     }
 
 

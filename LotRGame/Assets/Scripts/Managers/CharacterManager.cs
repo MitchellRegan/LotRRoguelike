@@ -33,6 +33,9 @@ public class CharacterManager : MonoBehaviour
     [HideInInspector]
     public List<EnemyEncounter> tileEnemyEncounters;
 
+    //Delegate event that listens for time passed events
+    private DelegateEvent<EVTData> timePassedListener;
+
 
 
     //Function called when this object is initialized
@@ -59,6 +62,23 @@ public class CharacterManager : MonoBehaviour
         this.deadCharacters = new List<DeadCharacterInfo>();
         //Initializing the list of tile encounters
         this.tileEnemyEncounters = new List<EnemyEncounter>();
+
+        //Setting the event delegate for the time passed listener
+        this.timePassedListener = new DelegateEvent<EVTData>(this.AdvanceTimeForAllCharacters);
+    }
+
+
+    //Telling the EventManager to listen for our time passed event
+    private void OnEnable()
+    {
+        EventManager.StartListening(TimePassedEVT.eventNum, this.timePassedListener);
+    }
+
+
+    //Telling the EventManager to stop listening for our time passed event
+    private void OnDisable()
+    {
+        EventManager.StopListening(TimePassedEVT.eventNum, this.timePassedListener);
     }
 
 
@@ -231,15 +251,19 @@ public class CharacterManager : MonoBehaviour
 
 
     //Function called externally On Time Advance to update each character's food/water/sleep/energy levels
-    public void AdvanceTimeForAllCharacters()
+    public void AdvanceTimeForAllCharacters(EVTData data_)
     {
-        //Looping through each player character in this manager
-        foreach(Character c in this.playerParty)
+        //Making sure the data given isn't null
+        if(data_.timePassed != null)
         {
-            //If the current character we're checking isn't an empty slot, we advance their time
-            if(c != null)
+            //Looping through each player character in this manager
+            foreach (Character c in this.playerParty)
             {
-                c.charPhysState.OnTimeAdvanced();
+                //If the current character we're checking isn't an empty slot, we advance their time
+                if (c != null)
+                {
+                    c.charPhysState.OnTimeAdvanced(data_.timePassed.timePassed);
+                }
             }
         }
     }

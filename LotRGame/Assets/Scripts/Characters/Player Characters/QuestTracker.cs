@@ -20,6 +20,9 @@ public class QuestTracker : MonoBehaviour
     [HideInInspector]
     public List<string> completedQuestNames;
 
+    //Delegate event that listens for TimePassingEVT events
+    private DelegateEvent<EVTData> advanceTimeListener;
+
 
 
     //Function called when this object is created
@@ -38,6 +41,23 @@ public class QuestTracker : MonoBehaviour
         //Initializing our list of quests
         this.questLog = new List<Quest>();
         this.completedQuestNames = new List<string>();
+
+        //Setting the event delegate
+        this.advanceTimeListener = new DelegateEvent<EVTData>(this.UpdateQuestTimers);
+    }
+
+
+    //Telling the EventManager.cs to listen for time passing events
+    private void OnEnable()
+    {
+        EventManager.StartListening(TimePassedEVT.eventNum, this.advanceTimeListener);
+    }
+
+
+    //Telling the EventManager.cs to stop listening for time passing events
+    private void OnDisable()
+    {
+        EventManager.StopListening(TimePassedEVT.eventNum, this.advanceTimeListener);
     }
     
 
@@ -237,16 +257,20 @@ public class QuestTracker : MonoBehaviour
 
 
     //Function called on time advance to update our quest timers
-    public void UpdateQuestTimers()
+    public void UpdateQuestTimers(EVTData data_)
     {
-        //Getting the amount of time that has passed on this time advance
-        int timePassed = TimePanelUI.globalReference.hoursAdvancedPerUpdate;
-
-        //Looping through all of the quests in our quest log
-        foreach(Quest q in this.questLog)
+        //Making sure the data passed isn't null
+        if (data_.timePassed != null)
         {
-            //Advancing time for each quest
-            q.UpdateTimePassed(timePassed);
+            //Getting the amount of time that has passed on this time advance
+            int timePassed = data_.timePassed.timePassed;
+
+            //Looping through all of the quests in our quest log
+            foreach (Quest q in this.questLog)
+            {
+                //Advancing time for each quest
+                q.UpdateTimePassed(timePassed);
+            }
         }
     }
 

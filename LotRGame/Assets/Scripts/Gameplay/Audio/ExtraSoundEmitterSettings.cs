@@ -38,14 +38,14 @@ public class ExtraSoundEmitterSettings : MonoBehaviour
     //Starts listening for the sound change event
     private void OnEnable()
     {
-        EventManager.StartListening("SoundSettingsChanged", this.soundChangeListener);
+        EventManager.StartListening(ChangeSoundSettings.eventNum, this.soundChangeListener);
     }
 
 
     //Stops listening for the sound change event 
     private void OnDisable()
     {
-        EventManager.StopListening("SoundSettingsChanged", this.soundChangeListener);
+        EventManager.StopListening(ChangeSoundSettings.eventNum, this.soundChangeListener);
     }
 
 

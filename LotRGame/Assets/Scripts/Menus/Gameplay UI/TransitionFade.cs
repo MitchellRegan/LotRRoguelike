@@ -51,21 +51,21 @@ public class TransitionFade : MonoBehaviour
     //Function called on the frist frame this object is created
     private void Start()
     {
-        EventManager.StartListening(CombatTransitionEVT.eventName, this.fadeEVT);
+        EventManager.StartListening(CombatTransitionEVT.eventNum, this.fadeEVT);
     }
 
 
     //Function called when this object is enabled
     private void Enable()
     {
-        EventManager.StartListening(CombatTransitionEVT.eventName, this.fadeEVT);
+        EventManager.StartListening(CombatTransitionEVT.eventNum, this.fadeEVT);
     }
 
 
     //Function called when this object is disabled
     private void Disable()
     {
-        EventManager.StopListening(CombatTransitionEVT.eventName, this.fadeEVT);
+        EventManager.StopListening(CombatTransitionEVT.eventNum, this.fadeEVT);
     }
 
 
