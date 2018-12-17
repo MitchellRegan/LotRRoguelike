@@ -196,7 +196,7 @@ public class TimePanelUI : MonoBehaviour
         //Calling the unity event
         EVTData timeData = new EVTData();
         timeData.timePassed = new TimePassedEVT(this.daysTaken, this.timeOfDay, hoursToAdvance_);
-        EventManager.TriggerEvent(TimePassedEVT.eventName, timeData);
+        EventManager.TriggerEvent(TimePassedEVT.eventNum, timeData);
     }
 
 

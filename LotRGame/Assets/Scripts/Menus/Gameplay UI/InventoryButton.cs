@@ -911,7 +911,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                         data.promptQuest = new PromptQuestEVT(itemQuest);
 
                         //Dispatching the quest prompt
-                        EventManager.TriggerEvent(PromptQuestEVT.eventName, data);
+                        EventManager.TriggerEvent(PromptQuestEVT.eventNum, data);
 
                         //Returning so nothing else happens with the item until the quest is accepted
                         return;

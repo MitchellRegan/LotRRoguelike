@@ -232,7 +232,7 @@ public class CombatManager : MonoBehaviour
                 //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
                 transitionEvent.combatTransition = new CombatTransitionEVT(0.5f, 1, 0.5f, this.combatEndEvent);
                 //Invoking the transition event through the EventManager
-                EventManager.TriggerEvent(CombatTransitionEVT.eventName, transitionEvent);
+                EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
                 //this.combatEndEvent.Invoke();
                 this.currentState = combatState.PlayerInput;
                 break;
@@ -286,7 +286,7 @@ public class CombatManager : MonoBehaviour
         //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to display the combat canvas
         transitionEvent.combatTransition = new CombatTransitionEVT(0.5f, 1, 0.5f, this.combatInitializeEvent);
         //Invoking the transition event through the EventManager
-        EventManager.TriggerEvent(CombatTransitionEVT.eventName, transitionEvent);
+        EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
 
         //Looping through and resetting the combat tiles
         for(int c = 0; c < this.combatTileGrid.Count; ++c)

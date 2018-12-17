@@ -11,9 +11,10 @@ public delegate void DelegateEvent<T>(T data_) where T : EVTData;
 public class EventManager : MonoBehaviour
 {
     //The dictionary where we hold all of our events and their name tags
-    private Dictionary<string, List<DelegateEvent<EVTData>>> EventDictionary;
+    private Dictionary<byte, List<DelegateEvent<EVTData>>> EventDictionary;
     //A reference to this event manager that can be accessed anywhere
     public static EventManager EVTManager;
+
 
 
     //Initializes this event manager and the event dictionary
@@ -32,19 +33,18 @@ public class EventManager : MonoBehaviour
         //Initializes a new dictionary to hold all events
         if (EventDictionary == null)
         {
-            EventDictionary = new Dictionary<string, List<DelegateEvent<EVTData>>>();
+            EventDictionary = new Dictionary<byte, List<DelegateEvent<EVTData>>>();
         }
     }
 
-
-
-    //Adds the given UnityAction to the dictionary of events under the given event name
-    public static void StartListening(string evtName_, DelegateEvent<EVTData> evtListener_)
+    
+    //Adds the given UnityAction to the dictionary of events under the given event number
+    public static void StartListening(byte evtNum_, DelegateEvent<EVTData> evtListener_)
     {
         List<DelegateEvent<EVTData>> startListeningDelegate = null;
 
         //Checks to see if our entry for the event dictionary is found. If so, adds the listener to the event
-        if (EVTManager.EventDictionary.TryGetValue(evtName_, out startListeningDelegate))
+        if (EVTManager.EventDictionary.TryGetValue(evtNum_, out startListeningDelegate))
         {
             startListeningDelegate.Add(evtListener_);
         }
@@ -53,14 +53,14 @@ public class EventManager : MonoBehaviour
         {
             startListeningDelegate = new List<DelegateEvent<EVTData>>();
             startListeningDelegate.Add(evtListener_);
-            EVTManager.EventDictionary.Add(evtName_, startListeningDelegate);
+            EVTManager.EventDictionary.Add(evtNum_, startListeningDelegate);
         }
     }
 
 
 
-    //Removes the given UnityAction from the dictionary of events with the given event name
-    public static void StopListening(string evtName_, DelegateEvent<EVTData> evtListener_)
+    //Removes the given UnityAction from the dictionary of events with the given event number
+    public static void StopListening(byte evtNum_, DelegateEvent<EVTData> evtListener_)
     {
         if (EVTManager == null)
             return;
@@ -68,7 +68,7 @@ public class EventManager : MonoBehaviour
         List<DelegateEvent<EVTData>> stopListeningDelegate = null;
 
         //Checks to see if our entry for the event dictionary is found. If so, removes the listener from the event
-        if (EVTManager.EventDictionary.TryGetValue(evtName_, out stopListeningDelegate))
+        if (EVTManager.EventDictionary.TryGetValue(evtNum_, out stopListeningDelegate))
         {
             stopListeningDelegate.Remove(evtListener_);
         }
@@ -77,8 +77,8 @@ public class EventManager : MonoBehaviour
 
 
 
-    //Invokes the event with the given name, calling all functions attached to the event
-    public static void TriggerEvent(string evtName_, EVTData dataPassed_ = null)
+    //Invokes the event with the given num, calling all functions attached to the event
+    public static void TriggerEvent(byte evtNum_, EVTData dataPassed_ = null)
     {
         List<DelegateEvent<EVTData>> triggerDelegate = null;
 
@@ -89,7 +89,7 @@ public class EventManager : MonoBehaviour
         }
 
         //Checks to see if our entry for the event dictionary is found. If so, invokes the event to call all functions attached to it
-        if (EVTManager.EventDictionary.TryGetValue(evtName_, out triggerDelegate))
+        if (EVTManager.EventDictionary.TryGetValue(evtNum_, out triggerDelegate))
         {
             foreach (DelegateEvent<EVTData> evt_ in triggerDelegate)
             {

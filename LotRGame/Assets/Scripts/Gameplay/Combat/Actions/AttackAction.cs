@@ -722,7 +722,7 @@ public class AttackAction : Action
                 int hitRoll = this.FindAttackRoll(actingChar_, targetChar);
 
                 //If the hit roll is below the required amount, the effect doesn't hit
-                if(hitRoll <= 66)
+                if(hitRoll <= CombatManager.baseHitDC)
                 {
                     effectHit = false;
                 }

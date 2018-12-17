@@ -42,14 +42,14 @@ public class LevelUpManager : MonoBehaviour
     //Function called when this component is enabled
     private void OnEnable()
     {
-        EventManager.StartListening(TimePassedEVT.eventName, this.trackTimePassageEVT);
+        EventManager.StartListening(TimePassedEVT.eventNum, this.trackTimePassageEVT);
     }
 
 
     //Function called when this component is disabled
     private void OnDisable()
     {
-        EventManager.StopListening(TimePassedEVT.eventName, this.trackTimePassageEVT);
+        EventManager.StopListening(TimePassedEVT.eventNum, this.trackTimePassageEVT);
     }
 
 

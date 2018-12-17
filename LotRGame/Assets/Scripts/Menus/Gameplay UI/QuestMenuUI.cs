@@ -49,6 +49,9 @@ public class QuestMenuUI : MonoBehaviour
     //Reference to the QuestRewardUI.cs component for when quests are turned in
     public QuestRewardUI rewardUI;
 
+    //Delegate event that listens for TimePassingEVT events
+    private DelegateEvent<EVTData> advanceTimeListener;
+
 
 
     //Function called when this object is created
@@ -68,6 +71,9 @@ public class QuestMenuUI : MonoBehaviour
         this.questPanels = new List<QuestUIPanel>();
         //Adding our original panel to our list so it's always index 0
         this.questPanels.Add(this.originalPanel);
+
+        //Setting the event delegate
+        this.advanceTimeListener = new DelegateEvent<EVTData>(this.UpdateDescriptionOnTimeAdvance);
     }
 
 
@@ -75,11 +81,21 @@ public class QuestMenuUI : MonoBehaviour
     private void OnEnable()
     {
         this.UpdatePanels(true);
+
+        //Telling the EventManager.cs to listen for time passing events
+        EventManager.StartListening(TimePassedEVT.eventNum, this.advanceTimeListener);
+    }
+
+
+    //Telling the EventManager.cs to stop listening for time passing events
+    private void OnDisable()
+    {
+        EventManager.StopListening(TimePassedEVT.eventNum, this.advanceTimeListener);
     }
 
 
     //Function called externally whenever time advances to update the description
-    public void UpdateDescriptionOnTimeAdvance()
+    public void UpdateDescriptionOnTimeAdvance(EVTData data_)
     {
         //If our current index is invalid or the description content is hidden, nothing happens
         if(this.displayedQuestPanelIndex < 0 || this.displayedQuestPanelIndex >= this.questPanels.Count || !this.descriptionContentTransform.gameObject.activeInHierarchy)
