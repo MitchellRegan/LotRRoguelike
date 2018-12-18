@@ -421,6 +421,15 @@ public class CombatManager : MonoBehaviour
         //Determine if we use the default enemy position or the ambush position
         EnemyEncounter.EnemyCombatPosition encounterPos = enemyParty_.defaultPosition;
 
+        //Rolling to see if this encounter will ambush the player
+        float ambushRoll = Random.Range(0f, 1f);
+
+        //If the enemies are able to ambush players, their encounter position is set to the ambush position
+        if(ambushRoll < enemyParty_.ambushChance)
+        {
+            encounterPos = enemyParty_.ambushPosition;
+        }
+
         //Determining which kind of enemy encounter the player's will be facing
         switch(encounterPos)
         {

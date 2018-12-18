@@ -392,7 +392,23 @@ public class TileInfo
                 //If we made it this far, there wasn't an enemy encounter on the tile, so we need to check for an encounter
                 if (rollForEncounter_)
                 {
-                    this.RollForRandomEncounter();
+                    //Looping through all objects on this tile to look for locations
+                    bool locationFound = false;
+                    foreach(GameObject o in this.objectsOnThisTile)
+                    {
+                        //If this object is a location, we break out of this loop
+                        if(o.GetComponent<MapLocation>())
+                        {
+                            locationFound = true;
+                            break;
+                        }
+                    }
+
+                    //If there isn't a location on this tile we can roll for encounters. If there is, no random encounter
+                    if (!locationFound)
+                    {
+                        this.RollForRandomEncounter();
+                    }
                 }
             }
         }
