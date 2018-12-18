@@ -229,8 +229,8 @@ public class CombatManager : MonoBehaviour
                 this.GetEncounterLoot();
                 //Creating the event data that we'll pass to the TransitionFade through the EventManager
                 EVTData transitionEvent = new EVTData();
-                //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
-                transitionEvent.combatTransition = new CombatTransitionEVT(0.5f, 1, 0.5f, this.combatEndEvent);
+                //Setting the transition to end combat, take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
+                transitionEvent.combatTransition = new CombatTransitionEVT(false, 0.5f, 1, 0.5f, this.combatEndEvent);
                 //Invoking the transition event through the EventManager
                 EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
                 //this.combatEndEvent.Invoke();
@@ -284,7 +284,7 @@ public class CombatManager : MonoBehaviour
         //Creating the event data that we'll pass to the TransitionFade through the EventManager
         EVTData transitionEvent = new EVTData();
         //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to display the combat canvas
-        transitionEvent.combatTransition = new CombatTransitionEVT(0.5f, 1, 0.5f, this.combatInitializeEvent);
+        transitionEvent.combatTransition = new CombatTransitionEVT(true, 0.5f, 1, 0.5f, this.combatInitializeEvent);
         //Invoking the transition event through the EventManager
         EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
 

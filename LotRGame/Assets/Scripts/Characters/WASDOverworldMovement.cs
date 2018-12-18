@@ -16,8 +16,10 @@ public class WASDOverworldMovement : MonoBehaviour
     private float currentTravelTime = 0;
     //The movement cost for the current tile to multiply the travel time by
     private int currentMoveCost = 1;
-    //Bool that, when True, allows this character to interpolate to the correct tile
+    //Bool that when True allows this character to interpolate to the correct tile
     private bool isTraveling = false;
+    //Bool that when True prevents the player from moving while combat is happening
+    private bool isInCombat = false;
 
     //The button for moving forward
     public KeyCode forwardButton = KeyCode.W;
@@ -26,6 +28,30 @@ public class WASDOverworldMovement : MonoBehaviour
     //The button for moving left
     public KeyCode leftButton = KeyCode.A;
 
+    //Delegate event to listen for events to start and end combat
+    private DelegateEvent<EVTData> combatTransitionListener;
+
+
+
+    //Function called when this object is created to assign our delegate event
+    private void Awake()
+    {
+        this.combatTransitionListener = new DelegateEvent<EVTData>(this.CombatTransitioning);
+    }
+
+
+    //Function called when this component is enabled
+    private void OnEnable()
+    {
+        EventManager.StartListening(CombatTransitionEVT.eventNum, this.combatTransitionListener);
+    }
+
+
+    //Function called when this component is disabled
+    private void OnDisable()
+    {
+        EventManager.StopListening(CombatTransitionEVT.eventNum, this.combatTransitionListener);
+    }
 
 
     //Function called externally to set the tile that this character is on
@@ -106,8 +132,8 @@ public class WASDOverworldMovement : MonoBehaviour
                 this.tileToTravelTo = null;
             }
         }
-        //If this party is NOT currently traveling
-        else
+        //If this party is NOT currently traveling or in combat
+        else if(!this.isInCombat)
         {
             //We find the angle that the player camera is facing and adding 360 so it's easier to deal with angle wrap-around
             float cameraAngle = OrbitCamera.directionFacing + 360;
@@ -234,6 +260,18 @@ public class WASDOverworldMovement : MonoBehaviour
                     TimePanelUI.globalReference.AdvanceTime(this.currentTile.movementCost * TimePanelUI.globalReference.hoursAdvancedPerUpdate);
                 }
             }
+        }
+    }
+
+
+    //Function called from the combatTransitionListener delegate from CombatTransitionEVT events
+    private void CombatTransitioning(EVTData data_)
+    {
+        //Making sure the combat transition event data isn't null
+        if(data_.combatTransition != null)
+        {
+            //Setting the isInCombat bool based on if combat is starting or ending
+            this.isInCombat = data_.combatTransition.startingCombat;
         }
     }
 }
