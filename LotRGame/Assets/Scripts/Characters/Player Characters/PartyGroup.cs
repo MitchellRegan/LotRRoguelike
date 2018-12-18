@@ -68,7 +68,8 @@ public class PartyGroup : MonoBehaviour
             if (charInGroup != charToCheck_)
             {
                 //If someone else is already occupying the same spot as the character we're checking
-                if (charToCheck_.charCombatStats.gridPositionCol == charInGroup.charCombatStats.gridPositionCol && charToCheck_.charCombatStats.gridPositionRow == charInGroup.charCombatStats.gridPositionRow)
+                if (charToCheck_.charCombatStats.gridPositionCol == charInGroup.charCombatStats.gridPositionCol &&
+                    charToCheck_.charCombatStats.gridPositionRow == charInGroup.charCombatStats.gridPositionRow)
                 {
                     //The character we're checking finds an empty spot using the Set Combat Position function in Combat Stats
                     charToCheck_.charCombatStats.SetCombatPosition();

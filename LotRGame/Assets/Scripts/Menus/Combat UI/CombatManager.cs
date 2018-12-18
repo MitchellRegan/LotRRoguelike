@@ -654,7 +654,7 @@ public class CombatManager : MonoBehaviour
             //If this enemy's column position is random
             if(enemyChar.randomCol)
             {
-                enemyCombatStats.gridPositionCol = Random.Range(0, 3);
+                enemyCombatStats.gridPositionCol = Random.Range(0, 4);
             }
             //If this enemy's column position isn't random
             else
@@ -665,7 +665,7 @@ public class CombatManager : MonoBehaviour
             //If this enemy's row position is random
             if(enemyChar.randomRow)
             {
-                enemyCombatStats.gridPositionRow = Random.Range(0, 7);
+                enemyCombatStats.gridPositionRow = Random.Range(0, 8);
             }
             //If this enemy's row position isn't random
             else
@@ -692,6 +692,75 @@ public class CombatManager : MonoBehaviour
                     //This case SHOULDN'T happen, but if it does, we treat it like the character's col is 0
                     enemyCombatStats.gridPositionCol = enemyColShift0;
                     break;
+            }
+
+            //Looping through all of the enemies created so far
+            for(int i = 0; i < this.enemyCharactersInCombat.Count - 1; ++i)
+            {
+                //If the enemy we've just added shares the same combat row and column as another enemy
+                if(enemyCombatStats.gridPositionCol == this.enemyCharactersInCombat[i].charCombatStats.gridPositionCol &&
+                    enemyCombatStats.gridPositionRow == this.enemyCharactersInCombat[i].charCombatStats.gridPositionRow)
+                {
+                    //The column shift amount for each column loop
+                    int cShift = 0;
+
+                    //Looping through all of the combat positions characters can be in
+                    for(int c = 0; c < 4; ++c)
+                    {
+                        //Setting the column shift for this loop
+                        if(c == 0)
+                        {
+                            cShift = enemyColShift0;
+                        }
+                        else if(c == 1)
+                        {
+                            cShift = enemyColShift1;
+                        }
+                        else if(c == 2)
+                        {
+                            cShift = enemyColShift2;
+                        }
+                        else if(c == 3)
+                        {
+                            cShift = enemyColShift3;
+                        }
+
+                        for(int r = 0; r < 8; ++r)
+                        {
+                            //Bool to track if the current position is empty
+                            bool emptyPos = true;
+
+                            //Looping through each enemy in the combat
+                            foreach(Character ec in this.enemyCharactersInCombat)
+                            {
+                                //Making sure the enemy isn't somehow null or the enemy we've just created
+                                if(ec != null && ec.gameObject != enemyCombatStats.gameObject)
+                                {
+                                    //If the tile isn't empty, we break out of this foreach loop
+                                    if(ec.charCombatStats.startingPositionCol == (c + cShift) &&
+                                        ec.charCombatStats.startingPositionRow == r)
+                                    {
+                                        emptyPos = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            //If we make it through all of the enemies without finding an overlap
+                            if(emptyPos)
+                            {
+                                //Setting this enemy's starting col and row to the empty position
+                                enemyCombatStats.startingPositionCol = c + cShift;
+                                enemyCombatStats.startingPositionRow = r;
+
+                                //Breaking the row loop, col loop, and loop for checking other enemy positions
+                                c = 10;
+                                i = this.enemyCharactersInCombat.Count + 1;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

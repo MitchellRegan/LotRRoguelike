@@ -109,6 +109,7 @@ public class CombatStats : MonoBehaviour
                         {
                             //Marking this tile as not empty and breaking the loop
                             emptyPos = false;
+                            break;
                         }
                     }
                 }
