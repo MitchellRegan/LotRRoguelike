@@ -421,10 +421,11 @@ public class TileInfo
 
         //Rolling to see if we meet the encounter chance
         float encounterRoll = Random.Range(0.0f, 1f);
+
         if (encounterRoll < this.randomEncounterChance)
         {
             //Rolling to see which encounter is spawned
-            float whichEncounter = Random.Range(0, 1);
+            float whichEncounter = Random.Range(0.0f, 1f);
 
             //Looping through each encounter
             for(int e = 0; e < this.randomEncounterList.Count; ++e)
@@ -433,15 +434,7 @@ public class TileInfo
                 if (this.randomEncounterList[e].encounterChance >= whichEncounter)
                 {
                     //Looping through and finding the object on this tile that has the player party
-                    PartyGroup playerParty = null;
-                    foreach(GameObject o in this.objectsOnThisTile)
-                    {
-                        if(o.GetComponent<PartyGroup>())
-                        {
-                            playerParty = o.GetComponent<PartyGroup>();
-                            break;
-                        }
-                    }
+                    PartyGroup playerParty = PartyGroup.group1;
 
                     //If we couldn't find the player party object for some reason, we stop the combat from happening
                     if(playerParty == null)
