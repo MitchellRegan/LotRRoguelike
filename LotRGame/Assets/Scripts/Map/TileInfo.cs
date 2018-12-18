@@ -420,7 +420,7 @@ public class TileInfo
         }
 
         //Rolling to see if we meet the encounter chance
-        float encounterRoll = Random.Range(0, 1);
+        float encounterRoll = Random.Range(0.0f, 1f);
         if (encounterRoll < this.randomEncounterChance)
         {
             //Rolling to see which encounter is spawned
