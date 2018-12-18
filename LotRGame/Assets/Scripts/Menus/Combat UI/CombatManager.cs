@@ -281,15 +281,13 @@ public class CombatManager : MonoBehaviour
     public enum GroupCombatDistance { Far, Medium, Close };
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
-        Debug.Log("Initiate Combat 1");
         //Creating the event data that we'll pass to the TransitionFade through the EventManager
         EVTData transitionEvent = new EVTData();
         //Setting the transition to take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to display the combat canvas
         transitionEvent.combatTransition = new CombatTransitionEVT(true, 0.5f, 1, 0.5f, this.combatInitializeEvent);
         //Invoking the transition event through the EventManager
         EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
-
-        Debug.Log("Initiate Combat 2");
+        
         //Looping through and resetting the combat tiles
         for (int c = 0; c < this.combatTileGrid.Count; ++c)
         {
@@ -298,20 +296,16 @@ public class CombatManager : MonoBehaviour
                 this.combatTileGrid[c][r].ResetTile();
             }
         }
-        Debug.Log("Initiate Combat 3");
 
         //Setting the background image
         this.SetBackgroundImage(combatLandType_);
-
-        Debug.Log("Initiate Combat 4");
+        
         //Setting the combat positions for the player characters and enemies based on their distances
         this.SetCombatPositions(charactersInCombat_, encounter_);
-
-        Debug.Log("Initiate Combat 5");
+        
         //Creating the Combat Character Sprites
         this.CreateCharacterSprites();
-
-        Debug.Log("Initiate Combat 6");
+        
         //Looping through and setting all of the player initiative bars to display the correct character
         for (int p = 0; p < this.playerInitiativeSliders.Count; ++p)
         {
@@ -335,8 +329,7 @@ public class CombatManager : MonoBehaviour
                 this.playerInitiativeSliders[p].background.gameObject.SetActive(false);
             }
         }
-
-        Debug.Log("Initiate Combat 7");
+        
         //Looping through and setting all of the enemy initiative bars to display the correct enemy
         for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
         {
@@ -359,24 +352,19 @@ public class CombatManager : MonoBehaviour
                 this.enemyInitiativeSliders[e].background.gameObject.SetActive(false);
             }
         }
-
-        Debug.Log("Initiate Combat 8");
+        
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
-
-        Debug.Log("Initiate Combat 9");
+        
         //Hiding the highlight ring
         this.highlightRing.enabled = false;
-
-        Debug.Log("Initiate Combat 10");
+        
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, combatState.IncreaseInitiative);
-
-        Debug.Log("Initiate Combat 11");
+        
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
-
-        Debug.Log("Initiate Combat 12");
+        
         //Looping through and copying the loot table from the encounter
         this.lootTable = new List<EncounterLoot>();
         foreach(EncounterLoot drop in encounter_.lootTable)
@@ -387,7 +375,6 @@ public class CombatManager : MonoBehaviour
             loot.stackSizeMinMax = drop.stackSizeMinMax;
             this.lootTable.Add(loot);
         }
-        Debug.Log("Initiate Combat 13");
 
         //Looping through each player character to see if anyone has a Threat Boost perk or perk to start combat with an effect
         for (int t = 0; t < this.playerCharactersInCombat.Count; ++t)
@@ -416,8 +403,6 @@ public class CombatManager : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log("Initiate Combat 14");
     }
 
 
@@ -643,9 +628,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
         }
-
-        Debug.Log("Combat position: " + encounterPos + ", Shift 0: " + enemyColShift0 + ", Shift 1: " + enemyColShift1 + ", Shift 2: " + enemyColShift2 + ", Shift 3: " + enemyColShift3);
-
+        
         //After we've found the column shifts, we loop through and set the player positions
         this.playerCharactersInCombat.Clear();
         foreach(Character playerChar in playerParty_.charactersInParty)
@@ -719,9 +702,6 @@ public class CombatManager : MonoBehaviour
                     enemyCombatStats.gridPositionCol == this.enemyCharactersInCombat[i].charCombatStats.gridPositionCol &&
                     enemyCombatStats.gridPositionRow == this.enemyCharactersInCombat[i].charCombatStats.gridPositionRow)
                 {
-                    Debug.Log("!!!!!!!!!!!!!!! FOUND OVERLAP. " + enemyCombatStats.GetComponent<Character>().firstName + " " + enemyCombatStats.GetComponent<Character>().lastName + " on tile " + enemyCombatStats.gridPositionCol + "," + enemyCombatStats.gridPositionRow +
-                        " and " + this.enemyCharactersInCombat[i].firstName + " " + this.enemyCharactersInCombat[i].lastName + " on tile " + this.enemyCharactersInCombat[i].charCombatStats.gridPositionCol + ", " + this.enemyCharactersInCombat[i].charCombatStats.gridPositionRow);
-                    
                     //The column shift amount for each column loop
                     int cShift = 0;
 
@@ -774,8 +754,6 @@ public class CombatManager : MonoBehaviour
                                 enemyCombatStats.gridPositionCol = cShift;
                                 enemyCombatStats.gridPositionRow = r;
 
-                                Debug.Log("Empty Position: Col " + cShift + ", cShift " + cShift + ", Row " + r);
-                                Debug.Log(enemyCombatStats.GetComponent<Character>().firstName + " position: " + enemyCombatStats.gridPositionCol + "," + enemyCombatStats.gridPositionRow);
                                 //Breaking the row loop, col loop, and loop for checking other enemy positions
                                 c = 10;
                                 i = this.enemyCharactersInCombat.Count + 1;
@@ -827,27 +805,21 @@ public class CombatManager : MonoBehaviour
             //Adding the character sprite base to our list
             this.characterSpriteList.Add(newCharSpriteBase);
         }
-        Debug.Log("Create Character Sprites 3");
 
         //Looping through each enemy character in this combat
         foreach (Character enemyChar in this.enemyCharactersInCombat)
         {
-            Debug.Log("Create Character Sprites 3.1");
             //Creating a new instance of the character sprite prefab
             GameObject newCharSprite = GameObject.Instantiate(enemyChar.charSprites.allSprites.spriteBase.gameObject);
-            Debug.Log("Create Character Sprites 3.2");
 
             //Getting the CombatCharacterSprite component reference
             CharacterSpriteBase newCharSpriteBase = newCharSprite.GetComponent<CharacterSpriteBase>();
-            Debug.Log("Create Character Sprites 3.3");
 
             //Telling the sprite base to use the given character's sprites
             newCharSpriteBase.SetSpriteImages(enemyChar.charSprites.allSprites, enemyChar.charInventory);
-            Debug.Log("Create Character Sprites 3.4");
 
             //Finding the combat tile that the current enemy character is on
             CombatTile enemyTile = this.FindCharactersTile(enemyChar);
-            Debug.Log("Create Character Sprites 3.5");
 
             //Getting the direction that this enemy initially faces
             CharacterSpriteBase.DirectionFacing direction = CharacterSpriteBase.DirectionFacing.Left;
@@ -856,7 +828,6 @@ public class CombatManager : MonoBehaviour
                 direction = CharacterSpriteBase.DirectionFacing.Right;
             }
             newCharSpriteBase.SetDirectionFacing(direction);
-            Debug.Log("Create Character Sprites 3.6");
 
             //Parenting the game object to this object so it shows up on our canvas
             newCharSprite.transform.SetParent(this.transform);
@@ -869,13 +840,10 @@ public class CombatManager : MonoBehaviour
 
             //Adding the character sprite base to our list
             this.characterSpriteList.Add(newCharSpriteBase);
-            Debug.Log("Create Character Sprites 3.7");
         }
-        Debug.Log("Create Character Sprites 4");
 
         //Sorting the sprites so that they appear in front of each other correctly
         this.UpdateCharacterSpriteOrder();
-        Debug.Log("Create Character Sprites 5");
     }
 
 
@@ -1236,8 +1204,6 @@ public class CombatManager : MonoBehaviour
         int row = characterToFind_.charCombatStats.gridPositionRow;
         int col = characterToFind_.charCombatStats.gridPositionCol;
 
-        Debug.Log("Find Characters Tile END. Character name: " + characterToFind_.firstName + " " + characterToFind_.lastName + ", Col: " + col + ", Row: " + row);
-        Debug.Log("Combat Tile Grid Col count: " + this.combatTileGrid.Count + ", Row count: " + this.combatTileGrid[0].Count);
         return this.combatTileGrid[col][row];
     }
 
