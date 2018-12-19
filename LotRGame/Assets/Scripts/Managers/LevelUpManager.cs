@@ -195,8 +195,6 @@ public class LevelUpManager : MonoBehaviour
     //Function called from TrackTimePassage to calculate a given character's current health curve and any bonus health to add
     private int[] FindCharacterHealthCurve(Character character_)
     {
-        //Need to do a calculation based on the average percentages and the plusses and minuses to health curves
-        
         //Getting the modifier for this character's health curve from their physical state
         int physStateMod = this.FindHealthCurveModFromPhysState(character_.charPhysState);
 
