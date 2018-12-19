@@ -195,13 +195,10 @@ public class LevelUpManager : MonoBehaviour
     //Function called from TrackTimePassage to calculate a given character's current health curve and any bonus health to add
     private int[] FindCharacterHealthCurve(Character character_)
     {
-        .//Need to do a calculation based on the average percentages and the plusses and minuses to health curves
+        //Need to do a calculation based on the average percentages and the plusses and minuses to health curves
         
         //Getting the modifier for this character's health curve from their physical state
         int physStateMod = this.FindHealthCurveModFromPhysState(character_.charPhysState);
-
-        //Int to hold the current character's health curve
-        int healthCurve = character_.charPhysState.healthCurveStagesSum;
 
         //Int to hold the amount of bonus health added
         int bonusHealthAdded = 0;
@@ -214,7 +211,7 @@ public class LevelUpManager : MonoBehaviour
             {
                 HealthBoostPerk hpBoostPerk = charPerk.GetComponent<HealthBoostPerk>();
                 //Increasing the health curve
-                healthCurve += hpBoostPerk.healthStageBoost;
+                physStateMod += hpBoostPerk.healthStageBoost;
 
                 //Adding the amount of bonus health to give
                 bonusHealthAdded += hpBoostPerk.GetHealthBoostAmount();
@@ -222,17 +219,17 @@ public class LevelUpManager : MonoBehaviour
         }
 
         //Making sure the health curve is within reasonable bounds (between 1(feeble) and 7(strong))
-        if(healthCurve > 7)
+        if(physStateMod > 7)
         {
-            healthCurve = 7;
+            physStateMod = 7;
         }
-        else if(healthCurve < 1)
+        else if(physStateMod < 1)
         {
-            healthCurve = 1;
+            physStateMod = 1;
         }
 
         //Returning the health cuve and bonus health values
-        int[] healthCurveAndBonus = new int[2] { healthCurve, bonusHealthAdded };
+        int[] healthCurveAndBonus = new int[2] { physStateMod, bonusHealthAdded };
         return healthCurveAndBonus;
     }
 
@@ -242,6 +239,38 @@ public class LevelUpManager : MonoBehaviour
     {
         //The total modifier returned
         int curveMod = 0;
+
+        //Finding the starting health curve
+        switch(state_.startingHealthCurve)
+        {
+            case HealthCurveTypes.Strong:
+                curveMod += 7;
+                break;
+
+            case HealthCurveTypes.Sturdy:
+                curveMod += 6;
+                break;
+
+            case HealthCurveTypes.Healthy:
+                curveMod += 5;
+                break;
+
+            case HealthCurveTypes.Average:
+                curveMod += 4;
+                break;
+
+            case HealthCurveTypes.Weak:
+                curveMod += 3;
+                break;
+
+            case HealthCurveTypes.Sickly:
+                curveMod += 2;
+                break;
+
+            case HealthCurveTypes.Feeble:
+                curveMod += 1;
+                break;
+        }
 
         //Finding the average health percent for this character
         float hpAvg = 0;
@@ -419,6 +448,19 @@ public class LevelUpManager : MonoBehaviour
         character_.charPhysState.healthCurveLevels[3] = 0;
     }
 }
+
+
+//Enum for the different health progressions
+public enum HealthCurveTypes
+{
+    Strong,
+    Sturdy,
+    Healthy,
+    Average,
+    Weak,
+    Sickly,
+    Feeble
+};
 
 
 //Class used in LevelUpManager.cs to track and change the time it takes for characters to level up

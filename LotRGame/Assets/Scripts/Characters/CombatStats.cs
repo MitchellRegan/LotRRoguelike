@@ -12,6 +12,7 @@ public class CombatStats : MonoBehaviour
     public PhysicalState currentState;
 
     //The speed that this character's initiative meter increases each frame during combat
+    [Range(0.005f, 0.015f)]
     public float currentInitiativeSpeed = 0.01f;
     public float initiativeMod = 0;
 

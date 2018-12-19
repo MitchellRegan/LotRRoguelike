@@ -74,7 +74,7 @@ public class PlayerHealthManager : MonoBehaviour
                     if (PartyGroup.group1.charactersInParty[p] != null)
                     {
                         //Int to hold the current character's health stage
-                        int healthStage = PartyGroup.group1.charactersInParty[p].charPhysState.healthCurveStagesSum;
+                        //int healthStage = PartyGroup.group1.charactersInParty[p].charPhysState.healthCurveStagesSum;
 
                         //Int to hold the amount of bonus health added
                         int bonusHealthAdded = 0;
@@ -87,7 +87,7 @@ public class PlayerHealthManager : MonoBehaviour
                             {
                                 HealthBoostPerk hpBoostPerk = charPerk.GetComponent<HealthBoostPerk>();
                                 //Increasing the health stage
-                                healthStage += hpBoostPerk.healthStageBoost;
+                                //healthStage += hpBoostPerk.healthStageBoost;
 
                                 //Adding the amount of bonus health to give
                                 bonusHealthAdded += hpBoostPerk.GetHealthBoostAmount();
@@ -95,12 +95,12 @@ public class PlayerHealthManager : MonoBehaviour
                         }
 
                         //Finding the amount of health based on the character's health curve
-                        HealthProgressionTypes type = this.FindCharacterHealthProgression(healthStage);
-                        int healthToGiveCharacter = this.GetHealthToAdd(type);
+                        //HealthProgressionTypes type = this.FindCharacterHealthProgression(healthStage);
+                        //int healthToGiveCharacter = this.GetHealthToAdd(type);
                         
                         //Adding the health to the character's current and maximum values
-                        PartyGroup.group1.charactersInParty[p].charPhysState.maxHealth += healthToGiveCharacter + bonusHealthAdded;
-                        PartyGroup.group1.charactersInParty[p].charPhysState.currentHealth += healthToGiveCharacter + bonusHealthAdded;
+                        //PartyGroup.group1.charactersInParty[p].charPhysState.maxHealth += healthToGiveCharacter + bonusHealthAdded;
+                        //PartyGroup.group1.charactersInParty[p].charPhysState.currentHealth += healthToGiveCharacter + bonusHealthAdded;
                     }
                 }
             }

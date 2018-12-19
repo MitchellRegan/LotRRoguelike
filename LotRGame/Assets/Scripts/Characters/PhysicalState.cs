@@ -6,13 +6,12 @@ using UnityEngine;
 public class PhysicalState : MonoBehaviour
 {
     //This characters health
-    public int currentHealth = 100;
+    public int currentHealth = 20;
     //The maximum amount of health this character can have
-    public int maxHealth = 100;
+    public int maxHealth = 20;
 
-    //The type of health progression curve that determines how much health they get
-    //Int lines up with the enum, but makes it easier to get the sum of all modifiers
-    public int healthCurveStagesSum = 3;
+    //The type of health progression curve that determines how much health they get from LevelUpManager.cs
+    public HealthCurveTypes startingHealthCurve = HealthCurveTypes.Average;
 
 
     //If false, this character doesn't require food to survive
