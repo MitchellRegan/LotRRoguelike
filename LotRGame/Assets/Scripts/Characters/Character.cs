@@ -274,6 +274,16 @@ public class Character : MonoBehaviour
         this.charPhysState.healthCurveStagesSum = saveData_.healthStage;
         this.charPhysState.healthCurveLevels = saveData_.healthCurveLevels;
 
+        this.charPhysState.highestHealthPercent = saveData_.highestHealthPercent;
+        this.charPhysState.highestFoodPercent = saveData_.highestFoodPercent;
+        this.charPhysState.highestWaterPercent = saveData_.highestWaterPercent;
+        this.charPhysState.highestSleepPercent = saveData_.highestSleepPercent;
+
+        this.charPhysState.trackingHealthPercents = saveData_.trackingHealthPercents;
+        this.charPhysState.trackingFoodPercents = saveData_.trackingFoodPercents;
+        this.charPhysState.trackingWaterPercents = saveData_.trackingWaterPercents;
+        this.charPhysState.trackingSleepPercents = saveData_.trackingSleepPercents;
+
         //Setting the variables in CombatStats.cs
         this.charCombatStats.currentInitiativeSpeed = saveData_.currentInitiativeSpeed;
         this.charCombatStats.startingPositionCol = saveData_.startingCol;
@@ -377,6 +387,14 @@ public class CharacterSaveData
     public float currentEnergy = 1;
     public int healthStage = 3;
     public int[] healthCurveLevels = new int[4];
+    public float highestHealthPercent;
+    public float highestFoodPercent;
+    public float highestWaterPercent;
+    public float highestSleepPercent;
+    public List<float> trackingHealthPercents;
+    public List<float> trackingFoodPercents;
+    public List<float> trackingWaterPercents;
+    public List<float> trackingSleepPercents;
 
     //Variables in CombatStats.cs
     public int startingCol = 0;
@@ -444,6 +462,16 @@ public class CharacterSaveData
         this.currentEnergy = characterToSave_.charPhysState.currentEnergy;
         this.healthStage = characterToSave_.charPhysState.healthCurveStagesSum;
         this.healthCurveLevels = characterToSave_.charPhysState.healthCurveLevels;
+
+        this.highestHealthPercent = characterToSave_.charPhysState.highestHealthPercent;
+        this.highestFoodPercent = characterToSave_.charPhysState.highestFoodPercent;
+        this.highestWaterPercent = characterToSave_.charPhysState.highestWaterPercent;
+        this.highestSleepPercent = characterToSave_.charPhysState.highestSleepPercent;
+
+        this.trackingHealthPercents = characterToSave_.charPhysState.trackingHealthPercents;
+        this.trackingFoodPercents = characterToSave_.charPhysState.trackingFoodPercents;
+        this.trackingWaterPercents = characterToSave_.charPhysState.trackingWaterPercents;
+        this.trackingSleepPercents = characterToSave_.charPhysState.trackingSleepPercents;
 
         //Setting variables from CombatStats.cs
         this.currentInitiativeSpeed = characterToSave_.charCombatStats.currentInitiativeSpeed;

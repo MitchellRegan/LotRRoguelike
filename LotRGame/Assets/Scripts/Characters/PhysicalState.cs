@@ -47,7 +47,28 @@ public class PhysicalState : MonoBehaviour
     //Array to hold this character's health curve value for each level up
     [HideInInspector]
     public int[] healthCurveLevels = new int[4] { 0, 0, 0, 0 };
-    
+
+    //Floats to track the highest percent of health, food, water, and sleep over the past 24 hours
+    [HideInInspector]
+    public float highestHealthPercent = 0;
+    [HideInInspector]
+    public float highestFoodPercent = 0;
+    [HideInInspector]
+    public float highestWaterPercent = 0;
+    [HideInInspector]
+    public float highestSleepPercent = 0;
+
+    //Lists of percentages for health, food, water, and sleep over the past few days to influence the character's health curve
+    [HideInInspector]
+    public List<float> trackingHealthPercents;
+    [HideInInspector]
+    public List<float> trackingFoodPercents;
+    [HideInInspector]
+    public List<float> trackingWaterPercents;
+    [HideInInspector]
+    public List<float> trackingSleepPercents;
+    //The number of days that we track percentages
+    private int daysToTrackPercentages = 7;
 
 
 
@@ -59,7 +80,12 @@ public class PhysicalState : MonoBehaviour
         this.currentWater = this.maxWater;
         this.currentSleep = this.maxSleep;
 
+        //Initializing our arrays
         healthCurveLevels = new int[4] {0,0,0,0};
+        this.trackingHealthPercents = new List<float>();
+        this.trackingFoodPercents = new List<float>();
+        this.trackingWaterPercents = new List<float>();
+        this.trackingSleepPercents = new List<float>();
 
         this.CalculateEnergyLevel();
     }
@@ -70,6 +96,9 @@ public class PhysicalState : MonoBehaviour
     {
         //Finding the percentage of a day that's passed
         float daysPassed = (timePassed_ * 1f) / 24f;
+
+        //Finding the highest health, food, water, and sleep percents for the day
+        this.FindHighestPercents();
 
         //Doesn't lower hunger if this character doesn't eat
         if (this.requiresFood)
@@ -109,6 +138,42 @@ public class PhysicalState : MonoBehaviour
 
         //Finding this character's energy level
         this.CalculateEnergyLevel();
+
+        //If the time passed will move us to the next day
+        if(TimePanelUI.globalReference.timeOfDay + timePassed_ >= 24)
+        {
+            //We track the health, food, water, and sleep percentages for the last day
+            this.TrackPercentages();
+        }
+    }
+
+
+    //Function called from OnTimeAdvance to find the highest percentage of health, food, water, and sleep for the day
+    private void FindHighestPercents()
+    {
+        //Floats to find the current character percentage values for health, food, water, and sleep
+        float hp = (this.currentHealth * 1f) / (this.maxHealth * 1f);
+        float fd = this.currentFood / this.maxFood;
+        float wt = this.currentWater / this.maxWater;
+        float sl = this.currentSleep / this.maxSleep;
+
+        //Checking to see if the current percentages are higher than the current highest for the day
+        if(hp > this.highestHealthPercent)
+        {
+            this.highestHealthPercent = hp;
+        }
+        if(fd > this.highestFoodPercent)
+        {
+            this.highestFoodPercent = fd;
+        }
+        if(wt > this.highestWaterPercent)
+        {
+            this.highestWaterPercent = wt;
+        }
+        if(sl > this.highestSleepPercent)
+        {
+            this.highestSleepPercent = sl;
+        }
     }
 
 
@@ -186,6 +251,41 @@ public class PhysicalState : MonoBehaviour
 
         //Setting this character's energy to the new value calculated
         this.currentEnergy = newEnergyValue;
+    }
+
+
+    //Function called from OnTimeAdvance to track the health, food, water, and sleep percentages for the past day
+    private void TrackPercentages()
+    {
+        //Adding the highest percents to the end of each list
+        this.trackingHealthPercents.Add(this.highestHealthPercent);
+        this.trackingFoodPercents.Add(this.highestFoodPercent);
+        this.trackingWaterPercents.Add(this.highestWaterPercent);
+        this.trackingSleepPercents.Add(this.highestSleepPercent);
+
+        //Making sure the lists are only tracking the maximum number of days needed
+        if(this.trackingHealthPercents.Count > this.daysToTrackPercentages)
+        {
+            this.trackingHealthPercents.RemoveAt(0);
+        }
+        if(this.trackingFoodPercents.Count > this.daysToTrackPercentages)
+        {
+            this.trackingFoodPercents.RemoveAt(0);
+        }
+        if(this.trackingWaterPercents.Count > this.daysToTrackPercentages)
+        {
+            this.trackingWaterPercents.RemoveAt(0);
+        }
+        if(this.trackingSleepPercents.Count > this.daysToTrackPercentages)
+        {
+            this.trackingSleepPercents.RemoveAt(0);
+        }
+
+        //Resetting the highest percentages for health, food, water, and sleep for the day
+        this.highestHealthPercent = 0;
+        this.highestFoodPercent = 0;
+        this.highestWaterPercent = 0;
+        this.highestSleepPercent = 0;
     }
 
 
