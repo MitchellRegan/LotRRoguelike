@@ -12,6 +12,15 @@ public class LevelUpManager : MonoBehaviour
     [HideInInspector]
     public int characterLevel = 0;
 
+    //The percentage values for modifications to character health curves based on their physical state
+    //From 0 to the first float is a -1 to the curve, first to second floats is +0, and second float to 1 is +1
+    public Vector2 healthPercentCurveModRange;
+    public Vector2 foodPercentCurveModRange;
+    public Vector2 waterPercentCurveModRange;
+    public Vector2 sleepPercentCurveModRange;
+
+    [Space(8)]
+
     //The different curves for level progressions
     public List<LevelUpCurve> levelCurves;
 
@@ -94,7 +103,6 @@ public class LevelUpManager : MonoBehaviour
         //Making sure the TimePassedEVT data given isn't null
         if(data_ == null)
         {
-            Debug.LogError("ERROR! LevelUpManager.IsItTimeToLevelUp: TimePassedEVT data given is NULL");
             return false;
         }
 
@@ -120,16 +128,6 @@ public class LevelUpManager : MonoBehaviour
             totalDays += 1;
             timeOfDay -= 24;
         }
-
-        //Subtracting the first few hours since the game doesn't start at midnight and level ups happen at noon
-        /*if (TimePanelUI.globalReference.startingTimeOfDay < 12)
-        {
-            totalDays -= ((12 - TimePanelUI.globalReference.startingTimeOfDay) * 1.0f) / 24.0f;
-        }
-        else if(TimePanelUI.globalReference.startingTimeOfDay > 12)
-        {
-            totalDays += ((TimePanelUI.globalReference.startingTimeOfDay - 12) * 1.0f) / 24.0f;
-        }*/
 
         //Adding the fraction of a day based on the hours passed
         //If the time of day is before noon, we add the 12 hours from the previous day from noon to midnight
@@ -197,6 +195,11 @@ public class LevelUpManager : MonoBehaviour
     //Function called from TrackTimePassage to calculate a given character's current health curve and any bonus health to add
     private int[] FindCharacterHealthCurve(Character character_)
     {
+        .//Need to do a calculation based on the average percentages and the plusses and minuses to health curves
+        
+        //Getting the modifier for this character's health curve from their physical state
+        int physStateMod = this.FindHealthCurveModFromPhysState(character_.charPhysState);
+
         //Int to hold the current character's health curve
         int healthCurve = character_.charPhysState.healthCurveStagesSum;
 
@@ -231,6 +234,93 @@ public class LevelUpManager : MonoBehaviour
         //Returning the health cuve and bonus health values
         int[] healthCurveAndBonus = new int[2] { healthCurve, bonusHealthAdded };
         return healthCurveAndBonus;
+    }
+
+
+    //Finding the total health curve modifier for a given character based on their physical state
+    private int FindHealthCurveModFromPhysState(PhysicalState state_)
+    {
+        //The total modifier returned
+        int curveMod = 0;
+
+        //Finding the average health percent for this character
+        float hpAvg = 0;
+        foreach (float hpP in state_.trackingHealthPercents)
+        {
+            hpAvg += hpP;
+        }
+        hpAvg = hpAvg / state_.trackingHealthPercents.Count;
+
+        //Finding the average food percent for this character
+        float fdAvg = 0;
+        foreach(float fdP in state_.trackingFoodPercents)
+        {
+            fdAvg += fdP;
+        }
+        fdAvg = fdAvg / state_.trackingFoodPercents.Count;
+
+        //Finding the average water percent for this character
+        float wtAvg = 0;
+        foreach(float wtP in state_.trackingWaterPercents)
+        {
+            wtAvg += wtP;
+        }
+        wtAvg = wtAvg / state_.trackingWaterPercents.Count;
+
+        //Finding the average sleep percent for this character
+        float slAvg = 0;
+        foreach(float slP in state_.trackingSleepPercents)
+        {
+            slAvg += slP;
+        }
+        slAvg = slAvg / state_.trackingSleepPercents.Count;
+
+
+        //If the Health average is too low, the modifier goes down
+        if(hpAvg < this.healthPercentCurveModRange.x)
+        {
+            curveMod -= 1;
+        }
+        //If the Health average is high enough, the modifier goes up
+        else if(hpAvg >= this.healthPercentCurveModRange.y)
+        {
+            curveMod += 1;
+        }
+
+        //If the Food average is too low, the modifier goes down
+        if(fdAvg < this.foodPercentCurveModRange.x)
+        {
+            curveMod -= 1;
+        }
+        //If the Food average is high enough, the modifier goes up
+        else if(fdAvg >= this.foodPercentCurveModRange.y)
+        {
+            curveMod += 1;
+        }
+
+        //If the Water average is too low, the modifier goes down
+        if(wtAvg < this.waterPercentCurveModRange.x)
+        {
+            curveMod -= 1;
+        }
+        //If the Water average is high enough, the modifier goes up
+        else if(wtAvg >= this.waterPercentCurveModRange.y)
+        {
+            curveMod += 1;
+        }
+
+        //If the Sleep average is too low, the modifier goes down
+        if(slAvg < this.sleepPercentCurveModRange.x)
+        {
+            curveMod -= 1;
+        }
+        //If the Sleep average is high enough, the modifier goes up
+        else if(slAvg >= this.sleepPercentCurveModRange.y)
+        {
+            curveMod += 1;
+        }
+
+        return curveMod;
     }
 
 
@@ -330,6 +420,8 @@ public class LevelUpManager : MonoBehaviour
     }
 }
 
+
+//Class used in LevelUpManager.cs to track and change the time it takes for characters to level up
 [System.Serializable]
 public class LevelUpCurve
 {
