@@ -263,4 +263,93 @@ public class PhysicalState : MonoBehaviour
             this.currentHealth = this.maxHealth;
         }
     }
+
+
+    //Function called externally from PartyCreator.cs to generate this character's starting hit dice
+    //They get a few levels worth of max health rolls and 1 random health roll on top
+    public void GenerateStartingHitDice()
+    {
+        //Int to hold the amount of health for this character's starting health curve
+        int hitDie = 0;
+
+        //Int to hold the random die roll based on the starting health curve
+        int hitRoll = 0;
+
+        //Switch for this character's starting health curve to get the max roll value
+        switch(this.startingHealthCurve)
+        {
+            case HealthCurveTypes.Strong:
+                hitDie = 12;
+                hitRoll = Random.Range(1, 13);
+                //Rolling again to see if the second roll is higher
+                int strongRoll2 = Random.Range(1, 13);
+                if (strongRoll2 > hitRoll)
+                {
+                    hitRoll = strongRoll2;
+                }
+                break;
+
+            case HealthCurveTypes.Sturdy:
+                hitDie = 12;
+                hitRoll = Random.Range(1, 13);
+                break;
+
+            case HealthCurveTypes.Healthy:
+                hitDie = 10;
+                hitRoll = Random.Range(1, 11);
+                break;
+
+            case HealthCurveTypes.Average:
+                hitDie = 8;
+                hitRoll = Random.Range(1, 9);
+                break;
+
+            case HealthCurveTypes.Weak:
+                hitDie = 6;
+                hitRoll = Random.Range(1, 7);
+                break;
+
+            case HealthCurveTypes.Sickly:
+                hitDie = 4;
+                hitRoll = Random.Range(1, 5);
+                break;
+
+            case HealthCurveTypes.Feeble:
+                hitDie = 4;
+                hitRoll = Random.Range(1, 5);
+                //Rolling again to see if the second roll is lower
+                int feebleRoll2 = Random.Range(1, 5);
+                if(feebleRoll2 < hitRoll)
+                {
+                    hitRoll = feebleRoll2;
+                }
+                break;
+        }
+
+        //Looping through the character's perks to see if they have any health boost perks
+        int perkBonus = 0;
+        foreach (Perk charPerk in this.GetComponent<Character>().charPerks.allPerks)
+        {
+            //If the current perk is a health boost perk, then we can give the character more health
+            if (charPerk.GetType() == typeof(HealthBoostPerk))
+            {
+                HealthBoostPerk hpBoostPerk = charPerk.GetComponent<HealthBoostPerk>();
+                //Adding the amount of bonus health to give
+                perkBonus += hpBoostPerk.GetHealthBoostAmount();
+            }
+        }
+
+        //Adding the perk bonus to the total hit die
+        hitDie += perkBonus;
+
+        //Multiplying the total amount by the number of starting dice allocated by the PartyCreator.cs
+        hitDie = hitDie * PartyCreator.startingHitDice;
+
+        //Adding the random roll value to the total hit die value as well as the perk bonus again
+        hitDie += (hitRoll + perkBonus);
+
+        //Setting this character's health to this hit die roll
+        this.maxHealth = hitDie;
+        this.currentHealth = hitDie;
+    }
 }
