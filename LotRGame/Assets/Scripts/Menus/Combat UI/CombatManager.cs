@@ -1130,7 +1130,7 @@ public class CombatManager : MonoBehaviour
 
                 //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost);
 
                 //If the character's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
@@ -1170,7 +1170,7 @@ public class CombatManager : MonoBehaviour
                 
                 //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
                 CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost) * (combatStats.currentState.currentEnergy / combatStats.currentState.maxEnergy);
+                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost);
                 
                 //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
                 if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)

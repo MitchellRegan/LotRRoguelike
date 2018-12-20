@@ -36,12 +36,6 @@ public class PhysicalState : MonoBehaviour
     public float currentSleep = 0;
     //The number of days at which this character starts losing health from lack of sleep
     public float maxSleep = 5;
-
-
-    //The energy this character has based on their health, hunger, thirst, and sleep
-    public float currentEnergy = 1;
-    //The maximum amount of energy this character can have
-    public float maxEnergy = 1;
     
     //Array to hold this character's health curve value for each level up
     [HideInInspector]
@@ -85,8 +79,6 @@ public class PhysicalState : MonoBehaviour
         this.trackingFoodPercents = new List<float>();
         this.trackingWaterPercents = new List<float>();
         this.trackingSleepPercents = new List<float>();
-
-        this.CalculateEnergyLevel();
     }
 
 
@@ -134,9 +126,7 @@ public class PhysicalState : MonoBehaviour
                 this.currentSleep = 0;
             }
         }
-
-        //Finding this character's energy level
-        this.CalculateEnergyLevel();
+        
 
         //If the time passed will move us to the next day
         if(TimePanelUI.globalReference.timeOfDay + timePassed_ >= 24)
@@ -173,83 +163,6 @@ public class PhysicalState : MonoBehaviour
         {
             this.highestSleepPercent = sl;
         }
-    }
-
-
-    //Function called from OnTimeAdvance to calculate this character's energy level
-    private void CalculateEnergyLevel()
-    {
-        //Floats that determine how much of the energy percentage bar each category fills
-        float maxEnergyFromFood = 0.2f;
-        float maxEnergyFromWater = 0.35f;
-        float maxEnergyFromSleep = 0.45f;
-
-        //Floats that determine the percentage of each category that need to be dropped below before it start's reducing energy
-        float foodSafePercent = 0.65f;
-        float waterSafePercent = 0.75f;
-        float sleepSafePercent = 0.8f;
-
-        //Variable to hold the current energy value
-        float newEnergyValue = 0;
-
-        //If this character doesn't require a category, it's importance is split with the others
-        if (!this.requiresFood)
-        {
-            maxEnergyFromFood = 0;
-            waterSafePercent = 0.4f;
-            maxEnergyFromSleep = 0.6f;
-        }
-        else if (!this.requiresWater)
-        {
-            maxEnergyFromFood = 0.3f;
-            waterSafePercent = 0;
-            maxEnergyFromSleep = 0.7f;
-        }
-        else if (!this.requiresSleep)
-        {
-            maxEnergyFromFood = 0.4f;
-            waterSafePercent = 0.6f;
-            maxEnergyFromSleep = 0;
-        }
-
-        //If the current food level is below the safe percentage, only a portion of its energy is added
-        if ((this.currentFood / this.maxFood) < foodSafePercent)
-        {
-            float energyFromFood = this.currentFood / (this.maxFood * foodSafePercent);
-            newEnergyValue += energyFromFood * maxEnergyFromFood;
-        }
-        //If the current food level is at or above the safe percentage, all of its energy is added
-        else
-        {
-            newEnergyValue += maxEnergyFromFood;
-        }
-
-        //If the current water level is below the safe percentage, only a portion of its energy is added
-        if ((this.currentWater / this.maxWater) < waterSafePercent)
-        {
-            float energyFromWater = this.currentWater / (this.maxWater * waterSafePercent);
-            newEnergyValue += energyFromWater * maxEnergyFromWater;
-        }
-        //If the current water level is at or above the safe percentage, all of its energy is added
-        else
-        {
-            newEnergyValue += maxEnergyFromWater;
-        }
-
-        //If the current water level is below the safe percentage, only a portion of its energy is added
-        if ((this.currentSleep / this.maxSleep) < sleepSafePercent)
-        {
-            float energyFromSleep = this.currentSleep / (this.maxSleep * sleepSafePercent);
-            newEnergyValue += energyFromSleep * maxEnergyFromSleep;
-        }
-        //If the current water level is at or above the safe percentage, all of its energy is added
-        else
-        {
-            newEnergyValue += maxEnergyFromSleep;
-        }
-
-        //Setting this character's energy to the new value calculated
-        this.currentEnergy = newEnergyValue;
     }
 
 
@@ -304,19 +217,13 @@ public class PhysicalState : MonoBehaviour
         {
             this.currentWater = this.maxWater;
         }
-
-        //Updating the energy level
-        this.CalculateEnergyLevel();
     }
 
 
     //Function called externally to make this character sleep
     public void Sleep()
     {
-
-
-        //Updating the energy level
-        this.CalculateEnergyLevel();
+        
     }
 
 

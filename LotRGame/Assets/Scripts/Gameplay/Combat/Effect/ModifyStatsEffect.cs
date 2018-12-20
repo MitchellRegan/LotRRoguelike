@@ -97,22 +97,6 @@ public class ModifyStatsEffect : Effect
                     }
                     break;
 
-                //Increasing the target character's max energy level
-                case StatModifier.StatName.Energy:
-                    //If we're adding the modifier
-                    if (addingChanges_)
-                    {
-                        this.characterToEffect.charPhysState.currentEnergy += Mathf.RoundToInt(mod.amountToChange);
-                        this.characterToEffect.charPhysState.maxEnergy += Mathf.RoundToInt(mod.amountToChange);
-                    }
-                    //If we're removing the modifier
-                    else
-                    {
-                        this.characterToEffect.charPhysState.currentEnergy -= Mathf.RoundToInt(mod.amountToChange);
-                        this.characterToEffect.charPhysState.maxEnergy -= Mathf.RoundToInt(mod.amountToChange);
-                    }
-                    break;
-
                 //Increasing the target character's combat initiative speed
                 case StatModifier.StatName.Initiative:
                     //If we're adding the modifier
@@ -700,7 +684,6 @@ public class StatModifier
     public enum StatName
     {
         Health,
-        Energy,
 
         Initiative,
         Accuracy,

@@ -27,9 +27,6 @@ public class CharacterStateUI : MonoBehaviour
     public Slider sleepSlider;
     public Text sleepValueText;
 
-    public Slider energySlider;
-    public Text energyValueText;
-
     //Delegate event that listens for TimePassingEVT events
     private DelegateEvent<EVTData> advanceTimeListener;
 
@@ -143,9 +140,5 @@ public class CharacterStateUI : MonoBehaviour
         this.sleepSlider.maxValue = this.selectedCharacterState.maxSleep;
         this.sleepSlider.value = this.selectedCharacterState.currentSleep;
         this.sleepValueText.text = this.selectedCharacterState.currentSleep + " / " + this.selectedCharacterState.maxSleep;
-
-        this.energySlider.maxValue = this.selectedCharacterState.maxEnergy;
-        this.energySlider.value = this.selectedCharacterState.currentEnergy;
-        this.energyValueText.text = Mathf.RoundToInt(this.selectedCharacterState.currentEnergy * 100) + " / " + (this.selectedCharacterState.maxEnergy * 100);
     }
 }

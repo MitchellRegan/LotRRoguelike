@@ -269,8 +269,6 @@ public class Character : MonoBehaviour
         this.charPhysState.requiresSleep = saveData_.requireSleep;
         this.charPhysState.maxSleep = saveData_.maxSleep;
         this.charPhysState.currentSleep = saveData_.currentSleep;
-        this.charPhysState.maxEnergy = saveData_.maxEnergy;
-        this.charPhysState.currentEnergy = saveData_.currentEnergy;
         this.charPhysState.startingHealthCurve = saveData_.startingHealthCurve;
         this.charPhysState.healthCurveLevels = saveData_.healthCurveLevels;
 
@@ -383,8 +381,6 @@ public class CharacterSaveData
     public bool requireFood = true;
     public bool requireWater = true;
     public bool requireSleep = true;
-    public float maxEnergy = 1;
-    public float currentEnergy = 1;
     public HealthCurveTypes startingHealthCurve = HealthCurveTypes.Average;
     public int[] healthCurveLevels = new int[4];
     public float highestHealthPercent;
@@ -458,8 +454,6 @@ public class CharacterSaveData
         this.requireFood = characterToSave_.charPhysState.requiresFood;
         this.requireWater = characterToSave_.charPhysState.requiresWater;
         this.requireSleep = characterToSave_.charPhysState.requiresSleep;
-        this.maxEnergy = characterToSave_.charPhysState.maxEnergy;
-        this.currentEnergy = characterToSave_.charPhysState.currentEnergy;
         this.startingHealthCurve = characterToSave_.charPhysState.startingHealthCurve;
         this.healthCurveLevels = characterToSave_.charPhysState.healthCurveLevels;
 
