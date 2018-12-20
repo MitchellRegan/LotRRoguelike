@@ -129,8 +129,9 @@ public class PhysicalState : MonoBehaviour
         
 
         //If the time passed will move us to the next day
-        if(TimePanelUI.globalReference.timeOfDay + timePassed_ >= 24)
+        if(TimePanelUI.globalReference.timeOfDay + timePassed_ >= 25)
         {
+            Debug.Log("Time: " + TimePanelUI.globalReference.timeOfDay + ", Passed: " + timePassed_);
             //We track the health, food, water, and sleep percentages for the last day
             this.TrackPercentages();
         }
@@ -192,6 +193,9 @@ public class PhysicalState : MonoBehaviour
         {
             this.trackingSleepPercents.RemoveAt(0);
         }
+
+        Debug.Log("Day Passed. Max HP%: " + this.highestHealthPercent + ", Max Food%: " + this.highestFoodPercent +
+            ", Max Water%: " + this.highestWaterPercent + ", Max Sleep%: " + this.highestSleepPercent);
 
         //Resetting the highest percentages for health, food, water, and sleep for the day
         this.highestHealthPercent = 0;

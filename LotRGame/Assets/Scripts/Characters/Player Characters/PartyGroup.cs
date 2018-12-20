@@ -48,6 +48,8 @@ public class PartyGroup : MonoBehaviour
             //Parenting the character to this group's transform
             charToAdd_.transform.SetParent(this.transform);
             charToAdd_.transform.position = new Vector3(0, 0, 0);
+            //Setting a starting combat position for this character
+            this.SetDefaultCombatPosition();
             //Checking the character's combat position so that it doesn't overlap with someone else
             this.CheckCombatPositionForCharacter(charToAdd_);
             return true;
@@ -55,6 +57,49 @@ public class PartyGroup : MonoBehaviour
         
         //If none of the other parameters were met, the character couldn't be added
         return false;
+    }
+
+
+    //Function called from AddCharacterToGroup to set default starting positions for new characters
+    private void SetDefaultCombatPosition()
+    {
+        //Setting a different default position based on how many characters are already in the group
+        switch(this.charactersInParty.Count)
+        {
+            case 1:
+                this.charactersInParty[0].charCombatStats.startingPositionCol = 1;
+                this.charactersInParty[0].charCombatStats.startingPositionRow = 2;
+                break;
+
+            case 2:
+                this.charactersInParty[1].charCombatStats.startingPositionCol = 1;
+                this.charactersInParty[1].charCombatStats.startingPositionRow = 5;
+                break;
+
+            case 3:
+                this.charactersInParty[2].charCombatStats.startingPositionCol = 2;
+                this.charactersInParty[2].charCombatStats.startingPositionRow = 1;
+                break;
+
+            case 4:
+                this.charactersInParty[3].charCombatStats.startingPositionCol = 2;
+                this.charactersInParty[3].charCombatStats.startingPositionRow = 6;
+                break;
+
+            case 5:
+                this.charactersInParty[4].charCombatStats.startingPositionCol = 0;
+                this.charactersInParty[4].charCombatStats.startingPositionRow = 1;
+                break;
+
+            case 6:
+                this.charactersInParty[5].charCombatStats.startingPositionCol = 0;
+                this.charactersInParty[5].charCombatStats.startingPositionRow = 6;
+                break;
+
+            default:
+                //????
+                break;
+        }
     }
 
 

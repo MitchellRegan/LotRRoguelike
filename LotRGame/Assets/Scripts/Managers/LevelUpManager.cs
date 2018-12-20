@@ -347,6 +347,9 @@ public class LevelUpManager : MonoBehaviour
             curveMod += 1;
         }
 
+        Debug.Log("Average HP%: " + hpAvg + ", Average Food%: " + fdAvg + ", Average Water%: " + wtAvg + ", Average Sleep%: " + slAvg);
+        Debug.Log("Curve Mod: " + curveMod);
+
         return curveMod;
     }
 
