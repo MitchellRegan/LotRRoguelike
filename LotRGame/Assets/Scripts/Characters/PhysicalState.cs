@@ -246,6 +246,13 @@ public class PhysicalState : MonoBehaviour
         if(this.currentHealth <= 0)
         {
             this.currentHealth = 0;
+
+            //Creating a character death event to tell other scripts about this death
+            EVTData deathEVTData = new EVTData();
+            deathEVTData.characterDeath = new CharacterDeathEVT(this.GetComponent<Character>());
+
+            //Dispatching the event to the EventManager
+            EventManager.TriggerEvent(CharacterDeathEVT.eventNum, deathEVTData);
         }
     }
 
