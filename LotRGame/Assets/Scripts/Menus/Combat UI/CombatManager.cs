@@ -13,7 +13,7 @@ public class CombatManager : MonoBehaviour
     public const int baseHitDC = 20;
 
     //Enum for the state of this combat manager to decide what to do on update
-    public enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat};
+    public enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat, GameOver};
     public combatState currentState = combatState.Wait;
 
     //The amount of time that has passed while waiting
@@ -82,6 +82,9 @@ public class CombatManager : MonoBehaviour
     //The list of characters who are dead after an attack
     private List<CharacterSpriteBase> deadCharacterSprites;
 
+    //Delegate function that's tied to the CharacterDeathEVT to make sure they're removed from combat correctly
+    private DelegateEvent<EVTData> charDeathEVT;
+
 
 
 	// Function called when this object is created
@@ -117,6 +120,23 @@ public class CombatManager : MonoBehaviour
         this.playerCharactersInCombat = new List<Character>();
         this.enemyCharactersInCombat = new List<Character>();
         this.characterSpriteList = new List<CharacterSpriteBase>();
+
+        //Setting our charDeathEVT delegate
+        this.charDeathEVT = new DelegateEvent<EVTData>(this.CharacterDied);
+    }
+
+
+    //Function called when this component is enabled
+    private void OnEnable()
+    {
+        EventManager.StartListening(CharacterDeathEVT.eventNum, this.charDeathEVT);
+    }
+
+
+    //Function called when this component is disabled
+    private void OnDisable()
+    {
+        EventManager.StopListening(CharacterDeathEVT.eventNum, this.charDeathEVT);
     }
 
 
@@ -164,6 +184,7 @@ public class CombatManager : MonoBehaviour
                     }
 
                     this.currentState = this.stateAfterWait;
+                    this.stateAfterWait = combatState.IncreaseInitiative;
 
                     //Disabling the action blocker so the player can pick actions again
                     this.actionBlocker.enabled = false;
@@ -179,17 +200,14 @@ public class CombatManager : MonoBehaviour
             //Hilighting the selected character whose turn it is
             case combatState.SelectAction:
                 //Triggering each combat effect on the acting character for the beginning of their turn
-                /*foreach (Effect e in this.actingCharacters[0].charCombatStats.combatEffects)
-                {
-                    e.EffectOnStartOfTurn();
-                }*/
                 int numberOfEffects = this.actingCharacters[0].charCombatStats.combatEffects.Count;
-                for(int sotEffects = 0; sotEffects < this.actingCharacters[0].charCombatStats.combatEffects.Count; ++sotEffects)
+                Character actingChar = this.actingCharacters[0];
+                for(int sotEffects = 0; sotEffects < actingChar.charCombatStats.combatEffects.Count; ++sotEffects)
                 {
-                    this.actingCharacters[0].charCombatStats.combatEffects[sotEffects].EffectOnStartOfTurn();
+                    actingChar.charCombatStats.combatEffects[sotEffects].EffectOnStartOfTurn();
 
                     //Checking to see if the effect has expired to set the counter back by 1
-                    if(this.actingCharacters[0].charCombatStats.combatEffects.Count < numberOfEffects)
+                    if(actingChar.charCombatStats.combatEffects.Count < numberOfEffects)
                     {
                         numberOfEffects -= 1;
                         sotEffects -= 1;
@@ -197,41 +215,49 @@ public class CombatManager : MonoBehaviour
                 }
 
                 //Refreshing the action list for the acting character
-                this.actingCharacters[0].charActionList.RefreshActionLists();
+                actingChar.charActionList.RefreshActionLists();
 
                 //If the selected character is a player
-                if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
+                if (this.playerCharactersInCombat.Contains(actingChar))
                 {
                     //Hilighting the slider of the player character whose turn it is
-                    int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
+                    int selectedCharIndex = this.playerCharactersInCombat.IndexOf(actingChar);
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
 
                     //Setting the highlight ring's color to the player color and making it visible
                     this.highlightRing.color = this.actingCharacterColor;
                     this.highlightRing.enabled = true;
 
-                    //Displaying the action panel so players can decide what to do
-                    this.showPlayerActions.Invoke();
-                    //Default to showing the acting character's standard actions
-                    CombatActionPanelUI.globalReference.DisplayActionTypes(0);
-                    //Now we wait for player input
-                    this.currentState = combatState.PlayerInput;
+                    //If this player character isn't dead from previous effects
+                    if (actingChar.charPhysState.currentHealth > 0)
+                    {
+                        //Displaying the action panel so players can decide what to do
+                        this.showPlayerActions.Invoke();
+                        //Default to showing the acting character's standard actions
+                        CombatActionPanelUI.globalReference.DisplayActionTypes(0);
+                        //Now we wait for player input
+                        this.currentState = combatState.PlayerInput;
+                    }
                 }
                 //If the selected character is an enemy
                 else
                 {
                     //Getting the index for the acting enemy
-                    int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
+                    int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(actingChar);
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
 
                     //Setting the highlight ring's color to the enemy color and making it visible
                     this.highlightRing.color = this.actingEnemyColor;
                     this.highlightRing.enabled = true;
 
-                    //Now we wait for enemy input
-                    this.currentState = combatState.PlayerInput;
-                    //Starting the acting enemy's turn so it can perform its actions
-                    this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
+                    //If this enemy isn't dead from previous effects
+                    if (actingChar.charPhysState.currentHealth > 0)
+                    {
+                        //Now we wait for enemy input
+                        this.currentState = combatState.PlayerInput;
+                        //Starting the acting enemy's turn so it can perform its actions
+                        this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
+                    }
                 }
                 break;
 
@@ -247,6 +273,11 @@ public class CombatManager : MonoBehaviour
                 EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
                 //this.combatEndEvent.Invoke();
                 this.currentState = combatState.PlayerInput;
+                break;
+
+            //The game is over
+            case combatState.GameOver:
+                Debug.Log("<<<------------- GAME OVER! -------------->>>");
                 break;
         }
     }
@@ -330,6 +361,9 @@ public class CombatManager : MonoBehaviour
                 this.playerInitiativeSliders[p].initiativeSlider.value = 0;
                 //Setting the character's name
                 this.playerInitiativeSliders[p].characterName.text = this.playerCharactersInCombat[p].firstName;
+                //Setting the slider's values to match the character's health
+                this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
+                this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
                 //Making the background panel set to the inactive color
                 this.playerInitiativeSliders[p].background.color = this.inactivePanelColor;
 
@@ -341,19 +375,25 @@ public class CombatManager : MonoBehaviour
                 this.playerInitiativeSliders[p].background.gameObject.SetActive(false);
             }
         }
-        
+
+        Debug.Log("Enemy Characters in Combat count: " + this.enemyCharactersInCombat.Count);
+        Debug.Log("Enemies in encounter: " + encounter_.enemies.Count);
         //Looping through and setting all of the enemy initiative bars to display the correct enemy
         for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
         {
             //if the current index isn't outside the count of enemies
             if (e < this.enemyCharactersInCombat.Count)
             {
+                Debug.Log("Slider count: " + e);
                 //The initiative slider is shown
                 this.enemyInitiativeSliders[e].initiativeSlider.gameObject.SetActive(true);
                 //Makes sure the initiative is set to 0
                 this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
                 //Setting the enemy's name
                 this.enemyInitiativeSliders[e].characterName.text = this.enemyCharactersInCombat[e].firstName;
+                //Setting the slider's values to match the enemy's health
+                this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
+                this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
                 //Making the background panel set to the inactive color
                 this.enemyInitiativeSliders[e].background.color = this.inactivePanelColor;
             }
@@ -911,6 +951,12 @@ public class CombatManager : MonoBehaviour
     //Function called to set the amount of time to wait
     private void SetWaitTime(float timeToWait_, combatState stateAfterWait_ = combatState.IncreaseInitiative)
     {
+        //If the state after we're done waiting is GameOver or EndCombat, we don't change states
+        if(this.stateAfterWait == combatState.EndCombat || this.stateAfterWait == combatState.GameOver)
+        {
+            return;
+        }
+
         this.waitTime = timeToWait_;
         this.currentState = combatState.Wait;
         this.stateAfterWait = stateAfterWait_;
@@ -957,7 +1003,6 @@ public class CombatManager : MonoBehaviour
     public enum DamageType { Stabbing, Slashing, Crushing, Arcane, Fire, Water, Electric, Wind, Holy, Dark, Nature, Pure, Bleed };
     public void DisplayDamageDealt(float timeDelay_, int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
     {
-        Debug.Log("CombatManager DisplayDamageDealt 1");
         //If the damage dealt was 0, nothing happens
         if(damage_ <= 0)
         {
@@ -973,160 +1018,125 @@ public class CombatManager : MonoBehaviour
 
         //Setting the info for the text
         newDamageText.SetDamageToDisplay(timeDelay_, damage_, type_, damagedCharTile_.transform.position, isCrit_, isHeal_);
-
-        Debug.Log("CombatManager DisplayDamageDealt 2");
-        //Checking to see if the attacked character is dead
-        if (damagedCharTile_.objectOnThisTile.GetComponent<Character>().charPhysState.currentHealth == 0)
-        {
-            Debug.Log("CombatManager DisplayDamageDealt 3");
-            //If the character is a player character
-            if (this.playerCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
-            {
-                Debug.Log("CombatManager DisplayDamageDealt 4");
-                //Updating the quest tracker to see if the dead ally is an escort character
-                QuestTracker.globalReference.CheckForDeadEscortCharacter(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
-            }
-            //If the character is an enemy
-            else if(this.enemyCharactersInCombat.Contains(damagedCharTile_.objectOnThisTile.GetComponent<Character>()))
-            {
-                Debug.Log("CombatManager DisplayDamageDealt 5");
-                //Updating the quest tracker to see if the dead enemy is a quest target
-                QuestTracker.globalReference.UpdateKillQuests(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
-            }
-            Debug.Log("CombatManager DisplayDamageDealt 6");
-
-            //Getting the character sprite for the dead character
-            CharacterSpriteBase deadSprite = this.GetCharacterSprite(damagedCharTile_.objectOnThisTile.GetComponent<Character>());
-            //Removing the sprite from our list and destroying it
-            this.deadCharacterSprites.Add(deadSprite);
-            //Freeing up the tile that the dead character is on
-            damagedCharTile_.SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
-            Debug.Log("CombatManager DisplayDamageDealt 7");
-        }
-        Debug.Log("CombatManager DisplayDamageDealt 8");
+        
         //Updating the health bars so we can see how much health characters have
         this.UpdateHealthBars();
-        Debug.Log("CombatManager DisplayDamageDealt END");
     }
 
 
     //Function called from DisplayDamageDealt to update all character's health sliders
     private void UpdateHealthBars()
     {
-        Debug.Log("CombatManager UpdateHealthBars 1");
         //Looping through each player character's initiative slider
         for (int p = 0; p < this.playerCharactersInCombat.Count; ++p)
         {
-            //Setting the health slider to show the current health based on the max health
-            this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
-            this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
-
-            //If this character is dead, their initiative slider is set to 0 so they can't act
-            if(this.playerCharactersInCombat[p].charPhysState.currentHealth == 0)
+            //If the character isn't already dead
+            if(this.playerInitiativeSliders[p].healthSlider.value > 0)
             {
-                Debug.Log("CombatManager UpdateHealthBars 1.1");
-                this.playerInitiativeSliders[p].initiativeSlider.value = 0;
+                //Setting the health slider to show the current health based on the max health
+                this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
+                this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
 
-                this.playerInitiativeSliders[p].background.color = Color.grey;
+                //If this character is dead, their initiative slider is set to 0 so they can't act
+                if(this.playerCharactersInCombat[p].charPhysState.currentHealth == 0)
+                {
+                    this.playerInitiativeSliders[p].initiativeSlider.value = 0;
 
-                //Looping through and clearing all of the effects on the dead character
-                for(int e = 0; e < this.playerCharactersInCombat[p].charCombatStats.combatEffects.Count; ++e)
-                {
-                    this.playerCharactersInCombat[p].charCombatStats.combatEffects[e].RemoveEffect();
-                    e -= 1;
-                }
+                    this.playerInitiativeSliders[p].background.color = Color.grey;
 
-                //If this character is the acting character
-                if(this.playerCharactersInCombat[p] == this.actingCharacters[0])
-                {
-                    //Their turn is ended
-                    this.EndActingCharactersTurn();
-                }
-                //Otherwise we check to see if they'll be acting soon
-                else
-                {
-                    //If this character is in line to act, they are removed from the list
-                    for (int a = 1; a < this.actingCharacters.Count; ++a)
+                    //Looping through and clearing all of the effects on the dead character
+                    for(int e = 0; e < this.playerCharactersInCombat[p].charCombatStats.combatEffects.Count; ++e)
                     {
-                        if (this.actingCharacters[a] == this.playerCharactersInCombat[p])
+                        this.playerCharactersInCombat[p].charCombatStats.combatEffects[e].RemoveEffect();
+                        e -= 1;
+                    }
+
+                    //If this character is the acting character
+                    if (this.playerCharactersInCombat[p] == this.actingCharacters[0])
+                    {
+                        //Their turn is ended
+                        this.EndActingCharactersTurn();
+                    }
+                    //Otherwise we check to see if they'll be acting soon
+                    else
+                    {
+                        //If this character is in line to act, they are removed from the list
+                        for (int a = 1; a < this.actingCharacters.Count; ++a)
                         {
-                            this.actingCharacters.RemoveAt(a);
-                            a -= 1;
+                            if (this.actingCharacters[a] == this.playerCharactersInCombat[p])
+                            {
+                                this.actingCharacters.RemoveAt(a);
+                                a -= 1;
+                            }
                         }
                     }
                 }
             }
         }
-        Debug.Log("CombatManager UpdateHealthBars 2");
 
         //Looping through each enemy's initiative slider
         for (int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
         {
-            //Setting the health slider to show the current health based on the max health
-            this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
-            this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
-            Debug.Log("CombatManager UpdateHealthBars 2.1");
-
-            //If this enemy is dead, their initiative slider is set to 0 so they can't act
-            if (this.enemyCharactersInCombat[e].charPhysState.currentHealth == 0)
+            //If the enemy isn't already dead
+            if (this.enemyInitiativeSliders[e].healthSlider.value > 0)
             {
-                Debug.Log("CombatManager UpdateHealthBars 2.2");
-                this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
+                //Setting the health slider to show the current health based on the max health
+                this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
+                this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
 
-                this.enemyInitiativeSliders[e].background.color = Color.grey;
-
-                //Looping through and clearing all of the effects on the dead character
-                for (int ef = 0; ef < this.enemyCharactersInCombat[e].charCombatStats.combatEffects.Count; ++ef)
+                //If this enemy is dead, their initiative slider is set to 0 so they can't act
+                if (this.enemyCharactersInCombat[e].charPhysState.currentHealth == 0)
                 {
-                    this.enemyCharactersInCombat[e].charCombatStats.combatEffects[ef].RemoveEffect();
-                    ef -= 1;
-                }
-                Debug.Log("CombatManager UpdateHealthBars 2.3");
+                    this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
 
-                //If this character is in line to act, they are removed from the list
-                for (int a = 1; a < this.actingCharacters.Count; ++a)
-                {
-                    if (this.actingCharacters[a] == this.enemyCharactersInCombat[e])
+                    this.enemyInitiativeSliders[e].background.color = Color.grey;
+
+                    //Looping through and clearing all of the effects on the dead character
+                    for (int ef = 0; ef < this.enemyCharactersInCombat[e].charCombatStats.combatEffects.Count; ++ef)
                     {
-                        this.actingCharacters.RemoveAt(a);
-                        a -= 1;
+                        this.enemyCharactersInCombat[e].charCombatStats.combatEffects[ef].RemoveEffect();
+                        ef -= 1;
                     }
-                }
-                Debug.Log("CombatManager UpdateHealthBars 2.4");
 
-                //Looping through all enemy characters to check their health
-                foreach (Character enemy in this.enemyCharactersInCombat)
-                {
-                    //If at least 1 enemy is still alive, we break out of the loop
-                    if(enemy.charPhysState.currentHealth > 0)
+                    //If this character is in line to act, they are removed from the list
+                    for (int a = 1; a < this.actingCharacters.Count; ++a)
                     {
-                        return;
+                        if (this.actingCharacters[a] == this.enemyCharactersInCombat[e])
+                        {
+                            this.actingCharacters.RemoveAt(a);
+                            a -= 1;
+                        }
                     }
-                }
-                Debug.Log("CombatManager UpdateHealthBars 2.5");
-                //If we get through the loop, that means that all enemies are dead and combat is over
 
-                //Perform the unity event after the action so we can hide some UI elements
-                this.eventAfterActionPerformed.Invoke();
-                Debug.Log("CombatManager UpdateHealthBars 2.6");
-
-                //Looping through and triggering all effects on the acting character for when their turn ends
-                if (this.actingCharacters.Count > 0)
-                {
-                    foreach (Effect ef in this.actingCharacters[0].charCombatStats.combatEffects)
+                    //Looping through all enemy characters to check their health
+                    foreach (Character enemy in this.enemyCharactersInCombat)
                     {
-                        ef.EffectOnEndOfTurn();
+                        //If at least 1 enemy is still alive, we break out of the loop
+                        if (enemy.charPhysState.currentHealth > 0)
+                        {
+                            return;
+                        }
                     }
-                }
-                Debug.Log("CombatManager UpdateHealthBars 2.7");
+                    //If we get through the loop, that means that all enemies are dead and combat is over
 
-                //Clearing the highlighted area showing the previously used action's range
-                this.ClearCombatTileHighlights();
-                this.SetWaitTime(2.5f, combatState.EndCombat);
-                Debug.Log("CombatManager UpdateHealthBars 2.8");
+                    //Perform the unity event after the action so we can hide some UI elements
+                    this.eventAfterActionPerformed.Invoke();
+
+                    //Looping through and triggering all effects on the acting character for when their turn ends
+                    if (this.actingCharacters.Count > 0)
+                    {
+                        foreach (Effect ef in this.actingCharacters[0].charCombatStats.combatEffects)
+                        {
+                            ef.EffectOnEndOfTurn();
+                        }
+                    }
+
+                    //Clearing the highlighted area showing the previously used action's range
+                    this.ClearCombatTileHighlights();
+                    this.SetWaitTime(2.5f, combatState.EndCombat);
+                }
             }
         }
-        Debug.Log("CombatManager UpdateHealthBars END");
     }
 
 
@@ -1430,6 +1440,89 @@ public class CombatManager : MonoBehaviour
                 {
                     targetCharacter_.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(actingCharacter_, threatToAdd_);
                 }
+            }
+        }
+    }
+
+
+    //Function called from the charDeathEVT delegate when a character dies
+    private void CharacterDied(EVTData data_)
+    {
+        //Making sure the data isn't null
+        if(data_ == null || data_.characterDeath == null)
+        {
+            return;
+        }
+        Debug.Log("CHARACTER DIED EVENT RECEIVED: " + data_.characterDeath.deadCharacter.firstName);
+        
+        //Getting the character sprite for the dead character
+        CharacterSpriteBase deadSprite = this.GetCharacterSprite(data_.characterDeath.deadCharacter);
+        //Removing the sprite from our list and destroying it
+        this.deadCharacterSprites.Add(deadSprite);
+        //Freeing up the tile that the dead character is on
+        CombatTile deadCharTile = this.combatTileGrid[data_.characterDeath.deadCharacter.charCombatStats.gridPositionCol][data_.characterDeath.deadCharacter.charCombatStats.gridPositionRow];
+        deadCharTile.SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
+
+        //If the dead character is the acting character, we end it's turn
+        if (this.actingCharacters.Count > 0 && this.actingCharacters[0] == data_.characterDeath.deadCharacter)
+        {
+            this.EndActingCharactersTurn();
+        }
+        //If the dead character was waiting to act, we remove it from the list of acting characters
+        else if(this.actingCharacters.Contains(data_.characterDeath.deadCharacter))
+        {
+            this.actingCharacters.Remove(data_.characterDeath.deadCharacter);
+        }
+
+        //Updating the health bars
+        this.UpdateHealthBars();
+
+        //If this character was a player character
+        if(this.playerCharactersInCombat.Contains(data_.characterDeath.deadCharacter))
+        {
+            //Updating the quest tracker to see if the dead ally is an escort character
+            QuestTracker.globalReference.CheckForDeadEscortCharacter(data_.characterDeath.deadCharacter);
+
+            //Looping through all player characters to see if they're all dead
+            bool allPlayersAreDead = true;
+            for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
+            {
+                //If this player character has any health, we break the loop and nothing happens
+                if(this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
+                {
+                    allPlayersAreDead = false;
+                    break;
+                }
+            }
+
+            //If we made it through the loop without finding any living players, GAME OVER
+            if(allPlayersAreDead)
+            {
+                this.SetWaitTime(5f, combatState.GameOver);
+            }
+        }
+        //If this character was an enemy character
+        else if(this.enemyCharactersInCombat.Contains(data_.characterDeath.deadCharacter))
+        {
+            //Updating the quest tracker to see if the dead enemy is a quest target
+            QuestTracker.globalReference.UpdateKillQuests(data_.characterDeath.deadCharacter);
+
+            //Looping through all enemy characters to see if they're all dead
+            bool allEnemiesAreDead = true;
+            for(int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
+            {
+                //If this enemy has any health, we break the loop and nothing happens
+                if(this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
+                {
+                    allEnemiesAreDead = false;
+                    break;
+                }
+            }
+
+            //If we made it through the loop without finding any living enemies, the combat is over
+            if(allEnemiesAreDead)
+            {
+                this.SetWaitTime(2.5f, combatState.EndCombat);
             }
         }
     }

@@ -108,13 +108,11 @@ public class DamageOverTimeEffect : Effect
     //Function called whenever this effect deals damage
     private void DamageCharacter()
     {
-        Debug.Log("DoT Damage Char 1");
         //Making sure the character isn't dead before dealing damage
         if (this.characterToEffect == null || this.characterToEffect.charPhysState.currentHealth <= 0)
         {
             return;
         }
-        Debug.Log("DoT Damage Char 2");
 
         //Seeing if this effect will trigger
         float triggerRoll = Random.Range(0, 1);
@@ -123,7 +121,6 @@ public class DamageOverTimeEffect : Effect
             //If we roll over the trigger chance, nothing happens and we don't tick
             return;
         }
-        Debug.Log("DoT Damage Char 3");
 
         //Finding out how much damage we deal this tick
         int damageDealt = Mathf.RoundToInt(Random.Range(this.damagePerTickRange.x, this.damagePerTickRange.y));
@@ -137,7 +134,6 @@ public class DamageOverTimeEffect : Effect
             damageDealt = damageDealt * this.critMultiplier;
             didThisCrit = true;
         }
-        Debug.Log("DoT Damage Char 4");
 
         //Looping through the perks of the character that used this ability to see if they have any damage type boost perks
         foreach (Perk charPerk in this.characterWhoTriggered.charPerks.allPerks)
@@ -147,7 +143,6 @@ public class DamageOverTimeEffect : Effect
                 damageDealt += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
             }
         }
-        Debug.Log("DoT Damage Char 5");
 
         //Looping through the defending character's perks to see if they have any spell resist or absorb perks
         SpellResistTypes magicResistType = SpellResistTypes.Normal;
@@ -184,7 +179,6 @@ public class DamageOverTimeEffect : Effect
                 }
             }
         }
-        Debug.Log("DoT Damage Char 6");
 
         //Subtracting any magic resistance from the damage that we're trying to deal
         switch (this.damageType)
@@ -214,7 +208,6 @@ public class DamageOverTimeEffect : Effect
                 damageDealt -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
         }
-        Debug.Log("DoT Damage Char 7");
 
         //Looping through the attacking character's perks to see if there's any bonus threat to add to this effect
         int bonusThreat = 0;
@@ -232,40 +225,33 @@ public class DamageOverTimeEffect : Effect
                 }
             }
         }
-        Debug.Log("DoT Damage Char 8");
 
         //If the damage was dealt normally
         if (magicResistType == SpellResistTypes.Normal)
         {
             //Dealing the damage to the effected character
             this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
-            Debug.Log("DoT Damage Char 8.1");
 
             //Telling the combat manager to display the damage dealt
             CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
-            Debug.Log("DoT Damage Char 8.15");
-            CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
 
-            Debug.Log("DoT Damage Char 8.2");
+            CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
+            
             //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
             if (this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
             {
-                Debug.Log("DoT Damage Char 8.3");
                 //If the character who cast this effect is a player character, we make the enemies hate that character
                 if (!this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
                 {
-                    Debug.Log("DoT Damage Char 8.4");
                     //If the attack didn't crit
                     if (!didThisCrit)
                     {
-                        Debug.Log("DoT Damage Char 8.5");
                         //Applying threat to the targeted character
                         this.characterToEffect.GetComponent<EnemyCombatAI_Basic>().IncreaseThreat(this.characterWhoTriggered, damageDealt + bonusThreat);
                     }
                     //If the attack did crit, we boost threat against all enemies by 25%
                     else
                     {
-                        Debug.Log("DoT Damage Char 8.6");
                         //Finding the bonus amount of threat that's applied to all enemies
                         int boostedThreat = damageDealt + bonusThreat;
                         boostedThreat = Mathf.RoundToInt(boostedThreat * 0.25f);
@@ -280,7 +266,6 @@ public class DamageOverTimeEffect : Effect
         //If the damage was negated completely
         else if(magicResistType == SpellResistTypes.Negate)
         {
-            Debug.Log("DoT Damage Char 8.7");
             //Telling the combat manager to display no damage dealt
             CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, 0, this.damageType, damagedCharTile, didThisCrit);
@@ -288,7 +273,6 @@ public class DamageOverTimeEffect : Effect
         //If the damage was absorbed and healed the character
         else if(magicResistType == SpellResistTypes.Absorb)
         {
-            Debug.Log("DoT Damage Char 8.8");
             //Healing the damage to the effected character
             this.characterToEffect.charPhysState.HealCharacter(damageDealt);
 
@@ -299,12 +283,10 @@ public class DamageOverTimeEffect : Effect
             //If the caster of this effect and the target are player characters, we increase the threat for the character who put this effect on them
             if (!this.characterToEffect.GetComponent<EnemyCombatAI_Basic>() && !this.characterWhoTriggered.GetComponent<EnemyCombatAI_Basic>())
             {
-                Debug.Log("DoT Damage Char 8.9");
                 //Applying threat to all enemies for the amount that's healed
                 CombatManager.globalReference.ApplyActionThreat(this.characterWhoTriggered, null, damageDealt + bonusThreat, true);
             }
         }
-        Debug.Log("DoT Damage Char 9");
 
         //Creating the visual effect for this effect
         CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
@@ -321,7 +303,6 @@ public class DamageOverTimeEffect : Effect
                 this.RemoveEffect();
             }
         }
-        Debug.Log("DoT Damage Char END");
     }
 
 
