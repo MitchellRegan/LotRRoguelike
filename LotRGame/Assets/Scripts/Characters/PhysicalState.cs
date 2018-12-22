@@ -131,7 +131,6 @@ public class PhysicalState : MonoBehaviour
         //If the time passed will move us to the next day
         if(TimePanelUI.globalReference.timeOfDay + timePassed_ >= 25)
         {
-            Debug.Log("Time: " + TimePanelUI.globalReference.timeOfDay + ", Passed: " + timePassed_);
             //We track the health, food, water, and sleep percentages for the last day
             this.TrackPercentages();
         }

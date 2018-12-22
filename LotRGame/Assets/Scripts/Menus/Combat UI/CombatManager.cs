@@ -356,7 +356,7 @@ public class CombatManager : MonoBehaviour
             if(p < this.playerCharactersInCombat.Count)
             {
                 //The initiative slider is shown
-                this.playerInitiativeSliders[p].initiativeSlider.gameObject.SetActive(true);
+                this.playerInitiativeSliders[p].background.gameObject.SetActive(true);
                 //Makes sure the initiative is set to 0
                 this.playerInitiativeSliders[p].initiativeSlider.value = 0;
                 //Setting the character's name
@@ -376,17 +376,14 @@ public class CombatManager : MonoBehaviour
             }
         }
 
-        Debug.Log("Enemy Characters in Combat count: " + this.enemyCharactersInCombat.Count);
-        Debug.Log("Enemies in encounter: " + encounter_.enemies.Count);
         //Looping through and setting all of the enemy initiative bars to display the correct enemy
         for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
         {
             //if the current index isn't outside the count of enemies
             if (e < this.enemyCharactersInCombat.Count)
             {
-                Debug.Log("Slider count: " + e);
                 //The initiative slider is shown
-                this.enemyInitiativeSliders[e].initiativeSlider.gameObject.SetActive(true);
+                this.enemyInitiativeSliders[e].background.gameObject.SetActive(true);
                 //Makes sure the initiative is set to 0
                 this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
                 //Setting the enemy's name
@@ -404,7 +401,7 @@ public class CombatManager : MonoBehaviour
                 this.enemyInitiativeSliders[e].background.gameObject.SetActive(false);
             }
         }
-        
+
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
         
@@ -1453,7 +1450,6 @@ public class CombatManager : MonoBehaviour
         {
             return;
         }
-        Debug.Log("CHARACTER DIED EVENT RECEIVED: " + data_.characterDeath.deadCharacter.firstName);
         
         //Getting the character sprite for the dead character
         CharacterSpriteBase deadSprite = this.GetCharacterSprite(data_.characterDeath.deadCharacter);
