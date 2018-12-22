@@ -1175,9 +1175,9 @@ public class CombatManager : MonoBehaviour
 
                 //Looping through the character's perk list to see if they have any InitiativeBoostPerks
                 float perkBoost = 0;
-                foreach(Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
+                foreach (Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
                 {
-                    if(charPerk.GetType() == typeof(InitiativeBoostPerk))
+                    if (charPerk.GetType() == typeof(InitiativeBoostPerk))
                     {
                         perkBoost += charPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
                     }
@@ -1200,6 +1200,11 @@ public class CombatManager : MonoBehaviour
                 {
                     this.actingCharacters.Add(this.playerCharactersInCombat[p]);
                 }
+            }
+            //If the character is dead but their initiative slider isn't greyed out
+            else if (this.playerInitiativeSliders[p].background.color != Color.grey)
+            {
+                this.playerInitiativeSliders[p].background.color = Color.grey;
             }
         }
 
@@ -1244,6 +1249,11 @@ public class CombatManager : MonoBehaviour
                         this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
                     }
                 }
+            }
+            //If the enemy is dead but their initiative slider isn't greyed out
+            else if (this.enemyInitiativeSliders[e].background.color != Color.grey)
+            {
+                this.enemyInitiativeSliders[e].background.color = Color.grey;
             }
         }
         
@@ -1474,6 +1484,19 @@ public class CombatManager : MonoBehaviour
         {
             this.highlightRing.enabled = false;
             this.EndActingCharactersTurn();
+
+            //If the dead character is a player character, we set their initiative slider to grey
+            if(this.playerCharactersInCombat.Contains(data_.characterDeath.deadCharacter))
+            {
+                int playerIndex = this.playerCharactersInCombat.IndexOf(data_.characterDeath.deadCharacter);
+                this.playerInitiativeSliders[playerIndex].background.color = Color.grey;
+            }
+            //If the dead character is an enemy, we set their initiative slider to grey
+            else if(this.enemyCharactersInCombat.Contains(data_.characterDeath.deadCharacter))
+            {
+                int enemyIndex = this.enemyCharactersInCombat.IndexOf(data_.characterDeath.deadCharacter);
+                this.enemyInitiativeSliders[enemyIndex].background.color = Color.grey;
+            }
         }
         //If the dead character was waiting to act, we remove it from the list of acting characters
         else if(this.actingCharacters.Contains(data_.characterDeath.deadCharacter))

@@ -277,8 +277,16 @@ public class AttackAction : Action
             {
                 int perkDamage = charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
 
-                //Applying the perk's added damage to the correct damage type
-                damageTypeTotalDamage[charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType] += perkDamage;
+                //If this perk applies the same damage type as this action, it's added to that damage type total
+                if (charPerk.GetComponent<SkillDamageBoostPerk>().useActionDamageType && this.damageDealt.Count > 0)
+                {
+                    damageTypeTotalDamage[this.damageDealt[0].type] += perkDamage;
+                }
+                //Otherwise we apply the damage type to the perk's specified damage type total
+                else
+                {
+                    damageTypeTotalDamage[charPerk.GetComponent<SkillDamageBoostPerk>().damageBoostType] += perkDamage;
+                }
             }
         }
 
