@@ -140,7 +140,7 @@ public class HealOverTimeEffect : Effect
         {
             if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.healType == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
             {
-                damagehealed += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+                damagehealed += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true, this.healType);
             }
         }
 

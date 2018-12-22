@@ -353,7 +353,7 @@ public class WeaponAction : AttackAction
                     //If the perk boosts a damage type that's the same as this damage type, we boost it
                     if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && atk.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
                     {
-                        atkDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
+                        atkDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false, atk.type);
                     }
                 }
 

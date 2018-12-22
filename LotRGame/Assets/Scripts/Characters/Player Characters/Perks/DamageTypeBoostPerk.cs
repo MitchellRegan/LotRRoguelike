@@ -38,10 +38,16 @@ public class DamageTypeBoostPerk : Perk
 
 
     //Function called from AttackAction.cs to get the amount of bonus damage this perk awards
-    public int GetDamageBoostAmount(Character perkOwner_, bool isCrit_, bool isDoTOrHot_)
+    public int GetDamageBoostAmount(Character perkOwner_, bool isCrit_, bool isDoTOrHot_, CombatManager.DamageType type_)
     {
         //The total amount of bonus damage returned
         int totalDamage = 0;
+
+        //If the damage type doesn't match the type we're boosting, nothing happens
+        if (this.damageTypeToBoost != type_)
+        {
+            return totalDamage;
+        }
 
         //If this perk only activates during a crit and the attack didn't crit, nothing happens
         if (this.onlyWorksOnCrit && !isCrit_)

@@ -1028,21 +1028,21 @@ public class CombatManager : MonoBehaviour
         for (int p = 0; p < this.playerCharactersInCombat.Count; ++p)
         {
             //If the character isn't already dead
-            if(this.playerInitiativeSliders[p].healthSlider.value > 0)
+            if (this.playerInitiativeSliders[p].healthSlider.value > 0)
             {
                 //Setting the health slider to show the current health based on the max health
                 this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
                 this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
 
                 //If this character is dead, their initiative slider is set to 0 so they can't act
-                if(this.playerCharactersInCombat[p].charPhysState.currentHealth == 0)
+                if (this.playerCharactersInCombat[p].charPhysState.currentHealth == 0)
                 {
                     this.playerInitiativeSliders[p].initiativeSlider.value = 0;
 
                     this.playerInitiativeSliders[p].background.color = Color.grey;
 
                     //Looping through and clearing all of the effects on the dead character
-                    for(int e = 0; e < this.playerCharactersInCombat[p].charCombatStats.combatEffects.Count; ++e)
+                    for (int e = 0; e < this.playerCharactersInCombat[p].charCombatStats.combatEffects.Count; ++e)
                     {
                         this.playerCharactersInCombat[p].charCombatStats.combatEffects[e].RemoveEffect();
                         e -= 1;
@@ -1068,6 +1068,11 @@ public class CombatManager : MonoBehaviour
                         }
                     }
                 }
+            }
+            //If the character is dead but their initiative slider isn't grey, we make it grey
+            else if (this.playerInitiativeSliders[p].background.color != Color.grey)
+            {
+                this.playerInitiativeSliders[p].background.color = Color.grey;
             }
         }
 
@@ -1132,6 +1137,11 @@ public class CombatManager : MonoBehaviour
                     this.ClearCombatTileHighlights();
                     this.SetWaitTime(2.5f, combatState.EndCombat);
                 }
+            }
+            //If the enemy is dead but their initiative slider isn't grey, we make it grey
+            else if (this.enemyInitiativeSliders[e].background.color != Color.grey)
+            {
+                this.enemyInitiativeSliders[e].background.color = Color.grey;
             }
         }
     }
@@ -1266,7 +1276,7 @@ public class CombatManager : MonoBehaviour
     public void PerformActionAtClickedTile(CombatTile tileClicked_)
     {
         //If the action being performed is a movement action and the tile clicked isn't empty, nothing happens
-        if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && tileClicked_.objectOnThisTile != null)
+        if (CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && tileClicked_.objectOnThisTile != null)
         {
             return;
         }
@@ -1462,6 +1472,7 @@ public class CombatManager : MonoBehaviour
         //If the dead character is the acting character, we end it's turn
         if (this.actingCharacters.Count > 0 && this.actingCharacters[0] == data_.characterDeath.deadCharacter)
         {
+            this.highlightRing.enabled = false;
             this.EndActingCharactersTurn();
         }
         //If the dead character was waiting to act, we remove it from the list of acting characters

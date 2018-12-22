@@ -197,10 +197,9 @@ public class AttackAction : Action
         Dictionary<CombatManager.DamageType, int> damageTypeTotalDamage = new Dictionary<CombatManager.DamageType, int>();
         //Dictionary for if all of the spell damage types for if the damage is completely negated
         Dictionary<CombatManager.DamageType, SpellResistTypes> spellResistDictionary = new Dictionary<CombatManager.DamageType, SpellResistTypes>();
-
+        
         //Initializing the dictionaries correctly
         this.InitializeDamageDictionaries(damageTypeTotalDamage, spellResistDictionary);
-
 
         //Looping through each damage type for this attack
         foreach (AttackDamage atk in this.damageDealt)
@@ -227,7 +226,7 @@ public class AttackAction : Action
                 //If the perk boosts a damage type that's the same as this damage type, we boost it
                 if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && atk.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
                 {
-                    atkDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
+                    atkDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false, atk.type);
                 }
             }
 
@@ -269,12 +268,12 @@ public class AttackAction : Action
             //Adding the current attack's damage to the correct type
             damageTypeTotalDamage[atk.type] += atkDamage;
         }
-        
+
         //Looping through the attacking character's perks to see if there's any bonus damage to add to this attack
         foreach (Perk charPerk in actingChar.charPerks.allPerks)
         {
-            //If the perk is a damage boosting perk, we get the bonus damage from it
-            if (charPerk.GetType() == typeof(SkillDamageBoostPerk))
+            //If the perk is a damage boosting perk for the skill used to perform this action, we get the bonus damage from it
+            if (charPerk.GetType() == typeof(SkillDamageBoostPerk) && this.weaponSkillUsed == charPerk.GetComponent<SkillDamageBoostPerk>().skillToBoost)
             {
                 int perkDamage = charPerk.GetComponent<SkillDamageBoostPerk>().GetDamageBoostAmount(actingChar, isCrit, false);
 
@@ -285,7 +284,7 @@ public class AttackAction : Action
 
         //Subtracting the target's melee and spell damage resistance from our attack damage
         this.SubtractResistances(damageTypeTotalDamage, defendingChar);
-
+        
         //Dealing damage to the target
         this.DealDamage(damageTypeTotalDamage, spellResistDictionary, defendingChar, targetTile_, isCrit);
 
