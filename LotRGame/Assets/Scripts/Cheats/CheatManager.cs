@@ -24,6 +24,14 @@ public class CheatManager : MonoBehaviour
 
 
     
+    //Function called when this object is created
+    private void Awake()
+    {
+        //Disabling the cheat holder object so it's off by default
+        this.cheatHolderObj.SetActive(false);
+    }
+
+
     //Function called every frame
     private void Update()
     {

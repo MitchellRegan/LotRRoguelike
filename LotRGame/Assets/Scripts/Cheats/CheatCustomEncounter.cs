@@ -40,6 +40,11 @@ public class CheatCustomEncounter : MonoBehaviour
         {
             this.CycleEncounterBackward();
         }
+        //If the /? button is pressed we debug the keys for this script
+        else if(Input.GetKeyDown(KeyCode.Slash))
+        {
+            Debug.Log("CHEAT: Custom Encounter info: Cycle Encounter Forward: " + this.cycleForwardButton + ", Cycle Encounter Backward: " + this.cycleBackwardButton + ", Spawn Encounter: " + this.spawnEncounterButton);
+        }
     }
 
 
