@@ -5,12 +5,6 @@ using UnityEngine.Events;
 
 public class CheatManager : MonoBehaviour
 {
-    //Static reference to this cheat manager
-    public static CheatManager globalReference;
-
-    //Bool for if cheats are active
-    private bool cheatsActive = false;
-
     //The three keyboard buttons that must be down to activate cheats
     public KeyCode activateKey1 = KeyCode.KeypadDivide;
     public KeyCode activateKey2 = KeyCode.KeypadMultiply;
@@ -25,36 +19,22 @@ public class CheatManager : MonoBehaviour
 
     [Space(8)]
 
-    //The list of keyboard buttons to activate cheats
-    public List<CheatButtonActivator> cheatList;
+    //Reference to the game object that holds all of the cheats. This is what is turned on and off
+    public GameObject cheatHolderObj;
 
 
-
-	//Function used for initialization to set the global reference
-    private void Awake()
-    {
-        if(globalReference != null && globalReference != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else if(globalReference == null)
-        {
-            globalReference = this;
-        }
-    }
-
-
+    
     //Function called every frame
     private void Update()
     {
         //If cheats are not active, we check for input to activate them
-        if(!this.cheatsActive)
+        if(!this.cheatHolderObj.activeInHierarchy)
         {
             //If all three activation keys are down, cheats are active
             if(Input.GetKey(this.activateKey1) && Input.GetKey(this.activateKey2) && Input.GetKey(this.activateKey3))
             {
                 Debug.Log("CHEATS ACTIVE!");
-                this.cheatsActive = true;
+                this.cheatHolderObj.SetActive(true);
             }
         }
         //If cheats are active, we check for input to deactivate them or input to use a cheat
@@ -64,27 +44,8 @@ public class CheatManager : MonoBehaviour
             if (Input.GetKey(this.deactivateKey1) && Input.GetKey(this.deactivateKey2) && Input.GetKey(this.deactivateKey3))
             {
                 Debug.Log("CHEATS DISABLED!");
-                this.cheatsActive = false;
-            }
-
-            //Looping through all of our cheats to see if any have been activated
-            for(int c = 0; c < this.cheatList.Count; ++c)
-            {
-                //Checking to see if the button for this cheat was pressed
-                if(Input.GetKeyDown(this.cheatList[c].activationKey))
-                {
-                    this.cheatList[c].cheatEvent.Invoke();
-                }
+                this.cheatHolderObj.SetActive(false);
             }
         }
     }
-}
-
-[System.Serializable]
-public class CheatButtonActivator
-{
-    //The keyboard button that activates this cheat
-    public KeyCode activationKey = KeyCode.KeypadEnter;
-    //The unity event called when activated
-    public UnityEvent cheatEvent;
 }
