@@ -72,7 +72,7 @@ public class CheatLevelUpSkills : MonoBehaviour
         //If we're in combat, nothing happens
         if (CombatManager.globalReference.GetComponent<Canvas>().enabled)
         {
-            Debug.Log("CHEAT: Level Up Skills, Increase Skill: ERROR cannot spawn encounter while in combat");
+            Debug.Log("CHEAT: Level Up Skills, Increase Skill: ERROR cannot increase skills during combat");
             return;
         }
 
@@ -110,8 +110,15 @@ public class CheatLevelUpSkills : MonoBehaviour
     //Function called from Update to cycle the selected skill to increase
     private void CycleSelectedSkill(bool cycleForward_)
     {
+        //If we're not in the gameplay scene, nothing happens
+        if (SceneManager.GetActiveScene().buildIndex != 1)
+        {
+            Debug.Log("CHEAT: Level Up Skills, Cycle Selected Skill: ERROR not in gameplay scene");
+            return;
+        }
+
         //If we cycle forward
-        if(cycleForward_)
+        if (cycleForward_)
         {
             this.selectedSkillIndex += 1;
 
@@ -140,33 +147,39 @@ public class CheatLevelUpSkills : MonoBehaviour
     //Function called from Update to cycle through the player party characters
     private void CycleSelectedPlayerCharacter()
     {
+        //If we're not in the gameplay scene, nothing happens
+        if (SceneManager.GetActiveScene().buildIndex != 1)
+        {
+            Debug.Log("CHEAT: Level Up Skills, Cycle Selected Player Character: ERROR not in gameplay scene");
+            return;
+        }
+
         //Bool for if we've found the currently selected character
         bool foundSelectedChar = false;
+        //Bool for if we need to loop back around to the first character
+        bool restartLoop = true;
 
         //Looping through all of characters in the player group
         for (int pc = 0; pc < PartyGroup.group1.charactersInParty.Count; ++pc)
         {
-            Debug.Log("First Loop, index: " + pc + ", found selected: " + foundSelectedChar);
             //If the character at this index isn't null or dead
             if (PartyGroup.group1.charactersInParty[pc] != null &&
                 PartyGroup.group1.charactersInParty[pc].charPhysState.currentHealth > 0)
             {
-                Debug.Log("Index " + pc + " is a valid character");
                 //If the current character is the one we're already selecting, we ignore it
                 if (this.selectedCharacter == PartyGroup.group1.charactersInParty[pc])
                 {
-                    Debug.Log("Found the selected character " + this.selectedCharacter.firstName);
                     foundSelectedChar = true;
                 }
                 //If the current character isn't the current character
                 else
                 {
-                    .Debug.Log("Found a diff")
                     //If the selected character is null or we've already found the previously selected character, we set this character as the selected one
                     if (this.selectedCharacter == null || foundSelectedChar)
                     {
                         this.selectedCharacter = PartyGroup.group1.charactersInParty[pc];
                         foundSelectedChar = true;
+                        restartLoop = false;
                         break;
                     }
                 }
@@ -174,9 +187,8 @@ public class CheatLevelUpSkills : MonoBehaviour
         }
 
         //If we made it through the loop without finding the previously selected character
-        if(!foundSelectedChar)
+        if(!foundSelectedChar || restartLoop)
         {
-            Debug.Log("Haven't found selected character");
             //We loop back around and select the first one found
             for (int c = 0; c < PartyGroup.group1.charactersInParty.Count; ++c)
             {
