@@ -11,6 +11,9 @@ public class SkillDamageBoostPerk : Perk
     //The type of damage that this perk applies
     public CombatManager.DamageType damageBoostType = CombatManager.DamageType.Slashing;
 
+    //Bool for if the type of damage this perk applies is the damage type of the action used
+    public bool useActionDamageType = true;
+
     //Bool for if this perk only works during a crit. If not, it works all the time
     public bool onlyWorksOnCrit = false;
 

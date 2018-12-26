@@ -60,8 +60,6 @@ public class Effect : MonoBehaviour
     {
         //Removing this effect from the target character's list of combat effects
         this.characterToEffect.charCombatStats.combatEffects.Remove(this);
-        //Destroying this effect's game object
-        Destroy(this.gameObject);
     }
 
 

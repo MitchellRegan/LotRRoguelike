@@ -24,6 +24,12 @@ public class EnemyEncounter : MonoBehaviour
 
     [Space(8)]
 
+    //The odds that the enemies in this encounter will ambush the player party
+    [Range(0, 1)]
+    public float ambushChance = 0.05f;
+
+    [Space(8)]
+
     //The loot table for this encounter
     public List<EncounterLoot> lootTable;
 }

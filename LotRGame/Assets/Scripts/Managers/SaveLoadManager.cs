@@ -419,7 +419,6 @@ public class SaveLoadManager : MonoBehaviour
             PartyGroup partyGroup1 = newPartyObj.GetComponent<PartyGroup>();
             
             //Setting the party variables
-            partyGroup1.groupIndex = loadedProgress.partyGroup1.groupIndex;
             partyGroup1.combatDistance = loadedProgress.partyGroup1.combatDist;
             
             //Looping through all of the character save data for this party group
@@ -458,100 +457,6 @@ public class SaveLoadManager : MonoBehaviour
             
             //Setting the static party group reference
             PartyGroup.group1 = partyGroup1;
-        }
-        if (loadedProgress.partyGroup2 != null)
-        {
-            //Creating a new PartyGroup instance
-            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
-            PartyGroup partyGroup2 = newPartyObj.GetComponent<PartyGroup>();
-
-            //Setting the party variables
-            partyGroup2.groupIndex = loadedProgress.partyGroup2.groupIndex;
-            partyGroup2.combatDistance = loadedProgress.partyGroup2.combatDist;
-
-            //Looping through all of the character save data for this party group
-            partyGroup2.charactersInParty = new List<Character>();
-            for (int c = 0; c < loadedProgress.partyGroup2.partyCharacters.Count; ++c)
-            {
-                //If the current character index isn't null, we make a new character instance
-                if (loadedProgress.partyGroup2.partyCharacters[c] != null)
-                {
-                    //Creating a new character instance
-                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
-                    Character newCharacter = newCharacterObj.GetComponent<Character>();
-
-                    //Passing the character save data to the character instance to set all of the component variables
-                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup2.partyCharacters[c]);
-
-                    //Adding the new character to our new party group
-                    partyGroup2.AddCharacterToGroup(newCharacter);
-                }
-                //If the current character index is null, we leave the gap in the list
-                else
-                {
-                    partyGroup2.charactersInParty.Add(null);
-                }
-            }
-
-            TileInfo partyLocation = loadedProgress.partyGroup2.tileLocation;
-            partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
-            for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
-            {
-                int col = partyLocation.connectedTileCoordinates[coord].col;
-                int row = partyLocation.connectedTileCoordinates[coord].row;
-                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
-            }
-            partyGroup2.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
-
-            //Setting the static party group reference
-            PartyGroup.group2 = partyGroup2;
-        }
-        if (loadedProgress.partyGroup3 != null)
-        {
-            //Creating a new PartyGroup instance
-            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
-            PartyGroup partyGroup3 = newPartyObj.GetComponent<PartyGroup>();
-
-            //Setting the party variables
-            partyGroup3.groupIndex = loadedProgress.partyGroup3.groupIndex;
-            partyGroup3.combatDistance = loadedProgress.partyGroup3.combatDist;
-
-            //Looping through all of the character save data for this party group
-            partyGroup3.charactersInParty = new List<Character>();
-            for (int c = 0; c < loadedProgress.partyGroup3.partyCharacters.Count; ++c)
-            {
-                //If the current character index isn't null, we make a new character instance
-                if (loadedProgress.partyGroup3.partyCharacters[c] != null)
-                {
-                    //Creating a new character instance
-                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
-                    Character newCharacter = newCharacterObj.GetComponent<Character>();
-
-                    //Passing the character save data to the character instance to set all of the component variables
-                    newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup3.partyCharacters[c]);
-
-                    //Adding the new character to our new party group
-                    partyGroup3.AddCharacterToGroup(newCharacter);
-                }
-                //If the current character index is null, we leave the gap in the list
-                else
-                {
-                    partyGroup3.charactersInParty.Add(null);
-                }
-            }
-
-            TileInfo partyLocation = loadedProgress.partyGroup3.tileLocation;
-            partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
-            for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
-            {
-                int col = partyLocation.connectedTileCoordinates[coord].col;
-                int row = partyLocation.connectedTileCoordinates[coord].row;
-                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
-            }
-            partyGroup3.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
-
-            //Setting the static party group reference
-            PartyGroup.group3 = partyGroup3;
         }
 
         //Setting the dead characters from CharacterManager.cs
@@ -600,8 +505,6 @@ public class PlayerProgress
 
     //Variables for the PartyGroup.cs
     public PartySaveData partyGroup1 = null;
-    public PartySaveData partyGroup2 = null;
-    public PartySaveData partyGroup3 = null;
 
     //Variable from CharacterManager.cs
     public List<DeadCharacterInfo> deadCharacters;
@@ -630,18 +533,7 @@ public class PlayerProgress
         this.characterLevel = levelUpManager_.characterLevel;
 
         //Setting the PartyGroup.cs variables
-        if (PartyGroup.group1 != null)
-        {
-            this.partyGroup1 = new PartySaveData(PartyGroup.group1);
-        }
-        if(PartyGroup.group2 != null)
-        {
-            this.partyGroup2 = new PartySaveData(PartyGroup.group2);
-        }
-        if(PartyGroup.group3 != null)
-        {
-            this.partyGroup3 = new PartySaveData(PartyGroup.group3);
-        }
+        this.partyGroup1 = new PartySaveData(PartyGroup.group1);
 
         //Looping through all of the dead character info in CharacterManager.cs
         this.deadCharacters = new List<DeadCharacterInfo>();

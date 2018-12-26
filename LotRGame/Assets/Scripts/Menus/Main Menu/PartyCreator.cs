@@ -16,7 +16,10 @@ public class PartyCreator : MonoBehaviour
 
     //Enum to track the chosen player race
     private RaceTypes.Races chosenRace = RaceTypes.Races.None;
-    
+
+    //Static int for how many hit dice player characters start with
+    public static int startingHitDice = 3;
+
 
 
     //Function called when this object is enabled
@@ -108,6 +111,9 @@ public class PartyCreator : MonoBehaviour
 
                         //Setting all of the info for each Character Customizer
                         this.SetCharacterCustomizerInfo(this.allCharacterCustomizers[c], createdChar.GetComponent<Character>());
+
+                        //Setting the character's starting hit dice
+                        createdChar.GetComponent<Character>().charPhysState.GenerateStartingHitDice();
 
                         //Breaking out of the loop
                         break;

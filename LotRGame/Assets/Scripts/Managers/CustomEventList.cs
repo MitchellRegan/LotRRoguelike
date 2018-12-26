@@ -14,6 +14,7 @@ public class EVTData
     public CombatTransitionEVT combatTransition = null;
     public ScreenShakeEVT screenShake = null;
     public PromptQuestEVT promptQuest = null;
+    public CharacterDeathEVT characterDeath = null;
 }
 
 
@@ -146,15 +147,19 @@ public class CombatTransitionEVT
     //The amount of time it takes to fade back in
     public float fadeInTime = 1;
 
+    //Bool for if combat is starting (True) or ending (False)
+    public bool startingCombat = true;
+
     //The UnityEvent that's invoked when the transition gets to black
     public UnityEvent eventOnBlack = null;
 
     //Public constructor for this class
-    public CombatTransitionEVT(float fadeToBlackTime_ = 1, float stayOnBlackTime_ = 1, float fadeInTime_ = 1, UnityEvent eventOnBlack_ = null)
+    public CombatTransitionEVT(bool startingCombat_, float fadeToBlackTime_ = 1, float stayOnBlackTime_ = 1, float fadeInTime_ = 1, UnityEvent eventOnBlack_ = null)
     {
         this.fadeToBlackTime = fadeToBlackTime_;
         this.stayOnBlackTime = stayOnBlackTime_;
         this.fadeInTime = fadeInTime_;
+        this.startingCombat = startingCombat_;
         this.eventOnBlack = eventOnBlack_;
     }
 }
@@ -206,4 +211,21 @@ public class ChangeSoundSettings
 {
     //The num used to call this event from the event manager
     public static byte eventNum = 247;
+}
+
+
+//Event data for when a character dies
+public class CharacterDeathEVT
+{
+    //The num used to call this event from the event manager
+    public static byte eventNum = 246;
+
+    //The character that just died
+    public Character deadCharacter;
+
+    //Public constructor for this class
+    public CharacterDeathEVT(Character deadCharacter_)
+    {
+        this.deadCharacter = deadCharacter_;
+    }
 }

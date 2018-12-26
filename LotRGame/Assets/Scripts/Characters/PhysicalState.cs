@@ -6,13 +6,12 @@ using UnityEngine;
 public class PhysicalState : MonoBehaviour
 {
     //This characters health
-    public int currentHealth = 100;
+    public int currentHealth = 20;
     //The maximum amount of health this character can have
-    public int maxHealth = 100;
+    public int maxHealth = 20;
 
-    //The type of health progression curve that determines how much health they get
-    //Int lines up with the enum, but makes it easier to get the sum of all modifiers
-    public int healthCurveStagesSum = 3;
+    //The type of health progression curve that determines how much health they get from LevelUpManager.cs
+    public HealthCurveTypes startingHealthCurve = HealthCurveTypes.Average;
 
 
     //If false, this character doesn't require food to survive
@@ -37,17 +36,32 @@ public class PhysicalState : MonoBehaviour
     public float currentSleep = 0;
     //The number of days at which this character starts losing health from lack of sleep
     public float maxSleep = 5;
-
-
-    //The energy this character has based on their health, hunger, thirst, and sleep
-    public float currentEnergy = 1;
-    //The maximum amount of energy this character can have
-    public float maxEnergy = 1;
     
     //Array to hold this character's health curve value for each level up
     [HideInInspector]
     public int[] healthCurveLevels = new int[4] { 0, 0, 0, 0 };
-    
+
+    //Floats to track the highest percent of health, food, water, and sleep over the past 24 hours
+    [HideInInspector]
+    public float highestHealthPercent = 0;
+    [HideInInspector]
+    public float highestFoodPercent = 0;
+    [HideInInspector]
+    public float highestWaterPercent = 0;
+    [HideInInspector]
+    public float highestSleepPercent = 0;
+
+    //Lists of percentages for health, food, water, and sleep over the past few days to influence the character's health curve
+    [HideInInspector]
+    public List<float> trackingHealthPercents;
+    [HideInInspector]
+    public List<float> trackingFoodPercents;
+    [HideInInspector]
+    public List<float> trackingWaterPercents;
+    [HideInInspector]
+    public List<float> trackingSleepPercents;
+    //The number of days that we track percentages
+    private int daysToTrackPercentages = 7;
 
 
 
@@ -59,9 +73,12 @@ public class PhysicalState : MonoBehaviour
         this.currentWater = this.maxWater;
         this.currentSleep = this.maxSleep;
 
+        //Initializing our arrays
         healthCurveLevels = new int[4] {0,0,0,0};
-
-        this.CalculateEnergyLevel();
+        this.trackingHealthPercents = new List<float>();
+        this.trackingFoodPercents = new List<float>();
+        this.trackingWaterPercents = new List<float>();
+        this.trackingSleepPercents = new List<float>();
     }
 
 
@@ -70,6 +87,9 @@ public class PhysicalState : MonoBehaviour
     {
         //Finding the percentage of a day that's passed
         float daysPassed = (timePassed_ * 1f) / 24f;
+
+        //Finding the highest health, food, water, and sleep percents for the day
+        this.FindHighestPercents();
 
         //Doesn't lower hunger if this character doesn't eat
         if (this.requiresFood)
@@ -106,86 +126,81 @@ public class PhysicalState : MonoBehaviour
                 this.currentSleep = 0;
             }
         }
+        
 
-        //Finding this character's energy level
-        this.CalculateEnergyLevel();
+        //If the time passed will move us to the next day
+        if(TimePanelUI.globalReference.timeOfDay + timePassed_ >= 25)
+        {
+            //We track the health, food, water, and sleep percentages for the last day
+            this.TrackPercentages();
+        }
     }
 
 
-    //Function called from OnTimeAdvance to calculate this character's energy level
-    private void CalculateEnergyLevel()
+    //Function called from OnTimeAdvance to find the highest percentage of health, food, water, and sleep for the day
+    private void FindHighestPercents()
     {
-        //Floats that determine how much of the energy percentage bar each category fills
-        float maxEnergyFromFood = 0.2f;
-        float maxEnergyFromWater = 0.35f;
-        float maxEnergyFromSleep = 0.45f;
+        //Floats to find the current character percentage values for health, food, water, and sleep
+        float hp = (this.currentHealth * 1f) / (this.maxHealth * 1f);
+        float fd = this.currentFood / this.maxFood;
+        float wt = this.currentWater / this.maxWater;
+        float sl = this.currentSleep / this.maxSleep;
 
-        //Floats that determine the percentage of each category that need to be dropped below before it start's reducing energy
-        float foodSafePercent = 0.65f;
-        float waterSafePercent = 0.75f;
-        float sleepSafePercent = 0.8f;
+        //Checking to see if the current percentages are higher than the current highest for the day
+        if(hp > this.highestHealthPercent)
+        {
+            this.highestHealthPercent = hp;
+        }
+        if(fd > this.highestFoodPercent)
+        {
+            this.highestFoodPercent = fd;
+        }
+        if(wt > this.highestWaterPercent)
+        {
+            this.highestWaterPercent = wt;
+        }
+        if(sl > this.highestSleepPercent)
+        {
+            this.highestSleepPercent = sl;
+        }
+    }
 
-        //Variable to hold the current energy value
-        float newEnergyValue = 0;
 
-        //If this character doesn't require a category, it's importance is split with the others
-        if (!this.requiresFood)
-        {
-            maxEnergyFromFood = 0;
-            waterSafePercent = 0.4f;
-            maxEnergyFromSleep = 0.6f;
-        }
-        else if (!this.requiresWater)
-        {
-            maxEnergyFromFood = 0.3f;
-            waterSafePercent = 0;
-            maxEnergyFromSleep = 0.7f;
-        }
-        else if (!this.requiresSleep)
-        {
-            maxEnergyFromFood = 0.4f;
-            waterSafePercent = 0.6f;
-            maxEnergyFromSleep = 0;
-        }
+    //Function called from OnTimeAdvance to track the health, food, water, and sleep percentages for the past day
+    private void TrackPercentages()
+    {
+        //Adding the highest percents to the end of each list
+        this.trackingHealthPercents.Add(this.highestHealthPercent);
+        this.trackingFoodPercents.Add(this.highestFoodPercent);
+        this.trackingWaterPercents.Add(this.highestWaterPercent);
+        this.trackingSleepPercents.Add(this.highestSleepPercent);
 
-        //If the current food level is below the safe percentage, only a portion of its energy is added
-        if ((this.currentFood / this.maxFood) < foodSafePercent)
+        //Making sure the lists are only tracking the maximum number of days needed
+        if(this.trackingHealthPercents.Count > this.daysToTrackPercentages)
         {
-            float energyFromFood = this.currentFood / (this.maxFood * foodSafePercent);
-            newEnergyValue += energyFromFood * maxEnergyFromFood;
+            this.trackingHealthPercents.RemoveAt(0);
         }
-        //If the current food level is at or above the safe percentage, all of its energy is added
-        else
+        if(this.trackingFoodPercents.Count > this.daysToTrackPercentages)
         {
-            newEnergyValue += maxEnergyFromFood;
+            this.trackingFoodPercents.RemoveAt(0);
         }
-
-        //If the current water level is below the safe percentage, only a portion of its energy is added
-        if ((this.currentWater / this.maxWater) < waterSafePercent)
+        if(this.trackingWaterPercents.Count > this.daysToTrackPercentages)
         {
-            float energyFromWater = this.currentWater / (this.maxWater * waterSafePercent);
-            newEnergyValue += energyFromWater * maxEnergyFromWater;
+            this.trackingWaterPercents.RemoveAt(0);
         }
-        //If the current water level is at or above the safe percentage, all of its energy is added
-        else
+        if(this.trackingSleepPercents.Count > this.daysToTrackPercentages)
         {
-            newEnergyValue += maxEnergyFromWater;
+            this.trackingSleepPercents.RemoveAt(0);
         }
 
-        //If the current water level is below the safe percentage, only a portion of its energy is added
-        if ((this.currentSleep / this.maxSleep) < sleepSafePercent)
-        {
-            float energyFromSleep = this.currentSleep / (this.maxSleep * sleepSafePercent);
-            newEnergyValue += energyFromSleep * maxEnergyFromSleep;
-        }
-        //If the current water level is at or above the safe percentage, all of its energy is added
-        else
-        {
-            newEnergyValue += maxEnergyFromSleep;
-        }
+        Debug.Log("Day Passed. Max HP%: " + this.highestHealthPercent + ", Max Food%: " + this.highestFoodPercent +
+            ", Max Water%: " + this.highestWaterPercent + ", Max Sleep%: " + this.highestSleepPercent);
 
-        //Setting this character's energy to the new value calculated
-        this.currentEnergy = newEnergyValue;
+        //Resetting the highest percentages for health, food, water, and sleep for the day
+        this.highestHealthPercent = 0;
+        this.highestFoodPercent = 0;
+        this.highestWaterPercent = 0;
+        this.highestSleepPercent = 0;
     }
 
 
@@ -205,19 +220,13 @@ public class PhysicalState : MonoBehaviour
         {
             this.currentWater = this.maxWater;
         }
-
-        //Updating the energy level
-        this.CalculateEnergyLevel();
     }
 
 
     //Function called externally to make this character sleep
     public void Sleep()
     {
-
-
-        //Updating the energy level
-        this.CalculateEnergyLevel();
+        
     }
 
 
@@ -236,6 +245,13 @@ public class PhysicalState : MonoBehaviour
         if(this.currentHealth <= 0)
         {
             this.currentHealth = 0;
+
+            //Creating a character death event to tell other scripts about this death
+            EVTData deathEVTData = new EVTData();
+            deathEVTData.characterDeath = new CharacterDeathEVT(this.GetComponent<Character>());
+
+            //Dispatching the event to the EventManager
+            EventManager.TriggerEvent(CharacterDeathEVT.eventNum, deathEVTData);
         }
     }
 
@@ -256,5 +272,94 @@ public class PhysicalState : MonoBehaviour
         {
             this.currentHealth = this.maxHealth;
         }
+    }
+
+
+    //Function called externally from PartyCreator.cs to generate this character's starting hit dice
+    //They get a few levels worth of max health rolls and 1 random health roll on top
+    public void GenerateStartingHitDice()
+    {
+        //Int to hold the amount of health for this character's starting health curve
+        int hitDie = 0;
+
+        //Int to hold the random die roll based on the starting health curve
+        int hitRoll = 0;
+
+        //Switch for this character's starting health curve to get the max roll value
+        switch(this.startingHealthCurve)
+        {
+            case HealthCurveTypes.Strong:
+                hitDie = 12;
+                hitRoll = Random.Range(1, 13);
+                //Rolling again to see if the second roll is higher
+                int strongRoll2 = Random.Range(1, 13);
+                if (strongRoll2 > hitRoll)
+                {
+                    hitRoll = strongRoll2;
+                }
+                break;
+
+            case HealthCurveTypes.Sturdy:
+                hitDie = 12;
+                hitRoll = Random.Range(1, 13);
+                break;
+
+            case HealthCurveTypes.Healthy:
+                hitDie = 10;
+                hitRoll = Random.Range(1, 11);
+                break;
+
+            case HealthCurveTypes.Average:
+                hitDie = 8;
+                hitRoll = Random.Range(1, 9);
+                break;
+
+            case HealthCurveTypes.Weak:
+                hitDie = 6;
+                hitRoll = Random.Range(1, 7);
+                break;
+
+            case HealthCurveTypes.Sickly:
+                hitDie = 4;
+                hitRoll = Random.Range(1, 5);
+                break;
+
+            case HealthCurveTypes.Feeble:
+                hitDie = 4;
+                hitRoll = Random.Range(1, 5);
+                //Rolling again to see if the second roll is lower
+                int feebleRoll2 = Random.Range(1, 5);
+                if(feebleRoll2 < hitRoll)
+                {
+                    hitRoll = feebleRoll2;
+                }
+                break;
+        }
+
+        //Looping through the character's perks to see if they have any health boost perks
+        int perkBonus = 0;
+        foreach (Perk charPerk in this.GetComponent<Character>().charPerks.allPerks)
+        {
+            //If the current perk is a health boost perk, then we can give the character more health
+            if (charPerk.GetType() == typeof(HealthBoostPerk))
+            {
+                HealthBoostPerk hpBoostPerk = charPerk.GetComponent<HealthBoostPerk>();
+                //Adding the amount of bonus health to give
+                perkBonus += hpBoostPerk.GetHealthBoostAmount();
+            }
+        }
+
+        //Adding the perk bonus to the total hit die
+        hitDie += perkBonus;
+
+        //Multiplying the total amount by the number of starting dice allocated by the PartyCreator.cs
+        hitDie = hitDie * PartyCreator.startingHitDice;
+
+        //Adding the random roll value to the total hit die value as well as the perk bonus again
+        hitDie += (hitRoll + perkBonus);
+
+        //Setting this character's health to this hit die roll
+        this.maxHealth = hitDie;
+        this.currentHealth = hitDie;
     }
 }

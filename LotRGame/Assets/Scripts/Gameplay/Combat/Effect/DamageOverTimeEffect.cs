@@ -109,7 +109,7 @@ public class DamageOverTimeEffect : Effect
     private void DamageCharacter()
     {
         //Making sure the character isn't dead before dealing damage
-        if (this.characterToEffect.charPhysState.currentHealth <= 0)
+        if (this.characterToEffect == null || this.characterToEffect.charPhysState.currentHealth <= 0)
         {
             return;
         }
@@ -140,7 +140,7 @@ public class DamageOverTimeEffect : Effect
         {
             if (charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.damageType == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
             {
-                damageDealt += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true);
+                damageDealt += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(this.characterWhoTriggered, didThisCrit, true, this.damageType);
             }
         }
 
@@ -234,8 +234,9 @@ public class DamageOverTimeEffect : Effect
 
             //Telling the combat manager to display the damage dealt
             CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
-            CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
 
+            CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
+            
             //If this character has the EnemyCombatAI component, we increase the threat for the character who put this effect on
             if (this.characterToEffect.GetComponent<EnemyCombatAI_Basic>())
             {
@@ -309,10 +310,10 @@ public class DamageOverTimeEffect : Effect
     private void Update()
     {
         //If this effect ticks while player initiative is building
-        if(this.tickOnRealTime)
+        if (this.tickOnRealTime)
         {
             //We can only track our timer when the combat manager is increasing initiative
-            if(CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
             {
                 //Increasing our tick timer
                 this.currentTickTime += Time.deltaTime;

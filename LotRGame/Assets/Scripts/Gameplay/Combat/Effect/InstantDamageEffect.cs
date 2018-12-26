@@ -60,7 +60,7 @@ public class InstantDamageEffect : Effect
             //If the perk boosts a damage type that's the same as this damage type, we boost it
             if(charPerk.GetType() == typeof(DamageTypeBoostPerk) && this.type == charPerk.GetComponent<DamageTypeBoostPerk>().damageTypeToBoost)
             {
-                totalDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(usingCharacter_, isCrit, false);
+                totalDamage += charPerk.GetComponent<DamageTypeBoostPerk>().GetDamageBoostAmount(usingCharacter_, isCrit, false, this.type);
             }
         }
 
