@@ -312,7 +312,11 @@ public class CombatManager : MonoBehaviour
                 {
                     //Getting the sprite base for the character
                     CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(tile.objectOnThisTile.GetComponent<Character>());
-                    cSprite.MakeSpritesVisible();
+
+                    if (cSprite != null)
+                    {
+                        cSprite.MakeSpritesVisible();
+                    }
                 }
             }
         }
