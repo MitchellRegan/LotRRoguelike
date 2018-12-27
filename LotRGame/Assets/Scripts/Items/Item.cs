@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+[RequireComponent(typeof(IDTag))]
 public class Item : MonoBehaviour
 {
     //The prefab that this object is an instance of
