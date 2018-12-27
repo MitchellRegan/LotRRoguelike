@@ -19,6 +19,9 @@ public class IDManager : MonoBehaviour
     //Reference to this object's QuestItemIDList component
     public QuestItemIDList questItemList;
 
+    //Reference to this object's FoodIDList component
+    public FoodIDList foodList;
+
 
 
     //Function called when this object is created
