@@ -13,6 +13,12 @@ public class IDManager : MonoBehaviour
     //Reference to this object's WeaponIDList component
     public WeaponIDList weaponList;
 
+    //Reference to this object's ArmorIDList compoent
+    public ArmorIDList armorList;
+
+    //Reference to this object's QuestItemIDList component
+    public QuestItemIDList questItemList;
+
 
 
     //Function called when this object is created
