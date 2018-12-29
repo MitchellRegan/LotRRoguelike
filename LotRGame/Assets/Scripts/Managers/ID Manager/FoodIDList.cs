@@ -12,7 +12,7 @@ public class FoodIDList : MonoBehaviour
 
 
     //Function called externally to return a food object reference when given the ID number
-    public Food GetFiidByIDNum(int numberID_)
+    public GameObject GetFoodByIDNum(int numberID_)
     {
         //Looping through each food in our list to check for the matching ID number
         for (int f = 0; f < this.foodList.Count; ++f)
@@ -20,7 +20,7 @@ public class FoodIDList : MonoBehaviour
             //If the current food has the same ID number, we get the food component reference and return it
             if (this.foodList[f].numberID == numberID_)
             {
-                return this.foodList[f].GetComponent<Food>();
+                return this.foodList[f].gameObject;
             }
         }
 
@@ -30,7 +30,7 @@ public class FoodIDList : MonoBehaviour
             //If the current food has the same ID number, we get the food component reference and return it
             if (this.drinkList[d].numberID == numberID_)
             {
-                return this.foodList[d].GetComponent<Food>();
+                return this.foodList[d].gameObject;
             }
         }
 
@@ -40,7 +40,7 @@ public class FoodIDList : MonoBehaviour
             //If the current food has the same ID number, we get the food component reference and return it
             if (this.potionList[p].numberID == numberID_)
             {
-                return this.potionList[p].GetComponent<Food>();
+                return this.potionList[p].gameObject;
             }
         }
 

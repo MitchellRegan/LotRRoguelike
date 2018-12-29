@@ -17,7 +17,7 @@ public class ArmorIDList : MonoBehaviour
 
 
     //Function called externally to return a armor object reference when given the ID number
-    public Armor GetArmorByIDNum(int numberID_)
+    public GameObject GetArmorByIDNum(int numberID_)
     {
         //Looping through each head armor in our list to check for the matching ID number
         for (int hd = 0; hd < this.headList.Count; ++hd)
@@ -25,7 +25,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.headList[hd].numberID == numberID_)
             {
-                return this.headList[hd].GetComponent<Armor>();
+                return this.headList[hd].gameObject;
             }
         }
 
@@ -35,7 +35,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.torsoList[t].numberID == numberID_)
             {
-                return this.torsoList[t].GetComponent<Armor>();
+                return this.torsoList[t].gameObject;
             }
         }
 
@@ -45,7 +45,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.legsList[l].numberID == numberID_)
             {
-                return this.legsList[l].GetComponent<Armor>();
+                return this.legsList[l].gameObject;
             }
         }
 
@@ -55,7 +55,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.handsList[h].numberID == numberID_)
             {
-                return this.handsList[h].GetComponent<Armor>();
+                return this.handsList[h].gameObject;
             }
         }
 
@@ -65,7 +65,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.feetList[f].numberID == numberID_)
             {
-                return this.feetList[f].GetComponent<Armor>();
+                return this.feetList[f].gameObject;
             }
         }
 
@@ -75,7 +75,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.cloakList[c].numberID == numberID_)
             {
-                return this.cloakList[c].GetComponent<Armor>();
+                return this.cloakList[c].gameObject;
             }
         }
 
@@ -85,7 +85,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.necklaceList[n].numberID == numberID_)
             {
-                return this.necklaceList[n].GetComponent<Armor>();
+                return this.necklaceList[n].gameObject;
             }
         }
 
@@ -95,7 +95,7 @@ public class ArmorIDList : MonoBehaviour
             //If the current armor has the same ID number, we get the armor component reference and return it
             if (this.ringList[r].numberID == numberID_)
             {
-                return this.ringList[r].GetComponent<Armor>();
+                return this.ringList[r].gameObject;
             }
         }
 

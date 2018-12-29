@@ -10,7 +10,7 @@ public class MiscItemIDList : MonoBehaviour
 
 
     //Function called externally to return a item object reference when given the ID number
-    public Item GetFiidByIDNum(int numberID_)
+    public GameObject GetItemByIDNum(int numberID_)
     {
         //Looping through each item in our list to check for the matching ID number
         for (int i = 0; i < this.itemList.Count; ++i)
@@ -18,7 +18,7 @@ public class MiscItemIDList : MonoBehaviour
             //If the current item has the same ID number, we get the item component reference and return it
             if (this.itemList[i].numberID == numberID_)
             {
-                return this.itemList[i].GetComponent<Item>();
+                return this.itemList[i].gameObject;
             }
         }
 

@@ -30,7 +30,7 @@ public class WeaponIDList : MonoBehaviour
 
 
     //Function called externally to return a weapon object reference when given the ID number
-    public Weapon GetWeaponByIDNum(int numberID_)
+    public GameObject GetWeaponByIDNum(int numberID_)
     {
         //Looping through each maul
         for(int m = 0; m < this.maulList.Count; ++m)
@@ -38,7 +38,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if(this.maulList[m].numberID == numberID_)
             {
-                return this.maulList[m].GetComponent<Weapon>();
+                return this.maulList[m].gameObject;
             }
         }
 
@@ -48,7 +48,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.bowList[b].numberID == numberID_)
             {
-                return this.bowList[b].GetComponent<Weapon>();
+                return this.bowList[b].gameObject;
             }
         }
 
@@ -58,7 +58,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.daggerList[d].numberID == numberID_)
             {
-                return this.daggerList[d].GetComponent<Weapon>();
+                return this.daggerList[d].gameObject;
             }
         }
 
@@ -68,7 +68,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.unarmedList[u].numberID == numberID_)
             {
-                return this.unarmedList[u].GetComponent<Weapon>();
+                return this.unarmedList[u].gameObject;
             }
         }
 
@@ -78,7 +78,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.shieldList[sh].numberID == numberID_)
             {
-                return this.shieldList[sh].GetComponent<Weapon>();
+                return this.shieldList[sh].gameObject;
             }
         }
 
@@ -88,7 +88,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.poleList[p].numberID == numberID_)
             {
-                return this.poleList[p].GetComponent<Weapon>();
+                return this.poleList[p].gameObject;
             }
         }
 
@@ -98,7 +98,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.swordList[sw].numberID == numberID_)
             {
-                return this.swordList[sw].GetComponent<Weapon>();
+                return this.swordList[sw].gameObject;
             }
         }
 
@@ -110,7 +110,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.arcaneList[amg].numberID == numberID_)
             {
-                return this.arcaneList[amg].GetComponent<Weapon>();
+                return this.arcaneList[amg].gameObject;
             }
         }
 
@@ -120,7 +120,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.holyList[hmg].numberID == numberID_)
             {
-                return this.holyList[hmg].GetComponent<Weapon>();
+                return this.holyList[hmg].gameObject;
             }
         }
 
@@ -130,7 +130,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.darkList[dmg].numberID == numberID_)
             {
-                return this.darkList[dmg].GetComponent<Weapon>();
+                return this.darkList[dmg].gameObject;
             }
         }
 
@@ -142,7 +142,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.fireList[fmg].numberID == numberID_)
             {
-                return this.fireList[fmg].GetComponent<Weapon>();
+                return this.fireList[fmg].gameObject;
             }
         }
 
@@ -152,7 +152,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.waterList[wtmg].numberID == numberID_)
             {
-                return this.waterList[wtmg].GetComponent<Weapon>();
+                return this.waterList[wtmg].gameObject;
             }
         }
 
@@ -162,7 +162,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.windList[wdmg].numberID == numberID_)
             {
-                return this.windList[wdmg].GetComponent<Weapon>();
+                return this.windList[wdmg].gameObject;
             }
         }
 
@@ -172,7 +172,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.electricList[emg].numberID == numberID_)
             {
-                return this.electricList[emg].GetComponent<Weapon>();
+                return this.electricList[emg].gameObject;
             }
         }
 
@@ -182,7 +182,7 @@ public class WeaponIDList : MonoBehaviour
             //If the current weapon has the same ID number, we get the weapon component reference and return it
             if (this.stoneList[smg].numberID == numberID_)
             {
-                return this.stoneList[smg].GetComponent<Weapon>();
+                return this.stoneList[smg].gameObject;
             }
         }
 

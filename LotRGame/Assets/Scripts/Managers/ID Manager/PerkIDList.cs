@@ -16,7 +16,7 @@ public class PerkIDList : MonoBehaviour
 
 
     //Function called externally to return a perk object reference when given the ID number
-    public Perk GetPerkByIDNum(int numberID_)
+    public GameObject GetPerkByIDNum(int numberID_)
     {
         //Looping through each damage type boost perk in our list to check for the matching ID number
         for(int dt = 0; dt < this.damageTypeBoost.Count; ++dt)
@@ -24,7 +24,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if(this.damageTypeBoost[dt].numberID == numberID_)
             {
-                return this.damageTypeBoost[dt].GetComponent<Perk>();
+                return this.damageTypeBoost[dt].gameObject;
             }
         }
 
@@ -34,7 +34,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if (this.damageSkillBoost[ds].numberID == numberID_)
             {
-                return this.damageSkillBoost[ds].GetComponent<Perk>();
+                return this.damageSkillBoost[ds].gameObject;
             }
         }
 
@@ -44,7 +44,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if (this.negateDamageBoost[nd].numberID == numberID_)
             {
-                return this.negateDamageBoost[nd].GetComponent<Perk>();
+                return this.negateDamageBoost[nd].gameObject;
             }
         }
 
@@ -54,7 +54,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if (this.spellAbsorb[sa].numberID == numberID_)
             {
-                return this.spellAbsorb[sa].GetComponent<Perk>();
+                return this.spellAbsorb[sa].gameObject;
             }
         }
 
@@ -64,7 +64,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if (this.armorBoost[am].numberID == numberID_)
             {
-                return this.armorBoost[am].GetComponent<Perk>();
+                return this.armorBoost[am].gameObject;
             }
         }
 
@@ -74,7 +74,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if (this.accuracyBoost[ac].numberID == numberID_)
             {
-                return this.accuracyBoost[ac].GetComponent<Perk>();
+                return this.accuracyBoost[ac].gameObject;
             }
         }
 
@@ -84,7 +84,7 @@ public class PerkIDList : MonoBehaviour
             //If the current perk has the same ID number, we get the Perk component reference and return it
             if (this.evasionBoost[ev].numberID == numberID_)
             {
-                return this.evasionBoost[ev].GetComponent<Perk>();
+                return this.evasionBoost[ev].gameObject;
             }
         }
 

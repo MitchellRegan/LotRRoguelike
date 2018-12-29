@@ -10,7 +10,7 @@ public class QuestItemIDList : MonoBehaviour
 
 
     //Function called externally to return a quest item object reference when given the ID number
-    public QuestItem GetQuestItemByIDNum(int numberID_)
+    public GameObject GetQuestItemByIDNum(int numberID_)
     {
         //Looping through each quest item in our list to check for the matching ID number
         for (int q = 0; q < this.questItemList.Count; ++q)
@@ -18,7 +18,7 @@ public class QuestItemIDList : MonoBehaviour
             //If the current quest item has the same ID number, we get the quest item component reference and return it
             if (this.questItemList[q].numberID == numberID_)
             {
-                return this.questItemList[q].GetComponent<QuestItem>();
+                return this.questItemList[q].gameObject;
             }
         }
 
