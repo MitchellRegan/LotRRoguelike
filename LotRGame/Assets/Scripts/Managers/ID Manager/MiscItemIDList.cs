@@ -5,7 +5,7 @@ using UnityEngine;
 public class MiscItemIDList : MonoBehaviour
 {
     //The list of item objects with the IDTag component so we can keep track of their IDs
-    public List<IDTag> itemList;
+    public List<IDTag> itemList;    //ID 6000-6999
 
 
 

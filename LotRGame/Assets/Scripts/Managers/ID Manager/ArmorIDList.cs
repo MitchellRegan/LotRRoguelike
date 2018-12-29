@@ -5,14 +5,14 @@ using UnityEngine;
 public class ArmorIDList : MonoBehaviour
 {
     //The list of armor objects with the IDTag component so we can keep track of their IDs
-    public List<IDTag> headList;
-    public List<IDTag> torsoList;
-    public List<IDTag> legsList;
-    public List<IDTag> handsList;
-    public List<IDTag> feetList;
-    public List<IDTag> cloakList;
-    public List<IDTag> necklaceList;
-    public List<IDTag> ringList;
+    public List<IDTag> headList;        //ID 3000-3099
+    public List<IDTag> torsoList;       //3100-3199
+    public List<IDTag> legsList;        //3200-3299
+    public List<IDTag> handsList;       //3300-3399
+    public List<IDTag> feetList;        //3400-3499
+    public List<IDTag> cloakList;       //3500-3599
+    public List<IDTag> necklaceList;    //3600-3699
+    public List<IDTag> ringList;        //3700-3799
 
 
 

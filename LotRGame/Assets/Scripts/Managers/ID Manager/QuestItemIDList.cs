@@ -5,7 +5,7 @@ using UnityEngine;
 public class QuestItemIDList : MonoBehaviour
 {
     //The list of quest item objects with the IDTag component so we can keep track of their IDs
-    public List<IDTag> questItemList;
+    public List<IDTag> questItemList;       //ID 4000-4999
 
 
 

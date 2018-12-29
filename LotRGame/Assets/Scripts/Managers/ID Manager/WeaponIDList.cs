@@ -5,27 +5,27 @@ using UnityEngine;
 public class WeaponIDList : MonoBehaviour
 {
     //The lists of weapon objects with the IDTag component so we can keep track of their IDs
-    public List<IDTag> maulList;
-    public List<IDTag> bowList;
-    public List<IDTag> daggerList;
-    public List<IDTag> unarmedList;
-    public List<IDTag> shieldList;
-    public List<IDTag> poleList;
-    public List<IDTag> swordList;
+    public List<IDTag> maulList;        //ID 1000-1099
+    public List<IDTag> bowList;         //1100-1199
+    public List<IDTag> daggerList;      //1200-1299
+    public List<IDTag> unarmedList;     //1300-1399
+    public List<IDTag> shieldList;      //1400-1499
+    public List<IDTag> poleList;        //1500-1599
+    public List<IDTag> swordList;       //1600-1699
 
     [Space(8)]
 
-    public List<IDTag> arcaneList;
-    public List<IDTag> holyList;
-    public List<IDTag> darkList;
+    public List<IDTag> arcaneList;      //1700-1799
+    public List<IDTag> holyList;        //1800-1899
+    public List<IDTag> darkList;        //1900-1999
 
     [Space(8)]
 
-    public List<IDTag> fireList;
-    public List<IDTag> waterList;
-    public List<IDTag> windList;
-    public List<IDTag> electricList;
-    public List<IDTag> stoneList;
+    public List<IDTag> fireList;        //2000-2099
+    public List<IDTag> waterList;       //2100-2199
+    public List<IDTag> windList;        //2200-2299
+    public List<IDTag> electricList;    //2300-2399
+    public List<IDTag> stoneList;       //2400-2499
 
 
 

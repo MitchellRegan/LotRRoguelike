@@ -5,13 +5,13 @@ using UnityEngine;
 public class PerkIDList : MonoBehaviour
 {
     //The list of perk objects with the IDTag component so we can keep track of their IDs
-    public List<IDTag> damageTypeBoost;
-    public List<IDTag> damageSkillBoost;
-    public List<IDTag> negateDamageBoost;
-    public List<IDTag> spellAbsorb;
-    public List<IDTag> armorBoost;
-    public List<IDTag> accuracyBoost;
-    public List<IDTag> evasionBoost;
+    public List<IDTag> damageTypeBoost; //ID 0-99
+    public List<IDTag> damageSkillBoost;    //ID 100-199
+    public List<IDTag> negateDamageBoost;   //200-299
+    public List<IDTag> spellAbsorb;         //300-399
+    public List<IDTag> armorBoost;          //400-499
+    public List<IDTag> accuracyBoost;       //500-599
+    public List<IDTag> evasionBoost;        //600-699
 
 
 
