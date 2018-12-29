@@ -5,20 +5,86 @@ using UnityEngine;
 public class PerkIDList : MonoBehaviour
 {
     //The list of perk objects with the IDTag component so we can keep track of their IDs
-    public List<IDTag> perkList;
+    public List<IDTag> damageTypeBoost;
+    public List<IDTag> damageSkillBoost;
+    public List<IDTag> negateDamageBoost;
+    public List<IDTag> spellAbsorb;
+    public List<IDTag> armorBoost;
+    public List<IDTag> accuracyBoost;
+    public List<IDTag> evasionBoost;
 
 
-    
+
     //Function called externally to return a perk object reference when given the ID number
     public Perk GetPerkByIDNum(int numberID_)
     {
-        //Looping through each perk in our list to check for the matching ID number
-        for(int p = 0; p < this.perkList.Count; ++p)
+        //Looping through each damage type boost perk in our list to check for the matching ID number
+        for(int dt = 0; dt < this.damageTypeBoost.Count; ++dt)
         {
             //If the current perk has the same ID number, we get the Perk component reference and return it
-            if(this.perkList[p].numberID == numberID_)
+            if(this.damageTypeBoost[dt].numberID == numberID_)
             {
-                return this.perkList[p].GetComponent<Perk>();
+                return this.damageTypeBoost[dt].GetComponent<Perk>();
+            }
+        }
+
+        //Looping through each damage skill boost perk in our list to check for the matching ID number
+        for (int ds = 0; ds < this.damageSkillBoost.Count; ++ds)
+        {
+            //If the current perk has the same ID number, we get the Perk component reference and return it
+            if (this.damageSkillBoost[ds].numberID == numberID_)
+            {
+                return this.damageSkillBoost[ds].GetComponent<Perk>();
+            }
+        }
+
+        //Looping through each negate damage perk in our list to check for the matching ID number
+        for (int nd = 0; nd < this.negateDamageBoost.Count; ++nd)
+        {
+            //If the current perk has the same ID number, we get the Perk component reference and return it
+            if (this.negateDamageBoost[nd].numberID == numberID_)
+            {
+                return this.negateDamageBoost[nd].GetComponent<Perk>();
+            }
+        }
+
+        //Looping through each spell absorb perk in our list to check for the matching ID number
+        for (int sa = 0; sa < this.spellAbsorb.Count; ++sa)
+        {
+            //If the current perk has the same ID number, we get the Perk component reference and return it
+            if (this.spellAbsorb[sa].numberID == numberID_)
+            {
+                return this.spellAbsorb[sa].GetComponent<Perk>();
+            }
+        }
+
+        //Looping through each armor boost perk in our list to check for the matching ID number
+        for (int am = 0; am < this.armorBoost.Count; ++am)
+        {
+            //If the current perk has the same ID number, we get the Perk component reference and return it
+            if (this.armorBoost[am].numberID == numberID_)
+            {
+                return this.armorBoost[am].GetComponent<Perk>();
+            }
+        }
+
+        //Looping through each accuracy perk in our list to check for the matching ID number
+        for (int ac = 0; ac < this.accuracyBoost.Count; ++ac)
+        {
+            //If the current perk has the same ID number, we get the Perk component reference and return it
+            if (this.accuracyBoost[ac].numberID == numberID_)
+            {
+                return this.accuracyBoost[ac].GetComponent<Perk>();
+            }
+        }
+
+        //Looping through each perk in our list to check for the matching ID number
+        for (int ev = 0; ev < this.evasionBoost.Count; ++ev)
+        {
+            //If the current perk has the same ID number, we get the Perk component reference and return it
+            if (this.evasionBoost[ev].numberID == numberID_)
+            {
+                return this.evasionBoost[ev].GetComponent<Perk>();
             }
         }
 
@@ -30,35 +96,48 @@ public class PerkIDList : MonoBehaviour
     //Function called for debugging purposes to make sure there are no problems with any of the perk IDs in the list
     public void CheckForInvalidIDs()
     {
+        this.CheckList(this.damageTypeBoost, "Damage Type Boost");
+        this.CheckList(this.damageSkillBoost, "Damage Skill Boost");
+        this.CheckList(this.negateDamageBoost, "Negate Damage");
+        this.CheckList(this.armorBoost, "Armor Boost");
+        this.CheckList(this.accuracyBoost, "Accuracy Boost");
+        this.CheckList(this.evasionBoost, "Evasion Boost");
+        this.CheckList(this.spellAbsorb, "Spell Absorb");
+    }
+
+
+    //Function called from CheckForInvalidIDs to loop through the given perk list
+    private void CheckList(List<IDTag> listToCheck_, string nameOfList_)
+    {
         //Looping through all of the perks in our list
-        for(int p1 = 0; p1 < this.perkList.Count; ++p1)
+        for (int a1 = 0; a1 < listToCheck_.Count; ++a1)
         {
             //If this slot in the list is empty, we throw a debug
-            if(this.perkList[p1] == null)
+            if (listToCheck_[a1] == null)
             {
-                Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckForInvalidIDs: Empty slot in perk list at index " + p1);
+                Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList " + nameOfList_ + ": Empty slot in perk list at index " + a1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if(this.perkList[p1].objType != IDTag.ObjectType.Perk)
+            else if (listToCheck_[a1].objType != IDTag.ObjectType.Perk)
             {
-                Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckForInvalidIDs: Invalid ID type at index " + p1);
+                Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList " + nameOfList_ + ": Invalid ID type at index " + a1);
             }
             //If this object doesn't have the perk component, we throw a debug
-            else if(this.perkList[p1].GetComponent<Perk>() == null)
+            else if (listToCheck_[a1].GetComponent<Perk>() == null)
             {
-                Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckForInvalidIDs: Object at index " + p1 + " doesn't have the Perk component.");
+                Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList " + nameOfList_ + ": Object at index " + a1 + " doesn't have the Perk component.");
             }
         }
 
         //Looping through the list again with nested for loops to check each ID against all other ID numbers
-        for(int x = 0; x < this.perkList.Count - 1; ++x)
+        for (int x = 0; x < listToCheck_.Count - 1; ++x)
         {
-            for(int y = x + 1; y < this.perkList.Count; ++y)
+            for (int y = x + 1; y < listToCheck_.Count; ++y)
             {
                 //If the ID numbers are the same we need to throw a debug
-                if(this.perkList[x].numberID == this.perkList[y].numberID)
+                if (listToCheck_[x].numberID == listToCheck_[y].numberID)
                 {
-                    Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckForInvalidIDs: Duplicate ID numbers on index " + x + " and " + y);
+                    Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList " + nameOfList_ + ": Duplicate ID numbers on index " + x + " and " + y);
                 }
             }
         }
