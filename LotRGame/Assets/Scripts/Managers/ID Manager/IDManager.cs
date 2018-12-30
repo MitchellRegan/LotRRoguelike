@@ -70,6 +70,37 @@ public class IDManager : MonoBehaviour
     }
 
 
+    //Function called externally from SaveLoadManager.cs to get object references based on the values from the IDTag component if the component isn't available
+    public GameObject GetPrefabFromID(IDTag.ObjectType objType_, int numberID_)
+    {
+        //Switch statement for the type of objet to get based on the ID enum
+        switch (objType_)
+        {
+            case IDTag.ObjectType.Perk:
+                return this.perkList.GetPerkByIDNum(numberID_);
+
+            case IDTag.ObjectType.ItemWeapon:
+                return this.weaponList.GetWeaponByIDNum(numberID_);
+
+            case IDTag.ObjectType.ItemArmor:
+                return this.armorList.GetArmorByIDNum(numberID_);
+
+            case IDTag.ObjectType.ItemQuest:
+                return this.questItemList.GetQuestItemByIDNum(numberID_);
+
+            case IDTag.ObjectType.ItemConsumable:
+                return this.foodList.GetFoodByIDNum(numberID_);
+
+            case IDTag.ObjectType.ItemMisc:
+                return this.itemList.GetItemByIDNum(numberID_);
+
+            default:
+                //If for some reason the enum has no match, we return null and let the SaveLoadManager deal with it
+                return null;
+        }
+    }
+
+
     //Function called on Awake to check all of our ID lists for invalid ID tags
     private void CheckAllLists()
     {
