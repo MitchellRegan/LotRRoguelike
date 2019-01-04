@@ -439,9 +439,10 @@ public class QuestTracker : MonoBehaviour
 
                 //Getting the item to collect for this requirement
                 string loadItem = questData.fetchItems[fi];
-                GameObjectSerializationWrapper itemObj = JsonUtility.FromJson(loadItem, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+                PrefabIDTagData itemData = JsonUtility.FromJson(loadItem, typeof(PrefabIDTagData)) as PrefabIDTagData;
+                GameObject itemObj = IDManager.globalReference.GetPrefabFromID(itemData.objType, itemData.iDNumber);
 
-                questFetch.collectableItem = itemObj.objToSave.GetComponent<Item>();
+                questFetch.collectableItem = itemObj.GetComponent<Item>();
                 questFetch.itemsRequired = questData.requiredItemAmount[fi];
                 questFetch.currentItems = questData.currentItemAmount[fi];
 
@@ -476,9 +477,10 @@ public class QuestTracker : MonoBehaviour
 
                 //Getting the item that is awarded
                 string loadItem = questData.itemRewards[ir];
-                GameObjectSerializationWrapper itemObj = JsonUtility.FromJson(loadItem, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+                PrefabIDTagData itemData = JsonUtility.FromJson(loadItem, typeof(PrefabIDTagData)) as PrefabIDTagData;
+                GameObject itemObj = IDManager.globalReference.GetPrefabFromID(itemData.objType, itemData.iDNumber);
 
-                itemReward.rewardItem = itemObj.objToSave.GetComponent<Item>();
+                itemReward.rewardItem = itemObj.GetComponent<Item>();
                 itemReward.amount = questData.itemRewardAmounts[ir];
 
                 //Adding the item reward to our quest
@@ -675,8 +677,8 @@ public class QuestSaveData
         this.currentItemAmount = new List<int>();
         foreach(QuestFetchItems fi in ourQuest_.fetchList)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(fi.collectableItem.gameObject);
-            this.fetchItems.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab), true));
+            PrefabIDTagData itemTagData = new PrefabIDTagData(fi.collectableItem.GetComponent<IDTag>());
+            this.fetchItems.Add(JsonUtility.ToJson(itemTagData, true));
             this.requiredItemAmount.Add(fi.itemsRequired);
             this.currentItemAmount.Add(fi.currentItems);
         }
@@ -696,8 +698,8 @@ public class QuestSaveData
         this.itemRewardAmounts = new List<int>();
         foreach(QuestItemReward ir in ourQuest_.itemRewards)
         {
-            GameObject itemPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ir.rewardItem.gameObject);
-            this.itemRewards.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab), true));
+            PrefabIDTagData itemTagData = new PrefabIDTagData(ir.rewardItem.GetComponent<IDTag>());
+            this.itemRewards.Add(JsonUtility.ToJson(itemTagData, true));
             this.itemRewardAmounts.Add(ir.amount);
         }
 

@@ -316,8 +316,9 @@ public class Character : MonoBehaviour
         this.charPerks.allPerks = new List<Perk>();
         for(int p = 0; p < saveData_.perkNames.Count; ++p)
         {
-            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.perkNames[p], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            this.charPerks.allPerks.Add(objWrapper.objToSave.GetComponent<Perk>());
+            PrefabIDTagData perkTagData = JsonUtility.FromJson(saveData_.perkNames[p], typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject loadedPerk = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(perkTagData.objType, perkTagData.iDNumber));
+            this.charPerks.allPerks.Add(loadedPerk.GetComponent<Perk>());
         }
     }
 }
