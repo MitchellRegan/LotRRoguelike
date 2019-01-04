@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(IDTag))]
 public class MapLocation : MonoBehaviour
 {
     //The name of this location

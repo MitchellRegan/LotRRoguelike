@@ -590,7 +590,7 @@ public class CharacterSaveData
 
 
 //Class used in Character.cs and SaveLoadManager.cs as a wrapper to store game object references for serialization
-/*[System.Serializable]
+[System.Serializable]
 public class GameObjectSerializationWrapper
 {
     //Reference to the game object we're going to serialize
@@ -601,7 +601,7 @@ public class GameObjectSerializationWrapper
     {
         this.objToSave = obj_;
     }
-}*/
+}
 
 
 //Class used in Character.cs and SaveLoadManager.cs to store IDTag data

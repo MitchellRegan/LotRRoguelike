@@ -14,7 +14,9 @@ public class IDTag : MonoBehaviour
         ItemArmor,
         ItemConsumable,
         ItemQuest,
-        ItemMisc
+        ItemMisc,
+        Action,
+        Location
     };
     public ObjectType objType = ObjectType.ItemMisc;
 
