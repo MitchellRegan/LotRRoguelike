@@ -27,13 +27,13 @@ public class PartyGroup : MonoBehaviour
         if (PartyGroup.group1 != null)
         {
             Destroy(this);
+            return;
         }
         else
         {
             PartyGroup.group1 = this;
         }
 
-        Debug.Log("PartyGroup AWAKE --------------------------------------------------------------------------");
         //If the character manager has already been initialized, we set this party group as the selected group
         if(CharacterManager.globalReference != null)
         {

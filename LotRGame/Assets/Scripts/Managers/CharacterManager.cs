@@ -65,8 +65,6 @@ public class CharacterManager : MonoBehaviour
 
         //Setting the event delegate for the time passed listener
         this.timePassedListener = new DelegateEvent<EVTData>(this.AdvanceTimeForAllCharacters);
-
-        Debug.Log("CharacterManager AWAKE");
     }
 
 
