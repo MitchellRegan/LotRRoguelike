@@ -39,7 +39,7 @@ public class IDManager : MonoBehaviour
         }
 
         Debug.Log("Checking all ID lists. Remove this debug");
-        this.CheckAllLists();
+        //this.CheckAllLists();
     }
 
 
