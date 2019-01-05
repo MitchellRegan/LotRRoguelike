@@ -300,8 +300,9 @@ public class Character : MonoBehaviour
         this.charActionList.defaultActions = new List<Action>();
         for(int da = 0; da < saveData_.defaultActions.Count; ++da)
         {
-            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            this.charActionList.defaultActions.Add(objWrapper.objToSave.GetComponent<Action>());
+            PrefabIDTagData actionData = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject actionObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(actionData.objType, actionData.iDNumber));
+            this.charActionList.defaultActions.Add(actionObj.GetComponent<Action>());
         }
         this.charActionList.rechargingSpells = new List<SpellRecharge>();
         for (int rs = 0; rs < saveData_.rechargingSpells.Count; ++rs)
@@ -486,10 +487,8 @@ public class CharacterSaveData
         this.defaultActions = new List<string>();
         for(int da = 0; da < characterToSave_.charActionList.defaultActions.Count; ++da)
         {
-            //Finding the prefab game object for this action
-            GameObject actionPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charActionList.defaultActions[da].gameObject);
-            GameObjectSerializationWrapper objWrapper = new GameObjectSerializationWrapper(actionPrefab);
-            this.defaultActions.Add(JsonUtility.ToJson(objWrapper));
+            PrefabIDTagData actionIDData = new PrefabIDTagData(characterToSave_.charActionList.defaultActions[da].GetComponent<IDTag>());
+            this.defaultActions.Add(JsonUtility.ToJson(actionIDData));
         }
 
         this.rechargingSpells = new List<string>();

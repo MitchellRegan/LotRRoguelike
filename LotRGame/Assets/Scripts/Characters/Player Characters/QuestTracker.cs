@@ -389,8 +389,9 @@ public class QuestTracker : MonoBehaviour
             }
             else
             {
-                GameObjectSerializationWrapper turnInLocObj = JsonUtility.FromJson(questData.turnInLocationObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-                q.turnInQuestLoaction = turnInLocObj.objToSave.GetComponent<MapLocation>();
+                PrefabIDTagData turnInLocData = JsonUtility.FromJson(questData.turnInLocationObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+                GameObject turnInLocObj = IDManager.globalReference.GetPrefabFromID(turnInLocData.objType, turnInLocData.iDNumber);
+                q.turnInQuestLoaction = turnInLocObj.GetComponent<MapLocation>();
             }
 
             //Looping through all of our travel destinations
@@ -402,9 +403,10 @@ public class QuestTracker : MonoBehaviour
 
                 //Getting the map location for this destination
                 string loadLoc = questData.travelDestinations[td];
-                GameObjectSerializationWrapper mapLocObj = JsonUtility.FromJson(loadLoc, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+                PrefabIDTagData mapLocData = JsonUtility.FromJson(loadLoc, typeof(PrefabIDTagData)) as PrefabIDTagData;
+                GameObject mapLocObj = IDManager.globalReference.GetPrefabFromID(mapLocData.objType, mapLocData.iDNumber);
 
-                questDestination.requiredLocation = mapLocObj.objToSave.GetComponent<MapLocation>();
+                questDestination.requiredLocation = mapLocObj.GetComponent<MapLocation>();
                 questDestination.locationVisited = questData.destinationTraveledTo[td];
 
                 //Adding the quest destination to our quest
@@ -496,9 +498,10 @@ public class QuestTracker : MonoBehaviour
 
                 //Getting the action object that is awarded
                 string loadAction = questData.actionRewards[ar];
-                GameObjectSerializationWrapper actionObj = JsonUtility.FromJson(loadAction, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
+                PrefabIDTagData actionData = JsonUtility.FromJson(loadAction, typeof(PrefabIDTagData)) as PrefabIDTagData;
+                GameObject actionObj = IDManager.globalReference.GetPrefabFromID(actionData.objType, actionData.iDNumber);
 
-                actionReward.rewardAction = actionObj.objToSave.GetComponent<Action>();
+                actionReward.rewardAction = actionObj.GetComponent<Action>();
                 actionReward.rewardDistribution = questData.actionDistributionTypes[ar];
 
                 //Adding the action reward to our quests
@@ -641,8 +644,8 @@ public class QuestSaveData
         //Serializing the turn in location if it exists
         if (ourQuest_.turnInQuestLoaction != null)
         {
-            GameObject locPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ourQuest_.turnInQuestLoaction.gameObject);
-            this.turnInLocationObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(locPrefab), true);
+            PrefabIDTagData turnInLocData = new PrefabIDTagData(ourQuest_.turnInQuestLoaction.GetComponent<IDTag>());
+            this.turnInLocationObj = JsonUtility.ToJson(turnInLocData, true);
         }
         else
         {
@@ -654,8 +657,8 @@ public class QuestSaveData
         this.destinationTraveledTo = new List<bool>();
         foreach(QuestTravelDestination td in ourQuest_.destinationList)
         {
-            GameObject locationPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(td.requiredLocation.gameObject);
-            this.travelDestinations.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(locationPrefab), true));
+            PrefabIDTagData destinationLocData = new PrefabIDTagData(td.requiredLocation.GetComponent<IDTag>());
+            this.travelDestinations.Add(JsonUtility.ToJson(destinationLocData, true));
             this.destinationTraveledTo.Add(td.locationVisited);
         }
 
@@ -708,8 +711,7 @@ public class QuestSaveData
         this.actionDistributionTypes = new List<QuestActionReward.DistributionType>();
         foreach(QuestActionReward ar in ourQuest_.actionRewards)
         {
-            GameObject actionPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(ar.rewardAction.gameObject);
-            this.actionRewards.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(actionPrefab), true));
+            this.actionRewards.Add(JsonUtility.ToJson(new PrefabIDTagData(ar.rewardAction.GetComponent<IDTag>()), true));
             this.actionDistributionTypes.Add(ar.rewardDistribution);
         }
     }
