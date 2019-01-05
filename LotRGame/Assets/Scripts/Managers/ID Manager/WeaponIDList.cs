@@ -188,6 +188,7 @@ public class WeaponIDList : MonoBehaviour
 
 
         //If we make it through the loop then we don't have the weapon and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: WeaponIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 

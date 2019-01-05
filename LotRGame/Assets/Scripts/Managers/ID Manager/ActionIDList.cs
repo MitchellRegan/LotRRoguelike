@@ -207,7 +207,20 @@ public class ActionIDList : MonoBehaviour
         }
 
 
+
+        //Looping through each misc
+        for (int ms = 0; ms < this.miscActList.Count; ++ms)
+        {
+            //If the current weapon has the same ID number, we get the object reference and return it
+            if (this.miscActList[ms].numberID == numberID_)
+            {
+                return this.miscActList[ms].gameObject;
+            }
+        }
+
+
         //If we make it through the loop then we don't have the weapon and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: ActionIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 

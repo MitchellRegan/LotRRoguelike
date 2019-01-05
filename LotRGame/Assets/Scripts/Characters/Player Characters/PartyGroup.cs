@@ -32,6 +32,13 @@ public class PartyGroup : MonoBehaviour
         {
             PartyGroup.group1 = this;
         }
+
+        Debug.Log("PartyGroup AWAKE --------------------------------------------------------------------------");
+        //If the character manager has already been initialized, we set this party group as the selected group
+        if(CharacterManager.globalReference != null)
+        {
+            CharacterManager.globalReference.selectedGroup = this;
+        }
     }
 
 

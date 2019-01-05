@@ -45,6 +45,7 @@ public class LocationIDList : MonoBehaviour
         }
 
         //If we make it through the loop then we don't have the location and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: LocationIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 

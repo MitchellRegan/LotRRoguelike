@@ -89,6 +89,7 @@ public class PerkIDList : MonoBehaviour
         }
 
         //If we make it through the loop then we don't have the perk and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 

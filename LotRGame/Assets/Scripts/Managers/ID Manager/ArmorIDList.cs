@@ -100,6 +100,7 @@ public class ArmorIDList : MonoBehaviour
         }
 
         //If we make it through the loop then we don't have the armor and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: ArmorIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 

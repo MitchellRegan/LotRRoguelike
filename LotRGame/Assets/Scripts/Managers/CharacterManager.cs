@@ -65,6 +65,8 @@ public class CharacterManager : MonoBehaviour
 
         //Setting the event delegate for the time passed listener
         this.timePassedListener = new DelegateEvent<EVTData>(this.AdvanceTimeForAllCharacters);
+
+        Debug.Log("CharacterManager AWAKE");
     }
 
 
@@ -79,6 +81,17 @@ public class CharacterManager : MonoBehaviour
     private void OnDisable()
     {
         EventManager.StopListening(TimePassedEVT.eventNum, this.timePassedListener);
+    }
+
+
+    //Function called every frame
+    private void Update()
+    {
+        //If the selected party group is null, we set the reference to group 1 automatically
+        if(this.selectedGroup == null)
+        {
+            this.selectedGroup = PartyGroup.group1;
+        }
     }
 
 

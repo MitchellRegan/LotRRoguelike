@@ -23,6 +23,7 @@ public class QuestItemIDList : MonoBehaviour
         }
 
         //If we make it through the loop then we don't have the quest item and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: QuestItemIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 

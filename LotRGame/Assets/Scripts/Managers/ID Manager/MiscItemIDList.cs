@@ -23,6 +23,7 @@ public class MiscItemIDList : MonoBehaviour
         }
 
         //If we make it through the loop then we don't have the item and we return null
+        Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: MiscItemIDList.CheckList: NULL ID Number: " + numberID_);
         return null;
     }
 
