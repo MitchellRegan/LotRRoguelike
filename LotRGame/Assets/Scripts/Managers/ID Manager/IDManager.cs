@@ -19,6 +19,10 @@ public class IDManager : MonoBehaviour
     public FoodIDList foodList;
     //Reference to this object's MiscItemIDList component
     public MiscItemIDList itemList;
+    //Reference to this object's LocationIDList component
+    public LocationIDList locationList;
+    //Reference to this object's ActionIDList component
+    public ActionIDList actionList;
 
 
 
@@ -63,6 +67,12 @@ public class IDManager : MonoBehaviour
             case IDTag.ObjectType.ItemMisc:
                 return this.itemList.GetItemByIDNum(tagToGet_.numberID);
 
+            case IDTag.ObjectType.Location:
+                return this.locationList.GetLocationByIDNum(tagToGet_.numberID);
+
+            case IDTag.ObjectType.Action:
+                return this.actionList.GetActionByIDNum(tagToGet_.numberID);
+
             default:
                 //If for some reason the enum has no match, we return null and let the SaveLoadManager deal with it
                 return null;
@@ -94,6 +104,12 @@ public class IDManager : MonoBehaviour
             case IDTag.ObjectType.ItemMisc:
                 return this.itemList.GetItemByIDNum(numberID_);
 
+            case IDTag.ObjectType.Location:
+                return this.locationList.GetLocationByIDNum(numberID_);
+
+            case IDTag.ObjectType.Action:
+                return this.actionList.GetActionByIDNum(numberID_);
+
             default:
                 //If for some reason the enum has no match, we return null and let the SaveLoadManager deal with it
                 return null;
@@ -110,5 +126,7 @@ public class IDManager : MonoBehaviour
         this.questItemList.CheckForInvalidIDs();
         this.foodList.CheckForInvalidIDs();
         this.itemList.CheckForInvalidIDs();
+        this.locationList.CheckForInvalidIDs();
+        this.actionList.CheckForInvalidIDs();
     }
 }

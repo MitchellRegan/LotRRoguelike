@@ -203,15 +203,15 @@ public class WeaponIDList : MonoBehaviour
         this.CheckList(this.poleList, "Poles", SkillList.Poles);
         this.CheckList(this.swordList, "Swords", SkillList.Swords);
 
-        this.CheckList(this.arcaneList, "Magic", SkillList.ArcaneMagic);
-        this.CheckList(this.holyList, "Magic", SkillList.HolyMagic);
-        this.CheckList(this.darkList, "Magic", SkillList.DarkMagic);
+        this.CheckList(this.arcaneList, "Arcane", SkillList.ArcaneMagic);
+        this.CheckList(this.holyList, "Holy", SkillList.HolyMagic);
+        this.CheckList(this.darkList, "Dark", SkillList.DarkMagic);
 
-        this.CheckList(this.fireList, "Magic", SkillList.FireMagic);
-        this.CheckList(this.waterList, "Magic", SkillList.WaterMagic);
-        this.CheckList(this.windList, "Magic", SkillList.WindMagic);
-        this.CheckList(this.electricList, "Magic", SkillList.ElectricMagic);
-        this.CheckList(this.stoneList, "Magic", SkillList.StoneMagic);
+        this.CheckList(this.fireList, "Fire", SkillList.FireMagic);
+        this.CheckList(this.waterList, "Water", SkillList.WaterMagic);
+        this.CheckList(this.windList, "Wind", SkillList.WindMagic);
+        this.CheckList(this.electricList, "Electric", SkillList.ElectricMagic);
+        this.CheckList(this.stoneList, "Stone", SkillList.StoneMagic);
     }
 
 
