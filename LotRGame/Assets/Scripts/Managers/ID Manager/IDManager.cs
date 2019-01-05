@@ -38,7 +38,6 @@ public class IDManager : MonoBehaviour
             Destroy(this);
         }
 
-        Debug.Log("Checking all ID lists. Remove this debug");
         //this.CheckAllLists();
     }
 
@@ -120,6 +119,7 @@ public class IDManager : MonoBehaviour
     //Function called on Awake to check all of our ID lists for invalid ID tags
     private void CheckAllLists()
     {
+        Debug.Log("IDManager.CheckAllLists >>> Checking all ID lists. Remove this debug");
         this.perkList.CheckForInvalidIDs();
         this.weaponList.CheckForInvalidIDs();
         this.armorList.CheckForInvalidIDs();

@@ -143,9 +143,9 @@ public class CreateTileGrid : MonoBehaviour
         {
             //Instantiating the player group prefab
             GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, new Vector3(0,0,0), new Quaternion());
-
+            
             CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
-
+            
             //Loading the tile grid using the SaveLoadManager
             SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
         }

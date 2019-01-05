@@ -301,7 +301,7 @@ public class Character : MonoBehaviour
         for(int da = 0; da < saveData_.defaultActions.Count; ++da)
         {
             PrefabIDTagData actionData = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(PrefabIDTagData)) as PrefabIDTagData;
-            GameObject actionObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(actionData.objType, actionData.iDNumber));
+            GameObject actionObj = IDManager.globalReference.GetPrefabFromID(actionData.objType, actionData.iDNumber);
             this.charActionList.defaultActions.Add(actionObj.GetComponent<Action>());
         }
         this.charActionList.rechargingSpells = new List<SpellRecharge>();
