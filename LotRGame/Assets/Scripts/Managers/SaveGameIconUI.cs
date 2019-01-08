@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class SaveGameIconUI : MonoBehaviour
 {
-    //Send event from SaveLoadManager to turn this on
-    //Track the amount of time that passes
-    //Rotate spinny thing
-    //Send event from SaveLoadManager to indicate the save is done
-    //If the time passed is less than X sec, keep spinning until X sec has passed
-
     //Object to enable when we're saving
     public GameObject iconObject;
 

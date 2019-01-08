@@ -257,13 +257,17 @@ public class LoadDataEVT
     //The num used to call this event from the event manager
     public static byte eventNum = 245;
 
-    //Bool for if we're starting the load (true) or done loading (false)
+    //Bool for if we're starting the load (true) or currently loading (false)
     public bool startingLoad = false;
+
+    //Int for the number of load updates that will happen before it finishes. Only applicable if startingLoad is true
+    public int totalLoadUpdates = 1;
 
 
     //Public constructor for this class
-    public LoadDataEVT(bool startingLoad_)
+    public LoadDataEVT(bool startingLoad_, int totalLoadUpdates_ = 1)
     {
         this.startingLoad = startingLoad_;
+        this.totalLoadUpdates = totalLoadUpdates_;
     }
 }
