@@ -364,6 +364,11 @@ public class SaveLoadManager : MonoBehaviour
     //Function called externally to save player progress. Called from the pause menu in GamePlay scene, and CreateTileGrid.cs in Start
     public void SavePlayerProgress()
     {
+        //Sending out an event to toggle the save game icon UI on
+        EVTData startSaveData = new EVTData();
+        startSaveData.saveData = new SaveDataEVT(true);
+        EventManager.TriggerEvent(SaveDataEVT.eventNum, startSaveData);
+
         //Making sure the save folder exists
         this.CheckSaveDirectory(GameData.globalReference.saveFolder);
         
@@ -373,6 +378,11 @@ public class SaveLoadManager : MonoBehaviour
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
         File.WriteAllText(Application.persistentDataPath + GameData.globalReference.saveFolder + "/PlayerProgress.txt", jsonPlayerProgress);
+
+        //Sending out an event to toggle the save game icon UI off
+        EVTData endSaveData = new EVTData();
+        endSaveData.saveData = new SaveDataEVT(false);
+        EventManager.TriggerEvent(SaveDataEVT.eventNum, endSaveData);
     }
 
 

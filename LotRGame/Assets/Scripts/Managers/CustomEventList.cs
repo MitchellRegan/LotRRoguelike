@@ -15,6 +15,8 @@ public class EVTData
     public ScreenShakeEVT screenShake = null;
     public PromptQuestEVT promptQuest = null;
     public CharacterDeathEVT characterDeath = null;
+    public SaveDataEVT saveData = null;
+    public LoadDataEVT loadData = null;
 }
 
 
@@ -227,5 +229,41 @@ public class CharacterDeathEVT
     public CharacterDeathEVT(Character deadCharacter_)
     {
         this.deadCharacter = deadCharacter_;
+    }
+}
+
+
+//Event data for when we're saving data
+public class SaveDataEVT
+{
+    //The num used to call this event from the event manager
+    public static byte eventNum = 245;
+
+    //Bool for if we're starting the save (true) or done saving (false)
+    public bool startingSave = false;
+
+
+    //Public constructor for this class
+    public SaveDataEVT(bool startingSave_)
+    {
+        this.startingSave = startingSave_;
+    }
+}
+
+
+//Event data for when we're loading data
+public class LoadDataEVT
+{
+    //The num used to call this event from the event manager
+    public static byte eventNum = 245;
+
+    //Bool for if we're starting the load (true) or done loading (false)
+    public bool startingLoad = false;
+
+
+    //Public constructor for this class
+    public LoadDataEVT(bool startingLoad_)
+    {
+        this.startingLoad = startingLoad_;
     }
 }
