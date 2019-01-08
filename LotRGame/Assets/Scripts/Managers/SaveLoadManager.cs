@@ -453,6 +453,7 @@ public class SaveLoadManager : MonoBehaviour
                 int row = partyLocation.connectedTileCoordinates[coord].row;
                 partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
             }
+            Debug.Log("SaveLoadManger.LoadPlayerProgress >>> Setting Current Party Tile");
             partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
             
             //Setting the static party group reference

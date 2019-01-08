@@ -172,7 +172,7 @@ public class CreateTileGrid : MonoBehaviour
             //Setting the selected group
             CharacterManager.globalReference.selectedGroup = PartyGroup.group1;
 
-            //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
+            Debug.Log("CreateTileGrid.Start >>> Setting Current Party Tile");
             CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
         }
     }
@@ -978,7 +978,7 @@ public class CreateTileGrid : MonoBehaviour
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
 
-        //playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
+        Debug.Log("CreateTileGrid.SetPlayerPartyPosition >>> Setting Current Party Tile");
         playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_, false);
 
         //Looping through all of the children for the GameData object to get the created characters
@@ -1317,7 +1317,8 @@ public class CreateTileGrid : MonoBehaviour
             //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
             if (newTile.decorationModel != null)
             {
-                GameObject decor = Instantiate(newTile.decorationModel, tileMesh.transform.position, new Quaternion());
+                Debug.Log("This is where the error is");
+                GameObject decor = Instantiate(newTile.decorationModel.gameObject, tileMesh.transform.position, new Quaternion());
                 decor.transform.SetParent(tileMesh.transform);
                 decor.transform.eulerAngles = new Vector3(0, newTile.decorationRotation, 0);
             }
