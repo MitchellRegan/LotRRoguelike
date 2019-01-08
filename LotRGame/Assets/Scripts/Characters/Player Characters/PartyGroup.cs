@@ -140,14 +140,18 @@ public class PartySaveData
     //The list of save data for each character in this party
     public List<CharacterSaveData> partyCharacters;
     //The tile that this party is currently on
-    public TileInfo tileLocation;
+    public int tileCol = -1;
+    public int tileRow = -1;
 
 
     //Constructor function for this class
     public PartySaveData(PartyGroup groupToSave_)
     {
         this.combatDist = groupToSave_.combatDistance;
-        this.tileLocation = groupToSave_.GetComponent<WASDOverworldMovement>().currentTile;
+
+        CreateTileGrid.TileColRow tileLocation = CreateTileGrid.globalReference.GetTileCoords(groupToSave_.GetComponent<WASDOverworldMovement>().currentTile);
+        this.tileCol = tileLocation.col;
+        this.tileRow = tileLocation.row;
 
         //Looping through all of the characters in the given party and getting their save data
         this.partyCharacters = new List<global::CharacterSaveData>();

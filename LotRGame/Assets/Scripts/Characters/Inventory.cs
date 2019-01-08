@@ -586,7 +586,7 @@ public class Inventory : MonoBehaviour
                         //Looping through each child (stacked item) in the item to add
                         while(itemToAdd_.transform.childCount > 0)
                         {
-                            Transform itemChild = itemToAdd_.transform.FindChild(this.itemSlots[s].name);
+                            Transform itemChild = itemToAdd_.transform.Find(this.itemSlots[s].name);
 
                             //If for some reason there isn't an available child of the same type but there are still children, we break the loop
                             if(itemChild == null)
@@ -617,7 +617,7 @@ public class Inventory : MonoBehaviour
                         //Looping through each child (stacked item) in the item to add until the current stack is full
                         while(this.itemSlots[s].currentStackSize < this.itemSlots[s].maxStackSize)
                         {
-                            Transform itemChild = itemToAdd_.transform.FindChild(this.itemSlots[s].name);
+                            Transform itemChild = itemToAdd_.transform.Find(this.itemSlots[s].name);
 
                             //If for some reason there isn't an available child of the same type, we break the loop and add the parent to the inventory
                             if (itemChild == null)

@@ -445,7 +445,8 @@ public class SaveLoadManager : MonoBehaviour
                 }
             }
 
-            TileInfo partyLocation = loadedProgress.partyGroup1.tileLocation;
+            //Getting the tile grid location of the player group and getting the tile connections
+            TileInfo partyLocation = CreateTileGrid.globalReference.tileGrid[loadedProgress.partyGroup1.tileCol][loadedProgress.partyGroup1.tileRow];
             partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
             for(int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
             {
@@ -453,7 +454,6 @@ public class SaveLoadManager : MonoBehaviour
                 int row = partyLocation.connectedTileCoordinates[coord].row;
                 partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
             }
-            Debug.Log("SaveLoadManger.LoadPlayerProgress >>> Setting Current Party Tile");
             partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
             
             //Setting the static party group reference
@@ -475,14 +475,6 @@ public class SaveLoadManager : MonoBehaviour
             TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
             //Telling the character manager to instantiate the prefab
             CharacterManager.globalReference.CreateEnemyEncounter(encounterPrefab, enemyTile);
-
-            /*//Creating a new instance of the encounter object
-            GameObject enemyObj = GameObject.Instantiate(loadedProgress.enemyTileEncounters[e].encounterPrefab) as GameObject;
-            //Setting the loaded encounter's prefab reference
-            enemyObj.GetComponent<EnemyEncounter>().encounterPrefab = loadedProgress.enemyTileEncounters[e].encounterPrefab;
-            //Setting the enemy's tile position
-            TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
-            enemyObj.GetComponent<Movement>().SetCurrentTile(enemyTile);*/
         }
     }
 }

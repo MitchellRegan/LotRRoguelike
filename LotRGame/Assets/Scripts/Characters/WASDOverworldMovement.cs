@@ -78,7 +78,6 @@ public class WASDOverworldMovement : MonoBehaviour
         if (this.GetComponent<PartyGroup>())
         {
             //The tile grid needs to update the visible tiles
-            Debug.Log("WASDOverworldMovement.SetCurrentTile >>> Generating Visible Land");
             CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
             if (QuestTracker.globalReference != null)
             {

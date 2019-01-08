@@ -171,8 +171,7 @@ public class CreateTileGrid : MonoBehaviour
 
             //Setting the selected group
             CharacterManager.globalReference.selectedGroup = PartyGroup.group1;
-
-            Debug.Log("CreateTileGrid.Start >>> Setting Current Party Tile");
+            
             CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
         }
     }
@@ -978,7 +977,6 @@ public class CreateTileGrid : MonoBehaviour
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
 
-        Debug.Log("CreateTileGrid.SetPlayerPartyPosition >>> Setting Current Party Tile");
         playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_, false);
 
         //Looping through all of the children for the GameData object to get the created characters
@@ -1317,7 +1315,6 @@ public class CreateTileGrid : MonoBehaviour
             //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
             if (newTile.decorationModel != null)
             {
-                Debug.Log("This is where the error is");
                 GameObject decor = Instantiate(newTile.decorationModel.gameObject, tileMesh.transform.position, new Quaternion());
                 decor.transform.SetParent(tileMesh.transform);
                 decor.transform.eulerAngles = new Vector3(0, newTile.decorationRotation, 0);
@@ -1456,25 +1453,8 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
 
-        /*//Looping through each column in the tile grid
-        for(int c = 0; c < this.tileGrid.Count; ++c)
-        {
-            //Looping through each row in the tile grid
-            for(int r = 0; r < this.tileGrid[0].Count; ++r)
-            {
-                //If the current tile is the one we're looking for
-                if(this.tileGrid[c][r] == tileToSearchFor_)
-                {
-                    //We set the column and row coordinates and return them
-                    tileCoord = new TileColRow();
-                    tileCoord.col = c;
-                    tileCoord.row = r;
-                    return tileCoord;
-                }
-            }
-        }*/
-
         //Returning the empty tile coordinates
+        Debug.LogError("CreateTileGrid.GetTileCoords >>> NULL RETURN");
         return tileCoord;
     }
 }
