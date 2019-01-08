@@ -142,9 +142,9 @@ public class CreateTileGrid : MonoBehaviour
         else
         {
             //Instantiating the player group prefab
-            GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, new Vector3(0,0,0), new Quaternion());
+            /*GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, new Vector3(0,0,0), new Quaternion());
             
-            CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();
+            CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();*/
             
             //Loading the tile grid using the SaveLoadManager
             SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
@@ -172,7 +172,7 @@ public class CreateTileGrid : MonoBehaviour
             //Setting the selected group
             CharacterManager.globalReference.selectedGroup = PartyGroup.group1;
             
-            CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
+            //CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
         }
     }
 

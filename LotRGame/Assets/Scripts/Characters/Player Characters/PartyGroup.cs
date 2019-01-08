@@ -24,7 +24,7 @@ public class PartyGroup : MonoBehaviour
         this.charactersInParty = new List<Character>();
 
         //Setting the static reference for this group
-        if (PartyGroup.group1 != null)
+        if (PartyGroup.group1 != null && PartyGroup.group1 != this)
         {
             Destroy(this);
             return;

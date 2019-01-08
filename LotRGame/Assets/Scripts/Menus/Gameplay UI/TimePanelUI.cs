@@ -73,10 +73,15 @@ public class TimePanelUI : MonoBehaviour
 
             //Setting the time of day
             this.timeOfDay = this.startingTimeOfDay;
-
-            //Setting the rotation of the lights
-            this.SetLightPositions(this.timeOfDay * 1f);
         }
+    }
+
+
+    //Function called the first frame this object is awake
+    private void Start()
+    {
+        //Setting the rotation of the lights
+        this.SetLightPositions(this.timeOfDay * 1f);
     }
 
 

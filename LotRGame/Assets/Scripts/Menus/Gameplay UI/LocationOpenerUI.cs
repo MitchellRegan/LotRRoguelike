@@ -60,21 +60,6 @@ public class LocationOpenerUI : MonoBehaviour
             return;
         }
 
-        //Checking to see if any of the objects on this tile are map locations
-        /*foreach(GameObject obj in partyTile.objectsOnThisTile)
-        {
-            //If we find an object that is a map location
-            if(obj.GetComponent<MapLocation>())
-            {
-                //We enable the goToLocationButton so that the player can travel there
-                this.goToLocationButton.interactable = true;
-                //Setting the playerTileLocation reference
-                this.playerTileLocation = obj.GetComponent<MapLocation>();
-                //We also end this function so we don't keep looping for no reason
-                return;
-            }
-        }*/
-
         //If we made it past the loop, there were no map locations on the current tile, so we disable the goToLocationButton
         this.goToLocationButton.interactable = false;
         //Setting the playerTileLocation reference to null
