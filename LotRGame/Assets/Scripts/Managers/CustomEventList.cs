@@ -255,7 +255,7 @@ public class SaveDataEVT
 public class LoadDataEVT
 {
     //The num used to call this event from the event manager
-    public static byte eventNum = 245;
+    public static byte eventNum = 244;
 
     //Bool for if we're starting the load (true) or currently loading (false)
     public bool startingLoad = false;

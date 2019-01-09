@@ -63,6 +63,12 @@ public class LoadingBarUI : MonoBehaviour
     //Function called from the toggleLoadEVT delegate
     private void ToggleLoad(EVTData data_)
     {
+        //Making sure the load data is valid
+        if(data_ == null || data_.loadData == null)
+        {
+            return;
+        }
+
         //If the load is starting
         if(data_.loadData.startingLoad)
         {
