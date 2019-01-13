@@ -23,6 +23,9 @@ public class LoadingBarUI : MonoBehaviour
     private int totalUpdates = 0;
     private int currentUpdates = 0;
 
+    //The amount of time that we pause the coroutine after getting a load update
+    private float coroutinePauseTime = 1f;
+
     //Delegate for the function to activate and deactivate the loading bar
     private DelegateEvent<EVTData> toggleLoadEVT;
 
@@ -90,7 +93,7 @@ public class LoadingBarUI : MonoBehaviour
             this.loadingBar.value = (this.currentUpdates * 1f) / (this.totalUpdates * 1f);
 
             //If we've hit the last update, we disable the loading bar
-            if(this.currentUpdates >= this.totalUpdates)
+            if (this.currentUpdates >= this.totalUpdates)
             {
                 this.loadingUIObject.SetActive(false);
             }

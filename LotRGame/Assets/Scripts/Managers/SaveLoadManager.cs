@@ -389,6 +389,13 @@ public class SaveLoadManager : MonoBehaviour
     //Function called externally to load player progress. Called from CreateTileGrid.cs on Start
     public void LoadPlayerProgress(string folderName_)
     {
+        StartCoroutine(this.LoadProgressCoroutine(folderName_));
+    }
+
+
+    //Coroutine called from LoadPlayerProgress to load in the progress over time
+    IEnumerator LoadProgressCoroutine(string folderName_)
+    {
         //If the folder directory doesn't exist
         if (!Directory.Exists(Application.persistentDataPath + folderName_))
         {
@@ -401,7 +408,7 @@ public class SaveLoadManager : MonoBehaviour
             //We throw an exception because the file that we're supposed to load doesn't exist
             throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The PlayerProgress.txt file for this save does not exist!");
         }
-        
+
         //Sending out an event to turn on the loading bar
         EVTData loadEVTData = new EVTData();
         loadEVTData.loadData = new LoadDataEVT(true, 7);
@@ -410,29 +417,29 @@ public class SaveLoadManager : MonoBehaviour
 
         //Getting all of the string data from the TileGrid.txt file
         string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt");
-        
+
         //De-serializing the player progress from the text file
         PlayerProgress loadedProgress = JsonUtility.FromJson(fileData, typeof(PlayerProgress)) as PlayerProgress;
-        
+
         //Setting the GameData.cs variables
         GameData.globalReference.currentDifficulty = loadedProgress.difficulty;
         GameData.globalReference.allowNewUnlockables = loadedProgress.allowNewUnlockables;
         GameData.globalReference.saveFolder = loadedProgress.folderName;
         Random.state = loadedProgress.randState;
-        
+
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//1
 
         //Setting the TimePanelUI.cs variables
         TimePanelUI.globalReference.daysTaken = loadedProgress.daysTaken;
         TimePanelUI.globalReference.timeOfDay = loadedProgress.timeOfDay;
-        
+
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//2
 
         //Setting the LevelUpManager.cs variable
         LevelUpManager.globalReference.characterLevel = loadedProgress.characterLevel;
-        
+
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//3
 
@@ -442,16 +449,16 @@ public class SaveLoadManager : MonoBehaviour
             //Creating a new PartyGroup instance
             GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
             PartyGroup partyGroup1 = newPartyObj.GetComponent<PartyGroup>();
-            
+
             //Setting the party variables
             partyGroup1.combatDistance = loadedProgress.partyGroup1.combatDist;
-            
+
             //Looping through all of the character save data for this party group
             partyGroup1.charactersInParty = new List<Character>();
-            for(int c = 0; c < loadedProgress.partyGroup1.partyCharacters.Count; ++c)
+            for (int c = 0; c < loadedProgress.partyGroup1.partyCharacters.Count; ++c)
             {
                 //If the current character index isn't null, we make a new character instance
-                if(loadedProgress.partyGroup1.partyCharacters[c] != null)
+                if (loadedProgress.partyGroup1.partyCharacters[c] != null)
                 {
                     //Creating a new character instance
                     GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
@@ -459,7 +466,7 @@ public class SaveLoadManager : MonoBehaviour
 
                     //Adding the new character to our new party group
                     partyGroup1.AddCharacterToGroup(newCharacter);
-                    
+
                     //Passing the character save data to the character instance to set all of the component variables
                     newCharacter.LoadCharacterFromSave(loadedProgress.partyGroup1.partyCharacters[c]);
                 }
@@ -469,34 +476,34 @@ public class SaveLoadManager : MonoBehaviour
                     partyGroup1.charactersInParty.Add(null);
                 }
             }
-            
+
             //Updating the loading bar
             EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//4
 
             //Getting the tile grid location of the player group and getting the tile connections
             TileInfo partyLocation = CreateTileGrid.globalReference.tileGrid[loadedProgress.partyGroup1.tileCol][loadedProgress.partyGroup1.tileRow];
             partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
-            for(int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
+            for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
             {
                 int col = partyLocation.connectedTileCoordinates[coord].col;
                 int row = partyLocation.connectedTileCoordinates[coord].row;
                 partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
             }
             partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
-            
+
             //Setting the static party group reference
             PartyGroup.group1 = partyGroup1;
-            
+
             //Updating the loading bar
             EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//5
         }
 
         //Setting the dead characters from CharacterManager.cs
         CharacterManager.globalReference.deadCharacters = loadedProgress.deadCharacters;
-        
+
         //Setting the quest log for QuestTracker.cs
         QuestTracker.globalReference.LoadQuestLogData(loadedProgress.questLog);
-        
+
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//6
 
@@ -510,9 +517,11 @@ public class SaveLoadManager : MonoBehaviour
             //Telling the character manager to instantiate the prefab
             CharacterManager.globalReference.CreateEnemyEncounter(encounterPrefab, enemyTile);
         }
-        
+
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//7
+
+        yield return null;
     }
 }
 
