@@ -373,7 +373,7 @@ public class SaveLoadManager : MonoBehaviour
         this.CheckSaveDirectory(GameData.globalReference.saveFolder);
         
         //Creating a new PlayerProgress class that we'll save
-        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
+        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, CreateTileGrid.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
         //Serializing the current progress
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
@@ -426,6 +426,10 @@ public class SaveLoadManager : MonoBehaviour
         GameData.globalReference.allowNewUnlockables = loadedProgress.allowNewUnlockables;
         GameData.globalReference.saveFolder = loadedProgress.folderName;
         Random.state = loadedProgress.randState;
+
+        //Setting the CreateTileGrid.cs variables
+        CreateTileGrid.globalReference.cols = loadedProgress.gridCols;
+        CreateTileGrid.globalReference.rows = loadedProgress.gridRows;
 
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//1
@@ -535,6 +539,10 @@ public class PlayerProgress
     public string folderName = "";
     public Random.State randState;
 
+    //Variables from CreateTileGrid.cs
+    public int gridCols = 0;
+    public int gridRows = 0;
+
     //Variables from TimePanelUI.cs
     public int daysTaken = 0;
     public int timeOfDay = 0;
@@ -556,13 +564,17 @@ public class PlayerProgress
 
 
     //Constructor function for this class
-    public PlayerProgress(GameData gameData_, TimePanelUI timePanel_, LevelUpManager levelUpManager_, CharacterManager charManager_, QuestTracker questTracker_)
+    public PlayerProgress(GameData gameData_, CreateTileGrid tileGrid_, TimePanelUI timePanel_, LevelUpManager levelUpManager_, CharacterManager charManager_, QuestTracker questTracker_)
     {
         //Setting the GameData.cs variables
         this.difficulty = gameData_.currentDifficulty;
         this.allowNewUnlockables = gameData_.allowNewUnlockables;
         this.folderName = gameData_.saveFolder;
         this.randState = Random.state;
+
+        //Setting the CreateTileGrid.cs variables
+        this.gridCols = tileGrid_.cols;
+        this.gridRows = tileGrid_.rows;
 
         //Setting the TimePanelUI.cs variables
         this.daysTaken = timePanel_.daysTaken;

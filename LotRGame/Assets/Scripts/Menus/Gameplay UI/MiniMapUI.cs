@@ -62,7 +62,6 @@ public class MiniMapUI : MonoBehaviour
             this.ourSprite.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mapTexture.width * this.mapShiftOnMove);
 
             //Setting the starting position of the image
-
         }
     }
 	
