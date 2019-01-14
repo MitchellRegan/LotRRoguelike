@@ -24,13 +24,20 @@ public class PartyGroup : MonoBehaviour
         this.charactersInParty = new List<Character>();
 
         //Setting the static reference for this group
-        if (PartyGroup.group1 != null)
+        if (PartyGroup.group1 != null && PartyGroup.group1 != this)
         {
             Destroy(this);
+            return;
         }
         else
         {
             PartyGroup.group1 = this;
+        }
+
+        //If the character manager has already been initialized, we set this party group as the selected group
+        if(CharacterManager.globalReference != null)
+        {
+            CharacterManager.globalReference.selectedGroup = this;
         }
     }
 
@@ -133,14 +140,18 @@ public class PartySaveData
     //The list of save data for each character in this party
     public List<CharacterSaveData> partyCharacters;
     //The tile that this party is currently on
-    public TileInfo tileLocation;
+    public int tileCol = -1;
+    public int tileRow = -1;
 
 
     //Constructor function for this class
     public PartySaveData(PartyGroup groupToSave_)
     {
         this.combatDist = groupToSave_.combatDistance;
-        this.tileLocation = groupToSave_.GetComponent<WASDOverworldMovement>().currentTile;
+
+        CreateTileGrid.TileColRow tileLocation = CreateTileGrid.globalReference.GetTileCoords(groupToSave_.GetComponent<WASDOverworldMovement>().currentTile);
+        this.tileCol = tileLocation.col;
+        this.tileRow = tileLocation.row;
 
         //Looping through all of the characters in the given party and getting their save data
         this.partyCharacters = new List<global::CharacterSaveData>();

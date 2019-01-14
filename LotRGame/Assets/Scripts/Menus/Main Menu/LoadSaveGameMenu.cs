@@ -33,6 +33,9 @@ public class LoadSaveGameMenu : MonoBehaviour
     //Text reference for the confirmation panel to display the deleted folder name
     public Text promptFileNameText;
 
+    //The game object that holds this canvas to enable/disable
+    public GameObject menuCanvas;
+
 
 
 	//Function called when this object is created
@@ -52,6 +55,8 @@ public class LoadSaveGameMenu : MonoBehaviour
         this.loadSavePanels = new List<LoadSavePanel>();
         //Adding our original panel to our list so it's always index 0
         this.loadSavePanels.Add(this.originalPanel);
+
+        this.menuCanvas.SetActive(false);
     }
 
 

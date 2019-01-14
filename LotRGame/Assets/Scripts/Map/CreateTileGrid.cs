@@ -141,6 +141,11 @@ public class CreateTileGrid : MonoBehaviour
         //If we're loading a previous game
         else
         {
+            //Instantiating the player group prefab
+            /*GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, new Vector3(0,0,0), new Quaternion());
+            
+            CharacterManager.globalReference.selectedGroup = playerParty1.GetComponent<PartyGroup>();*/
+            
             //Loading the tile grid using the SaveLoadManager
             SaveLoadManager.globalReference.LoadTileGrid(GameData.globalReference.saveFolder);
         }
@@ -166,9 +171,8 @@ public class CreateTileGrid : MonoBehaviour
 
             //Setting the selected group
             CharacterManager.globalReference.selectedGroup = PartyGroup.group1;
-
-            //this.GenerateVisibleLand2(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile);
-            CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
+            
+            //CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().SetCurrentTile(CharacterManager.globalReference.selectedGroup.GetComponent<WASDOverworldMovement>().currentTile, false);
         }
     }
 
@@ -973,7 +977,6 @@ public class CreateTileGrid : MonoBehaviour
         //Instantiating the player group at the starting tile's location
         GameObject playerParty1 = GameObject.Instantiate(this.partyGroup1Prefab, startTile_.tilePosition, new Quaternion());
 
-        //playerParty1.GetComponent<Movement>().SetCurrentTile(startTile_);
         playerParty1.GetComponent<WASDOverworldMovement>().SetCurrentTile(startTile_, false);
 
         //Looping through all of the children for the GameData object to get the created characters
@@ -1312,7 +1315,7 @@ public class CreateTileGrid : MonoBehaviour
             //If this tile has a decoration model, an instance of it is created and parented to this tile's mesh object
             if (newTile.decorationModel != null)
             {
-                GameObject decor = Instantiate(newTile.decorationModel, tileMesh.transform.position, new Quaternion());
+                GameObject decor = Instantiate(newTile.decorationModel.gameObject, tileMesh.transform.position, new Quaternion());
                 decor.transform.SetParent(tileMesh.transform);
                 decor.transform.eulerAngles = new Vector3(0, newTile.decorationRotation, 0);
             }
@@ -1450,25 +1453,8 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
 
-        /*//Looping through each column in the tile grid
-        for(int c = 0; c < this.tileGrid.Count; ++c)
-        {
-            //Looping through each row in the tile grid
-            for(int r = 0; r < this.tileGrid[0].Count; ++r)
-            {
-                //If the current tile is the one we're looking for
-                if(this.tileGrid[c][r] == tileToSearchFor_)
-                {
-                    //We set the column and row coordinates and return them
-                    tileCoord = new TileColRow();
-                    tileCoord.col = c;
-                    tileCoord.row = r;
-                    return tileCoord;
-                }
-            }
-        }*/
-
         //Returning the empty tile coordinates
+        Debug.LogError("CreateTileGrid.GetTileCoords >>> NULL RETURN");
         return tileCoord;
     }
 }

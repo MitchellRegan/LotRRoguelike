@@ -205,7 +205,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                                 //Move as many stacks from this stack to the hit button's stack as possible
                                 while(thisButtonItem.transform.childCount > 0)
                                 {
-                                    Transform itemChild = thisButtonItem.transform.FindChild(thisButtonItem.name);
+                                    Transform itemChild = thisButtonItem.transform.Find(thisButtonItem.name);
 
                                     //If for some reason there isn't an available child of the same type but there are still children, we break the loop
                                     if(itemChild == null)
@@ -936,7 +936,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                         {
                             thisButtonItem.currentStackSize -= 1;
                             //Finding the child of this button's item and destroying the first instance
-                            Transform childItem = thisButtonItem.transform.FindChild(thisButtonItem.name);
+                            Transform childItem = thisButtonItem.transform.Find(thisButtonItem.name);
                             if (childItem != null)
                             {
                                 Destroy(childItem.gameObject);
@@ -1075,7 +1075,7 @@ public class InventoryButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                     {
                         thisButtonItem.currentStackSize -= 1;
                         //Finding the child of this button's item and destroying the first instance
-                        Transform childItem = thisButtonItem.transform.FindChild(thisButtonItem.name);
+                        Transform childItem = thisButtonItem.transform.Find(thisButtonItem.name);
                         if (childItem != null)
                         {
                             Destroy(childItem.gameObject);

@@ -47,6 +47,7 @@ public class Movement : MonoBehaviour
         //If this movement script is attached to a player party group, the tile grid needs to update the visible tiles
         if (this.GetComponent<PartyGroup>())
         {
+            Debug.Log("Movement.SetCurrentTile >>> Generating Visible Land");
             CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
         }
     }

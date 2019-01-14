@@ -82,9 +82,9 @@ public class Character : MonoBehaviour
         //Setting all of the equipped items in Inventory.cs
         if (saveData_.helmObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.helmObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.helmObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+            
             itemObj.transform.SetParent(this.transform);
             this.charInventory.helm = itemObj.GetComponent<Armor>();
         }
@@ -94,9 +94,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.chestObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.chestObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.chestObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.chestPiece = itemObj.GetComponent<Armor>();
         }
@@ -106,9 +106,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.legObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.legObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.legObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.leggings = itemObj.GetComponent<Armor>();
         }
@@ -118,9 +118,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.shoeObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.shoeObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.shoeObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.shoes = itemObj.GetComponent<Armor>();
         }
@@ -130,9 +130,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.gloveObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.gloveObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.gloveObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.gloves = itemObj.GetComponent<Armor>();
         }
@@ -142,9 +142,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.cloakObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.cloakObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.cloakObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.cloak = itemObj.GetComponent<Armor>();
         }
@@ -154,9 +154,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.necklaceObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.necklaceObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.necklaceObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.necklace = itemObj.GetComponent<Armor>();
         }
@@ -166,9 +166,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.ringObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.ringObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.ringObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.ring = itemObj.GetComponent<Armor>();
         }
@@ -178,9 +178,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.leftHandObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.leftHandObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.leftHandObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.leftHand = itemObj.GetComponent<Weapon>();
         }
@@ -190,9 +190,9 @@ public class Character : MonoBehaviour
         }
         if (saveData_.rightHandObj != "")
         {
-            GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.rightHandObj, typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-            itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+            PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.rightHandObj, typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+
             itemObj.transform.SetParent(this.transform);
             this.charInventory.rightHand = itemObj.GetComponent<Weapon>();
         }
@@ -213,9 +213,9 @@ public class Character : MonoBehaviour
             //If the current item isn't empty, we add it's item component to our inventory
             else
             {
-                GameObjectSerializationWrapper itemObjw = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-                GameObject itemObj = GameObject.Instantiate(itemObjw.objToSave);
-                itemObj.GetComponent<Item>().itemPrefabRoot = itemObjw.objToSave;
+                PrefabIDTagData prefabID = JsonUtility.FromJson(saveData_.inventorySlots[i], typeof(PrefabIDTagData)) as PrefabIDTagData;
+                GameObject itemObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(prefabID.objType, prefabID.iDNumber));
+                
                 itemObj.transform.SetParent(this.transform);
                 this.charInventory.itemSlots.Add(itemObj.GetComponent<Item>());
             }
@@ -225,19 +225,20 @@ public class Character : MonoBehaviour
             //Making sure the item in this item stack matches the same item in the 
             //Getting the stack data
             InventoryItemStackData stackData = JsonUtility.FromJson(saveData_.stackedItems[s], typeof(InventoryItemStackData)) as InventoryItemStackData;
+            GameObject stackedObj = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(stackData.objType, stackData.iDNumber));
 
             //Making sure the stacked object is actually an item
-            if (stackData.stackedItem.GetComponent<Item>())
+            if (stackedObj.GetComponent<Item>())
             {
                 //Making sure the item in this stack matches the item in the designated inventory index
-                if (stackData.itemStackIndex < this.charInventory.itemSlots.Count && this.charInventory.itemSlots[stackData.itemStackIndex].itemNameID == stackData.stackedItem.GetComponent<Item>().itemNameID)
+                if (stackData.itemStackIndex < this.charInventory.itemSlots.Count && 
+                    this.charInventory.itemSlots[stackData.itemStackIndex].GetComponent<IDTag>().numberID == stackData.iDNumber)
                 {
                     //Looping through every item that's in this stack
                     for (int si = 0; si < stackData.numberOfItemsInStack; ++si)
                     {
                         //Creating a new instance of the stacked item
-                        GameObject stackedItem = GameObject.Instantiate(stackData.stackedItem) as GameObject;
-                        stackedItem.GetComponent<Item>().itemPrefabRoot = stackData.stackedItem;
+                        GameObject stackedItem = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(stackData.objType, stackData.iDNumber));
                         //Parenting the stacked item to the one that's in the inventory slot
                         stackedItem.transform.SetParent(this.charInventory.itemSlots[stackData.itemStackIndex].transform);
                         //Increasing the stack size count in the inventory slot
@@ -299,8 +300,9 @@ public class Character : MonoBehaviour
         this.charActionList.defaultActions = new List<Action>();
         for(int da = 0; da < saveData_.defaultActions.Count; ++da)
         {
-            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            this.charActionList.defaultActions.Add(objWrapper.objToSave.GetComponent<Action>());
+            PrefabIDTagData actionData = JsonUtility.FromJson(saveData_.defaultActions[da], typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject actionObj = IDManager.globalReference.GetPrefabFromID(actionData.objType, actionData.iDNumber);
+            this.charActionList.defaultActions.Add(actionObj.GetComponent<Action>());
         }
         this.charActionList.rechargingSpells = new List<SpellRecharge>();
         for (int rs = 0; rs < saveData_.rechargingSpells.Count; ++rs)
@@ -315,8 +317,9 @@ public class Character : MonoBehaviour
         this.charPerks.allPerks = new List<Perk>();
         for(int p = 0; p < saveData_.perkNames.Count; ++p)
         {
-            GameObjectSerializationWrapper objWrapper = JsonUtility.FromJson(saveData_.perkNames[p], typeof(GameObjectSerializationWrapper)) as GameObjectSerializationWrapper;
-            this.charPerks.allPerks.Add(objWrapper.objToSave.GetComponent<Perk>());
+            PrefabIDTagData perkTagData = JsonUtility.FromJson(saveData_.perkNames[p], typeof(PrefabIDTagData)) as PrefabIDTagData;
+            GameObject loadedPerk = GameObject.Instantiate(IDManager.globalReference.GetPrefabFromID(perkTagData.objType, perkTagData.iDNumber));
+            this.charPerks.allPerks.Add(loadedPerk.GetComponent<Perk>());
         }
     }
 }
@@ -484,10 +487,8 @@ public class CharacterSaveData
         this.defaultActions = new List<string>();
         for(int da = 0; da < characterToSave_.charActionList.defaultActions.Count; ++da)
         {
-            //Finding the prefab game object for this action
-            GameObject actionPrefab = UnityEditor.PrefabUtility.FindPrefabRoot(characterToSave_.charActionList.defaultActions[da].gameObject);
-            GameObjectSerializationWrapper objWrapper = new GameObjectSerializationWrapper(actionPrefab);
-            this.defaultActions.Add(JsonUtility.ToJson(objWrapper));
+            PrefabIDTagData actionIDData = new PrefabIDTagData(characterToSave_.charActionList.defaultActions[da].GetComponent<IDTag>());
+            this.defaultActions.Add(JsonUtility.ToJson(actionIDData));
         }
 
         this.rechargingSpells = new List<string>();
@@ -502,54 +503,44 @@ public class CharacterSaveData
         //Setting all of the equipped object references
         if (characterToSave_.charInventory.helm != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.helm.GetComponent<Item>().itemPrefabRoot;
-            this.helmObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.helmObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.helm.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.chestPiece != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.chestPiece.GetComponent<Item>().itemPrefabRoot;
-            this.chestObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.chestObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.chestPiece.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.leggings != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.leggings.GetComponent<Item>().itemPrefabRoot;
-            this.legObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.legObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.leggings.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.gloves != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.gloves.GetComponent<Item>().itemPrefabRoot;
-            this.gloveObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.gloveObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.gloves.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.shoes != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.shoes.GetComponent<Item>().itemPrefabRoot;
-            this.shoeObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.shoeObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.shoes.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.cloak != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.cloak.GetComponent<Item>().itemPrefabRoot;
-            this.cloakObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.cloakObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.cloak.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.necklace != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.necklace.GetComponent<Item>().itemPrefabRoot;
-            this.necklaceObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.necklaceObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.necklace.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.ring != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.ring.GetComponent<Item>().itemPrefabRoot;
-            this.ringObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.ringObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.ring.GetComponent<IDTag>()));
         }
 
         if (characterToSave_.charInventory.leftHand != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.leftHand.GetComponent<Item>().itemPrefabRoot;
-            this.leftHandObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.leftHandObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.leftHand.GetComponent<IDTag>()));
         }
         if (characterToSave_.charInventory.rightHand != null)
         {
-            GameObject itemPrefab = characterToSave_.charInventory.rightHand.GetComponent<Item>().itemPrefabRoot;
-            this.rightHandObj = JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab));
+            this.rightHandObj = JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charInventory.rightHand.GetComponent<IDTag>()));
         }
 
         //Looping through all of the character inventory items to save their object references
@@ -560,26 +551,17 @@ public class CharacterSaveData
             //Making sure the current inventory object isn't null
             if (characterToSave_.charInventory.itemSlots[i] != null)
             {
-                GameObject itemPrefab = null;
-                //If the prefab object stored in the item is null, we try to find the prefab root
-                if (characterToSave_.charInventory.itemSlots[i].itemPrefabRoot == null)
-                {
-                    //We throw an exception because the object that we're supposed to save doesn't exist
-                    //throw new System.ArgumentException("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
-                    Debug.Log("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
-                }
-                //If the prefab root object stored in the item is not null, we set it as the itemPrefab to save
-                else
-                {
-                    itemPrefab = characterToSave_.charInventory.itemSlots[i].itemPrefabRoot;
-                }
-                this.inventorySlots.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(itemPrefab)));
+                //Reference to the item's IDTag component
+                IDTag itemTag = characterToSave_.charInventory.itemSlots[i].GetComponent<IDTag>();
+
+                //Saving the IDTag info
+                this.inventorySlots.Add(JsonUtility.ToJson(new PrefabIDTagData(itemTag)));
 
                 //If the current item is a stack
                 if(characterToSave_.charInventory.itemSlots[i].currentStackSize > 1)
                 {
                     //Creating a new InventoryItemStackData class to store the item stack
-                    InventoryItemStackData stack = new InventoryItemStackData(i, itemPrefab, characterToSave_.charInventory.itemSlots[i].currentStackSize);
+                    InventoryItemStackData stack = new InventoryItemStackData(i, itemTag, characterToSave_.charInventory.itemSlots[i].currentStackSize);
                     //Adding a serialized version of the stack data to our list of stacked items
                     this.stackedItems.Add(JsonUtility.ToJson(stack));
                 }
@@ -598,21 +580,8 @@ public class CharacterSaveData
             //Making sure the current perk isn't null
             if(characterToSave_.charPerks.allPerks[p] != null)
             {
-                GameObject perkPrefab = null;
-
-                //If the prefab object for this perk is null, we throw an error
-                if(characterToSave_.charPerks.allPerks[p].perkPrefabRoot == null)
-                {
-                    //We throw an exception because the object that we're supposed to save doesn't exist
-                    //throw new System.ArgumentException("CharacterSaveData constructor, The item prefab root for " + characterToSave_.charInventory.itemSlots[i].itemNameID + " doesn't exist! Find out where it came from!");
-                    Debug.Log("CharacterSaveData constructor, The perk prefab root for " + characterToSave_.charPerks.allPerks[p].perkNameID + " doesn't exist! Find out where it came from!");
-                }
-                //If the prefab root object for the perk is not null, we set it as the perkPrefab to save
-                else
-                {
-                    perkPrefab = characterToSave_.charPerks.allPerks[p].perkPrefabRoot;
-                }
-                this.perkNames.Add(JsonUtility.ToJson(new GameObjectSerializationWrapper(perkPrefab)));
+                //Saving this perk's ID tag info
+                this.perkNames.Add(JsonUtility.ToJson(new PrefabIDTagData(characterToSave_.charPerks.allPerks[p].GetComponent<IDTag>())));
             }
         }
     }
@@ -633,22 +602,44 @@ public class GameObjectSerializationWrapper
     }
 }
 
-//Class used in Character.cs to store objects for serialization and 
+
+//Class used in Character.cs and SaveLoadManager.cs to store IDTag data
+[System.Serializable]
+public class PrefabIDTagData
+{
+    //The enum for what type of object this is
+    public IDTag.ObjectType objType;
+    //The int for the object's ID number
+    public int iDNumber;
+
+    //Constructor for this class
+    public PrefabIDTagData(IDTag objIDTag_)
+    {
+        this.objType = objIDTag_.objType;
+        this.iDNumber = objIDTag_.numberID;
+    }
+}
+
+
+//Class used in Character.cs to store objects for serialization 
 [System.Serializable]
 public class InventoryItemStackData
 {
     //Index where this item is stored in a character's inventory
     public int itemStackIndex = 0;
-    //The object that's being stacked in this inventory slot
-    public GameObject stackedItem;
+    //The enum for what type of object this is
+    public IDTag.ObjectType objType;
+    //The int for the object's ID number
+    public int iDNumber;
     //The number of items in this stack
     public uint numberOfItemsInStack = 1;
 
     //Constructor for this class
-    public InventoryItemStackData(int inventoryIndex_, GameObject stackedItem_, uint stackSize_)
+    public InventoryItemStackData(int inventoryIndex_, IDTag objIDTag_, uint stackSize_)
     {
         this.itemStackIndex = inventoryIndex_;
-        this.stackedItem = stackedItem_;
+        this.objType = objIDTag_.objType;
+        this.iDNumber = objIDTag_.numberID;
         this.numberOfItemsInStack = stackSize_ - 1; //Removing one because the first one is already saved in the index position
     }
 }
