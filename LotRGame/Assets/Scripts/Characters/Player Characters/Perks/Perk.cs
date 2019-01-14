@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+[RequireComponent(typeof(IDTag))]
 public class Perk : MonoBehaviour
 {
     //The prefab object reference that this perk is an instance of

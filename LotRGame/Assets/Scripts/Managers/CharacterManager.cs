@@ -82,6 +82,17 @@ public class CharacterManager : MonoBehaviour
     }
 
 
+    //Function called every frame
+    private void Update()
+    {
+        //If the selected party group is null, we set the reference to group 1 automatically
+        if(this.selectedGroup == null)
+        {
+            this.selectedGroup = PartyGroup.group1;
+        }
+    }
+
+
     //Function used to get the player character at the given index
     public Character GetCharacterAtIndex(int characterIndex_)
     {

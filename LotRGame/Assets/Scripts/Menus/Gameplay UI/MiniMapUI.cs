@@ -54,8 +54,7 @@ public class MiniMapUI : MonoBehaviour
             mapTexture.LoadImage(mapFileData);
 
             //Creating a new sprite from the map texture to set as our object's sprite
-            Sprite mapSprite = new Sprite();
-            mapSprite = Sprite.Create(mapTexture, new Rect(0, 0, mapTexture.width, mapTexture.height), new Vector2(0, 0));
+            Sprite mapSprite = Sprite.Create(mapTexture, new Rect(0, 0, mapTexture.width, mapTexture.height), new Vector2(0, 0));
             this.ourSprite.sprite = mapSprite;
 
             //Resizing our sprite size
@@ -63,7 +62,6 @@ public class MiniMapUI : MonoBehaviour
             this.ourSprite.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mapTexture.width * this.mapShiftOnMove);
 
             //Setting the starting position of the image
-
         }
     }
 	
