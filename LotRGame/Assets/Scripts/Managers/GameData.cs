@@ -34,6 +34,7 @@ public class GameData : MonoBehaviour
     public bool allowNewUnlockables = true;
 
     //The name of the current game folder where our save directory is
+    // Current path: C:/Users/Me/AppData/LocalLow/DefaultCompany/LotRGame/SaveFiles
     [HideInInspector]
     public string saveFolder = "";
 
