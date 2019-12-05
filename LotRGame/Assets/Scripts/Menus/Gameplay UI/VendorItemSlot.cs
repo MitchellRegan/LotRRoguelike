@@ -26,7 +26,6 @@ public class VendorItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     public int value = 0;
 
     //Enum that determines if this button is for buying a vendor item or selling a character item
-    public enum VendorButtonType { Buy, Sell };
     public VendorButtonType type = VendorButtonType.Buy;
 
 

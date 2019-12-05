@@ -44,7 +44,7 @@ public class MapOverworldUI : MonoBehaviour
 	private void Update ()
     {
         //Finding the party group's row and col coords in the overworld
-        CreateTileGrid.TileColRow partyColRow = CreateTileGrid.globalReference.GetTileCoords(this.partyMove.currentTile);
+        TileColRow partyColRow = CreateTileGrid.globalReference.GetTileCoords(this.partyMove.currentTile);
 
         if(partyColRow != null)
         {

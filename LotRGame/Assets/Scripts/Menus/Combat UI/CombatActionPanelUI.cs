@@ -18,7 +18,7 @@ public class CombatActionPanelUI : MonoBehaviour
     public Color fullRoundColor;
 
     //The current type of action that we're displaying
-    public Action.ActionType actionTypeShown = Action.ActionType.Major;
+    public ActionType actionTypeShown = ActionType.Major;
 
     //The list of action buttons that 
     public List<ActionButton> actionButtons;
@@ -129,27 +129,27 @@ public class CombatActionPanelUI : MonoBehaviour
             case 0:
                 this.UpdateActionButtons(actingCharActions.majorActions);
                 this.backgroundImage.color = this.standardColor;
-                this.actionTypeShown = Action.ActionType.Major;
+                this.actionTypeShown = ActionType.Major;
                 break;
             case 1:
                 this.UpdateActionButtons(actingCharActions.minorActions);
                 this.backgroundImage.color = this.secondaryColor;
-                this.actionTypeShown = Action.ActionType.Minor;
+                this.actionTypeShown = ActionType.Minor;
                 break;
             case 2:
                 this.UpdateActionButtons(actingCharActions.fastActions);
                 this.backgroundImage.color = this.quickColor;
-                this.actionTypeShown = Action.ActionType.Fast;
+                this.actionTypeShown = ActionType.Fast;
                 break;
             case 3:
                 this.UpdateActionButtons(actingCharActions.massiveActions);
                 this.backgroundImage.color = this.fullRoundColor;
-                this.actionTypeShown = Action.ActionType.Massive;
+                this.actionTypeShown = ActionType.Massive;
                 break;
             default:
                 this.UpdateActionButtons(actingCharActions.majorActions);
                 this.backgroundImage.color = this.standardColor;
-                this.actionTypeShown = Action.ActionType.Major;
+                this.actionTypeShown = ActionType.Major;
                 break;
         }
     }
@@ -223,20 +223,20 @@ public class CombatActionPanelUI : MonoBehaviour
         int actionRange = 0;
         switch(this.actionTypeShown)
         {
-            case Action.ActionType.Major:
+            case ActionType.Major:
                 actionRange = actingCharacter.charActionList.majorActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.majorActions[actionIndex_].gameObject);
                 //this.selectedAction = actingCharacter.charActionList.standardActions[actionIndex_];
                 break;
-            case Action.ActionType.Minor:
+            case ActionType.Minor:
                 actionRange = actingCharacter.charActionList.minorActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.minorActions[actionIndex_].gameObject);
                 break;
-            case Action.ActionType.Fast:
+            case ActionType.Fast:
                 actionRange = actingCharacter.charActionList.fastActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.fastActions[actionIndex_].gameObject);
                 break;
-            case Action.ActionType.Massive:
+            case ActionType.Massive:
                 actionRange = actingCharacter.charActionList.massiveActions[actionIndex_].range;
                 actionObj = GameObject.Instantiate(actingCharacter.charActionList.massiveActions[actionIndex_].gameObject);
                 break;
@@ -346,16 +346,16 @@ public class CombatActionPanelUI : MonoBehaviour
                 //Setting the type of touch type it is
                 switch(atkDetails.touchType)
                 {
-                    case AttackAction.attackTouchType.Regular:
+                    case AttackTouchType.Regular:
                         this.selectedPanelDetails.touchTypeText.text = "";
                         break;
-                    case AttackAction.attackTouchType.IgnoreEvasion:
+                    case AttackTouchType.IgnoreEvasion:
                         this.selectedPanelDetails.touchTypeText.text = "Ignores Evasion";
                         break;
-                    case AttackAction.attackTouchType.IgnoreArmor:
+                    case AttackTouchType.IgnoreArmor:
                         this.selectedPanelDetails.touchTypeText.text = "Ignores Armor";
                         break;
-                    case AttackAction.attackTouchType.IgnoreEvasionAndArmor:
+                    case AttackTouchType.IgnoreEvasionAndArmor:
                         this.selectedPanelDetails.touchTypeText.text = "Ignores Evasion & Armor";
                         break;
                 }
@@ -405,43 +405,43 @@ public class CombatActionPanelUI : MonoBehaviour
                     //Finding out which type of damage it is
                     switch(atkDetails.damageDealt[a].type)
                     {
-                        case CombatManager.DamageType.Slashing:
+                        case DamageType.Slashing:
                             this.selectedPanelDetails.damageText.text += " Slashing";
                             break;
-                        case CombatManager.DamageType.Stabbing:
+                        case DamageType.Stabbing:
                             this.selectedPanelDetails.damageText.text += " Stabbing";
                             break;
-                        case CombatManager.DamageType.Crushing:
+                        case DamageType.Crushing:
                             this.selectedPanelDetails.damageText.text += " Crushing";
                             break;
-                        case CombatManager.DamageType.Arcane:
+                        case DamageType.Arcane:
                             this.selectedPanelDetails.damageText.text += " Arcane";
                             break;
-                        case CombatManager.DamageType.Fire:
+                        case DamageType.Fire:
                             this.selectedPanelDetails.damageText.text += " Fire";
                             break;
-                        case CombatManager.DamageType.Water:
+                        case DamageType.Water:
                             this.selectedPanelDetails.damageText.text += " Water";
                             break;
-                        case CombatManager.DamageType.Electric:
+                        case DamageType.Electric:
                             this.selectedPanelDetails.damageText.text += " Electric";
                             break;
-                        case CombatManager.DamageType.Wind:
+                        case DamageType.Wind:
                             this.selectedPanelDetails.damageText.text += " Wind";
                             break;
-                        case CombatManager.DamageType.Holy:
+                        case DamageType.Holy:
                             this.selectedPanelDetails.damageText.text += " Holy";
                             break;
-                        case CombatManager.DamageType.Dark:
+                        case DamageType.Dark:
                             this.selectedPanelDetails.damageText.text += " Dark";
                             break;
-                        case CombatManager.DamageType.Pure:
+                        case DamageType.Pure:
                             this.selectedPanelDetails.damageText.text += " Pure";
                             break;
-                        case CombatManager.DamageType.Nature:
+                        case DamageType.Nature:
                             this.selectedPanelDetails.damageText.text += " Nature";
                             break;
-                        case CombatManager.DamageType.Bleed:
+                        case DamageType.Bleed:
                             this.selectedPanelDetails.damageText.text += " Bleed";
                             break;
                     }
@@ -488,18 +488,18 @@ public class CombatActionPanelUI : MonoBehaviour
         //The actions are disabled based on what type was used
         switch(this.selectedAction.type)
         {
-            case Action.ActionType.Major:
+            case ActionType.Major:
                 this.standardActButton.interactable = false;
                 this.fullRoundActButton.interactable = false;
                 break;
-            case Action.ActionType.Minor:
+            case ActionType.Minor:
                 this.secondaryActButton.interactable = false;
                 this.fullRoundActButton.interactable = false;
                 break;
-            case Action.ActionType.Fast:
+            case ActionType.Fast:
                 this.quickActButton.interactable = false;
                 break;
-            case Action.ActionType.Massive:
+            case ActionType.Massive:
                 this.fullRoundActButton.interactable = false;
                 this.standardActButton.interactable = false;
                 this.secondaryActButton.interactable = false;
@@ -520,50 +520,4 @@ public class CombatActionPanelUI : MonoBehaviour
         //Clearing the action details panel
         this.UpdateActionDetailsPanel();
     }
-}
-
-
-[System.Serializable]
-public class ActionButton
-{
-    //The name text for the action
-    public Text nameText;
-    //The description for the action
-    public Text descriptionText;
-    //The button component that can be enabled/disabled
-    public Button buttonComponent;
-}
-
-
-[System.Serializable]
-public class SelectedActionPanel
-{
-    //The name of the action
-    public Text nameText;
-    //The description for the action
-    public Text descriptionText;
-    //The range of the action
-    public Text rangeText;
-
-    [Space(8)]
-
-    //The parent object of the damage display
-    public GameObject attackDetails;
-
-    //The crit range of the attack
-    public Text critText;
-    //The crit multiplier of the attack
-    public Text multiplierText;
-
-    //The touch type of this attack
-    public Text touchTypeText;
-
-    //The accuracy of this attack
-    public Text accuracyText;
-
-    //The damage of the attack
-    public Text damageText;
-
-    //Effect on hit
-    public Text effectNameText;
 }

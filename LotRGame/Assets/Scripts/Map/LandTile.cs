@@ -42,7 +42,7 @@ public class LandTile : MonoBehaviour
     private void OnMouseEnter()
     {
         //If the selection mode is on anything but "None", this tile is hilighted
-        if (TileSelectionMode.GlobalReference.currentSelectionMode != TileSelectionMode.SelectionMode.None)
+        if (TileSelectionMode.GlobalReference.currentSelectionMode != SelectionMode.None)
         {
             this.HilightThisTile(true);
         }
@@ -53,14 +53,14 @@ public class LandTile : MonoBehaviour
     private void OnMouseOver()
     {
         //If the selection mode is switched to "None", this tile is no longer hilighted
-        if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.None)
+        if(TileSelectionMode.GlobalReference.currentSelectionMode == SelectionMode.None)
         {
             this.HilightThisTile(false);
             return;
         }
 
         //If the player left clicks over this tile and the selection mode is anything but "None", it becomes the one that's selected
-        if(Input.GetMouseButtonDown(0) && TileSelectionMode.GlobalReference.currentSelectionMode != TileSelectionMode.SelectionMode.None)
+        if(Input.GetMouseButtonDown(0) && TileSelectionMode.GlobalReference.currentSelectionMode != SelectionMode.None)
         {
             //If the left Alt button isn't held down (for rotating the camera)
             if (!Input.GetKey(KeyCode.LeftAlt))
@@ -74,7 +74,7 @@ public class LandTile : MonoBehaviour
                 LandTile.selectedTile = this;
 
                 //If the selection mode is on "Movement" then the selected characters are told to move to this tile
-                if(TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.Movement)
+                if(TileSelectionMode.GlobalReference.currentSelectionMode == SelectionMode.Movement)
                 {
                     //Making sure the clicked tile isn't the one that the group is already on
                     if(CharacterManager.globalReference.selectedGroup.GetComponent<Movement>().currentTile != LandTile.selectedTile.tileReference)
@@ -129,7 +129,7 @@ public class LandTile : MonoBehaviour
         }
         
         //If the player right clicks or if the selection mode goes back to "None", the selected tile is cleared
-        if (Input.GetMouseButtonDown(1) || TileSelectionMode.GlobalReference.currentSelectionMode == TileSelectionMode.SelectionMode.None)
+        if (Input.GetMouseButtonDown(1) || TileSelectionMode.GlobalReference.currentSelectionMode == SelectionMode.None)
         {
             //If this tile was the one selected, it becomes un-hilighted
             this.HilightThisTile(false);

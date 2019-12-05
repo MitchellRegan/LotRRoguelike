@@ -5,14 +5,6 @@ using UnityEngine;
 public class WeaponAction : AttackAction
 {
     //Enum for the hand that this weapon attack requires the used weapon to be in
-    public enum WeaponHand
-    {
-        MainHand,//Required weapon needs to be in the main hand
-        OffHand,//Required weapon needs to be in the off hand
-        OneHand,//Required weapon can be in the main OR off hand as long as it's 1-handed
-        TwoHand,//Required weapon needs to be 2-handed
-        DualWeild//Required weapons need to be in both hands
-    };
     public WeaponHand requiredWeaponHand = WeaponHand.OneHand;
 
     //The number of times this attack hits
@@ -65,7 +57,7 @@ public class WeaponAction : AttackAction
                 {
                     //Making sure the main hand weapon isn't holding a 2-handed weapon
                     if(charToCheck_.charInventory.rightHand == null || 
-                        charToCheck_.charInventory.rightHand.size == Weapon.WeaponSize.OneHand)
+                        charToCheck_.charInventory.rightHand.size == WeaponSize.OneHand)
                     {
                         canUse = true;
                     }
@@ -74,7 +66,7 @@ public class WeaponAction : AttackAction
 
             case WeaponHand.OneHand:
                 //Checking the character's main hand weapon to see if it matches our weapon skill type and size
-                if (charToCheck_.charInventory.rightHand != null && charToCheck_.charInventory.rightHand.size == Weapon.WeaponSize.OneHand)
+                if (charToCheck_.charInventory.rightHand != null && charToCheck_.charInventory.rightHand.size == WeaponSize.OneHand)
                 {
                     if (charToCheck_.charInventory.rightHand.weaponType == this.weaponSkillUsed)
                     {
@@ -102,7 +94,7 @@ public class WeaponAction : AttackAction
                 {
                     //Making sure the main hand weapon isn't holding a 2-handed weapon
                     if (charToCheck_.charInventory.rightHand == null ||
-                        charToCheck_.charInventory.rightHand.size == Weapon.WeaponSize.OneHand)
+                        charToCheck_.charInventory.rightHand.size == WeaponSize.OneHand)
                     {
                         canUse = true;
                     }
@@ -111,7 +103,7 @@ public class WeaponAction : AttackAction
 
             case WeaponHand.TwoHand:
                 //Checking the character's main hand weapon to see if it matches our weapon skill type and size
-                if (charToCheck_.charInventory.rightHand != null && charToCheck_.charInventory.rightHand.size == Weapon.WeaponSize.TwoHands)
+                if (charToCheck_.charInventory.rightHand != null && charToCheck_.charInventory.rightHand.size == WeaponSize.TwoHands)
                 {
                     if (charToCheck_.charInventory.rightHand.weaponType == this.weaponSkillUsed)
                     {
@@ -318,9 +310,9 @@ public class WeaponAction : AttackAction
             }
 
             //Dictionary for the total amount of damage for each type that will be dealt with this attack
-            Dictionary<CombatManager.DamageType, int> damageTypeTotalDamage = new Dictionary<CombatManager.DamageType, int>();
+            Dictionary<DamageType, int> damageTypeTotalDamage = new Dictionary<DamageType, int>();
             //Dictionary for if all of the spell damage types for if the damage is completely negated
-            Dictionary<CombatManager.DamageType, SpellResistTypes> spellResistDictionary = new Dictionary<CombatManager.DamageType, SpellResistTypes>();
+            Dictionary<DamageType, SpellResistTypes> spellResistDictionary = new Dictionary<DamageType, SpellResistTypes>();
 
             //Initializing the dictionaries correctly
             this.InitializeDamageDictionaries(damageTypeTotalDamage, spellResistDictionary);
@@ -434,7 +426,7 @@ public class WeaponAction : AttackAction
 
 
     //Function called from PerformAction to get the damage dealt by the player weapon(s)
-    private void GetWeaponDamage(Character abilityUser_, Dictionary<CombatManager.DamageType, int> damageTypeTotalDamage_, int attackNumber_)
+    private void GetWeaponDamage(Character abilityUser_, Dictionary<DamageType, int> damageTypeTotalDamage_, int attackNumber_)
     {
         //If this attack isn't using unarmed attacks, we get the weapon damage
         if (this.weaponSkillUsed != SkillList.Unarmed)

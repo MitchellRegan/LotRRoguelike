@@ -82,7 +82,7 @@ public class ModifyStatsEffect : Effect
             switch(mod.modifiedStat)
             {
                 //Increasing the target character's max health
-                case StatModifier.StatName.Health:
+                case StatName.Health:
                     //If we're adding the modifier
                     if(addingChanges_)
                     {
@@ -98,7 +98,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Increasing the target character's combat initiative speed
-                case StatModifier.StatName.Initiative:
+                case StatName.Initiative:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -112,7 +112,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Increasing the target character's combat accuracy
-                case StatModifier.StatName.Accuracy:
+                case StatName.Accuracy:
                     //If we're adding the modifier
                     if(addingChanges_)
                     {
@@ -126,7 +126,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Increasing the target character's combat evasion speed
-                case StatModifier.StatName.Evasion:
+                case StatName.Evasion:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -140,7 +140,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Increasing the target character's combat skills
-                case StatModifier.StatName.Unarmed:
+                case StatName.Unarmed:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -154,7 +154,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Daggers
-                case StatModifier.StatName.Daggers:
+                case StatName.Daggers:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -168,7 +168,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Swords
-                case StatModifier.StatName.Swords:
+                case StatName.Swords:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -182,7 +182,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Axes
-                case StatModifier.StatName.Mauls:
+                case StatName.Mauls:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -196,7 +196,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Spears
-                case StatModifier.StatName.Poles:
+                case StatName.Poles:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -210,7 +210,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Bows
-                case StatModifier.StatName.Bows:
+                case StatName.Bows:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -224,7 +224,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Shields
-                case StatModifier.StatName.Shields:
+                case StatName.Shields:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -238,7 +238,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Arcane magic
-                case StatModifier.StatName.ArcaneMagic:
+                case StatName.ArcaneMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -253,7 +253,7 @@ public class ModifyStatsEffect : Effect
 
 
                 //Holy magic
-                case StatModifier.StatName.HolyMagic:
+                case StatName.HolyMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -267,7 +267,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Dark magic
-                case StatModifier.StatName.DarkMagic:
+                case StatName.DarkMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -281,7 +281,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Fire magic
-                case StatModifier.StatName.FireMagic:
+                case StatName.FireMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -295,7 +295,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Water magic
-                case StatModifier.StatName.WaterMagic:
+                case StatName.WaterMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -309,7 +309,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Wind magic
-                case StatModifier.StatName.WindMagic:
+                case StatName.WindMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -323,7 +323,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Electric magic
-                case StatModifier.StatName.ElectricMagic:
+                case StatName.ElectricMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -337,7 +337,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Stone magic
-                case StatModifier.StatName.StoneMagic:
+                case StatName.StoneMagic:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -351,7 +351,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Armor
-                case StatModifier.StatName.SlashingArmor:
+                case StatName.SlashingArmor:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -365,7 +365,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Armor
-                case StatModifier.StatName.StabbingArmor:
+                case StatName.StabbingArmor:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -379,7 +379,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Armor
-                case StatModifier.StatName.CrushingArmor:
+                case StatName.CrushingArmor:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -393,7 +393,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Arcane resist
-                case StatModifier.StatName.ArcaneResist:
+                case StatName.ArcaneResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -407,7 +407,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Holy resist
-                case StatModifier.StatName.HolyResist:
+                case StatName.HolyResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -421,7 +421,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Dark resist
-                case StatModifier.StatName.DarkResist:
+                case StatName.DarkResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -435,7 +435,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Fire resist
-                case StatModifier.StatName.FireResist:
+                case StatName.FireResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -449,7 +449,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Water resist
-                case StatModifier.StatName.WaterResist:
+                case StatName.WaterResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -463,7 +463,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Electric resist
-                case StatModifier.StatName.ElectricResist:
+                case StatName.ElectricResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -477,7 +477,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Wind resist
-                case StatModifier.StatName.WindResist:
+                case StatName.WindResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -491,7 +491,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Nature resist
-                case StatModifier.StatName.NatureResist:
+                case StatName.NatureResist:
                     //If we're adding the modifier
                     if (addingChanges_)
                     {
@@ -505,7 +505,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Bleed resist
-                case StatModifier.StatName.BleedResist:
+                case StatName.BleedResist:
                     //If we're adding the modifier
                     if(addingChanges_)
                     {
@@ -519,7 +519,7 @@ public class ModifyStatsEffect : Effect
                     break;
 
                 //Armor
-                case StatModifier.StatName.Armor:
+                case StatName.Armor:
                     //If we're adding the modifier
                     if(addingChanges_)
                     {
@@ -551,7 +551,7 @@ public class ModifyStatsEffect : Effect
         if (this.tickOnRealTime)
         {
             //We can only track our timer when the combat manager is increasing initiative
-            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            if (CombatManager.globalReference.currentState == CombatState.IncreaseInitiative)
             {
                 //Increasing our tick timer
                 this.currentTickTime += Time.deltaTime;
@@ -673,58 +673,4 @@ public class ModifyStatsEffect : Effect
             this.visualEffect = visual;
         }
     }
-}
-
-
-//Class used in ModifyStatEffect.cs for an individual 
-[System.Serializable]
-public class StatModifier
-{
-    //Enum for each stat that can be modified
-    public enum StatName
-    {
-        Health,
-
-        Initiative,
-        Accuracy,
-        Evasion,
-
-        Unarmed,
-        Daggers,
-        Swords,
-        Mauls,
-        Poles,
-        Bows,
-        Shields,
-
-        ArcaneMagic,
-        HolyMagic,
-        DarkMagic,
-        FireMagic,
-        WaterMagic,
-        WindMagic,
-        ElectricMagic,
-        StoneMagic,
-
-        SlashingArmor,
-        StabbingArmor,
-        CrushingArmor,
-        ArcaneResist,
-        HolyResist,
-        DarkResist,
-        FireResist,
-        WaterResist,
-        WindResist,
-        ElectricResist,
-        NatureResist,
-        BleedResist,
-
-        Armor //Different from Slashing, Stabbing, and Crushing armor. This effects hit chance
-    }
-
-    //Enum for which stat this modifier changes
-    public StatName modifiedStat = StatName.Health;
-
-    //Amount that the modified stat is changed
-    public float amountToChange = 1;
 }

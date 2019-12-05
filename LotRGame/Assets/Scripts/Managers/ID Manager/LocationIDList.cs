@@ -71,7 +71,7 @@ public class LocationIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: LocationIDList.CheckList " + nameOfList_ + ": Empty slot in location list at index " + l);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if(listToCheck_[l].objType != IDTag.ObjectType.Location)
+            else if(listToCheck_[l].objType != ObjectType.Location)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: LocationIDList.CheckList " + nameOfList_ + ": Invalid ID type at index " + l);
             }

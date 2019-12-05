@@ -32,7 +32,7 @@ public class SkillTome : Item
                 //Switch statement to allocate points based on the curve type
                 switch(curve.progressionCurve)
                 {
-                    case SkillTomeProgression.progressionCurves.Linear:
+                    case ProgressionCurves.Linear:
                         //Getting the percent that the player is between the curve range min/max
                         float percentL = (1f * (currentSkillLevel - curve.skillRangeMin)) /
                                         (1f * (curve.skillRangeMax - curve.skillRangeMin));
@@ -41,7 +41,7 @@ public class SkillTome : Item
                         improvedSkillLevel = curve.newSkillMin + Mathf.RoundToInt(newSkillF);
                         break;
 
-                    case SkillTomeProgression.progressionCurves.SineIn:
+                    case ProgressionCurves.SineIn:
                         //Getting the percent that the player is between the curve range min/max
                         float percentSI = (1f * (currentSkillLevel - curve.skillRangeMin)) /
                                         (1f * (curve.skillRangeMax - curve.skillRangeMin));
@@ -55,7 +55,7 @@ public class SkillTome : Item
                         improvedSkillLevel = curve.newSkillMin + Mathf.RoundToInt(newSkillSI);
                         break;
 
-                    case SkillTomeProgression.progressionCurves.SineOut:
+                    case ProgressionCurves.SineOut:
                         //Getting the percent that the player is between the curve range min/max
                         float percentSO = (1f * (currentSkillLevel - curve.skillRangeMin)) /
                                         (1f * (curve.skillRangeMax - curve.skillRangeMin));
@@ -69,7 +69,7 @@ public class SkillTome : Item
                         improvedSkillLevel = curve.newSkillMin + Mathf.RoundToInt(newSkillSO);
                         break;
 
-                    case SkillTomeProgression.progressionCurves.UpToMax:
+                    case ProgressionCurves.UpToMax:
                         //Setting the skill level to the max
                         improvedSkillLevel = curve.newSkillMax;
                         break;
@@ -239,31 +239,3 @@ public class SkillTome : Item
     }
 }
 
-//Class used by SkillTome to determine the amount of skill points recieved when used
-[System.Serializable]
-public class SkillTomeProgression
-{
-    //The low end of this skill range
-    [Range(0, 99)]
-    public int skillRangeMin = 0;
-    //The high end of this skill range
-    [Range(1, 100)]
-    public int skillRangeMax = 1;
-
-    [Space(8)]
-
-    //The minimum skill points to allocate in this level range
-    public int newSkillMin = 0;
-    //The maximum skill points to allocate in this level range
-    public int newSkillMax = 1;
-    
-    //The mathematical curve that is used to determine how many points to give
-    public enum progressionCurves
-    {
-        Linear,
-        UpToMax,
-        SineIn,
-        SineOut
-    };
-    public progressionCurves progressionCurve = progressionCurves.Linear;
-}

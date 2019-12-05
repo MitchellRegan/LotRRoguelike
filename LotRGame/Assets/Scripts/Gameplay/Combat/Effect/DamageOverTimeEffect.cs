@@ -6,7 +6,7 @@ using UnityEngine;
 public class DamageOverTimeEffect : Effect
 {
     //What type of damage this damage counts as
-    public CombatManager.DamageType damageType = CombatManager.DamageType.Arcane;
+    public DamageType damageType = DamageType.Arcane;
 
     //The chance that this effect will happen whenever it's triggered
     [Range(0,1)]
@@ -183,28 +183,28 @@ public class DamageOverTimeEffect : Effect
         //Subtracting any magic resistance from the damage that we're trying to deal
         switch (this.damageType)
         {
-            case CombatManager.DamageType.Arcane:
+            case DamageType.Arcane:
                 damageDealt -= this.characterToEffect.charInventory.totalArcaneResist;
                 break;
-            case CombatManager.DamageType.Fire:
+            case DamageType.Fire:
                 damageDealt -= this.characterToEffect.charInventory.totalFireResist;
                 break;
-            case CombatManager.DamageType.Water:
+            case DamageType.Water:
                 damageDealt -= this.characterToEffect.charInventory.totalWaterResist;
                 break;
-            case CombatManager.DamageType.Electric:
+            case DamageType.Electric:
                 damageDealt -= this.characterToEffect.charInventory.totalElectricResist;
                 break;
-            case CombatManager.DamageType.Wind:
+            case DamageType.Wind:
                 damageDealt -= this.characterToEffect.charInventory.totalWindResist;
                 break;
-            case CombatManager.DamageType.Nature:
+            case DamageType.Nature:
                 damageDealt -= this.characterToEffect.charInventory.totalNatureResist;
                 break;
-            case CombatManager.DamageType.Holy:
+            case DamageType.Holy:
                 damageDealt -= this.characterToEffect.charInventory.totalHolyResist;
                 break;
-            case CombatManager.DamageType.Dark:
+            case DamageType.Dark:
                 damageDealt -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
         }
@@ -313,7 +313,7 @@ public class DamageOverTimeEffect : Effect
         if (this.tickOnRealTime)
         {
             //We can only track our timer when the combat manager is increasing initiative
-            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            if (CombatManager.globalReference.currentState == CombatState.IncreaseInitiative)
             {
                 //Increasing our tick timer
                 this.currentTickTime += Time.deltaTime;

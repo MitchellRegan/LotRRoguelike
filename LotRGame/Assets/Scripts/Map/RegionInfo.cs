@@ -68,20 +68,3 @@ public class ResourceBlock
     //The quantity of each resource. The length MUST be the same as resources
     public List<int> resourceQuantities;
 }
-
-
-//Class used in RegionInfo.cs. Represents a collection of enemies in a group that have a chance to be spawned together
-[System.Serializable]
-public class EncounterBlock
-{
-    //The skill roll that the player party has to reach to encounter
-    [Range(10, 200)]
-    public int skillCheck = 10;
-
-    //The likelihood that this encounter block will be chosen
-    [Range(0.01f, 1f)]
-    public float encounterChance = 0.1f;
-
-    //The list of enemies in this encounter
-    public EnemyEncounter encounterEnemies;
-}

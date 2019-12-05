@@ -93,7 +93,7 @@ public class MiniMapUI : MonoBehaviour
             this.currentTile = partyTile;
 
             //Getting the row and column of the current tile
-            CreateTileGrid.TileColRow newTileColRow = CreateTileGrid.globalReference.GetTileCoords(partyTile);
+            TileColRow newTileColRow = CreateTileGrid.globalReference.GetTileCoords(partyTile);
 
             if (newTileColRow != null)
             {

@@ -473,33 +473,3 @@ public class TileInfo
         }
     }
 }
-
-
-//Enum used in TileInfo.cs to denote the type of environment it's on
-public enum LandType
-{
-    Empty,
-    Ocean,
-    River,
-    Swamp,
-    Grasslands,
-    Forest,
-    Desert,
-    Mountain,
-    Volcano
-}
-
-//Struct used in TileInfo.cs and CreateTileGrid.cs to save which col/row a tile is in
-[System.Serializable]
-public class GridCoordinates
-{
-    public int col;
-    public int row;
-
-    //Constructor for this struct
-    public GridCoordinates(int col_, int row_)
-    {
-        this.col = col_;
-        this.row = row_;
-    }
-}

@@ -262,7 +262,7 @@ public class ActionIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: ActionIDList.CheckList " + nameOfList_ + ": Empty slot in weapon list at index " + w1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if (listToCheck_[w1].objType != IDTag.ObjectType.Action)
+            else if (listToCheck_[w1].objType != ObjectType.Action)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: ActionIDList.CheckList " + nameOfList_ + ": Invalid ID type at index " + w1);
             }

@@ -1016,7 +1016,7 @@ public class PathfindingAlgorithms : MonoBehaviour
             if (currentPoint == targetPoint_)
             {
                 //If the target tile has nothing on it
-                if (currentPoint.typeOnTile == CombatTile.ObjectType.Nothing)
+                if (currentPoint.typeOnTile == TileObjectType.Nothing)
                 {
                     //Adding the current point's tile to the list of returned objects
                     tilePath.Add(currentPoint);
@@ -1067,13 +1067,13 @@ public class PathfindingAlgorithms : MonoBehaviour
 
                             CombatTile connectedCombatTile = connection.GetComponent<CombatTile>();
                             //If the connected tile isn't empty, we have to check it first
-                            if (connectedCombatTile.typeOnTile != CombatTile.ObjectType.Nothing)
+                            if (connectedCombatTile.typeOnTile != TileObjectType.Nothing)
                             {
                                 //Making sure that this type of movement can safely travel across the type of object on the tile
                                 if (connectedCombatTile == targetPoint_ ||
-                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Object && !avoidObjects_) ||
-                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Enemy && !avoidCharacters_) ||
-                                    (connectedCombatTile.typeOnTile == CombatTile.ObjectType.Player && !avoidCharacters_))
+                                    (connectedCombatTile.typeOnTile == TileObjectType.Object && !avoidObjects_) ||
+                                    (connectedCombatTile.typeOnTile == TileObjectType.Enemy && !avoidCharacters_) ||
+                                    (connectedCombatTile.typeOnTile == TileObjectType.Player && !avoidCharacters_))
                                 {
                                     //Adding the connected point to the frontier and list of visited tiles
                                     frontier.Add(connectedCombatTile);

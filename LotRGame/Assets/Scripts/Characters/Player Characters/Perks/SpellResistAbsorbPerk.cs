@@ -6,7 +6,7 @@ using UnityEngine;
 public class SpellResistAbsorbPerk : Perk
 {
     //The type of spell that this perk resists or absorbs
-    public CombatManager.DamageType typeToResist = CombatManager.DamageType.Arcane;
+    public DamageType typeToResist = DamageType.Arcane;
 
     //Bool for if this perk only applies to crits
     public bool onlyWorksOnCrit = false;
@@ -109,28 +109,28 @@ public class SpellResistAbsorbPerk : Perk
     {
         switch(this.typeToResist)
         {
-            case CombatManager.DamageType.Arcane:
+            case DamageType.Arcane:
                 return SkillList.ArcaneMagic;
 
-            case CombatManager.DamageType.Holy:
+            case DamageType.Holy:
                 return SkillList.HolyMagic;
 
-            case CombatManager.DamageType.Dark:
+            case DamageType.Dark:
                 return SkillList.DarkMagic;
 
-            case CombatManager.DamageType.Fire:
+            case DamageType.Fire:
                 return SkillList.FireMagic;
 
-            case CombatManager.DamageType.Water:
+            case DamageType.Water:
                 return SkillList.WaterMagic;
 
-            case CombatManager.DamageType.Wind:
+            case DamageType.Wind:
                 return SkillList.WindMagic;
 
-            case CombatManager.DamageType.Electric:
+            case DamageType.Electric:
                 return SkillList.ElectricMagic;
 
-            case CombatManager.DamageType.Nature:
+            case DamageType.Nature:
                 return SkillList.StoneMagic;
 
             //If the type isn't any of those other magic types, we return a skill that will be ignored

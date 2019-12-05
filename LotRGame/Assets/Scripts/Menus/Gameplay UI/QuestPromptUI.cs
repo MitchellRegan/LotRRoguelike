@@ -284,15 +284,15 @@ public class QuestPromptUI : MonoBehaviour
                 //Adding a description so the player knows how the ability is distributed
                 switch (ar.rewardDistribution)
                 {
-                    case QuestActionReward.DistributionType.Everyone:
+                    case DistributionType.Everyone:
                         rewardText += "(All Party Members)\n";
                         break;
 
-                    case QuestActionReward.DistributionType.OneRandomCharacter:
+                    case DistributionType.OneRandomCharacter:
                         rewardText += "(Random Party Member)\n";
                         break;
 
-                    case QuestActionReward.DistributionType.PlayerChoice:
+                    case DistributionType.PlayerChoice:
                         rewardText += "\n";
                         break;
                 }

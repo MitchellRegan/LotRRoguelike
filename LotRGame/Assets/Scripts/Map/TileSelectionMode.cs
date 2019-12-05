@@ -9,7 +9,6 @@ public class TileSelectionMode : MonoBehaviour
     public static TileSelectionMode GlobalReference;
 
     //Enum used to determine what happens when tiles are selected
-    public enum SelectionMode { None, Info, Movement };
     public SelectionMode currentSelectionMode = SelectionMode.None;
 
     //Public UnityEvent to deactivate the Move UI button

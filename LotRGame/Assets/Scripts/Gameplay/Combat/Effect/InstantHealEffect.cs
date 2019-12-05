@@ -6,7 +6,7 @@ using UnityEngine;
 public class InstantHealEffect : Effect
 {
     //The type of heal that's inflicted
-    public CombatManager.DamageType type = CombatManager.DamageType.Holy;
+    public DamageType type = DamageType.Holy;
 
     //The base amount of heal dealt
     public int baseHeal = 0;
@@ -92,84 +92,84 @@ public class InstantHealEffect : Effect
         //Subtracting the target character's magic resistances
         switch (this.type)
         {
-            case CombatManager.DamageType.Slashing:
+            case DamageType.Slashing:
                 if (targetCharacter_.charInventory.totalSlashingArmor > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalSlashingArmor;
                 }
                 break;
 
-            case CombatManager.DamageType.Stabbing:
+            case DamageType.Stabbing:
                 if (targetCharacter_.charInventory.totalStabbingArmor > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalStabbingArmor;
                 }
                 break;
 
-            case CombatManager.DamageType.Crushing:
+            case DamageType.Crushing:
                 if (targetCharacter_.charInventory.totalCrushingArmor > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalCrushingArmor;
                 }
                 break;
 
-            case CombatManager.DamageType.Fire:
+            case DamageType.Fire:
                 if (targetCharacter_.charInventory.totalFireResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalFireResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Water:
+            case DamageType.Water:
                 if (targetCharacter_.charInventory.totalWaterResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalWaterResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Electric:
+            case DamageType.Electric:
                 if (targetCharacter_.charInventory.totalElectricResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalElectricResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Wind:
+            case DamageType.Wind:
                 if (targetCharacter_.charInventory.totalWindResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalWindResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Nature:
+            case DamageType.Nature:
                 if (targetCharacter_.charInventory.totalNatureResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalNatureResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Arcane:
+            case DamageType.Arcane:
                 if (targetCharacter_.charInventory.totalArcaneResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalArcaneResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Holy:
+            case DamageType.Holy:
                 if (targetCharacter_.charInventory.totalHolyResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalHolyResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Dark:
+            case DamageType.Dark:
                 if (targetCharacter_.charInventory.totalDarkResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalDarkResist;
                 }
                 break;
 
-            case CombatManager.DamageType.Bleed:
+            case DamageType.Bleed:
                 if(targetCharacter_.charInventory.totalBleedResist > 0)
                 {
                     totalHeal -= targetCharacter_.charInventory.totalBleedResist;

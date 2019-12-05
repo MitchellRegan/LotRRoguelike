@@ -6,7 +6,7 @@ using UnityEngine;
 public class HealOverTimeEffect : Effect
 {
     //What type of magic this damage counts as
-    public CombatManager.DamageType healType = CombatManager.DamageType.Arcane;
+    public DamageType healType = DamageType.Arcane;
 
     //The chance that this effect will happen whenever it's triggered
     [Range(0, 1)]
@@ -172,28 +172,28 @@ public class HealOverTimeEffect : Effect
         //Subtracting any magic resistance from the amount that we're trying to heal
         switch (this.healType)
         {
-            case CombatManager.DamageType.Arcane:
+            case DamageType.Arcane:
                 damagehealed -= this.characterToEffect.charInventory.totalArcaneResist;
                 break;
-            case CombatManager.DamageType.Fire:
+            case DamageType.Fire:
                 damagehealed -= this.characterToEffect.charInventory.totalFireResist;
                 break;
-            case CombatManager.DamageType.Water:
+            case DamageType.Water:
                 damagehealed -= this.characterToEffect.charInventory.totalWaterResist;
                 break;
-            case CombatManager.DamageType.Electric:
+            case DamageType.Electric:
                 damagehealed -= this.characterToEffect.charInventory.totalElectricResist;
                 break;
-            case CombatManager.DamageType.Wind:
+            case DamageType.Wind:
                 damagehealed -= this.characterToEffect.charInventory.totalWindResist;
                 break;
-            case CombatManager.DamageType.Nature:
+            case DamageType.Nature:
                 damagehealed -= this.characterToEffect.charInventory.totalNatureResist;
                 break;
-            case CombatManager.DamageType.Holy:
+            case DamageType.Holy:
                 damagehealed -= this.characterToEffect.charInventory.totalHolyResist;
                 break;
-            case CombatManager.DamageType.Dark:
+            case DamageType.Dark:
                 damagehealed -= this.characterToEffect.charInventory.totalDarkResist;
                 break;
                 //Pure damage type has no resist
@@ -266,7 +266,7 @@ public class HealOverTimeEffect : Effect
         if (this.tickOnRealTime)
         {
             //We can only track our timer when the combat manager is increasing initiative
-            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            if (CombatManager.globalReference.currentState == CombatState.IncreaseInitiative)
             {
                 //Increasing our tick timer
                 this.currentTickTime += Time.deltaTime;

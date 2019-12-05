@@ -145,7 +145,7 @@ public class QuestRewardUI : MonoBehaviour
             //If the action is awarded to every character
             switch (this.questToDisplay.actionRewards[this.questRewardIndex - this.questToDisplay.itemRewards.Count].rewardDistribution)
             {
-                case QuestActionReward.DistributionType.Everyone:
+                case DistributionType.Everyone:
                     //Setting the reward text to the action
                     this.rewardNameText.text = rewardAct.actionName;
                     this.rewardDescriptionText.text = rewardAct.actionDescription;
@@ -156,7 +156,7 @@ public class QuestRewardUI : MonoBehaviour
                     this.giveAllCharactersActionPanel.gameObject.SetActive(true);
                     break;
 
-                case QuestActionReward.DistributionType.OneRandomCharacter:
+                case DistributionType.OneRandomCharacter:
                     //Setting the reward text to the action
                     this.rewardNameText.text = rewardAct.actionName;
                     this.rewardDescriptionText.text = rewardAct.actionDescription;
@@ -167,7 +167,7 @@ public class QuestRewardUI : MonoBehaviour
                     this.giveRandomCharacterActionPanel.gameObject.SetActive(true);
                     break;
 
-                case QuestActionReward.DistributionType.PlayerChoice:
+                case DistributionType.PlayerChoice:
                     //Setting the reward text to the action
                     this.rewardNameText.text = rewardAct.actionName;
                     this.rewardDescriptionText.text = rewardAct.actionDescription;

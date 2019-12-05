@@ -10,7 +10,7 @@ public class CritMultiplierPerk : Perk
     public bool boostAllSkills = false;
 
     //The type of weapon size this perk effects
-    public WeaponAction.WeaponHand weaponSizeRequirement = WeaponAction.WeaponHand.OneHand;
+    public WeaponHand weaponSizeRequirement = WeaponHand.OneHand;
     //Bool for if this perk boosts all weapon sizes
     public bool noSizeRequirement = true;
 

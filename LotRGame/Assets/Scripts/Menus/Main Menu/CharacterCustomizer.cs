@@ -27,7 +27,7 @@ public class CharacterCustomizer : MonoBehaviour
 
     //The race of the character
     [HideInInspector]
-    public RaceTypes.Races race = RaceTypes.Races.Human;
+    public Races race = Races.Human;
 
     //The total number of skill points that can be allocated to the character
     public int pointsToAllocate = 20;
@@ -138,10 +138,10 @@ public class CharacterCustomizer : MonoBehaviour
             //If this character is female, they're now genderless
             case Genders.Female:
                 //If the current player race is Amazon, nothing happens because Amazons are all women
-                if (GameData.globalReference.startingRace != RaceTypes.Races.Amazon)
+                if (GameData.globalReference.startingRace != Races.Amazon)
                 {
                     //If the current player race is Gill Folk, they can be genderless
-                    if (GameData.globalReference.startingRace == RaceTypes.Races.GillFolk || GameData.globalReference.startingRace == RaceTypes.Races.Elf)
+                    if (GameData.globalReference.startingRace == Races.GillFolk || GameData.globalReference.startingRace == Races.Elf)
                     {
                         this.sex = Genders.Genderless;
                         this.sexText.text = "Genderless";
@@ -178,7 +178,7 @@ public class CharacterCustomizer : MonoBehaviour
             //If this character is male, they're now genderless
             case Genders.Male:
                 //If the current player race is Gill Folk or Elf, they can be genderless
-                if (GameData.globalReference.startingRace == RaceTypes.Races.GillFolk || GameData.globalReference.startingRace == RaceTypes.Races.Elf)
+                if (GameData.globalReference.startingRace == Races.GillFolk || GameData.globalReference.startingRace == Races.Elf)
                 {
                     this.sex = Genders.Genderless;
                     this.sexText.text = "Genderless";
@@ -194,7 +194,7 @@ public class CharacterCustomizer : MonoBehaviour
             //If this character is female, they're now male
             case Genders.Female:
                 //If the current player race is Amazon, nothing happens because Amazons are all women
-                if (GameData.globalReference.startingRace != RaceTypes.Races.Amazon)
+                if (GameData.globalReference.startingRace != Races.Amazon)
                 {
                     this.sex = Genders.Male;
                     this.sexText.text = "Male";
@@ -301,12 +301,3 @@ public class CharacterCustomizer : MonoBehaviour
     }
 }
 
-//Class used by CharacterCustomizer.cs so we can distinguish which sprite base to use
-[System.Serializable]
-public class CustomizerRaceSpriteBase
-{
-    //The race that this customizer uses
-    public RaceTypes.Races race;
-    //The customizer that is tied to the selected race
-    public SpriteCustomizer customizer;
-}

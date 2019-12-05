@@ -132,7 +132,7 @@ public class CreateTileGrid : MonoBehaviour
         this.visibleTileObjects = new Dictionary<TileInfo, GameObject>();
 
         //If we're starting a new game, we need to generate the map first
-        if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
+        if(GameData.globalReference.loadType == LevelLoadType.GenerateNewLevel)
         {
             //Refreshing the seed so that the map will ALWAYS be the same with the same seed, since the Randomize feature in the sprite customizer can offset it
             GameData.globalReference.GetComponent<RandomSeedGenerator>().SetSeed(GameData.globalReference.GetComponent<RandomSeedGenerator>().seed);
@@ -156,7 +156,7 @@ public class CreateTileGrid : MonoBehaviour
     private void Start()
     {
         //If we just created a new game, we need to save player progress immediately
-        if(GameData.globalReference.loadType == GameData.levelLoadType.GenerateNewLevel)
+        if(GameData.globalReference.loadType == LevelLoadType.GenerateNewLevel)
         {
             //Assigning the main quests to the character quest log
             QuestTracker.globalReference.AssignMainQuests();
@@ -164,7 +164,7 @@ public class CreateTileGrid : MonoBehaviour
             SaveLoadManager.globalReference.SavePlayerProgress();
         }
         //If we just loaded a game save, we load our player progress
-        else if(GameData.globalReference.loadType == GameData.levelLoadType.LoadLevel)
+        else if(GameData.globalReference.loadType == LevelLoadType.LoadLevel)
         {
             //Loading the party progress
             SaveLoadManager.globalReference.LoadPlayerProgress(GameData.globalReference.saveFolder);
@@ -183,17 +183,17 @@ public class CreateTileGrid : MonoBehaviour
         //Setting the number of columns and rows based on the game difficulty map sizes
         switch (GameData.globalReference.currentDifficulty)
         {
-            case GameData.gameDifficulty.Easy:
+            case GameDifficulty.Easy:
                 this.rows = Mathf.RoundToInt(GameData.globalReference.easyMapSize.y);
                 this.cols = Mathf.RoundToInt(GameData.globalReference.easyMapSize.x);
                 break;
 
-            case GameData.gameDifficulty.Normal:
+            case GameDifficulty.Normal:
                 this.rows = Mathf.RoundToInt(GameData.globalReference.normalMapSize.y);
                 this.cols = Mathf.RoundToInt(GameData.globalReference.normalMapSize.x);
                 break;
 
-            case GameData.gameDifficulty.Hard:
+            case GameDifficulty.Hard:
                 this.rows = Mathf.RoundToInt(GameData.globalReference.hardMapSize.y);
                 this.cols = Mathf.RoundToInt(GameData.globalReference.hardMapSize.x);
                 break;
@@ -236,7 +236,7 @@ public class CreateTileGrid : MonoBehaviour
         for (int e = 0; e < this.numberOfStepLoops; ++e)
         {
             this.ExpandRegionBoarders();
-            this.CreateMapTexture("" + e);
+            //this.CreateMapTexture("" + e);
         }
 
         this.CreateMapTexture("" + this.numberOfStepLoops);
@@ -1422,13 +1422,12 @@ public class CreateTileGrid : MonoBehaviour
 
         string saveFolder = GameData.globalReference.saveFolder;
         
-        //Writing the file to the desktop
+        //Writing the file to the save folder
         System.IO.File.WriteAllBytes(Application.persistentDataPath + saveFolder + "/Map" + mapNameExtras_ + ".png", bytes);
     }
 
     
     //Function called externally to get the column and row for a given tile
-    public class TileColRow { public int col; public int row; };
     public TileColRow GetTileCoords(TileInfo tileToSearchFor_)
     {
         //The coordinates that we'll return
@@ -1459,22 +1458,3 @@ public class CreateTileGrid : MonoBehaviour
     }
 }
 
-//Class used in SaveLoadManager.cs to store info from CreateTileGrid.cs to be serialized
-[System.Serializable]
-public class TileGridSaveInfo
-{
-    //The strings that holds the entire tile grid
-    public List<List<string>> serializedTileGrid;
-    //The strings for the tiles the cities are on
-    public List<string> serializedCityTiles;
-    //The strings for the tiles the dungeons are on
-    public List<string> serializedDungeonTiles;
-
-    //Public constructor for this class
-    public TileGridSaveInfo(List<List<string>> tileGridString_, List<string> cityTilesString_, List<string> dungeonTilesString_)
-    {
-        this.serializedTileGrid = tileGridString_;
-        this.serializedCityTiles = cityTilesString_;
-        this.serializedDungeonTiles = dungeonTilesString_;
-    }
-}

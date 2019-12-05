@@ -30,9 +30,8 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public float atkRadiusTransparency = 0.7f;
 
     //Enum for what kind of object is on this tile
-    public enum ObjectType { Player, Enemy, Object, Nothing };
     [HideInInspector]
-    public ObjectType typeOnTile = ObjectType.Nothing;
+    public TileObjectType typeOnTile = TileObjectType.Nothing;
 
     //Color picker for when this tile is not in use
     public Color inactiveColor = Color.white;
@@ -163,26 +162,26 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
 
     //Function called from CombatManager.cs to set what object is on this tile
-    public void SetObjectOnTile(GameObject objOnTile_, ObjectType type_)
+    public void SetObjectOnTile(GameObject objOnTile_, TileObjectType type_)
     {
         this.typeOnTile = type_;
 
         //If no object is added
-        if(objOnTile_ == null || type_ == ObjectType.Nothing)
+        if(objOnTile_ == null || type_ == TileObjectType.Nothing)
         {
             this.ResetTile();
         }
-        else if(type_ == ObjectType.Player)
+        else if(type_ == TileObjectType.Player)
         {
             this.objectOnThisTile = objOnTile_;
             this.SetTileColor(this.playerOccupiedColor);
         }
-        else if(type_ == ObjectType.Enemy)
+        else if(type_ == TileObjectType.Enemy)
         {
             this.objectOnThisTile = objOnTile_;
             this.SetTileColor(this.enemyOccupiedColor);
         }
-        else if(type_ == ObjectType.Object)
+        else if(type_ == TileObjectType.Object)
         {
             this.objectOnThisTile = objOnTile_;
             this.SetTileColor(this.inactiveColor);

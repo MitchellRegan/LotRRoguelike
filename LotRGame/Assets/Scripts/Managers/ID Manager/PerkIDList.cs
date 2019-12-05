@@ -119,7 +119,7 @@ public class PerkIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList " + nameOfList_ + ": Empty slot in perk list at index " + a1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if (listToCheck_[a1].objType != IDTag.ObjectType.Perk)
+            else if (listToCheck_[a1].objType != ObjectType.Perk)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: PerkIDList.CheckList " + nameOfList_ + ": Invalid ID type at index " + a1);
             }

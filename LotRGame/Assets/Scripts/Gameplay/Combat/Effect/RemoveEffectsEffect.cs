@@ -9,26 +9,13 @@ public class RemoveEffectsEffect : Effect
     public int numEffectsToRemove = 1;
 
     //Enum for the type of effect to remove
-    public enum EffectTypeToRemove
-    {
-        Any, //Removes any kind of effect
-        Beneficial, //HoT and positive stat effects
-        Negative, //DoT and negative stat effects
-        DoT, //Damage over Time effects
-        DoTType, //Damage over Time effect of a specific damage type
-        HoT, //Heal over Time effects
-        HoTType, //Heal over Time effect of a specific damage type
-        ModifyStat, //Any modify stat effect
-        StatBoost, //Modify stat effects that are beneficial
-        StatNerf //Modify stat effects that are negative
-    };
     public EffectTypeToRemove typeToRemove = EffectTypeToRemove.Any;
 
     //Bool for if this effect ignores the designated damage type
     public bool ignoreSelectedDamageType = false;
 
     //The damage type to remove if removing DoTType or HoTType
-    public CombatManager.DamageType doTHoTType = CombatManager.DamageType.Arcane;
+    public DamageType doTHoTType = DamageType.Arcane;
 
 
 
@@ -206,7 +193,7 @@ public class RemoveEffectsEffect : Effect
         foreach(StatModifier mod in effectToCheck_.statChanges)
         {
             //Since the initiative mod is small, we have to multiply it before it's bonus is added
-            if(mod.modifiedStat == StatModifier.StatName.Initiative)
+            if(mod.modifiedStat == StatName.Initiative)
             {
                 netBenefit += 20 * mod.amountToChange;
             }
