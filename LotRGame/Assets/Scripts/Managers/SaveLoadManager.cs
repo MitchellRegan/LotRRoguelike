@@ -11,7 +11,11 @@ public class SaveLoadManager : MonoBehaviour
     public static SaveLoadManager globalReference;
 
     //The default name given to folders with invalid directory names
-    public string defaultFolderName = "New Game";
+    private string defaultFolderName = "CurrentGame";
+    private string saveFolderPath = "/Zein/SaveFiles";
+    private string defaultProgressFileName = "PlayerProgress.txt";
+    private string defaultTileGridFileName = "TileGrid.txt";
+    private string defaultMapFileName = "Map.png";
 
 
 
@@ -33,50 +37,29 @@ public class SaveLoadManager : MonoBehaviour
     }
 
 
-    //Function called from SaveGameData to check for illegal characters in the save folder name
-    public string CheckFolderName(string folderName_)
+    //Function called from SaveGameData to create a folder for a new game. Returns the folder path
+    public string CreateNewSaveFolder()
     {
-        //String to hold the folder name while we check it
-        string checkedName = folderName_;
+        //String to hold the folder name
+        string newSaveFolder = this.saveFolderPath + "/" + this.defaultFolderName;
 
-        //Checking the string for each illegal character
-        if(checkedName.Contains("<") || checkedName.Contains(">") ||
-            checkedName.Contains(":") || checkedName.Contains("\"") ||
-            checkedName.Contains("\\") || checkedName.Contains("/") ||
-            checkedName.Contains("|") || checkedName.Contains("?") ||
-            checkedName.Contains("*"))
+        //If there's already a save folder at the current directory, it is deleted
+        if(Directory.Exists(Application.persistentDataPath + newSaveFolder))
         {
-            //If the player-given name contains any of the illegal characters, we set the folder name to the default
-            checkedName = this.defaultFolderName;
-        }
-        //Checking if the folder name is empty
-        else if(checkedName == "")
-        {
-            //If the folder has no name, we give it the default
-            checkedName = this.defaultFolderName;
-        }
-
-        //adding a save folder path to the beginning of the given folder name
-        checkedName = "/Zein/SaveFiles/" + checkedName;
-
-        //If there's already a save folder at the current directory, we need to modify it a bit
-        if(Directory.Exists(Application.persistentDataPath + checkedName))
-        {
-            //Looping until we have a numbered version of the checked name that doesn't exist
-            int saveNum = 2;
-            while(Directory.Exists(Application.persistentDataPath + checkedName + saveNum))
+            //Deleting all files in the folder
+            string[] files = Directory.GetFiles(Application.persistentDataPath + newSaveFolder);
+            foreach(string file in files)
             {
-                ++saveNum;
+                File.Delete(file);
             }
-
-            //Once we find a directory that doesn't exist, we put the number at the end of the checked name
-            checkedName = checkedName + saveNum;
+            //Deleting the folder itself
+            Directory.Delete(Application.persistentDataPath + newSaveFolder);
         }
 
-        //Creating the directory for the new save
-        this.CheckSaveDirectory(checkedName);
+        //Creating the new folder in the correct path
+        Directory.CreateDirectory(Application.persistentDataPath + newSaveFolder);
 
-        return checkedName;
+        return newSaveFolder;
     }
 
 
@@ -89,6 +72,56 @@ public class SaveLoadManager : MonoBehaviour
             //We create the folder at the application directory with the given folder name
             Directory.CreateDirectory(Application.persistentDataPath + folderName_);
         }
+    }
+
+
+    //Function called externally by the Continue Game button in the main menu to check if there's a current game save
+    public bool DoesSaveFileExist()
+    {
+        string[] folders = Directory.GetDirectories(Application.persistentDataPath + this.saveFolderPath);
+
+        //If there are no folders, the save file can't exist
+        if(folders.Length == 0)
+        {
+            return false;
+        }
+
+        //Looking through each folder until we find one with the files we need
+        for(int i = 0; i < folders.Length; i++)
+        {
+            string[] files = Directory.GetFiles(folders[i]);
+            bool hasGrid = false;
+            bool hasProgress = false;
+            bool hasMap = false;
+
+            //Checking each file
+            for(int f = 0; f < files.Length; f++)
+            {
+                //Getting the file name from the path and checking for the 3 files we need
+                string[] split = files[f].Split('\\');
+                if(split[split.Length - 1] == this.defaultMapFileName)
+                {
+                    hasMap = true;
+                }
+                else if(split[split.Length - 1] == this.defaultProgressFileName)
+                {
+                    hasProgress = true;
+                }
+                else if(split[split.Length - 1] == this.defaultTileGridFileName)
+                {
+                    hasGrid = true;
+                }
+            }
+
+            //If we have all 3 files, return true
+            if(hasGrid && hasMap && hasProgress)
+            {
+                return true;
+            }
+        }
+
+        //If we make it this far, no complete save file exists
+        return false;
     }
 
 
@@ -268,7 +301,7 @@ public class SaveLoadManager : MonoBehaviour
         string jsonMapData = JsonConvert.SerializeObject(newMapSave, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
 
         //Writing the JSON map data to a new text file in the given folder's directory
-        File.WriteAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt", jsonMapData);
+        File.WriteAllText(Application.persistentDataPath + folderName_ + "/" + this.defaultTileGridFileName, jsonMapData);
     }
 
 
@@ -282,7 +315,7 @@ public class SaveLoadManager : MonoBehaviour
             throw new System.ArgumentException("SaveLoadManager.LoadTileGrid, The folder directory given does not exist!");
         }
         //If the folder exists but the file doesn't
-        else if(!File.Exists(Application.persistentDataPath + folderName_ + "/TileGrid.txt"))
+        else if(!File.Exists(Application.persistentDataPath + folderName_ + "/" + this.defaultTileGridFileName))
         {
             //We throw an exception because the file that we're supposed to load doesn't exist
             throw new System.ArgumentException("SaveLoadManager.LoadTileGrid, The TileGrid.txt file for this save does not exist!");
@@ -290,7 +323,7 @@ public class SaveLoadManager : MonoBehaviour
 
 
         //Getting all of the string data from the TileGrid.txt file
-        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt");
+        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/" + this.defaultTileGridFileName);
 
         //Getting the de-serialized TileGridSaveInfo class from the file using the JSON.net converter
         TileGridSaveInfo tileSaveInfo = JsonConvert.DeserializeObject(fileData, typeof(TileGridSaveInfo)) as TileGridSaveInfo;
@@ -377,7 +410,7 @@ public class SaveLoadManager : MonoBehaviour
         //Serializing the current progress
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
-        File.WriteAllText(Application.persistentDataPath + GameData.globalReference.saveFolder + "/PlayerProgress.txt", jsonPlayerProgress);
+        File.WriteAllText(Application.persistentDataPath + GameData.globalReference.saveFolder + "/" + this.defaultProgressFileName, jsonPlayerProgress);
 
         //Sending out an event to toggle the save game icon UI off
         EVTData endSaveData = new EVTData();
@@ -403,7 +436,7 @@ public class SaveLoadManager : MonoBehaviour
             throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The folder directory given does not exist!");
         }
         //If the folder exists but the file doesn't
-        else if (!File.Exists(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt"))
+        else if (!File.Exists(Application.persistentDataPath + folderName_ + "/" + this.defaultProgressFileName))
         {
             //We throw an exception because the file that we're supposed to load doesn't exist
             throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The PlayerProgress.txt file for this save does not exist!");
@@ -416,7 +449,7 @@ public class SaveLoadManager : MonoBehaviour
         loadEVTData.loadData.startingLoad = false;
 
         //Getting all of the string data from the TileGrid.txt file
-        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt");
+        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/" + this.defaultProgressFileName);
 
         //De-serializing the player progress from the text file
         PlayerProgress loadedProgress = JsonUtility.FromJson(fileData, typeof(PlayerProgress)) as PlayerProgress;

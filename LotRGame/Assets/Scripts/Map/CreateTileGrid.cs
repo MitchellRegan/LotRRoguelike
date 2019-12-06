@@ -230,7 +230,7 @@ public class CreateTileGrid : MonoBehaviour
             }
         }
         
-        this.CreateMapTexture();
+        //this.CreateMapTexture();
 
         //Looping though to randomize the regions so that they grow in different directions
         for (int e = 0; e < this.numberOfStepLoops; ++e)
@@ -239,8 +239,9 @@ public class CreateTileGrid : MonoBehaviour
             //this.CreateMapTexture("" + e);
         }
 
-        this.CreateMapTexture("" + this.numberOfStepLoops);
-
+        //this.CreateMapTexture("" + this.numberOfStepLoops);
+        this.CreateMapTexture();
+        
         //Saving this tile grid using the folder name in GameData.cs
         SaveLoadManager.globalReference.SaveTileGrid(GameData.globalReference.saveFolder);
     }

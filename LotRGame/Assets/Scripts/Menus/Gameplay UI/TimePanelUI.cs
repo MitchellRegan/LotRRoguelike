@@ -82,6 +82,12 @@ public class TimePanelUI : MonoBehaviour
     {
         //Setting the rotation of the lights
         this.SetLightPositions(this.timeOfDay * 1f);
+
+        //If this is the beginning of the first day, we save player progress by default
+        if(this.daysTaken == 0)
+        {
+            SaveLoadManager.globalReference.SavePlayerProgress();
+        }
     }
 
 

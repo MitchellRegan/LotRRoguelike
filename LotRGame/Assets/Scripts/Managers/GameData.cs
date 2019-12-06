@@ -163,7 +163,7 @@ public class GameData : MonoBehaviour
         }
 
         //Making sure our save folder name is valid
-        this.saveFolder = SaveLoadManager.globalReference.CheckFolderName(this.saveFolder);
+        this.saveFolder = SaveLoadManager.globalReference.CreateNewSaveFolder();
 
         //Telling the map generator to create a new level instead of loading one from a save
         this.loadType = LevelLoadType.GenerateNewLevel;
