@@ -126,12 +126,15 @@ public class SceneTransitionEVT
     public string newSceneName = "";
     //The amount of time it takes to transition to the new scene
     public float transitionTime = 1;
+    //The amount of time the screen stays black before and after transitioning
+    public float stayOnBlackTime = 0.5f;
 
     //Public constructor for this class
-    public SceneTransitionEVT(string newSceneName_, float transitionTime_)
+    public SceneTransitionEVT(string newSceneName_, float transitionTime_, float stayOnBlackTime_)
     {
         this.newSceneName = newSceneName_;
         this.transitionTime = transitionTime_;
+        this.stayOnBlackTime = stayOnBlackTime_;
     }
 }
 

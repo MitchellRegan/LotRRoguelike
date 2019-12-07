@@ -172,7 +172,10 @@ public class GameData : MonoBehaviour
         PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
 
         //Transitioning to the gameplay level
-        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        //this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        EVTData transitionEVT = new EVTData();
+        transitionEVT.sceneTransition = new SceneTransitionEVT(this.gameplayLevelName, 0.5f, 1);
+        EventManager.TriggerEvent(SceneTransitionEVT.eventNum, transitionEVT);
     }
 
 
@@ -203,7 +206,10 @@ public class GameData : MonoBehaviour
         this.loadType = LevelLoadType.LoadLevel;
 
         //Transitioning to the gameplay level
-        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        //this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        EVTData transitionEVT = new EVTData();
+        transitionEVT.sceneTransition = new SceneTransitionEVT(this.gameplayLevelName, 0.5f, 1);
+        EventManager.TriggerEvent(SceneTransitionEVT.eventNum, transitionEVT);
     }
 
 
