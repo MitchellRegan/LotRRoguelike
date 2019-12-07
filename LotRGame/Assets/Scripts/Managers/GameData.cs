@@ -111,6 +111,14 @@ public class GameData : MonoBehaviour
                 this.startingRace = Races.Minotaur;
                 break;
 
+            case 9:
+                this.startingRace = Races.Elemental;
+                break;
+
+            case 10:
+                this.startingRace = Races.Dragon;
+                break;
+
             default:
                 this.startingRace = Races.Human;
                 break;

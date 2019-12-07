@@ -1,0 +1,49 @@
+﻿//Enum used to reference each type of gear that can be unlocked
+public enum UnlockableGearType
+{
+    //Physical
+    Unarmed,
+    Daggers,
+    Swords,
+    Mauls,
+    Poles,
+    Bows,
+    Shields,
+    Social,
+
+    //Magic
+    HolyMagic,
+    DarkMagic,
+    ArcaneMagic,
+    FireMagic,
+    WaterMagic,
+    WindMagic,
+    ElectricMagic,
+    StoneMagic,
+
+    //Combo
+    Paladin,
+    PhoenixCleric,
+    Theif,
+    AscendedMonk,
+    FrostHammer,
+    Golem,
+    BellowingChanter,
+    BoltStormer,
+    Dragoon,
+    Magus,
+    Knight,
+    Inquisitor,
+    UnholyBehemoth,
+    Druid,
+    Ranger,
+    Necromancer,
+    Hellspear,
+    FlowingFist,
+    ThunderingRager,
+    GreyMage,
+    Monolith,
+    TempestBow,
+    Hoplite,
+    Stormcaller
+}
