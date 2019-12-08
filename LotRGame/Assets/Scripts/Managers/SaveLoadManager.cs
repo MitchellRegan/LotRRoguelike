@@ -10,12 +10,16 @@ public class SaveLoadManager : MonoBehaviour
     [HideInInspector]
     public static SaveLoadManager globalReference;
 
-    //The default name given to folders with invalid directory names
+    //The default name given to the current save game folder
     private string defaultFolderName = "CurrentGame";
+    //The path for the current save game and the names of each file required
     private string saveFolderPath = "/Zein/SaveFiles";
     private string defaultProgressFileName = "PlayerProgress.txt";
     private string defaultTileGridFileName = "TileGrid.txt";
     private string defaultMapFileName = "Map.png";
+    //The path for the unlock save progress folder and the name of the unlock file
+    private string unlockFolderPath = "/Zein/Unlocks";
+    private string defaultUnlockFileName = "UnlockProgress.txt";
 
 
 
@@ -557,6 +561,60 @@ public class SaveLoadManager : MonoBehaviour
 
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//7
+
+        yield return null;
+    }
+
+
+    //Function called externally to save the player unlocks
+    public void SaveUnlockProgress()
+    {
+        //Making sure the save folder exists
+        this.CheckSaveDirectory(this.unlockFolderPath);
+
+        //If for some reason there is no data for player unlocks, we create a new, blank version
+        if(GameData.globalReference.playerUnlocks == null)
+        {
+            GameData.globalReference.playerUnlocks = new UnlockablesData();
+        }
+
+        //Serializing the current unlock progress and saving it to a new text file
+        string jsonUnlockProgress = JsonUtility.ToJson(GameData.globalReference.playerUnlocks, true);
+        File.WriteAllText(Application.persistentDataPath + this.unlockFolderPath + "/" + this.defaultUnlockFileName, jsonUnlockProgress);
+    }
+
+
+    //Function called externally by GameData.cs to load the player unlocks
+    public void LoadUnlockProgress()
+    {
+        StartCoroutine(this.LoadUnlockablesCoroutine());
+    }
+
+
+    //Coroutine called from LoadUnlockProgress to load the unlockable data and send it to GameData
+    IEnumerator LoadUnlockablesCoroutine()
+    {
+        //If the folder directory doesn't exist
+        if (!Directory.Exists(Application.persistentDataPath + this.unlockFolderPath))
+        {
+            //Using the SaveUnlockProgress function to create the directory and a new file
+            this.SaveUnlockProgress();
+        }
+        //If the folder exists but the file doesn't
+        else if (!File.Exists(Application.persistentDataPath + this.unlockFolderPath + "/" + this.defaultUnlockFileName))
+        {
+            //Using the SaveUnlockProgress function to create a new file
+            this.SaveUnlockProgress();
+        }
+
+        //Getting all of the string data from the unlockables file
+        string fileData = File.ReadAllText(Application.persistentDataPath + this.unlockFolderPath + "/" + this.defaultUnlockFileName);
+
+        //De-serializing the data from the text file
+        UnlockablesData loadedUnlockables = JsonUtility.FromJson(fileData, typeof(UnlockablesData)) as UnlockablesData;
+
+        //Passing the data class to the GameData global reference
+        GameData.globalReference.playerUnlocks = loadedUnlockables;
 
         yield return null;
     }

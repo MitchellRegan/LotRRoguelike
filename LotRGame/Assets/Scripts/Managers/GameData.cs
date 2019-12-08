@@ -30,6 +30,10 @@ public class GameData : MonoBehaviour
     [HideInInspector]
     public bool allowNewUnlockables = true;
 
+    //Our reference to the class that tracks what the player has unlocked
+    [HideInInspector]
+    public UnlockablesData playerUnlocks;
+
     //The name of the current game folder where our save directory is
     // Current path: C:/Users/Me/AppData/LocalLow/DefaultCompany/LotRGame/SaveFiles
     [HideInInspector]
@@ -60,6 +64,16 @@ public class GameData : MonoBehaviour
     {
         //Loading in the player preferences
         SaveLoadManager.globalReference.LoadPlayerPreferences();
+        //Loading the data for which unlockables the player has unlocked
+        SaveLoadManager.globalReference.LoadUnlockProgress();
+    }
+
+
+    //Function called when this object is destroyed
+    private void OnDestroy()
+    {
+        //Saving the player unlockable progress
+        SaveLoadManager.globalReference.SaveUnlockProgress();
     }
 
 

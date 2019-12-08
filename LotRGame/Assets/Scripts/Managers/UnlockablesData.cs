@@ -129,6 +129,226 @@ public class UnlockablesData
     }
 
 
+    //Function called by SaveLoadData.cs to load in unlockable race settings
+    public void LoadRaceSetting(Races raceToLoad_, bool isUnlocked_)
+    {
+        switch (raceToLoad_)
+        {
+            case Races.Human:
+                this.human = isUnlocked_;
+                break;
+
+            case Races.Dwarf:
+                this.dwarf = isUnlocked_;
+                break;
+
+            case Races.Elf:
+                this.elf = isUnlocked_;
+                break;
+
+            case Races.HalfMan:
+                this.halfman = isUnlocked_;
+                break;
+
+            case Races.Orc:
+                this.orc = isUnlocked_;
+                break;
+
+            case Races.GillFolk:
+                this.gillfolk = isUnlocked_;
+                break;
+
+            case Races.ScaleSkin:
+                this.scaleskin = isUnlocked_;
+                break;
+
+            case Races.Amazon:
+                this.amazon = isUnlocked_;
+                break;
+
+            case Races.Minotaur:
+                this.minotaur = isUnlocked_;
+                break;
+
+            case Races.Elemental:
+                this.elemental = isUnlocked_;
+                break;
+
+            case Races.Dragon:
+                this.dragon = isUnlocked_;
+                break;
+        }
+    }
+
+
+    //Function called by SaveLoadData.cs to load in unlockable gear settings
+    public void LoadGearSetting(UnlockableGearType gearToLoad_, bool isUnlocked_)
+    {
+        switch (gearToLoad_)
+        {
+            case UnlockableGearType.Unarmed:
+                this.unarmed = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Daggers:
+                this.daggers = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Swords:
+                this.sword = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Mauls:
+                this.maul = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Poles:
+                this.pole = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Bows:
+                this.bow = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Shields:
+                this.shield = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Social:
+                this.social = isUnlocked_;
+                break;
+
+            case UnlockableGearType.HolyMagic:
+                this.holy = isUnlocked_;
+                break;
+
+            case UnlockableGearType.DarkMagic:
+                this.dark = isUnlocked_;
+                break;
+
+            case UnlockableGearType.ArcaneMagic:
+                this.arcane = isUnlocked_;
+                break;
+
+            case UnlockableGearType.FireMagic:
+                this.fire = isUnlocked_;
+                break;
+
+            case UnlockableGearType.WaterMagic:
+                this.water = isUnlocked_;
+                break;
+
+            case UnlockableGearType.WindMagic:
+                this.wind = isUnlocked_;
+                break;
+
+            case UnlockableGearType.ElectricMagic:
+                this.electric = isUnlocked_;
+                break;
+
+            case UnlockableGearType.StoneMagic:
+                this.stone = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Paladin:
+                this.paladin = isUnlocked_;
+                break;
+
+            case UnlockableGearType.PhoenixCleric:
+                this.phoenixCleric = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Theif:
+                this.theif = isUnlocked_;
+                break;
+
+            case UnlockableGearType.AscendedMonk:
+                this.ascendedMonk = isUnlocked_;
+                break;
+
+            case UnlockableGearType.FrostHammer:
+                this.frostHammer = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Golem:
+                this.golem = isUnlocked_;
+                break;
+
+            case UnlockableGearType.BellowingChanter:
+                this.bellowingChanter = isUnlocked_;
+                break;
+
+            case UnlockableGearType.BoltStormer:
+                this.boltStormer = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Dragoon:
+                this.dragoon = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Magus:
+                this.magus = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Knight:
+                this.knight = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Inquisitor:
+                this.inquisitor = isUnlocked_;
+                break;
+
+            case UnlockableGearType.UnholyBehemoth:
+                this.unholyBehemoth = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Druid:
+                this.druid = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Ranger:
+                this.ranger = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Necromancer:
+                this.necromancer = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Hellspear:
+                this.hellspear = isUnlocked_;
+                break;
+
+            case UnlockableGearType.FlowingFist:
+                this.flowingFist = isUnlocked_;
+                break;
+
+            case UnlockableGearType.ThunderingRager:
+                this.thunderingRager = isUnlocked_;
+                break;
+
+            case UnlockableGearType.GreyMage:
+                this.greyMage = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Monolith:
+                this.monolith = isUnlocked_;
+                break;
+
+            case UnlockableGearType.TempestBow:
+                this.tempestBow = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Hoplite:
+                this.hoplite = isUnlocked_;
+                break;
+
+            case UnlockableGearType.Stormcaller:
+                this.stormcaller = isUnlocked_;
+                break;
+        }
+    }
+
+
     //Function called externally from MainMenu scene to check if a race is unlocked
     public bool IsRaceUnlocked(Races raceToCheck_)
     {
