@@ -1394,6 +1394,15 @@ public class CreateTileGrid : MonoBehaviour
                     }
                 }
 
+                //Altering the pixel color based on the height of the tile
+                float tileHeight = CreateTileGrid.globalReference.tileGrid[c][r].elevation;
+                float maxHeight = 70;
+                float colorOffset = tileHeight / maxHeight;
+                colorOffset = 0.7f + (colorOffset * 0.3f);
+                pixelColor = new Color(pixelColor.r * colorOffset,
+                                        pixelColor.g * colorOffset,
+                                        pixelColor.b * colorOffset, 1);
+
                 //If we're on an even numbered column
                 if (c % 2 == 0)
                 {
