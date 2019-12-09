@@ -1466,5 +1466,19 @@ public class CreateTileGrid : MonoBehaviour
         Debug.LogError("CreateTileGrid.GetTileCoords >>> NULL RETURN");
         return tileCoord;
     }
+
+
+    //Function called from StartMapCreation to generate roads between all locations
+    private void GenerateRoads()
+    {
+
+    }
+
+
+    //Function called from GenerateTrails to connect 2 tiles with a road
+    private void CreateRoad(TileColRow tile1_, TileColRow tile2_)
+    {
+
+    }
 }
 
