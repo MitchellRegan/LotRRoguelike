@@ -27,6 +27,22 @@ public class OrbitCamera : MonoBehaviour
     //If the Right Mouse button has to be down to rotate
     public bool rightMouseActivate = false;
 
+    [Space(8)]
+
+    //Reference to the camera we're zooming in and out
+    public Camera zoomCam;
+    //The min/max distances that our camera will be at
+    public Vector2 camZoomMinMax = new Vector2(-15, -40);
+    //The animation curve we'll use to determine the camera zoom based on our angle
+    public AnimationCurve zoomCurve;
+
+
+
+    //Function called the first frame this object is awake
+    private void Start()
+    {
+        this.AdjustCameraZoom(this.transform.localEulerAngles.x);
+    }
 
 
     // Update is called once per frame
@@ -84,6 +100,27 @@ public class OrbitCamera : MonoBehaviour
 
             //Applying the rotation to this object's transform
             this.transform.localEulerAngles += new Vector3(xRot, yRot, 0);
+
+            //Changing our camera's zoom
+            this.AdjustCameraZoom(this.transform.localEulerAngles.x);
         }
+    }
+
+
+    //Called from Start and Update to zoom the main camera in/out based on our rotation
+    private void AdjustCameraZoom(float xRot_)
+    {
+        //Finding the percent that our rotation is between our min/max
+        float percent = (xRot_ - this.xRotMinMax.x) / (this.xRotMinMax.y - this.xRotMinMax.x);
+
+        //Using the zoom curve to change our percentage
+        percent = this.zoomCurve.Evaluate(percent);
+
+        //Finding the camera's new z distance based on our zoom min/max
+        float newZDist = (this.camZoomMinMax.y - this.camZoomMinMax.x) * percent;
+        newZDist += this.camZoomMinMax.x;
+        this.zoomCam.transform.localPosition = new Vector3(this.zoomCam.transform.localPosition.x,
+                                                            this.zoomCam.transform.localPosition.y,
+                                                            newZDist);
     }
 }
