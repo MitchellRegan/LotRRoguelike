@@ -723,7 +723,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 if(connectedTile != null)
                 {
                     //If the connected tile is a city tile or dungeon tile
-                    if (CreateTileGrid.globalReference.cityTiles.Contains(connectedTile) || CreateTileGrid.globalReference.dungeonTiles.Contains(connectedTile))
+                    if (TileMapManager.globalReference.cityTiles.Contains(connectedTile) || TileMapManager.globalReference.dungeonTiles.Contains(connectedTile))
                     {
                         //If the city/dungeon tile that this edge tile is near has a different region name
                         if (edgeTile.regionName != connectedTile.regionName)
@@ -739,7 +739,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                         foreach(TileInfo c in connectedTile.connectedTiles)
                         {
                             //If this second connected tile is a city tile
-                            if (CreateTileGrid.globalReference.cityTiles.Contains(c) || CreateTileGrid.globalReference.dungeonTiles.Contains(c))
+                            if (TileMapManager.globalReference.cityTiles.Contains(c) || TileMapManager.globalReference.dungeonTiles.Contains(c))
                             {
                                 //If the city tile that this edge tile is near has a different region name
                                 if (edgeTile.regionName != c.regionName)

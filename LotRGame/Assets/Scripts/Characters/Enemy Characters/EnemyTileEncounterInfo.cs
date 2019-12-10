@@ -18,7 +18,7 @@ public class EnemyTileEncounterInfo
         //Getting the object prefab for the encounter
         this.encounterPrefab = encounter_.encounterPrefab;
         //Getting the tile that this encounter is on
-        TileColRow encounterCoords = CreateTileGrid.globalReference.GetTileCoords(encounter_.GetComponent<Movement>().currentTile);
+        TileColRow encounterCoords = TileMapManager.globalReference.GetTileCoords(encounter_.GetComponent<Movement>().currentTile);
         this.encounterTileCol = encounterCoords.col;
         this.encounterTileRow = encounterCoords.row;
     }

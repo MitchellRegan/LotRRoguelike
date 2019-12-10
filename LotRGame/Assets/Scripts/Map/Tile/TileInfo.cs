@@ -242,8 +242,10 @@ public class TileInfo
     //Function called externally through PathfindingAlgorithms.cs in StepOutRegionEdge. Sets this tile's info based on another tile
     public void SetTileBasedOnAnotherTile(TileInfo otherTile_)
     {
+        CreateMapRegions mapRegions = TileMapManager.globalReference.GetComponent<CreateMapRegions>();
+
         //Looping through each of the very easy regions in the CreateTileGrid.cs prefab for the other tile's region
-        foreach(RegionInfo veRegion in CreateTileGrid.globalReference.veryEasyRegions)
+        foreach(RegionInfo veRegion in mapRegions.veryEasy.regions)
         {
             //If the region's type and name matches the other tile, then we use that region to define this one
             if(veRegion.environmentType == otherTile_.type && veRegion.regionName == otherTile_.regionName)
@@ -253,7 +255,7 @@ public class TileInfo
             }
         }
         //Looping through each of the easy regions in the CreateTileGrid.cs prefab for the other tile's region
-        foreach (RegionInfo eRegion in CreateTileGrid.globalReference.easyRegions)
+        foreach (RegionInfo eRegion in mapRegions.easy.regions)
         {
             //If the region's type and name matches the other tile, then we use that region to define this one
             if (eRegion.environmentType == otherTile_.type && eRegion.regionName == otherTile_.regionName)
@@ -263,7 +265,7 @@ public class TileInfo
             }
         }
         //Looping through each of the medium regions in the CreateTileGrid.cs prefab for the other tile's region
-        foreach (RegionInfo mRegion in CreateTileGrid.globalReference.mediumRegions)
+        foreach (RegionInfo mRegion in mapRegions.medium.regions)
         {
             //If the region's type and name matches the other tile, then we use that region to define this one
             if (mRegion.environmentType == otherTile_.type && mRegion.regionName == otherTile_.regionName)
@@ -273,7 +275,7 @@ public class TileInfo
             }
         }
         //Looping through each of the hard regions in the CreateTileGrid.cs prefab for the other tile's region
-        foreach (RegionInfo hRegion in CreateTileGrid.globalReference.hardRegions)
+        foreach (RegionInfo hRegion in mapRegions.hard.regions)
         {
             //If the region's type and name matches the other tile, then we use that region to define this one
             if (hRegion.environmentType == otherTile_.type && hRegion.regionName == otherTile_.regionName)
@@ -283,7 +285,7 @@ public class TileInfo
             }
         }
         //Looping through each of the very hard regions in the CreateTileGrid.cs prefab for the other tile's region
-        foreach (RegionInfo vhRegion in CreateTileGrid.globalReference.veryHardRegions)
+        foreach (RegionInfo vhRegion in mapRegions.veryHard.regions)
         {
             //If the region's type and name matches the other tile, then we use that region to define this one
             if (vhRegion.environmentType == otherTile_.type && vhRegion.regionName == otherTile_.regionName)
@@ -293,7 +295,7 @@ public class TileInfo
             }
         }
         //Looping through each of the very hard regions in the CreateTileGrid.cs prefab for the other tile's region
-        foreach (RegionInfo fRegion in CreateTileGrid.globalReference.finalRegions)
+        foreach (RegionInfo fRegion in mapRegions.final.regions)
         {
             //If the region's type and name matches the other tile, then we use that region to define this one
             if (fRegion.environmentType == otherTile_.type && fRegion.regionName == otherTile_.regionName)

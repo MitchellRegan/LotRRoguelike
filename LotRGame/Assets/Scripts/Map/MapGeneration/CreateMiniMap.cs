@@ -8,8 +8,8 @@ public class CreateMiniMap : MonoBehaviour
     public void CreateMapTexture(string mapNameExtras_ = "")
     {
         //Getting the height and width of the texture based on the size of the map
-        int mapWidth = CreateTileGrid.globalReference.cols;
-        int mapHeight = CreateTileGrid.globalReference.rows;
+        int mapWidth = TileMapManager.globalReference.cols;
+        int mapHeight = TileMapManager.globalReference.rows;
 
         //Creating a new map texture using the map width and height
         Texture2D mapTexture = new Texture2D(mapWidth * 2, (mapHeight * 2) + 1, TextureFormat.ARGB32, false);
@@ -25,12 +25,12 @@ public class CreateMiniMap : MonoBehaviour
 
 
                 //If this tile is one of the city tiles
-                if (TileMapManager.globalReference.cityTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
+                if (TileMapManager.globalReference.cityTiles.Contains(TileMapManager.globalReference.tileGrid[c][r]))
                 {
                     pixelColor = Color.white;
                 }
                 //If this tile is one of the dungeon tiles
-                else if (TileMapManager.globalReference.dungeonTiles.Contains(CreateTileGrid.globalReference.tileGrid[c][r]))
+                else if (TileMapManager.globalReference.dungeonTiles.Contains(TileMapManager.globalReference.tileGrid[c][r]))
                 {
                     pixelColor = Color.black;
                 }
@@ -38,7 +38,7 @@ public class CreateMiniMap : MonoBehaviour
                 else
                 {
                     //Setting the color based on the type of tile we're currently on
-                    switch (CreateTileGrid.globalReference.tileGrid[c][r].type)
+                    switch (TileMapManager.globalReference.tileGrid[c][r].type)
                     {
                         case LandType.Ocean:
                             pixelColor = Color.blue;
@@ -75,7 +75,7 @@ public class CreateMiniMap : MonoBehaviour
                 }
 
                 //Altering the pixel color based on the height of the tile
-                float tileHeight = CreateTileGrid.globalReference.tileGrid[c][r].elevation;
+                float tileHeight = TileMapManager.globalReference.tileGrid[c][r].elevation;
                 float maxHeight = 70;
                 float colorOffset = tileHeight / maxHeight;
                 colorOffset = 0.7f + (colorOffset * 0.3f);

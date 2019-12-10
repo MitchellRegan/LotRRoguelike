@@ -93,7 +93,7 @@ public class MiniMapUI : MonoBehaviour
             this.currentTile = partyTile;
 
             //Getting the row and column of the current tile
-            TileColRow newTileColRow = CreateTileGrid.globalReference.GetTileCoords(partyTile);
+            TileColRow newTileColRow = TileMapManager.globalReference.GetTileCoords(partyTile);
 
             if (newTileColRow != null)
             {
@@ -101,8 +101,8 @@ public class MiniMapUI : MonoBehaviour
                 RectTransform ourRect = this.GetComponent<RectTransform>();
 
                 //Setting the pivot position based on the offsets
-                ourRect.pivot = new Vector2((newTileColRow.col * 1f) / (CreateTileGrid.globalReference.cols * 1f),
-                                  (newTileColRow.row * 1f) / (CreateTileGrid.globalReference.rows * 1f));
+                ourRect.pivot = new Vector2((newTileColRow.col * 1f) / (TileMapManager.globalReference.cols * 1f),
+                                  (newTileColRow.row * 1f) / (TileMapManager.globalReference.rows * 1f));
                 //Re-centering the map sprite so that our pivot position is now at 0,0 in the middle of the minimap
                 ourRect.localPosition = new Vector3();
             }

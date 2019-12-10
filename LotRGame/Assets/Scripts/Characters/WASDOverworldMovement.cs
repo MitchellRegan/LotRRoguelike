@@ -78,7 +78,7 @@ public class WASDOverworldMovement : MonoBehaviour
         if (this.GetComponent<PartyGroup>())
         {
             //The tile grid needs to update the visible tiles
-            CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
+            TileMapManager.globalReference.GenerateVisibleLand(this.currentTile);
             if (QuestTracker.globalReference != null)
             {
                 //Checking to see if our current tile is a destination for a quest

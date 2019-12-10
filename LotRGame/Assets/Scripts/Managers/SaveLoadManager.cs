@@ -261,15 +261,15 @@ public class SaveLoadManager : MonoBehaviour
 
         //Creating a 2D list of strings to hold all of the serialized TileInfo classes in the tile grid
         List<List<string>> serializedTileGrid = new List<List<string>>();
-        for(int col = 0; col < CreateTileGrid.globalReference.tileGrid.Count; ++col)
+        for(int col = 0; col < TileMapManager.globalReference.tileGrid.Count; ++col)
         {
             //Creating a new column (list of tile strings)
             List<string> newCol = new List<string>();
 
-            for(int row = 0; row < CreateTileGrid.globalReference.tileGrid[0].Count; ++row)
+            for(int row = 0; row < TileMapManager.globalReference.tileGrid[0].Count; ++row)
             {
                 //Serializing the current tile using JsonUtility
-                string jsonTile = JsonUtility.ToJson(CreateTileGrid.globalReference.tileGrid[col][row]);
+                string jsonTile = JsonUtility.ToJson(TileMapManager.globalReference.tileGrid[col][row]);
                 //Adding the tile string to the list of serialized tiles
                 newCol.Add(jsonTile);
             }
@@ -280,20 +280,20 @@ public class SaveLoadManager : MonoBehaviour
 
         //Creating a list of strings to hold serialized TileInfo classes for city tiles
         List<string> serializedCities = new List<string>();
-        for(int c = 0; c < CreateTileGrid.globalReference.cityTiles.Count; ++c)
+        for(int c = 0; c < TileMapManager.globalReference.cityTiles.Count; ++c)
         {
             //Serializing the current city tile using JsonUtility
-            string jsonCityTile = JsonUtility.ToJson(CreateTileGrid.globalReference.cityTiles[c]);
+            string jsonCityTile = JsonUtility.ToJson(TileMapManager.globalReference.cityTiles[c]);
             //Adding the city tile to the list of serialized cities
             serializedCities.Add(jsonCityTile);
         }
 
         //Creating a list of strings to hold serialized TileInfo classes for dungeon tiles
         List<string> serializedDungeons = new List<string>();
-        for(int d = 0; d < CreateTileGrid.globalReference.dungeonTiles.Count; ++d)
+        for(int d = 0; d < TileMapManager.globalReference.dungeonTiles.Count; ++d)
         {
             //Serializing the current dungeon tile using JsonUtility
-            string jsonDungeonTile = JsonUtility.ToJson(CreateTileGrid.globalReference.dungeonTiles[d]);
+            string jsonDungeonTile = JsonUtility.ToJson(TileMapManager.globalReference.dungeonTiles[d]);
             //Adding the city tile to the list of serialized dungeons
             serializedDungeons.Add(jsonDungeonTile);
         }
@@ -392,9 +392,9 @@ public class SaveLoadManager : MonoBehaviour
         }
 
         //Setting the CreateTileGrid references to the loaded lists of tiles
-        CreateTileGrid.globalReference.tileGrid = loadedTileGrid;
-        CreateTileGrid.globalReference.cityTiles = loadedCityTiles;
-        CreateTileGrid.globalReference.dungeonTiles = loadedDungeonTiles;
+        TileMapManager.globalReference.tileGrid = loadedTileGrid;
+        TileMapManager.globalReference.cityTiles = loadedCityTiles;
+        TileMapManager.globalReference.dungeonTiles = loadedDungeonTiles;
     }
     
 
@@ -410,7 +410,7 @@ public class SaveLoadManager : MonoBehaviour
         this.CheckSaveDirectory(GameData.globalReference.saveFolder);
         
         //Creating a new PlayerProgress class that we'll save
-        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, CreateTileGrid.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
+        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TileMapManager.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
         //Serializing the current progress
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
@@ -465,8 +465,8 @@ public class SaveLoadManager : MonoBehaviour
         Random.state = loadedProgress.randState;
 
         //Setting the CreateTileGrid.cs variables
-        CreateTileGrid.globalReference.cols = loadedProgress.gridCols;
-        CreateTileGrid.globalReference.rows = loadedProgress.gridRows;
+        TileMapManager.globalReference.cols = loadedProgress.gridCols;
+        TileMapManager.globalReference.rows = loadedProgress.gridRows;
 
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//1
@@ -488,7 +488,7 @@ public class SaveLoadManager : MonoBehaviour
         if (loadedProgress.partyGroup1 != null)
         {
             //Creating a new PartyGroup instance
-            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
+            GameObject newPartyObj = GameObject.Instantiate(TileMapManager.globalReference.partyGroupPrefab);
             PartyGroup partyGroup1 = newPartyObj.GetComponent<PartyGroup>();
 
             //Setting the party variables
@@ -502,7 +502,7 @@ public class SaveLoadManager : MonoBehaviour
                 if (loadedProgress.partyGroup1.partyCharacters[c] != null)
                 {
                     //Creating a new character instance
-                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
+                    GameObject newCharacterObj = GameObject.Instantiate(TileMapManager.globalReference.testCharacter);
                     Character newCharacter = newCharacterObj.GetComponent<Character>();
 
                     //Adding the new character to our new party group
@@ -522,13 +522,13 @@ public class SaveLoadManager : MonoBehaviour
             EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//4
 
             //Getting the tile grid location of the player group and getting the tile connections
-            TileInfo partyLocation = CreateTileGrid.globalReference.tileGrid[loadedProgress.partyGroup1.tileCol][loadedProgress.partyGroup1.tileRow];
+            TileInfo partyLocation = TileMapManager.globalReference.tileGrid[loadedProgress.partyGroup1.tileCol][loadedProgress.partyGroup1.tileRow];
             partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
             for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
             {
                 int col = partyLocation.connectedTileCoordinates[coord].col;
                 int row = partyLocation.connectedTileCoordinates[coord].row;
-                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
+                partyLocation.connectedTiles[coord] = TileMapManager.globalReference.tileGrid[col][row];
             }
             partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
@@ -554,7 +554,7 @@ public class SaveLoadManager : MonoBehaviour
             //Getting the encounter reference
             EnemyEncounter encounterPrefab = loadedProgress.enemyTileEncounters[e].encounterPrefab.GetComponent<EnemyEncounter>();
             //Getting the enemy's tile position
-            TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
+            TileInfo enemyTile = TileMapManager.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
             //Telling the character manager to instantiate the prefab
             CharacterManager.globalReference.CreateEnemyEncounter(encounterPrefab, enemyTile);
         }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CreateMiniMap))]
-[RequireComponent(typeof(CreateRoads))]
-[RequireComponent(typeof(DistortRegionBorders))]
-[RequireComponent(typeof(PopulateMapLocations))]
-[RequireComponent(typeof(CreateMapRegions))]
 [RequireComponent(typeof(CreateTileGrid))]
+[RequireComponent(typeof(CreateMapRegions))]
+[RequireComponent(typeof(PopulateMapLocations))]
+[RequireComponent(typeof(DistortRegionBorders))]
+[RequireComponent(typeof(CreateRoads))]
+[RequireComponent(typeof(CreateMiniMap))]
 public class TileMapManager : MonoBehaviour
 {
     //Static reference to this manager
@@ -118,6 +118,8 @@ public class TileMapManager : MonoBehaviour
         //Have CreateRoads.cs connect the locations on the map with roads
         this.GetComponent<CreateRoads>().DrawMapRoads();
 
+        this.SetPlayerPartyPosition();
+
         //Have CreateMiniMap.cs output the map.png image
         this.GetComponent<CreateMiniMap>().CreateMapTexture();
 
@@ -133,7 +135,7 @@ public class TileMapManager : MonoBehaviour
         TileInfo startTile = this.tileGrid[0][0];
 
         //Looping through to each region in the very easy regions to find a starting tile for the player group
-        foreach (RegionInfo ver in this.GetComponent<CreateMapRegions>().easy.regions)
+        foreach (RegionInfo ver in this.GetComponent<CreateMapRegions>().veryEasy.regions)
         {
             //Looping through each city tile until we find one that matches this region
             foreach (TileInfo city in this.cityTiles)
@@ -303,8 +305,10 @@ public class TileMapManager : MonoBehaviour
             //Resetting the tile to say it hasn't been checked
             newTile.hasBeenChecked = false;
 
+            GameObject hexMesh = this.GetComponent<CreateTileGrid>().hexMesh.gameObject;
+
             //Creating an instance of the hex mesh for this tile
-            GameObject tileMesh = Instantiate(this.hexMesh.gameObject, new Vector3(newTile.tilePosition.x, newTile.elevation, newTile.tilePosition.z), new Quaternion());
+            GameObject tileMesh = Instantiate(hexMesh, new Vector3(newTile.tilePosition.x, newTile.elevation, newTile.tilePosition.z), new Quaternion());
             //Setting the mesh's material to the correct one for the tile
             Material[] tileMat = tileMesh.GetComponent<MeshRenderer>().materials;
             tileMat[0] = newTile.tileMaterial;

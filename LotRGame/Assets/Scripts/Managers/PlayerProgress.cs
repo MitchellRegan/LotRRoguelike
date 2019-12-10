@@ -37,7 +37,7 @@ public class PlayerProgress
 
 
     //Constructor function for this class
-    public PlayerProgress(GameData gameData_, CreateTileGrid tileGrid_, TimePanelUI timePanel_, LevelUpManager levelUpManager_, CharacterManager charManager_, QuestTracker questTracker_)
+    public PlayerProgress(GameData gameData_, TileMapManager tileGrid_, TimePanelUI timePanel_, LevelUpManager levelUpManager_, CharacterManager charManager_, QuestTracker questTracker_)
     {
         //Setting the GameData.cs variables
         this.difficulty = gameData_.currentDifficulty;

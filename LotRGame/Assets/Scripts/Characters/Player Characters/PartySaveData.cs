@@ -20,7 +20,7 @@ public class PartySaveData
     {
         this.combatDist = groupToSave_.combatDistance;
 
-        TileColRow tileLocation = CreateTileGrid.globalReference.GetTileCoords(groupToSave_.GetComponent<WASDOverworldMovement>().currentTile);
+        TileColRow tileLocation = TileMapManager.globalReference.GetTileCoords(groupToSave_.GetComponent<WASDOverworldMovement>().currentTile);
         this.tileCol = tileLocation.col;
         this.tileRow = tileLocation.row;
 

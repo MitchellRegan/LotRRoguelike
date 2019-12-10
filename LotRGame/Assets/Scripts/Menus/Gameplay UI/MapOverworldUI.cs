@@ -44,13 +44,13 @@ public class MapOverworldUI : MonoBehaviour
 	private void Update ()
     {
         //Finding the party group's row and col coords in the overworld
-        TileColRow partyColRow = CreateTileGrid.globalReference.GetTileCoords(this.partyMove.currentTile);
+        TileColRow partyColRow = TileMapManager.globalReference.GetTileCoords(this.partyMove.currentTile);
 
         if(partyColRow != null)
         {
             //Setting the anchor position of the player location object relative to the size of this UI object
-            Vector2 anchorPos = new Vector2((partyColRow.col * 1f) / (CreateTileGrid.globalReference.cols * 1f),
-                                  (partyColRow.row * 1f) / (CreateTileGrid.globalReference.rows * 1f));
+            Vector2 anchorPos = new Vector2((partyColRow.col * 1f) / (TileMapManager.globalReference.cols * 1f),
+                                  (partyColRow.row * 1f) / (TileMapManager.globalReference.rows * 1f));
 
             this.playerLocationObj.anchorMin = anchorPos;
             this.playerLocationObj.anchorMax = anchorPos;
