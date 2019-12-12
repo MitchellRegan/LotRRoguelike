@@ -4,10 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(CombatTileHandler))]
+[RequireComponent(typeof(CombatInitiativeHandler))]
+[RequireComponent(typeof(CombatUIHandler))]
 public class CombatManager : MonoBehaviour
 {
     //Static reference to this combat manager
     public static CombatManager globalReference;
+
+    //References to the scripts that handle different aspects of the combat gameplay
+    public CombatTileHandler tileHandler;
+    public CombatInitiativeHandler initiativeHandler;
+    public CombatUIHandler uiHandler;
 
     //The value that attacking characters must reach after all combat modifiers to hit their opponent. Used in AttackAction and WeaponAction
     public const int baseHitDC = 20;
