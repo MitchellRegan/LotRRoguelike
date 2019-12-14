@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 [RequireComponent(typeof(CombatTileHandler))]
 [RequireComponent(typeof(CombatInitiativeHandler))]
+[RequireComponent(typeof(CombatCharacterHandler))]
 [RequireComponent(typeof(CombatUIHandler))]
 public class CombatManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class CombatManager : MonoBehaviour
     //References to the scripts that handle different aspects of the combat gameplay
     public CombatTileHandler tileHandler;
     public CombatInitiativeHandler initiativeHandler;
+    public CombatCharacterHandler characterHandler;
     public CombatUIHandler uiHandler;
 
     //The value that attacking characters must reach after all combat modifiers to hit their opponent. Used in AttackAction and WeaponAction
@@ -201,7 +203,7 @@ public class CombatManager : MonoBehaviour
             //Adding each character's attack speed to their current initative 
             case CombatState.IncreaseInitiative:
                 //Making sure the highlight ring is invisible
-                this.IncreaseInitiative();
+                this.initiativeHandler.IncreaseInitiatives();
                 break;
 
             //Hilighting the selected character whose turn it is
@@ -357,59 +359,9 @@ public class CombatManager : MonoBehaviour
         
         //Creating the Combat Character Sprites
         this.CreateCharacterSprites();
-        
-        //Looping through and setting all of the player initiative bars to display the correct character
-        for (int p = 0; p < this.playerInitiativeSliders.Count; ++p)
-        {
-            //if the current index isn't outside the count of characters
-            if(p < this.playerCharactersInCombat.Count)
-            {
-                //The initiative slider is shown
-                this.playerInitiativeSliders[p].background.gameObject.SetActive(true);
-                //Makes sure the initiative is set to 0
-                this.playerInitiativeSliders[p].initiativeSlider.value = 0;
-                //Setting the character's name
-                this.playerInitiativeSliders[p].characterName.text = this.playerCharactersInCombat[p].firstName;
-                //Setting the slider's values to match the character's health
-                this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
-                this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
-                //Making the background panel set to the inactive color
-                this.playerInitiativeSliders[p].background.color = this.inactivePanelColor;
 
-            }
-            //If the index is outside the count of characters
-            else
-            {
-                //The initiative slider is hidden
-                this.playerInitiativeSliders[p].background.gameObject.SetActive(false);
-            }
-        }
-
-        //Looping through and setting all of the enemy initiative bars to display the correct enemy
-        for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
-        {
-            //if the current index isn't outside the count of enemies
-            if (e < this.enemyCharactersInCombat.Count)
-            {
-                //The initiative slider is shown
-                this.enemyInitiativeSliders[e].background.gameObject.SetActive(true);
-                //Makes sure the initiative is set to 0
-                this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
-                //Setting the enemy's name
-                this.enemyInitiativeSliders[e].characterName.text = this.enemyCharactersInCombat[e].firstName;
-                //Setting the slider's values to match the enemy's health
-                this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
-                this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
-                //Making the background panel set to the inactive color
-                this.enemyInitiativeSliders[e].background.color = this.inactivePanelColor;
-            }
-            //If the index is outside the count of enemies
-            else
-            {
-                //The initiative slider is hidden
-                this.enemyInitiativeSliders[e].background.gameObject.SetActive(false);
-            }
-        }
+        this.initiativeHandler.ResetForCombatStart();
+        this.uiHandler.ResetForCombatStart();
 
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
@@ -955,7 +907,7 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called to set the amount of time to wait
-    private void SetWaitTime(float timeToWait_, CombatState stateAfterWait_ = CombatState.IncreaseInitiative)
+    public void SetWaitTime(float timeToWait_, CombatState stateAfterWait_ = CombatState.IncreaseInitiative)
     {
         //If the state after we're done waiting is GameOver or EndCombat, we don't change states
         if(this.stateAfterWait == CombatState.EndCombat || this.stateAfterWait == CombatState.GameOver)
@@ -1155,122 +1107,7 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    //Function called from AttackAction.PerformAction to show that an attack missed
-    public void DisplayMissedAttack(float timeDelay_, CombatTile attackedCharTile_)
-    {
-        //Creating an instance of the damage text object prefab
-        GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
-        //Parenting the damage text object to this object's transform
-        newDamageDisplay.transform.SetParent(this.transform);
-        //Getting the DamageText component reference
-        DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
-        //Setting the info for the text
-        newDamageText.DisplayMiss(timeDelay_, attackedCharTile_.transform.position);
-    }
-
-
-    //Function called from Update. Loops through all characters and increases their initiative
-    private void IncreaseInitiative()
-    {
-        //Looping through each player character
-        for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
-        {
-            //Making sure the current character isn't dead first
-            if (this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
-            {
-                //Reducing the character's action cooldown times
-                this.playerCharactersInCombat[p].charActionList.ReduceCooldowns(Time.deltaTime);
-
-                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
-                float perkBoost = 0;
-                foreach (Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
-                {
-                    if (charPerk.GetType() == typeof(InitiativeBoostPerk))
-                    {
-                        perkBoost += charPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
-                    }
-                }
-
-                //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
-                CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost);
-
-                //If the character's initiative is lower than 10% of their base initiative, we set it to 10%
-                if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
-                {
-                    initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
-                }
-
-                this.playerInitiativeSliders[p].initiativeSlider.value += initiativeToAdd;
-
-                //If the slider is filled, this character is added to the acting character list
-                if (this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
-                {
-                    this.actingCharacters.Add(this.playerCharactersInCombat[p]);
-                }
-            }
-            //If the character is dead but their initiative slider isn't greyed out
-            else if (this.playerInitiativeSliders[p].background.color != Color.grey)
-            {
-                this.playerInitiativeSliders[p].background.color = Color.grey;
-            }
-        }
-
-        
-        //Looping through each enemy character
-        for (int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
-        {
-            //Making sure the current enemy isn't dead first
-            if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
-            {
-                //Reducing the character's action cooldown times
-                this.enemyCharactersInCombat[e].charActionList.ReduceCooldowns(Time.deltaTime);
-                
-                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
-                float perkBoost = 0;
-                foreach (Perk enemyPerk in this.enemyCharactersInCombat[e].charPerks.allPerks)
-                {
-                    if (enemyPerk.GetType() == typeof(InitiativeBoostPerk))
-                    {
-                        perkBoost += enemyPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
-                    }
-                }
-                
-                //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
-                CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost);
-                
-                //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
-                if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
-                {
-                    initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
-                }
-                
-                this.enemyInitiativeSliders[e].initiativeSlider.value += initiativeToAdd;
-
-                //If the slider is filled, this character is added to the acting character list
-                if (this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
-                {
-                    //Making sure this character isn't already in the list of acting characters
-                    if (!this.actingCharacters.Contains(this.enemyCharactersInCombat[e]))
-                    {
-                        this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
-                    }
-                }
-            }
-            //If the enemy is dead but their initiative slider isn't greyed out
-            else if (this.enemyInitiativeSliders[e].background.color != Color.grey)
-            {
-                this.enemyInitiativeSliders[e].background.color = Color.grey;
-            }
-        }
-        
-        //If there are any characters in the acting Characters list, the state changes so we stop updating initiative meters
-        if (this.actingCharacters.Count != 0)
-        {
-            this.SetWaitTime(1, CombatState.SelectAction);
-        }
-    }
+    
 
 
     //Function called externally to find out which combat tile the given character is on

@@ -196,7 +196,7 @@ public class WeaponAction : AttackAction
             //If there are no attack damage rolls (like if the attack was just to inflict an effect) the "Miss" text isn't shown
             if (this.damageDealt.Count > 0)
             {
-                CombatManager.globalReference.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
+                CombatManager.globalReference.uiHandler.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
             }
 
             //If the visual effect doesn't require a hit to be spawned, we create it at the target tile
@@ -228,7 +228,7 @@ public class WeaponAction : AttackAction
             if (this.damageDealt.Count > 0)
             {
                 //Miss
-                CombatManager.globalReference.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
+                CombatManager.globalReference.uiHandler.DisplayMissedAttack(this.timeToCompleteAction, targetTile_);
             }
 
             //If the visual effect doesn't require a hit to be spawned, we create it at the target tile

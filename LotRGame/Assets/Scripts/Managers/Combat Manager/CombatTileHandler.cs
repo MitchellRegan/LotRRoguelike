@@ -92,4 +92,15 @@ public class CombatTileHandler : MonoBehaviour
             this.combatTileGrid[col_ + 1][row_].left = this.combatTileGrid[col_][row_];
         }
     }
+
+
+    //Function called externally to find out which combat tile the given character is on
+    public CombatTile3D FindCharactersTile(Character characterToFind_)
+    {
+        //Getting less confusing references to the character's row/column position
+        int row = characterToFind_.charCombatStats.gridPositionRow;
+        int col = characterToFind_.charCombatStats.gridPositionCol;
+
+        return this.combatTileGrid[col][row];
+    }
 }

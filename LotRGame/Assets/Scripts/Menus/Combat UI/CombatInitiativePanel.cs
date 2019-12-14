@@ -13,4 +13,12 @@ public class CombatInitiativePanel : MonoBehaviour
     public Slider initiativeSlider;
     //The background image that changes color
     public Image backgroundImage;
+
+
+
+    //Function called externally to set our background image color
+    public void SetBackgroundColor(Color new_color_)
+    {
+        this.backgroundImage.color = new_color_;
+    }
 }
