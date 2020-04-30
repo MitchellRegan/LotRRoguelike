@@ -40,7 +40,7 @@ public class QuestItemIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: QuestItemIDList.CheckForInvalidIDs: Empty slot in quest item list at index " + q1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if (this.questItemList[q1].objType != IDTag.ObjectType.ItemQuest)
+            else if (this.questItemList[q1].objType != ObjectType.ItemQuest)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: QuestItemIDList.CheckForInvalidIDs: Invalid ID type at index " + q1);
             }

@@ -145,7 +145,7 @@ public class ModifyThreatEffect : Effect
         if (this.tickOnRealTime)
         {
             //We can only track our timer when the combat manager is increasing initiative
-            if (CombatManager.globalReference.currentState == CombatManager.combatState.IncreaseInitiative)
+            if (CombatManager.globalReference.currentState == CombatState.IncreaseInitiative)
             {
                 //Increasing our tick timer
                 this.currentTickTime += Time.deltaTime;

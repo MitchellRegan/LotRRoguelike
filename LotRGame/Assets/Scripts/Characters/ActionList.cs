@@ -155,25 +155,25 @@ public class ActionList : MonoBehaviour
         //Adding the action to the correct list based on its type
         switch (actToAdd_.type)
         {
-            case Action.ActionType.Major:
+            case ActionType.Major:
                 if (!this.majorActions.Contains(actToAdd_))
                 {
                     this.majorActions.Add(actToAdd_);
                 }
                 break;
-            case Action.ActionType.Minor:
+            case ActionType.Minor:
                 if (!this.minorActions.Contains(actToAdd_))
                 {
                     this.minorActions.Add(actToAdd_);
                 }
                 break;
-            case Action.ActionType.Fast:
+            case ActionType.Fast:
                 if (!this.fastActions.Contains(actToAdd_))
                 {
                     this.fastActions.Add(actToAdd_);
                 }
                 break;
-            case Action.ActionType.Massive:
+            case ActionType.Massive:
                 if (!this.massiveActions.Contains(actToAdd_))
                 {
                     this.massiveActions.Add(actToAdd_);
@@ -730,36 +730,6 @@ public class ActionList : MonoBehaviour
     }
 }
 
-//Class used in ActionList.cs to handle recharging spells
-[System.Serializable]
-public class SpellRecharge
-{
-    //The reference to the spell that's recharging
-    public SpellAction spellThatsCharging;
-    //The amount of time remaining for this spell to finish recharging
-    public int hoursRemaining = 0;
-
-    //Constructor for this class
-    public SpellRecharge(SpellAction spell_, int hours_)
-    {
-        this.spellThatsCharging = spell_;
-        this.hoursRemaining = hours_;
-    }
-}
-
-//Class used in ActionList.cs to track each type of ability this character has used and remaining cooldown time
-public class ActionCooldown
-{
-    //The action that's cooling down
-    public Action actionCoolingDown;
-    //The remaining time left on the cooldown
-    public float remainingCooldownTime = 0;
 
 
-    //Constructor function for this class
-    public ActionCooldown(Action actionCoolingDown_, float cooldownTime_)
-    {
-        this.actionCoolingDown = actionCoolingDown_;
-        this.remainingCooldownTime = cooldownTime_;
-    }
-}
+

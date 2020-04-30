@@ -9,7 +9,7 @@ public class MovementBoostPerk : Perk
     public int addedMovementSpaces = 0;
 
     //The type of action that this perk effects
-    public Action.ActionType actionTypeToBoost = Action.ActionType.Minor;
+    public ActionType actionTypeToBoost = ActionType.Minor;
 
     //NOTE: This is used in CombatActionPanelUI.SelectActionAtIndex
 }

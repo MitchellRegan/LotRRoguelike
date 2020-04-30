@@ -71,12 +71,12 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             StateBehavior defaultBehavior = new StateBehavior();
 
             //Creating a basic condition, even though we don't need to use it because it won't change
-            defaultBehavior.conditional = StateBehavior.ConditionalType.PersonalHPRange;
+            defaultBehavior.conditional = ConditionalType.PersonalHPRange;
             defaultBehavior.healthRange = new Vector2(0, 1);
 
             //Making it so this enemy just melee attacks whoever is highest on the threat list
-            defaultBehavior.preferredTargetType = StateBehavior.PlayerTargetPreference.HighestThreat;
-            defaultBehavior.state = StateBehavior.AICombatState.Hostile;
+            defaultBehavior.preferredTargetType = PlayerTargetPreference.HighestThreat;
+            defaultBehavior.state = AICombatState.Hostile;
             defaultBehavior.preferredDistFromTarget = 1;
             //Initializing an empty action list so we don't get errors
             defaultBehavior.addedActions = new List<Action>();
@@ -253,19 +253,19 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         //Finding out which function to call for the highest priority behavior
         switch(this.behaviorList[this.validBehaviorIndexList[0]].state)
         {
-            case StateBehavior.AICombatState.Hostile:
+            case AICombatState.Hostile:
                 this.HostileStateLogic();
                 break;
 
-            case StateBehavior.AICombatState.Support:
+            case AICombatState.Support:
                 this.SupportStateLogic();
                 break;
 
-            case StateBehavior.AICombatState.Defensive:
+            case AICombatState.Defensive:
                 this.DefensiveStateLogic();
                 break;
 
-            case StateBehavior.AICombatState.Terrified:
+            case AICombatState.Terrified:
                 this.TerrifiedStateLogic();
                 break;
         }
@@ -294,7 +294,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             switch(this.behaviorList[b].conditional)
             {
                 //If this enemy's health is between a specific health range
-                case StateBehavior.ConditionalType.PersonalHPRange:
+                case ConditionalType.PersonalHPRange:
                     //Getting this enemy's health percentage
                     float ourHPPercent = (this.ourCharacter.charPhysState.currentHealth * 1f) / (this.ourCharacter.charPhysState.maxHealth * 1f);
                     //If our HP is within this condition's health range, we meet the condition
@@ -305,7 +305,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If any of this enemy's ally's health are between a specific range
-                case StateBehavior.ConditionalType.OneAllyHPRange:
+                case ConditionalType.OneAllyHPRange:
                     //Looping through all of the enemies in this combat
                     foreach(Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
                     {
@@ -325,7 +325,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If half of this enemy's ally's health are between a specific range
-                case StateBehavior.ConditionalType.HalfAlliesHPRange:
+                case ConditionalType.HalfAlliesHPRange:
                     //Making an int to track the number of allies whose health is within the range
                     int numAlliesInRange = 0;
                     //Looping through all of the enemies in this combat
@@ -353,7 +353,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If all of this enemy's ally's health are between a specific range
-                case StateBehavior.ConditionalType.AllAlliesHPRange:
+                case ConditionalType.AllAlliesHPRange:
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
                     //Looping through all of the enemies in this combat
@@ -375,7 +375,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If this enemy has a debuff
-                case StateBehavior.ConditionalType.Debuffed:
+                case ConditionalType.Debuffed:
                     //Looping through all of the effects on this character
                     foreach(Effect combatEffect in this.ourCharacter.charCombatStats.combatEffects)
                     {
@@ -394,7 +394,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                             foreach(StatModifier change in mse.statChanges)
                             {
                                 //If the change isn't for initiative, the value is added normally
-                                if(change.modifiedStat != StatModifier.StatName.Initiative)
+                                if(change.modifiedStat != StatName.Initiative)
                                 {
                                     netStatChange += change.amountToChange;
                                 }
@@ -416,7 +416,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If any of this enemy's allies have a debuff:
-                case StateBehavior.ConditionalType.AllyDebuffed:
+                case ConditionalType.AllyDebuffed:
                     //Looping through all of the enemies in combat to check their effects
                     foreach(Character allyEnemy in CombatManager.globalReference.enemyCharactersInCombat)
                     {
@@ -447,7 +447,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                     foreach (StatModifier change in mse.statChanges)
                                     {
                                         //If the change isn't for initiative, the value is added normally
-                                        if (change.modifiedStat != StatModifier.StatName.Initiative)
+                                        if (change.modifiedStat != StatName.Initiative)
                                         {
                                             netStatChange += change.amountToChange;
                                         }
@@ -471,7 +471,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If at least one player character's health is between a specific range
-                case StateBehavior.ConditionalType.OnePlayerHPRange:
+                case ConditionalType.OnePlayerHPRange:
                     //Looping through all of the player characters in this combat
                     foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
                     {
@@ -491,7 +491,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If at least half of the player characters' health are between a specific range
-                case StateBehavior.ConditionalType.HalfPlayersHPRange:
+                case ConditionalType.HalfPlayersHPRange:
                     //Making an int to track the number of player characters whose health is within the range
                     int numPlayersInRange = 0;
                     //Looping through all of the player characters in this combat
@@ -519,7 +519,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     break;
 
                 //If all of the player characters' health are between a specific range
-                case StateBehavior.ConditionalType.AllPlayersHPRange:
+                case ConditionalType.AllPlayersHPRange:
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
                     //Looping through all of the player characters in this combat
@@ -628,7 +628,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (addedAct.type)
                         {
-                            case Action.ActionType.Major:
+                            case ActionType.Major:
                                 standardAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if(highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -638,7 +638,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Minor:
+                            case ActionType.Minor:
                                 secondaryAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if(highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -648,7 +648,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Fast:
+                            case ActionType.Fast:
                                 quickAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if(highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -658,7 +658,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Massive:
+                            case ActionType.Massive:
                                 fullRoundAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if(highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -687,7 +687,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (atkAct.type)
                         {
-                            case Action.ActionType.Major:
+                            case ActionType.Major:
                                 standardAtkDmg.Add(atkAct, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -697,7 +697,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Minor:
+                            case ActionType.Minor:
                                 secondaryAtkDmg.Add(atkAct, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -707,7 +707,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Fast:
+                            case ActionType.Fast:
                                 quickAtkDmg.Add(atkAct, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -717,7 +717,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Massive:
+                            case ActionType.Massive:
                                 fullRoundAtkDmg.Add(atkAct, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -806,7 +806,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action addedAct in this.behaviorList[0].addedActions)
             {
                 //If the current action is a full round action and is a move action, we're allowed to use full round move actions
-                if(addedAct.type == Action.ActionType.Massive && addedAct.GetType() == typeof(MoveAction))
+                if(addedAct.type == ActionType.Massive && addedAct.GetType() == typeof(MoveAction))
                 {
                     canUseFullRoundMove = true;
                     break;
@@ -846,21 +846,21 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 switch(mv.type)
                 {
                     //If we're taking a quick move act, we can't make a quick attack act
-                    case Action.ActionType.Fast:
+                    case ActionType.Fast:
                         quickActAvailable = false;
                         break;
                     //If we're taking a secondary move act, we can't make a secondary or full round attack act
-                    case Action.ActionType.Minor:
+                    case ActionType.Minor:
                         secondaryActAvailable = false;
                         fullRoundActAvailable = false;
                         break;
                     //If we're taking a standard move act, we can't make a standard or full round attack act
-                    case Action.ActionType.Major:
+                    case ActionType.Major:
                         standardActAvailable = false;
                         fullRoundActAvailable = false;
                         break;
                     //If we're taking a full round move act, we can't make a full round, standard, or secondary attack act
-                    case Action.ActionType.Massive:
+                    case ActionType.Massive:
                         fullRoundActAvailable = false;
                         standardActAvailable = false;
                         secondaryActAvailable = false;
@@ -895,7 +895,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (addedAct.type)
                         {
-                            case Action.ActionType.Major:
+                            case ActionType.Major:
                                 standardAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -905,7 +905,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Minor:
+                            case ActionType.Minor:
                                 secondaryAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -915,7 +915,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Fast:
+                            case ActionType.Fast:
                                 quickAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -925,7 +925,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Massive:
+                            case ActionType.Massive:
                                 fullRoundAtkDmg.Add(addedAct as AttackAction, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -954,7 +954,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                         //Getting the type of action this attack is
                         switch (atkAct.type)
                         {
-                            case Action.ActionType.Major:
+                            case ActionType.Major:
                                 standardAtkDmg.Add(atkAct, avgDamage);
                                 //If this standard attack has a higher average damage than the current highest standard attack
                                 if (highestStandard == null || standardAtkDmg[highestStandard] < avgDamage)
@@ -964,7 +964,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Minor:
+                            case ActionType.Minor:
                                 secondaryAtkDmg.Add(atkAct, avgDamage);
                                 //If this secondary attack has a higher average damage than the current highest secondary attack
                                 if (highestSecondary == null || secondaryAtkDmg[highestSecondary] < avgDamage)
@@ -974,7 +974,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Fast:
+                            case ActionType.Fast:
                                 quickAtkDmg.Add(atkAct, avgDamage);
                                 //If this quick attack has a higher average damage than the current highest quick attack
                                 if (highestQuick == null || quickAtkDmg[highestQuick] < avgDamage)
@@ -984,7 +984,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 }
                                 break;
 
-                            case Action.ActionType.Massive:
+                            case ActionType.Massive:
                                 fullRoundAtkDmg.Add(atkAct, avgDamage);
                                 //If this full round attack has a higher average damage than the current highest full round attack
                                 if (highestFullRound == null || fullRoundAtkDmg[highestFullRound] < avgDamage)
@@ -1076,17 +1076,17 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         switch(this.behaviorList[this.validBehaviorIndexList[0]].preferredTargetType)
         {
             //Finding the character with the highest threat
-            case StateBehavior.PlayerTargetPreference.HighestThreat:
+            case PlayerTargetPreference.HighestThreat:
                 this.playerCharToAttack = this.threatList[0].characterRef;
                 break;
 
             //Finding the character with the lowest threat
-            case StateBehavior.PlayerTargetPreference.LowestThreat:
+            case PlayerTargetPreference.LowestThreat:
                 this.playerCharToAttack = this.threatList[this.threatList.Count - 1].characterRef;
                 break;
             
             //Finding the closest character to this enemy
-            case StateBehavior.PlayerTargetPreference.ClosestPlayer:
+            case PlayerTargetPreference.ClosestPlayer:
                 //The index for the character that best matches our attack preference
                 int closestDistIndex = 0;
                 //The distance that's currently the closest
@@ -1121,7 +1121,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the furthest character to this enemy
-            case StateBehavior.PlayerTargetPreference.FurthestPlayer:
+            case PlayerTargetPreference.FurthestPlayer:
                 //The index for the character that best matches our attack preference
                 int furthestDistIndex = 0;
                 //The distance that's currently the furthest
@@ -1156,7 +1156,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the lowest health
-            case StateBehavior.PlayerTargetPreference.LowestHealth:
+            case PlayerTargetPreference.LowestHealth:
                 //The index for the character that best matches our attack preference
                 int lowestHPIndex = 0;
 
@@ -1181,7 +1181,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the highest health
-            case StateBehavior.PlayerTargetPreference.HighestHealth:
+            case PlayerTargetPreference.HighestHealth:
                 //The index for the character that best matches our attack preference
                 int highestHPIndex = 0;
 
@@ -1206,7 +1206,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the lowest armor
-            case StateBehavior.PlayerTargetPreference.LowestArmor:
+            case PlayerTargetPreference.LowestArmor:
                 //The index for the character that best matches our attack preference
                 int lowestArmorIndex = 0;
 
@@ -1231,7 +1231,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the highest armor
-            case StateBehavior.PlayerTargetPreference.HighestArmor:
+            case PlayerTargetPreference.HighestArmor:
                 //The index for the character that best matches our attack preference
                 int highestArmorIndex = 0;
 
@@ -1256,7 +1256,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 break;
 
             //Finding the character with the most quest items in their inventory
-            case StateBehavior.PlayerTargetPreference.QuestItem:
+            case PlayerTargetPreference.QuestItem:
                 //The index for the character that best matches our attack preference
                 int mostQuestItemsIndex = 0;
                 //The number of quest items that the current best character has in their inventory
@@ -1369,13 +1369,13 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         foreach (AttackEffect eft in attackAct_.effectsOnHit)
         {
             //If the effect hits enemies
-            if (eft.effectedTargets == AttackEffect.EffectedTargets.Defender || eft.effectedTargets == AttackEffect.EffectedTargets.EnemiesOnly ||
-                eft.effectedTargets == AttackEffect.EffectedTargets.Everyone || eft.effectedTargets == AttackEffect.EffectedTargets.EnemiesExceptDefender)
+            if (eft.effectedTargets == EffectedTargets.Defender || eft.effectedTargets == EffectedTargets.EnemiesOnly ||
+                eft.effectedTargets == EffectedTargets.Everyone || eft.effectedTargets == EffectedTargets.EnemiesExceptDefender)
             {
                 //If the effect only hits a specific type or race, we need to make sure the target meets the race/type requirements
-                if (!eft.hitEffectedType || (eft.effectedRace == RaceTypes.Races.None && eft.effectedType == RaceTypes.Subtypes.None) ||
-                    (eft.effectedRace == this.playerCharToAttack.charRaceTypes.race && eft.effectedType == RaceTypes.Subtypes.None) ||
-                    (eft.effectedRace == RaceTypes.Races.None && this.playerCharToAttack.charRaceTypes.subtypeList.Contains(eft.effectedType) ||
+                if (!eft.hitEffectedType || (eft.effectedRace == Races.None && eft.effectedType == Subtypes.None) ||
+                    (eft.effectedRace == this.playerCharToAttack.charRaceTypes.race && eft.effectedType == Subtypes.None) ||
+                    (eft.effectedRace == Races.None && this.playerCharToAttack.charRaceTypes.subtypeList.Contains(eft.effectedType) ||
                     (eft.effectedRace == this.playerCharToAttack.charRaceTypes.race && this.playerCharToAttack.charRaceTypes.subtypeList.Contains(eft.effectedType))))
                 {
                     //If the effect is a damage over time
@@ -1453,7 +1453,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         foreach (Action aaQ in this.behaviorList[0].addedActions)
         {
             //If the action is a movement action and is a quick action
-            if (aaQ.type == Action.ActionType.Fast && aaQ.GetType() == typeof(MoveAction))
+            if (aaQ.type == ActionType.Fast && aaQ.GetType() == typeof(MoveAction))
             {
                 //If the current quick move action is null or has a lower range, this action becomes the one we use
                 if (quickMoveAct == null || quickMoveAct.range < aaQ.range)
@@ -1477,7 +1477,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach (MoveAction moveAct in this.moveActionList)
             {
                 //If the current move action is a quick action and has a longer range than our current quick action
-                if (moveAct.type == Action.ActionType.Fast && moveAct.range > currentMoveSum)
+                if (moveAct.type == ActionType.Fast && moveAct.range > currentMoveSum)
                 {
                     //This move act becomes the new quick move
                     quickMoveAct = moveAct;
@@ -1499,7 +1499,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action aaS in this.behaviorList[0].addedActions)
             {
                 //If the action is a movement action and is a secondary action
-                if(aaS.type == Action.ActionType.Minor && aaS.GetType() == typeof(MoveAction))
+                if(aaS.type == ActionType.Minor && aaS.GetType() == typeof(MoveAction))
                 {
                     //If the current secondary move action is null or has a lower range, this action becomes the one we use
                     if(secondaryMoveAct == null || secondaryMoveAct.range < aaS.range)
@@ -1539,7 +1539,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a secondary action and has a longer range than our current secondary action
-                    if(moveAct.type == Action.ActionType.Minor && secondaryMoveAct == null || moveAct.range > secondaryMoveAct.range)
+                    if(moveAct.type == ActionType.Minor && secondaryMoveAct == null || moveAct.range > secondaryMoveAct.range)
                     {
                         //If the current secondary move act isn't null, we subtract its range from our move sum
                         if(secondaryMoveAct != null)
@@ -1578,7 +1578,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action aaSt in this.behaviorList[0].addedActions)
             {
                 //If the action is a movement action and is a standard action
-                if(aaSt.type == Action.ActionType.Major && aaSt.GetType() == typeof(MoveAction))
+                if(aaSt.type == ActionType.Major && aaSt.GetType() == typeof(MoveAction))
                 {
                     //If the current standard move action is null or has a lower range, this action becomes the one we use
                     if(standardMoveAct == null || standardMoveAct.range < aaSt.range)
@@ -1636,7 +1636,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a standard action and has a longer range than our current standard action
-                    if(moveAct.type == Action.ActionType.Major && (standardMoveAct == null || moveAct.range > standardMoveAct.range))
+                    if(moveAct.type == ActionType.Major && (standardMoveAct == null || moveAct.range > standardMoveAct.range))
                     {
                         //If the current standard move act isn't null, we subtract its range from our move sum
                         if(standardMoveAct != null)
@@ -1693,7 +1693,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             foreach(Action aaFr in this.behaviorList[0].addedActions)
             {
                 //If the action is a movement action and is a full round action
-                if(aaFr.type == Action.ActionType.Massive && aaFr.GetType() == typeof(MoveAction))
+                if(aaFr.type == ActionType.Massive && aaFr.GetType() == typeof(MoveAction))
                 {
                     //If the current full round action is null or has a lower range, this action becomes the one we use
                     if(fullRoundMoveAct == null || fullRoundMoveAct.range < aaFr.range)
@@ -1753,7 +1753,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 foreach(MoveAction moveAct in this.moveActionList)
                 {
                     //If the current move action is a full round action and has a longer range than our current full round action
-                    if(moveAct.type == Action.ActionType.Massive && fullRoundMoveAct == null || moveAct.range > fullRoundMoveAct.range)
+                    if(moveAct.type == ActionType.Massive && fullRoundMoveAct == null || moveAct.range > fullRoundMoveAct.range)
                     {
                         //If the current full round move act isn't null, we subtract its range from our move sum
                         if(fullRoundMoveAct != null)
@@ -1894,7 +1894,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         }
 
         //If we aren't ready to act for some reason, OR we're waiting for the combat manager to let us give input, nothing happens
-        if(!this.readyToAct || this.actionCooldown > 0 || CombatManager.globalReference.currentState != CombatManager.combatState.PlayerInput)
+        if(!this.readyToAct || this.actionCooldown > 0 || CombatManager.globalReference.currentState != CombatState.PlayerInput)
         {
             return;
         }
@@ -1935,83 +1935,5 @@ public class EnemyCombatAI_Basic : MonoBehaviour
     private void EndEnemyTurn()
     {
         CombatManager.globalReference.EndActingCharactersTurn();
-    }
-}
-
-
-
-//Class used in EnemyCombatAI_Basic to track each character's threat level
-public class PlayerThreatMeter
-{
-    //The character for this threat meter
-    public Character characterRef;
-    //The threat value for this character
-    public int threatLevel = 0;
-
-
-    //Constructor function for this class
-    public PlayerThreatMeter(Character characterRef_, int threatLevel_)
-    {
-        this.characterRef = characterRef_;
-        this.threatLevel = threatLevel_;
-    }
-}
-
-
-//Class used in EnemyCombatAI_Basic.cs to determine which state this enemy will be in at a given time
-[System.Serializable]
-public class StateBehavior
-{
-    //The priority for this condition in case there are multiple behavior conditions that are true. 0 is lowest, 10 is highest
-    [Range(0, 10)]
-    public int priority = 1;
-
-    //Enum for what kind of condition this is
-    public enum ConditionalType { PersonalHPRange, OneAllyHPRange, HalfAlliesHPRange, AllAlliesHPRange, Debuffed, AllyDebuffed, AnyTargetBuffed, OnePlayerHPRange, HalfPlayersHPRange, AllPlayersHPRange };
-    public ConditionalType conditional = ConditionalType.PersonalHPRange;
-
-    //The range for health percentage for the TargetHPRange, PersonalHPRange, and AllyHPRange
-    public Vector2 healthRange = new Vector2(0, 1);
-
-    //The range of risky behavior from very low risk to very high risk
-    [Range(0.1f, 0.9f)]
-    public float chanceOfRisk = 0.5f;
-
-    //Enum for what type of target this enemy prefers to attack
-    public enum PlayerTargetPreference { HighestThreat, LowestThreat, ClosestPlayer, FurthestPlayer, LowestHealth, HighestHealth, LowestArmor, HighestArmor, QuestItem };
-    public PlayerTargetPreference preferredTargetType = PlayerTargetPreference.HighestThreat;
-
-    //Bool that determines if this enemy takes threat into consideration at all
-    public bool ignoreThreat = false;
-
-    //Enum for the state that this enemy shifts to once this state is entered
-    public enum AICombatState { Hostile, Support, Defensive, Terrified };
-    public AICombatState state = AICombatState.Hostile;
-
-    //The preferred distance from the target
-    [Range(1,13)]
-    public int preferredDistFromTarget = 1;
-
-    //The list of actions that are added to this enemy's action list when this state is entered
-    public List<Action> addedActions;
-
-    //If true, the actions in the addedActions list are the ONLY actions that can be used in this behavior
-    public bool onlyUseAddedActions = false;
-}
-
-
-//Class used in EnemyCombatAI_Basic to hold an enemy's action and the tile that they use it on
-public class EnemyActionAndTile
-{
-    //The action that the enemy will use
-    public Action enemyActionToUse;
-    //The tile that the action will be used on
-    public CombatTile targetTile;
-
-    //Constructor function for this class
-    public EnemyActionAndTile(Action enemyAct_, CombatTile targetTile_)
-    {
-        this.enemyActionToUse = enemyAct_;
-        this.targetTile = targetTile_;
     }
 }

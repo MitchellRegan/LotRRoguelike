@@ -26,7 +26,6 @@ public class ProjectileLauncher : MonoBehaviour
     public bool rotateToFaceTarget = true;
 
     //The type of interpolation this projectile follows along the path to the target
-    public enum ProjectilePath { Straight, Arc, Instant, ReversedStraight, ReversedArc, ReversedInstant };
     public ProjectilePath pathType = ProjectilePath.Straight;
 
     //Bool that needs to be triggered in order to set this projectile to travel along the path

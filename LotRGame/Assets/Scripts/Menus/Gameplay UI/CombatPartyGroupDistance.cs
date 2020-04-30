@@ -33,13 +33,13 @@ public class CombatPartyGroupDistance : MonoBehaviour
         //Setting our slider's value based on which party group is selected
         switch(CharacterManager.globalReference.selectedGroup.combatDistance)
         {
-            case CombatManager.GroupCombatDistance.Close:
+            case GroupCombatDistance.Close:
                 this.ourSlider.value = 2;
                 break;
-            case CombatManager.GroupCombatDistance.Medium:
+            case GroupCombatDistance.Medium:
                 this.ourSlider.value = 1;
                 break;
-            case CombatManager.GroupCombatDistance.Far:
+            case GroupCombatDistance.Far:
                 this.ourSlider.value = 0;
                 break;
         }
@@ -56,13 +56,13 @@ public class CombatPartyGroupDistance : MonoBehaviour
         switch(distance)
         {
             case 0:
-                CharacterManager.globalReference.selectedGroup.combatDistance = CombatManager.GroupCombatDistance.Far;
+                CharacterManager.globalReference.selectedGroup.combatDistance = GroupCombatDistance.Far;
                 break;
             case 1:
-                CharacterManager.globalReference.selectedGroup.combatDistance = CombatManager.GroupCombatDistance.Medium;
+                CharacterManager.globalReference.selectedGroup.combatDistance = GroupCombatDistance.Medium;
                 break;
             default:
-                CharacterManager.globalReference.selectedGroup.combatDistance = CombatManager.GroupCombatDistance.Close;
+                CharacterManager.globalReference.selectedGroup.combatDistance = GroupCombatDistance.Close;
                 break;
         }
     }

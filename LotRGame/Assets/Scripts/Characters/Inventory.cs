@@ -176,12 +176,12 @@ public class Inventory : MonoBehaviour
         if (this.leftHand != null)
         {
             //If we're trying to equip a 2 handed weapon to the left hand, it has to be cleared
-            if(this.leftHand.size == Weapon.WeaponSize.TwoHands)
+            if(this.leftHand.size == WeaponSize.TwoHands)
             {
                 this.leftHand = null;
             }
             //Making sure that there isn't a 2 handed weapon already equipped
-            else if (this.rightHand == null || this.rightHand.size == Weapon.WeaponSize.OneHand)
+            else if (this.rightHand == null || this.rightHand.size == WeaponSize.OneHand)
             {
                 //Creates a new instance of the item and sets this object as the parent
                 GameObject newItemInstance = Object.Instantiate(this.leftHand.gameObject, this.transform);
@@ -658,52 +658,52 @@ public class Inventory : MonoBehaviour
         //Adding all of the other inventory's armor and weapon slots to this inventory
         if(this.AddItemToInventory(otherInventory_.helm.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Head, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Head, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.chestPiece.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Torso, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Torso, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.leggings.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Legs, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Legs, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.shoes.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Feet, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Feet, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.gloves.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Hands, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Hands, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.cloak.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Cloak, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Cloak, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.necklace.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Necklace, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Necklace, null);
         }
 
         if (this.AddItemToInventory(otherInventory_.ring.GetComponent<Item>()))
         {
-            otherInventory_.ChangeArmorItemAtSlot(Armor.ArmorSlot.Ring, null);
+            otherInventory_.ChangeArmorItemAtSlot(ArmorSlot.Ring, null);
         }
 
         if(this.AddItemToInventory(otherInventory_.rightHand.GetComponent<Item>()))
         {
-            otherInventory_.ChangeWeaponItem(WeaponHand.Right, null);
+            otherInventory_.ChangeWeaponItem(CharacterHands.Right, null);
         }
 
         if(this.AddItemToInventory(otherInventory_.leftHand.GetComponent<Item>()))
         {
-            otherInventory_.ChangeWeaponItem(WeaponHand.Left, null);
+            otherInventory_.ChangeWeaponItem(CharacterHands.Left, null);
         }
 
         //Loops through each slot in the other inventory
@@ -743,7 +743,7 @@ public class Inventory : MonoBehaviour
         //Finding the correct slot to equip the armor
         switch(armorToEquip.slot)
         {
-            case Armor.ArmorSlot.Head:
+            case ArmorSlot.Head:
                 if (this.helm != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.helm.GetComponent<Item>();
@@ -756,7 +756,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Torso:
+            case ArmorSlot.Torso:
                 if(this.chestPiece != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.chestPiece.GetComponent<Item>();
@@ -769,7 +769,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Legs:
+            case ArmorSlot.Legs:
                 if (this.leggings != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.leggings.GetComponent<Item>();
@@ -782,7 +782,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Hands:
+            case ArmorSlot.Hands:
                 if(this.gloves != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.gloves.GetComponent<Item>();
@@ -795,7 +795,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Feet:
+            case ArmorSlot.Feet:
                 if (this.shoes != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.shoes.GetComponent<Item>();
@@ -808,7 +808,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Cloak:
+            case ArmorSlot.Cloak:
                 if (this.cloak != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.cloak.GetComponent<Item>();
@@ -821,7 +821,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Necklace:
+            case ArmorSlot.Necklace:
                 if (this.necklace != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.necklace.GetComponent<Item>();
@@ -834,7 +834,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Ring:
+            case ArmorSlot.Ring:
                 if (this.ring != null)
                 {
                     this.itemSlots[armorInventoryIndex_] = this.ring.GetComponent<Item>();
@@ -851,7 +851,7 @@ public class Inventory : MonoBehaviour
 
 
     //Unequips the piece of armor in the given slot
-    public void UnequipArmor(Armor.ArmorSlot slotToRemove_)
+    public void UnequipArmor(ArmorSlot slotToRemove_)
     {
         //Making sure there's a free inventory slot first
         if(this.CheckForEmptySlot() < 1)
@@ -862,35 +862,35 @@ public class Inventory : MonoBehaviour
         //Finding the correct slot to equip the armor, adding it to the inventory, and setting the slot to null
         switch (slotToRemove_)
         {
-            case Armor.ArmorSlot.Head:
+            case ArmorSlot.Head:
                 this.AddItemToInventory(this.helm.GetComponent<Item>());
                 this.helm = null;
                 break;
-            case Armor.ArmorSlot.Torso:
+            case ArmorSlot.Torso:
                 this.AddItemToInventory(this.chestPiece.GetComponent<Item>());
                 this.chestPiece = null;
                 break;
-            case Armor.ArmorSlot.Legs:
+            case ArmorSlot.Legs:
                 this.AddItemToInventory(this.leggings.GetComponent<Item>());
                 this.leggings = null;
                 break;
-            case Armor.ArmorSlot.Hands:
+            case ArmorSlot.Hands:
                 this.AddItemToInventory(this.gloves.GetComponent<Item>());
                 this.gloves = null;
                 break;
-            case Armor.ArmorSlot.Feet:
+            case ArmorSlot.Feet:
                 this.AddItemToInventory(this.shoes.GetComponent<Item>());
                 this.shoes = null;
                 break;
-            case Armor.ArmorSlot.Cloak:
+            case ArmorSlot.Cloak:
                 this.AddItemToInventory(this.cloak.GetComponent<Item>());
                 this.cloak = null;
                 break;
-            case Armor.ArmorSlot.Necklace:
+            case ArmorSlot.Necklace:
                 this.AddItemToInventory(this.necklace.GetComponent<Item>());
                 this.necklace = null;
                 break;
-            case Armor.ArmorSlot.Ring:
+            case ArmorSlot.Ring:
                 this.AddItemToInventory(this.ring.GetComponent<Item>());
                 this.ring = null;
                 break;
@@ -915,7 +915,7 @@ public class Inventory : MonoBehaviour
         //Finding the correct slot to equip the weapon
         switch (weaponToEquip_.size)
         {
-            case Weapon.WeaponSize.OneHand:
+            case WeaponSize.OneHand:
                 //If the right hand is empty, this weapon is equipped there
                 if(this.rightHand == null)
                 {
@@ -923,7 +923,7 @@ public class Inventory : MonoBehaviour
                     this.itemSlots[weaponInventoryIndex_] = null;
                 }
                 //If the right hand is full and the left isn't, the weapon is equipped in the left hand
-                else if(this.leftHand == null && this.rightHand.size != Weapon.WeaponSize.TwoHands)
+                else if(this.leftHand == null && this.rightHand.size != WeaponSize.TwoHands)
                 {
                     this.leftHand = weaponToEquip_;
                     this.itemSlots[weaponInventoryIndex_] = null;
@@ -936,7 +936,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Weapon.WeaponSize.TwoHands:
+            case WeaponSize.TwoHands:
                 //If both hands are empty, the weapon is equipped in the right hand
                 if (this.rightHand == null && this.leftHand == null)
                 {
@@ -949,7 +949,7 @@ public class Inventory : MonoBehaviour
                     //If there's at least 1 empty spot in our inventory for the left hand item
                     if(this.CheckForEmptySlot() > 0)
                     {
-                        this.UnequipWeapon(WeaponHand.Left);
+                        this.UnequipWeapon(CharacterHands.Left);
                         this.itemSlots[weaponInventoryIndex_] = this.rightHand.GetComponent<Item>();
                         this.rightHand = weaponToEquip_;
                     }
@@ -977,12 +977,11 @@ public class Inventory : MonoBehaviour
 
 
     //Unequips the weapon in the given slot
-    public enum WeaponHand {Right, Left, Both};
-    public void UnequipWeapon(WeaponHand handToRemove_)
+    public void UnequipWeapon(CharacterHands handToRemove_)
     {
         switch(handToRemove_)
         {
-            case WeaponHand.Right:
+            case CharacterHands.Right:
                 //Making sure there's an equipped weapon and empty slot to put the weapon
                 if(this.rightHand != null && this.CheckForEmptySlot() > 0)
                 {
@@ -990,7 +989,7 @@ public class Inventory : MonoBehaviour
                     this.AddItemToInventory(this.rightHand.GetComponent<Item>());
 
                     //If this character is holding a 2-handed weapon, the left hand is freed as well
-                    if(this.rightHand.size == Weapon.WeaponSize.TwoHands)
+                    if(this.rightHand.size == WeaponSize.TwoHands)
                     {
                         this.leftHand = null;
                     }
@@ -998,7 +997,7 @@ public class Inventory : MonoBehaviour
                     this.rightHand = null;
                 }
                 break;
-            case WeaponHand.Left:
+            case CharacterHands.Left:
                 //Making sure there's an equipped weapon and empty slot to put the weapon
                 if(this.leftHand != null && this.CheckForEmptySlot() > 0)
                 {
@@ -1007,10 +1006,10 @@ public class Inventory : MonoBehaviour
                     this.leftHand = null;
                 }
                 break;
-            case WeaponHand.Both:
+            case CharacterHands.Both:
                 //Calls this function twice, but with the other hands
-                this.UnequipWeapon(WeaponHand.Right);
-                this.UnequipWeapon(WeaponHand.Left);
+                this.UnequipWeapon(CharacterHands.Right);
+                this.UnequipWeapon(CharacterHands.Left);
                 break;
         }
 
@@ -1025,49 +1024,49 @@ public class Inventory : MonoBehaviour
         //Checking the correct armor slot to see if the equipped armor matches
         switch(armorToCheck_.slot)
         {
-            case Armor.ArmorSlot.Head:
+            case ArmorSlot.Head:
                 if(this.helm == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Torso:
+            case ArmorSlot.Torso:
                 if(this.chestPiece == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Legs:
+            case ArmorSlot.Legs:
                 if(this.leggings == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Hands:
+            case ArmorSlot.Hands:
                 if(this.gloves == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Feet:
+            case ArmorSlot.Feet:
                 if(this.shoes == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Cloak:
+            case ArmorSlot.Cloak:
                 if(this.cloak == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Necklace:
+            case ArmorSlot.Necklace:
                 if(this.necklace == armorToCheck_)
                 {
                     return true;
                 }
                 break;
-            case Armor.ArmorSlot.Ring:
+            case ArmorSlot.Ring:
                 if(this.ring == armorToCheck_)
                 {
                     return true;
@@ -1106,7 +1105,7 @@ public class Inventory : MonoBehaviour
 
 
     //Function used to change the armor at the given slot to the new one
-    public void ChangeArmorItemAtSlot(Armor.ArmorSlot slot_, Armor armorToChangeTo_)
+    public void ChangeArmorItemAtSlot(ArmorSlot slot_, Armor armorToChangeTo_)
     {
         //Making sure the armor to change to actually matches the slot it's being equipped to
         if(armorToChangeTo_!= null && armorToChangeTo_.slot != slot_)
@@ -1117,7 +1116,7 @@ public class Inventory : MonoBehaviour
         //Finding the correct slot to replace
         switch(slot_)
         {
-            case Armor.ArmorSlot.Head:
+            case ArmorSlot.Head:
                 this.helm = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1125,7 +1124,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Torso:
+            case ArmorSlot.Torso:
                 this.chestPiece = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1133,7 +1132,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Legs:
+            case ArmorSlot.Legs:
                 this.leggings = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1141,7 +1140,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Feet:
+            case ArmorSlot.Feet:
                 this.shoes = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1149,7 +1148,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Hands:
+            case ArmorSlot.Hands:
                 this.gloves = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1157,7 +1156,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Necklace:
+            case ArmorSlot.Necklace:
                 this.necklace = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1165,7 +1164,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Cloak:
+            case ArmorSlot.Cloak:
                 this.cloak = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1173,7 +1172,7 @@ public class Inventory : MonoBehaviour
                 }
                 break;
 
-            case Armor.ArmorSlot.Ring:
+            case ArmorSlot.Ring:
                 this.ring = armorToChangeTo_;
                 if (armorToChangeTo_ != null)
                 {
@@ -1188,9 +1187,9 @@ public class Inventory : MonoBehaviour
 
 
     //Function used to change the weapon at the given slot to the new one
-    public void ChangeWeaponItem(WeaponHand handSlot_, Weapon weaponToChangeTo_)
+    public void ChangeWeaponItem(CharacterHands handSlot_, Weapon weaponToChangeTo_)
     {
-        if(handSlot_ == WeaponHand.Right)
+        if(handSlot_ == CharacterHands.Right)
         {
             this.rightHand = weaponToChangeTo_;
 
@@ -1200,7 +1199,7 @@ public class Inventory : MonoBehaviour
                 weaponToChangeTo_.transform.SetParent(this.transform);
             }
         }
-        else if(handSlot_ == WeaponHand.Left)
+        else if(handSlot_ == CharacterHands.Left)
         {
             this.leftHand = weaponToChangeTo_;
 

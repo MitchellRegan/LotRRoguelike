@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class CharacterInventoryUI : MonoBehaviour
 {
     //Enum for the type of inventory. Party: Only shows characters in the party. Trade: Shows characters that can trade with the Party character. Bag: A non-character inventory like a bag or chest
-    public enum InventoryType { Party, Trade, Bag };
     public InventoryType inventoryUIType = InventoryType.Party;
 
     //Reference to the selected character whose invintory will be shown
@@ -21,7 +20,7 @@ public class CharacterInventoryUI : MonoBehaviour
     //The image that displays this character's combat appearance
     public GameObject playerSpriteLoc;
     //The direction that the character sprite base is currently looking in the inventory screen
-    private CharacterSpriteBase.DirectionFacing spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+    private DirectionFacing spriteDirection = DirectionFacing.Down;
 
     //Selected Character's Name
     public Text selectedCharacterName;
@@ -412,59 +411,59 @@ public class CharacterInventoryUI : MonoBehaviour
 
 
     //Function called from InventoryButton.cs to find the correct armor slot of a button
-    public Armor.ArmorSlot GetArmorSlotFromImage(Image slotImage_)
+    public ArmorSlot GetArmorSlotFromImage(Image slotImage_)
     {
         //Checking each of the armor slot images in this UI
         if(this.head == slotImage_)
         {
-            return Armor.ArmorSlot.Head;
+            return ArmorSlot.Head;
         }
         else if(this.torso == slotImage_)
         {
-            return Armor.ArmorSlot.Torso;
+            return ArmorSlot.Torso;
         }
         else if(this.legs == slotImage_)
         {
-            return Armor.ArmorSlot.Legs;
+            return ArmorSlot.Legs;
         }
         else if(this.feet == slotImage_)
         {
-            return Armor.ArmorSlot.Feet;
+            return ArmorSlot.Feet;
         }
         else if(this.hands == slotImage_)
         {
-            return Armor.ArmorSlot.Hands;
+            return ArmorSlot.Hands;
         }
         else if(this.cloak == slotImage_)
         {
-            return Armor.ArmorSlot.Cloak;
+            return ArmorSlot.Cloak;
         }
         else if(this.necklace == slotImage_)
         {
-            return Armor.ArmorSlot.Necklace;
+            return ArmorSlot.Necklace;
         }
         else if(this.ring == slotImage_)
         {
-            return Armor.ArmorSlot.Ring;
+            return ArmorSlot.Ring;
         }
 
         //If the image wasn't found, there isn't a slot
-        return Armor.ArmorSlot.None;
+        return ArmorSlot.None;
     }
 
 
     //Function called from InventoryButton.cs to find the correct hand slot of a button
-    public Inventory.WeaponHand GetWeaponHandSlotFromImage(Image slotImage_)
+    public CharacterHands GetWeaponHandSlotFromImage(Image slotImage_)
     {
         //If the image is the same one used for the right hand
         if(slotImage_ == this.rightHand)
         {
-            return Inventory.WeaponHand.Right;
+            return CharacterHands.Right;
         }
         //If the image is the same one used for the left hand
         else
         {
-            return Inventory.WeaponHand.Left;
+            return CharacterHands.Left;
         }
     }
 
@@ -542,17 +541,17 @@ public class CharacterInventoryUI : MonoBehaviour
             //Changing our direction
             switch(this.spriteDirection)
             {
-                case CharacterSpriteBase.DirectionFacing.Down:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Right;
+                case DirectionFacing.Down:
+                    this.spriteDirection = DirectionFacing.Right;
                     break;
-                case CharacterSpriteBase.DirectionFacing.Right:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Up;
+                case DirectionFacing.Right:
+                    this.spriteDirection = DirectionFacing.Up;
                     break;
-                case CharacterSpriteBase.DirectionFacing.Up:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Left;
+                case DirectionFacing.Up:
+                    this.spriteDirection = DirectionFacing.Left;
                     break;
-                case CharacterSpriteBase.DirectionFacing.Left:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+                case DirectionFacing.Left:
+                    this.spriteDirection = DirectionFacing.Down;
                     break;
             }
         }
@@ -562,17 +561,17 @@ public class CharacterInventoryUI : MonoBehaviour
             //Changing our direction
             switch (this.spriteDirection)
             {
-                case CharacterSpriteBase.DirectionFacing.Down:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Left;
+                case DirectionFacing.Down:
+                    this.spriteDirection = DirectionFacing.Left;
                     break;
-                case CharacterSpriteBase.DirectionFacing.Right:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Down;
+                case DirectionFacing.Right:
+                    this.spriteDirection = DirectionFacing.Down;
                     break;
-                case CharacterSpriteBase.DirectionFacing.Up:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Right;
+                case DirectionFacing.Up:
+                    this.spriteDirection = DirectionFacing.Right;
                     break;
-                case CharacterSpriteBase.DirectionFacing.Left:
-                    this.spriteDirection = CharacterSpriteBase.DirectionFacing.Up;
+                case DirectionFacing.Left:
+                    this.spriteDirection = DirectionFacing.Up;
                     break;
             }
         }

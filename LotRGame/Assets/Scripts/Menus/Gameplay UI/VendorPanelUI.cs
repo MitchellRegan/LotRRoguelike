@@ -92,7 +92,7 @@ public class VendorPanelUI : MonoBehaviour
 
         //Setting the sprite base's sprites and making it face left
         this.playerSprite.SetSpriteImages(this.selectedCharacter.charSprites.allSprites, this.selectedCharacter.charInventory);
-        this.playerSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Left);
+        this.playerSprite.SetDirectionFacing(DirectionFacing.Left);
     }
 
 

@@ -10,8 +10,16 @@ public class SaveLoadManager : MonoBehaviour
     [HideInInspector]
     public static SaveLoadManager globalReference;
 
-    //The default name given to folders with invalid directory names
-    public string defaultFolderName = "New Game";
+    //The default name given to the current save game folder
+    private string defaultFolderName = "CurrentGame";
+    //The path for the current save game and the names of each file required
+    private string saveFolderPath = "/Zein/SaveFiles";
+    private string defaultProgressFileName = "PlayerProgress.txt";
+    private string defaultTileGridFileName = "TileGrid.txt";
+    private string defaultMapFileName = "Map.png";
+    //The path for the unlock save progress folder and the name of the unlock file
+    private string unlockFolderPath = "/Zein/Unlocks";
+    private string defaultUnlockFileName = "UnlockProgress.txt";
 
 
 
@@ -33,50 +41,29 @@ public class SaveLoadManager : MonoBehaviour
     }
 
 
-    //Function called from SaveGameData to check for illegal characters in the save folder name
-    public string CheckFolderName(string folderName_)
+    //Function called from SaveGameData to create a folder for a new game. Returns the folder path
+    public string CreateNewSaveFolder()
     {
-        //String to hold the folder name while we check it
-        string checkedName = folderName_;
+        //String to hold the folder name
+        string newSaveFolder = this.saveFolderPath + "/" + this.defaultFolderName;
 
-        //Checking the string for each illegal character
-        if(checkedName.Contains("<") || checkedName.Contains(">") ||
-            checkedName.Contains(":") || checkedName.Contains("\"") ||
-            checkedName.Contains("\\") || checkedName.Contains("/") ||
-            checkedName.Contains("|") || checkedName.Contains("?") ||
-            checkedName.Contains("*"))
+        //If there's already a save folder at the current directory, it is deleted
+        if(Directory.Exists(Application.persistentDataPath + newSaveFolder))
         {
-            //If the player-given name contains any of the illegal characters, we set the folder name to the default
-            checkedName = this.defaultFolderName;
-        }
-        //Checking if the folder name is empty
-        else if(checkedName == "")
-        {
-            //If the folder has no name, we give it the default
-            checkedName = this.defaultFolderName;
-        }
-
-        //adding a save folder path to the beginning of the given folder name
-        checkedName = "/Zein/SaveFiles/" + checkedName;
-
-        //If there's already a save folder at the current directory, we need to modify it a bit
-        if(Directory.Exists(Application.persistentDataPath + checkedName))
-        {
-            //Looping until we have a numbered version of the checked name that doesn't exist
-            int saveNum = 2;
-            while(Directory.Exists(Application.persistentDataPath + checkedName + saveNum))
+            //Deleting all files in the folder
+            string[] files = Directory.GetFiles(Application.persistentDataPath + newSaveFolder);
+            foreach(string file in files)
             {
-                ++saveNum;
+                File.Delete(file);
             }
-
-            //Once we find a directory that doesn't exist, we put the number at the end of the checked name
-            checkedName = checkedName + saveNum;
+            //Deleting the folder itself
+            Directory.Delete(Application.persistentDataPath + newSaveFolder);
         }
 
-        //Creating the directory for the new save
-        this.CheckSaveDirectory(checkedName);
+        //Creating the new folder in the correct path
+        Directory.CreateDirectory(Application.persistentDataPath + newSaveFolder);
 
-        return checkedName;
+        return newSaveFolder;
     }
 
 
@@ -89,6 +76,56 @@ public class SaveLoadManager : MonoBehaviour
             //We create the folder at the application directory with the given folder name
             Directory.CreateDirectory(Application.persistentDataPath + folderName_);
         }
+    }
+
+
+    //Function called externally by the Continue Game button in the main menu to check if there's a current game save
+    public bool DoesSaveFileExist()
+    {
+        string[] folders = Directory.GetDirectories(Application.persistentDataPath + this.saveFolderPath);
+
+        //If there are no folders, the save file can't exist
+        if(folders.Length == 0)
+        {
+            return false;
+        }
+
+        //Looking through each folder until we find one with the files we need
+        for(int i = 0; i < folders.Length; i++)
+        {
+            string[] files = Directory.GetFiles(folders[i]);
+            bool hasGrid = false;
+            bool hasProgress = false;
+            bool hasMap = false;
+
+            //Checking each file
+            for(int f = 0; f < files.Length; f++)
+            {
+                //Getting the file name from the path and checking for the 3 files we need
+                string[] split = files[f].Split('\\');
+                if(split[split.Length - 1] == this.defaultMapFileName)
+                {
+                    hasMap = true;
+                }
+                else if(split[split.Length - 1] == this.defaultProgressFileName)
+                {
+                    hasProgress = true;
+                }
+                else if(split[split.Length - 1] == this.defaultTileGridFileName)
+                {
+                    hasGrid = true;
+                }
+            }
+
+            //If we have all 3 files, return true
+            if(hasGrid && hasMap && hasProgress)
+            {
+                return true;
+            }
+        }
+
+        //If we make it this far, no complete save file exists
+        return false;
     }
 
 
@@ -224,15 +261,15 @@ public class SaveLoadManager : MonoBehaviour
 
         //Creating a 2D list of strings to hold all of the serialized TileInfo classes in the tile grid
         List<List<string>> serializedTileGrid = new List<List<string>>();
-        for(int col = 0; col < CreateTileGrid.globalReference.tileGrid.Count; ++col)
+        for(int col = 0; col < TileMapManager.globalReference.tileGrid.Count; ++col)
         {
             //Creating a new column (list of tile strings)
             List<string> newCol = new List<string>();
 
-            for(int row = 0; row < CreateTileGrid.globalReference.tileGrid[0].Count; ++row)
+            for(int row = 0; row < TileMapManager.globalReference.tileGrid[0].Count; ++row)
             {
                 //Serializing the current tile using JsonUtility
-                string jsonTile = JsonUtility.ToJson(CreateTileGrid.globalReference.tileGrid[col][row]);
+                string jsonTile = JsonUtility.ToJson(TileMapManager.globalReference.tileGrid[col][row]);
                 //Adding the tile string to the list of serialized tiles
                 newCol.Add(jsonTile);
             }
@@ -243,20 +280,20 @@ public class SaveLoadManager : MonoBehaviour
 
         //Creating a list of strings to hold serialized TileInfo classes for city tiles
         List<string> serializedCities = new List<string>();
-        for(int c = 0; c < CreateTileGrid.globalReference.cityTiles.Count; ++c)
+        for(int c = 0; c < TileMapManager.globalReference.cityTiles.Count; ++c)
         {
             //Serializing the current city tile using JsonUtility
-            string jsonCityTile = JsonUtility.ToJson(CreateTileGrid.globalReference.cityTiles[c]);
+            string jsonCityTile = JsonUtility.ToJson(TileMapManager.globalReference.cityTiles[c]);
             //Adding the city tile to the list of serialized cities
             serializedCities.Add(jsonCityTile);
         }
 
         //Creating a list of strings to hold serialized TileInfo classes for dungeon tiles
         List<string> serializedDungeons = new List<string>();
-        for(int d = 0; d < CreateTileGrid.globalReference.dungeonTiles.Count; ++d)
+        for(int d = 0; d < TileMapManager.globalReference.dungeonTiles.Count; ++d)
         {
             //Serializing the current dungeon tile using JsonUtility
-            string jsonDungeonTile = JsonUtility.ToJson(CreateTileGrid.globalReference.dungeonTiles[d]);
+            string jsonDungeonTile = JsonUtility.ToJson(TileMapManager.globalReference.dungeonTiles[d]);
             //Adding the city tile to the list of serialized dungeons
             serializedDungeons.Add(jsonDungeonTile);
         }
@@ -268,7 +305,7 @@ public class SaveLoadManager : MonoBehaviour
         string jsonMapData = JsonConvert.SerializeObject(newMapSave, Formatting.None, new JsonSerializerSettings() {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
 
         //Writing the JSON map data to a new text file in the given folder's directory
-        File.WriteAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt", jsonMapData);
+        File.WriteAllText(Application.persistentDataPath + folderName_ + "/" + this.defaultTileGridFileName, jsonMapData);
     }
 
 
@@ -282,7 +319,7 @@ public class SaveLoadManager : MonoBehaviour
             throw new System.ArgumentException("SaveLoadManager.LoadTileGrid, The folder directory given does not exist!");
         }
         //If the folder exists but the file doesn't
-        else if(!File.Exists(Application.persistentDataPath + folderName_ + "/TileGrid.txt"))
+        else if(!File.Exists(Application.persistentDataPath + folderName_ + "/" + this.defaultTileGridFileName))
         {
             //We throw an exception because the file that we're supposed to load doesn't exist
             throw new System.ArgumentException("SaveLoadManager.LoadTileGrid, The TileGrid.txt file for this save does not exist!");
@@ -290,7 +327,7 @@ public class SaveLoadManager : MonoBehaviour
 
 
         //Getting all of the string data from the TileGrid.txt file
-        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/TileGrid.txt");
+        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/" + this.defaultTileGridFileName);
 
         //Getting the de-serialized TileGridSaveInfo class from the file using the JSON.net converter
         TileGridSaveInfo tileSaveInfo = JsonConvert.DeserializeObject(fileData, typeof(TileGridSaveInfo)) as TileGridSaveInfo;
@@ -355,9 +392,9 @@ public class SaveLoadManager : MonoBehaviour
         }
 
         //Setting the CreateTileGrid references to the loaded lists of tiles
-        CreateTileGrid.globalReference.tileGrid = loadedTileGrid;
-        CreateTileGrid.globalReference.cityTiles = loadedCityTiles;
-        CreateTileGrid.globalReference.dungeonTiles = loadedDungeonTiles;
+        TileMapManager.globalReference.tileGrid = loadedTileGrid;
+        TileMapManager.globalReference.cityTiles = loadedCityTiles;
+        TileMapManager.globalReference.dungeonTiles = loadedDungeonTiles;
     }
     
 
@@ -373,11 +410,11 @@ public class SaveLoadManager : MonoBehaviour
         this.CheckSaveDirectory(GameData.globalReference.saveFolder);
         
         //Creating a new PlayerProgress class that we'll save
-        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, CreateTileGrid.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
+        PlayerProgress currentProgress = new PlayerProgress(GameData.globalReference, TileMapManager.globalReference, TimePanelUI.globalReference, LevelUpManager.globalReference, CharacterManager.globalReference, QuestTracker.globalReference);
         //Serializing the current progress
         string jsonPlayerProgress = JsonUtility.ToJson(currentProgress, true);
         //Writing the JSON progress data to a new text file in the given folder's directory
-        File.WriteAllText(Application.persistentDataPath + GameData.globalReference.saveFolder + "/PlayerProgress.txt", jsonPlayerProgress);
+        File.WriteAllText(Application.persistentDataPath + GameData.globalReference.saveFolder + "/" + this.defaultProgressFileName, jsonPlayerProgress);
 
         //Sending out an event to toggle the save game icon UI off
         EVTData endSaveData = new EVTData();
@@ -403,7 +440,7 @@ public class SaveLoadManager : MonoBehaviour
             throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The folder directory given does not exist!");
         }
         //If the folder exists but the file doesn't
-        else if (!File.Exists(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt"))
+        else if (!File.Exists(Application.persistentDataPath + folderName_ + "/" + this.defaultProgressFileName))
         {
             //We throw an exception because the file that we're supposed to load doesn't exist
             throw new System.ArgumentException("SaveLoadManager.LoadPlayerProgress, The PlayerProgress.txt file for this save does not exist!");
@@ -416,7 +453,7 @@ public class SaveLoadManager : MonoBehaviour
         loadEVTData.loadData.startingLoad = false;
 
         //Getting all of the string data from the TileGrid.txt file
-        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/PlayerProgress.txt");
+        string fileData = File.ReadAllText(Application.persistentDataPath + folderName_ + "/" + this.defaultProgressFileName);
 
         //De-serializing the player progress from the text file
         PlayerProgress loadedProgress = JsonUtility.FromJson(fileData, typeof(PlayerProgress)) as PlayerProgress;
@@ -428,8 +465,8 @@ public class SaveLoadManager : MonoBehaviour
         Random.state = loadedProgress.randState;
 
         //Setting the CreateTileGrid.cs variables
-        CreateTileGrid.globalReference.cols = loadedProgress.gridCols;
-        CreateTileGrid.globalReference.rows = loadedProgress.gridRows;
+        TileMapManager.globalReference.cols = loadedProgress.gridCols;
+        TileMapManager.globalReference.rows = loadedProgress.gridRows;
 
         //Updating the loading bar
         EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//1
@@ -451,7 +488,7 @@ public class SaveLoadManager : MonoBehaviour
         if (loadedProgress.partyGroup1 != null)
         {
             //Creating a new PartyGroup instance
-            GameObject newPartyObj = GameObject.Instantiate(CreateTileGrid.globalReference.partyGroup1Prefab);
+            GameObject newPartyObj = GameObject.Instantiate(TileMapManager.globalReference.partyGroupPrefab);
             PartyGroup partyGroup1 = newPartyObj.GetComponent<PartyGroup>();
 
             //Setting the party variables
@@ -465,7 +502,7 @@ public class SaveLoadManager : MonoBehaviour
                 if (loadedProgress.partyGroup1.partyCharacters[c] != null)
                 {
                     //Creating a new character instance
-                    GameObject newCharacterObj = GameObject.Instantiate(CreateTileGrid.globalReference.testCharacter);
+                    GameObject newCharacterObj = GameObject.Instantiate(TileMapManager.globalReference.testCharacter);
                     Character newCharacter = newCharacterObj.GetComponent<Character>();
 
                     //Adding the new character to our new party group
@@ -485,13 +522,13 @@ public class SaveLoadManager : MonoBehaviour
             EventManager.TriggerEvent(LoadDataEVT.eventNum, loadEVTData);//4
 
             //Getting the tile grid location of the player group and getting the tile connections
-            TileInfo partyLocation = CreateTileGrid.globalReference.tileGrid[loadedProgress.partyGroup1.tileCol][loadedProgress.partyGroup1.tileRow];
+            TileInfo partyLocation = TileMapManager.globalReference.tileGrid[loadedProgress.partyGroup1.tileCol][loadedProgress.partyGroup1.tileRow];
             partyLocation.connectedTiles = new List<TileInfo>() { null, null, null, null, null, null };
             for (int coord = 0; coord < partyLocation.connectedTileCoordinates.Count; ++coord)
             {
                 int col = partyLocation.connectedTileCoordinates[coord].col;
                 int row = partyLocation.connectedTileCoordinates[coord].row;
-                partyLocation.connectedTiles[coord] = CreateTileGrid.globalReference.tileGrid[col][row];
+                partyLocation.connectedTiles[coord] = TileMapManager.globalReference.tileGrid[col][row];
             }
             partyGroup1.GetComponent<WASDOverworldMovement>().SetCurrentTile(partyLocation);
 
@@ -517,7 +554,7 @@ public class SaveLoadManager : MonoBehaviour
             //Getting the encounter reference
             EnemyEncounter encounterPrefab = loadedProgress.enemyTileEncounters[e].encounterPrefab.GetComponent<EnemyEncounter>();
             //Getting the enemy's tile position
-            TileInfo enemyTile = CreateTileGrid.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
+            TileInfo enemyTile = TileMapManager.globalReference.tileGrid[loadedProgress.enemyTileEncounters[e].encounterTileCol][loadedProgress.enemyTileEncounters[e].encounterTileRow];
             //Telling the character manager to instantiate the prefab
             CharacterManager.globalReference.CreateEnemyEncounter(encounterPrefab, enemyTile);
         }
@@ -527,94 +564,59 @@ public class SaveLoadManager : MonoBehaviour
 
         yield return null;
     }
-}
-
-//Class used in SaveLoadManager.SavePlayerProgress and LoadPlayerProgress
-[System.Serializable]
-public class PlayerProgress
-{
-    //Variables from GameData.cs
-    public GameData.gameDifficulty difficulty = GameData.gameDifficulty.Normal;
-    public bool allowNewUnlockables = true;
-    public string folderName = "";
-    public Random.State randState;
-
-    //Variables from CreateTileGrid.cs
-    public int gridCols = 0;
-    public int gridRows = 0;
-
-    //Variables from TimePanelUI.cs
-    public int daysTaken = 0;
-    public int timeOfDay = 0;
-
-    //Variables from LevelUpManager.cs
-    public int characterLevel = 0;
-
-    //Variables for the PartyGroup.cs
-    public PartySaveData partyGroup1 = null;
-
-    //Variable from CharacterManager.cs
-    public List<DeadCharacterInfo> deadCharacters;
-    public List<EnemyTileEncounterInfo> enemyTileEncounters;
-
-    //Variables from QuestTracker.cs
-    public List<string> questLog;
-    public List<string> finishedQuests;
 
 
-
-    //Constructor function for this class
-    public PlayerProgress(GameData gameData_, CreateTileGrid tileGrid_, TimePanelUI timePanel_, LevelUpManager levelUpManager_, CharacterManager charManager_, QuestTracker questTracker_)
+    //Function called externally to save the player unlocks
+    public void SaveUnlockProgress()
     {
-        //Setting the GameData.cs variables
-        this.difficulty = gameData_.currentDifficulty;
-        this.allowNewUnlockables = gameData_.allowNewUnlockables;
-        this.folderName = gameData_.saveFolder;
-        this.randState = Random.state;
+        //Making sure the save folder exists
+        this.CheckSaveDirectory(this.unlockFolderPath);
 
-        //Setting the CreateTileGrid.cs variables
-        this.gridCols = tileGrid_.cols;
-        this.gridRows = tileGrid_.rows;
-
-        //Setting the TimePanelUI.cs variables
-        this.daysTaken = timePanel_.daysTaken;
-        this.timeOfDay = timePanel_.timeOfDay;
-
-        //Setting the LevelUpManager variable
-        this.characterLevel = levelUpManager_.characterLevel;
-
-        //Setting the PartyGroup.cs variables
-        this.partyGroup1 = new PartySaveData(PartyGroup.group1);
-
-        //Looping through all of the dead character info in CharacterManager.cs
-        this.deadCharacters = new List<DeadCharacterInfo>();
-        for(int d = 0; d < charManager_.deadCharacters.Count; ++d)
+        //If for some reason there is no data for player unlocks, we create a new, blank version
+        if(GameData.globalReference.playerUnlocks == null)
         {
-            this.deadCharacters.Add(charManager_.deadCharacters[d]);
+            GameData.globalReference.playerUnlocks = new UnlockablesData();
         }
 
-        //Looping through all of the enemy tile encounters in CharacterManager.cs
-        this.enemyTileEncounters = new List<EnemyTileEncounterInfo>();
-        for(int e = 0; e < CharacterManager.globalReference.tileEnemyEncounters.Count; ++e)
+        //Serializing the current unlock progress and saving it to a new text file
+        string jsonUnlockProgress = JsonUtility.ToJson(GameData.globalReference.playerUnlocks, true);
+        File.WriteAllText(Application.persistentDataPath + this.unlockFolderPath + "/" + this.defaultUnlockFileName, jsonUnlockProgress);
+    }
+
+
+    //Function called externally by GameData.cs to load the player unlocks
+    public void LoadUnlockProgress()
+    {
+        StartCoroutine(this.LoadUnlockablesCoroutine());
+    }
+
+
+    //Coroutine called from LoadUnlockProgress to load the unlockable data and send it to GameData
+    IEnumerator LoadUnlockablesCoroutine()
+    {
+        //If the folder directory doesn't exist
+        if (!Directory.Exists(Application.persistentDataPath + this.unlockFolderPath))
         {
-            //Making sure the encounter isn't null first
-            if (CharacterManager.globalReference.tileEnemyEncounters[e] != null)
-            {
-                //Creating a new tile encounter info for the enemy
-                EnemyTileEncounterInfo enemyInfo = new EnemyTileEncounterInfo(CharacterManager.globalReference.tileEnemyEncounters[e]);
-                //Adding the enemy encounter info to our list to serialize
-                this.enemyTileEncounters.Add(enemyInfo);
-            }
+            //Using the SaveUnlockProgress function to create the directory and a new file
+            this.SaveUnlockProgress();
+        }
+        //If the folder exists but the file doesn't
+        else if (!File.Exists(Application.persistentDataPath + this.unlockFolderPath + "/" + this.defaultUnlockFileName))
+        {
+            //Using the SaveUnlockProgress function to create a new file
+            this.SaveUnlockProgress();
         }
 
-        //Looping through all of the quests in our quest log
-        this.questLog = new List<string>();
-        foreach(Quest q in questTracker_.questLog)
-        {
-            this.questLog.Add(JsonUtility.ToJson(new QuestSaveData(q), true));
-        }
+        //Getting all of the string data from the unlockables file
+        string fileData = File.ReadAllText(Application.persistentDataPath + this.unlockFolderPath + "/" + this.defaultUnlockFileName);
 
-        //Saving all of the finished quest names
-        this.finishedQuests = questTracker_.completedQuestNames;
+        //De-serializing the data from the text file
+        UnlockablesData loadedUnlockables = JsonUtility.FromJson(fileData, typeof(UnlockablesData)) as UnlockablesData;
+
+        //Passing the data class to the GameData global reference
+        GameData.globalReference.playerUnlocks = loadedUnlockables;
+
+        yield return null;
     }
 }
+

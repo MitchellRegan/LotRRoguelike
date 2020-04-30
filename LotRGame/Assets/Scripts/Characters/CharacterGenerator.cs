@@ -6,7 +6,7 @@ using UnityEngine;
 public class CharacterGenerator : MonoBehaviour
 {
     /* ~~~~~~ RACE ~~~~~~*/
-    public RaceTypes.Races race = RaceTypes.Races.Human;
+    public Races race = Races.Human;
 
     /* ~~~~~~ NAMES ~~~~~~*/
     public List<string> firstNames;

@@ -4,18 +4,6 @@ using UnityEngine;
 
 public class PlayerHealthManager : MonoBehaviour
 {
-    //Enum for the different health progressions
-    public enum HealthProgressionTypes
-    {
-        Strong,
-        Sturdy,
-        Healthy,
-        Average,
-        Weak,
-        Sickly,
-        Feeble
-    };
-
     //The number of days that need to pass before player health is increased
     public int daysBeforeHPIncrease = 7;
 
@@ -109,43 +97,43 @@ public class PlayerHealthManager : MonoBehaviour
 
 
     //Function called from TrackTimePassage to find a given character's health curve based on their stage sum
-    private HealthProgressionTypes FindCharacterHealthProgression(int stageSum_)
+    private HealthCurveTypes FindCharacterHealthProgression(int stageSum_)
     {
         //If the stage sum is below 0 then it's counted as 0
         if(stageSum_ <= 0)
         {
-            return HealthProgressionTypes.Feeble;
+            return HealthCurveTypes.Feeble;
         }
         else if(stageSum_ == 1)
         {
-            return HealthProgressionTypes.Sickly;
+            return HealthCurveTypes.Sickly;
         }
         else if (stageSum_ == 2)
         {
-            return HealthProgressionTypes.Weak;
+            return HealthCurveTypes.Weak;
         }
         else if (stageSum_ == 3)
         {
-            return HealthProgressionTypes.Average;
+            return HealthCurveTypes.Average;
         }
         else if (stageSum_ == 4)
         {
-            return HealthProgressionTypes.Healthy;
+            return HealthCurveTypes.Healthy;
         }
         else if (stageSum_ == 5)
         {
-            return HealthProgressionTypes.Sturdy;
+            return HealthCurveTypes.Sturdy;
         }
         //If the stage sum is above 6 then it's counted as 6
         else
         {
-            return HealthProgressionTypes.Strong;
+            return HealthCurveTypes.Strong;
         }
     }
 
 
     //Function called from TrackTimePassage to get the amount of health a character will gain
-    private int GetHealthToAdd(HealthProgressionTypes type_)
+    private int GetHealthToAdd(HealthCurveTypes type_)
     {
         //The amount of health to add that is returned
         int healthToAdd = 0;
@@ -216,32 +204,4 @@ public class PlayerHealthManager : MonoBehaviour
         //returning the total health
         return healthToAdd + diceResult;
     }
-}
-
-
-//Class used in PlayerHealthManager.cs for each of the different health curves
-[System.Serializable]
-public class HealthCurve
-{
-    //The type of progression curve tied to this
-    public PlayerHealthManager.HealthProgressionTypes curveType = PlayerHealthManager.HealthProgressionTypes.Average;
-
-    //The minimum amount of health that can be added
-    public int minHealthGiven = 0;
-    //The maximum amount of health that can be added
-    public int maxHealthGiven = 10;
-
-    //The curve between the min and max health given over the number of health increases
-    public AnimationCurve curveBetweenMinMax;
-
-    //The number of dice rolled for bonus random health
-    public int diceRolled = 1;
-
-    //The sides of the dice rolled for random health
-    public int numberOfDiceSides = 6;
-
-    //Bool to determine if we roll twice and take the best result
-    public bool rollTwiceTakeBest = false;
-    //Bool to determine if we roll twice and take the worst result
-    public bool rollTwiceTakeWorst = false;
 }

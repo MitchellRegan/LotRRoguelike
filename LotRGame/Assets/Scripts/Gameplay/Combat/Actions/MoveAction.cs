@@ -85,31 +85,31 @@ public class MoveAction : Action
                 //If the new tile is to the left of the old tile, we face the character left
                 if(this.movementPath[this.currentNumTilesMoved].transform.position.x < this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
-                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Left);
+                    charSprite.SetDirectionFacing(DirectionFacing.Left);
                 }
                 //If the new tile is to the right of the old tile, we face the character right
                 else if(this.movementPath[this.currentNumTilesMoved].transform.position.x > this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
-                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
+                    charSprite.SetDirectionFacing(DirectionFacing.Right);
                 }
                 //If the new tile is above the old tile, we face the character up
                 else if(this.movementPath[this.currentNumTilesMoved].transform.position.y > this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
-                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Up);
+                    charSprite.SetDirectionFacing(DirectionFacing.Up);
                 }
                 //If the new tile is below the old tile, we face the character down
                 else if (this.movementPath[this.currentNumTilesMoved].transform.position.y < this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
-                    charSprite.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Down);
+                    charSprite.SetDirectionFacing(DirectionFacing.Down);
                 }
 
                 //Removing the acting character from the tile they're on
-                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
+                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, TileObjectType.Nothing);
                 
                 //Once the time has passed for this tile, the selected character's position is updated
                 this.actingCharacter.charCombatStats.gridPositionCol = this.movementPath[this.currentNumTilesMoved].col;
                 this.actingCharacter.charCombatStats.gridPositionRow = this.movementPath[this.currentNumTilesMoved].row;
-                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, CombatTile.ObjectType.Player);
+                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, TileObjectType.Player);
 
                 //Looping through and triggering all effects on the moving character that happen during movement
                 foreach(Effect e in this.actingCharacter.charCombatStats.combatEffects)
@@ -150,9 +150,9 @@ public class MoveAction : Action
                 if (!this.movementPath.Contains(CombatTile.mouseOverTile))
                 {
                     //If the tile has no object on it OR if there is an object and the movement action ignores objects
-                    if (CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Nothing || 
-                            (CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Object && this.ignoreObstacles) ||
-                            ((CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Enemy || CombatTile.mouseOverTile.typeOnTile == CombatTile.ObjectType.Player) && this.ignoreEnemies))
+                    if (CombatTile.mouseOverTile.typeOnTile == TileObjectType.Nothing || 
+                            (CombatTile.mouseOverTile.typeOnTile == TileObjectType.Object && this.ignoreObstacles) ||
+                            ((CombatTile.mouseOverTile.typeOnTile == TileObjectType.Enemy || CombatTile.mouseOverTile.typeOnTile == TileObjectType.Player) && this.ignoreEnemies))
                     {
                         this.movementPath.Add(CombatTile.mouseOverTile);
                         CombatTile.mouseOverTile.HighlightTile(true);

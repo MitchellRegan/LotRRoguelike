@@ -70,7 +70,7 @@ public class DamageText : MonoBehaviour
 
 
     //Function called from the combat manager to set our damage text, color, and position
-    public void SetDamageToDisplay(float timeDelay_, int damageDealt_, CombatManager.DamageType type_, Vector3 position_, bool isCrit_, bool isHeal_ = false)
+    public void SetDamageToDisplay(float timeDelay_, int damageDealt_, DamageType type_, Vector3 position_, bool isCrit_, bool isHeal_ = false)
     {
         //Adding this DamageText to the static list
         DamageText.allDamageTextObj.Add(this);
@@ -106,43 +106,43 @@ public class DamageText : MonoBehaviour
         //Setting the color of the text based on the damage type
         switch(type_)
         {
-            case CombatManager.DamageType.Slashing:
+            case DamageType.Slashing:
                 this.background.color = this.slashDamageColor;
                 break;
-            case CombatManager.DamageType.Stabbing:
+            case DamageType.Stabbing:
                 this.background.color = this.stabDamageColor;
                 break;
-            case CombatManager.DamageType.Crushing:
+            case DamageType.Crushing:
                 this.background.color = this.crushDamageColor;
                 break;
-            case CombatManager.DamageType.Arcane:
+            case DamageType.Arcane:
                 this.background.color = this.arcaneDamageColor;
                 break;
-            case CombatManager.DamageType.Holy:
+            case DamageType.Holy:
                 this.background.color = this.holyDamageColor;
                 break;
-            case CombatManager.DamageType.Dark:
+            case DamageType.Dark:
                 this.background.color = this.darkDamageColor;
                 break;
-            case CombatManager.DamageType.Fire:
+            case DamageType.Fire:
                 this.background.color = this.fireDamageColor;
                 break;
-            case CombatManager.DamageType.Water:
+            case DamageType.Water:
                 this.background.color = this.waterDamageColor;
                 break;
-            case CombatManager.DamageType.Electric:
+            case DamageType.Electric:
                 this.background.color = this.electricDamageColor;
                 break;
-            case CombatManager.DamageType.Wind:
+            case DamageType.Wind:
                 this.background.color = this.windDamageColor;
                 break;
-            case CombatManager.DamageType.Pure:
+            case DamageType.Pure:
                 this.background.color = this.pureDamageColor;
                 break;
-            case CombatManager.DamageType.Nature:
+            case DamageType.Nature:
                 this.background.color = this.natureDamageColor;
                 break;
-            case CombatManager.DamageType.Bleed:
+            case DamageType.Bleed:
                 this.background.color = this.bleedDamageColor;
                 break;
         }

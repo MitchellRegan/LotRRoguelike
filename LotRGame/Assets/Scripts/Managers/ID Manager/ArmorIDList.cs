@@ -108,19 +108,19 @@ public class ArmorIDList : MonoBehaviour
     //Function called for debugging purposes to make sure there are no problems with any of the armor IDs in the list
     public void CheckForInvalidIDs()
     {
-        this.CheckList(this.headList, "Head", Armor.ArmorSlot.Head);
-        this.CheckList(this.torsoList, "Torso", Armor.ArmorSlot.Torso);
-        this.CheckList(this.legsList, "Legs", Armor.ArmorSlot.Legs);
-        this.CheckList(this.handsList, "Hands", Armor.ArmorSlot.Hands);
-        this.CheckList(this.feetList, "Feet", Armor.ArmorSlot.Feet);
-        this.CheckList(this.cloakList, "Cloak", Armor.ArmorSlot.Cloak);
-        this.CheckList(this.necklaceList, "Necklace", Armor.ArmorSlot.Necklace);
-        this.CheckList(this.ringList, "Ring", Armor.ArmorSlot.Ring);
+        this.CheckList(this.headList, "Head", ArmorSlot.Head);
+        this.CheckList(this.torsoList, "Torso", ArmorSlot.Torso);
+        this.CheckList(this.legsList, "Legs", ArmorSlot.Legs);
+        this.CheckList(this.handsList, "Hands", ArmorSlot.Hands);
+        this.CheckList(this.feetList, "Feet", ArmorSlot.Feet);
+        this.CheckList(this.cloakList, "Cloak", ArmorSlot.Cloak);
+        this.CheckList(this.necklaceList, "Necklace", ArmorSlot.Necklace);
+        this.CheckList(this.ringList, "Ring", ArmorSlot.Ring);
     }
 
 
     //Function called from CheckForInvalidIDs to loop through the given armor list
-    private void CheckList(List<IDTag> listToCheck_, string nameOfList_, Armor.ArmorSlot armorSlot_)
+    private void CheckList(List<IDTag> listToCheck_, string nameOfList_, ArmorSlot armorSlot_)
     {
         //Looping through all of the armor in our list
         for (int a1 = 0; a1 < listToCheck_.Count; ++a1)
@@ -131,7 +131,7 @@ public class ArmorIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: ArmorIDList.CheckList " + nameOfList_ + ": Empty slot in armor list at index " + a1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if (listToCheck_[a1].objType != IDTag.ObjectType.ItemArmor)
+            else if (listToCheck_[a1].objType != ObjectType.ItemArmor)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: ArmorIDList.CheckList " + nameOfList_ + ": Invalid ID type at index " + a1);
             }

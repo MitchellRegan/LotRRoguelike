@@ -16,8 +16,6 @@ public class Action : MonoBehaviour
     public int range = 1;
 
     //Enum for the type of action this is
-    [System.Serializable]
-    public enum ActionType { Major, Minor, Fast, Massive };
     public ActionType type = ActionType.Major;
 
     //The amount of time this action takes to cooldown after use

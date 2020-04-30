@@ -634,7 +634,6 @@ public class CharacterSpriteBase : MonoBehaviour
 
 
     //Function called externally to set the direction this sprite base is facing
-    public enum DirectionFacing { Left, Right, Up, Down};
     public void SetDirectionFacing(DirectionFacing direction_)
     {
         switch(direction_)

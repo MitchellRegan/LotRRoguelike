@@ -48,7 +48,7 @@ public class Movement : MonoBehaviour
         if (this.GetComponent<PartyGroup>())
         {
             Debug.Log("Movement.SetCurrentTile >>> Generating Visible Land");
-            CreateTileGrid.globalReference.GenerateVisibleLand(this.currentTile);
+            TileMapManager.globalReference.GenerateVisibleLand(this.currentTile);
         }
     }
 

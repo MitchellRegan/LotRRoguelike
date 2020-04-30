@@ -10,8 +10,7 @@ public class ExtraSoundEmitterSettings : MonoBehaviour
     private AudioSource ourAudio;
 
     //Type of sound this emitter plays
-    public enum SoundType { SFX, Dialogue, Music, }
-    public SoundType soundEmitterType = SoundType.SFX;
+    SoundType soundEmitterType = SoundType.SFX;
 
     //Slider for the Headphone volume, going from mute to the max
     [Range(0.0f, 1.0f)]

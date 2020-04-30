@@ -15,7 +15,7 @@ public class PartyCreator : MonoBehaviour
     private List<Character> newPartyCharacters;
 
     //Enum to track the chosen player race
-    private RaceTypes.Races chosenRace = RaceTypes.Races.None;
+    private Races chosenRace = Races.None;
 
     //Static int for how many hit dice player characters start with
     public static int startingHitDice = 3;
@@ -280,15 +280,3 @@ public class PartyCreator : MonoBehaviour
     }
 }
 
-[System.Serializable]
-public class RacePartyMembers
-{
-    //The race that determines how many party members there will be at the beginning
-    public RaceTypes.Races race = RaceTypes.Races.Human;
-
-    //The number of starting party members
-    public int startingPartyMembers = 1;
-
-    //The prefab for this race of character
-    public List<GameObject> characterPrefabs;
-}

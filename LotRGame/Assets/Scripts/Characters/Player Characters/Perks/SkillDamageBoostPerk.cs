@@ -9,7 +9,7 @@ public class SkillDamageBoostPerk : Perk
     public SkillList skillToBoost = SkillList.Unarmed;
 
     //The type of damage that this perk applies
-    public CombatManager.DamageType damageBoostType = CombatManager.DamageType.Slashing;
+    public DamageType damageBoostType = DamageType.Slashing;
 
     //Bool for if the type of damage this perk applies is the damage type of the action used
     public bool useActionDamageType = true;
@@ -48,6 +48,7 @@ public class SkillDamageBoostPerk : Perk
     public int damageDiceSideNumber = 6;
     //If this die roll is negative
     public bool dieRollIsNegative = false;
+
 
 
 	//Function called from AttackAction.cs to get the amount of bonus damage this perk awards

@@ -40,7 +40,7 @@ public class MiscItemIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: MiscItemIDList.CheckForInvalidIDs: Empty slot in item list at index " + i1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if (this.itemList[i1].objType != IDTag.ObjectType.ItemMisc)
+            else if (this.itemList[i1].objType != ObjectType.ItemMisc)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: MiscItemIDList.CheckForInvalidIDs: Invalid ID type at index " + i1);
             }

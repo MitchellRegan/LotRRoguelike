@@ -4,22 +4,31 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(CombatTileHandler))]
+[RequireComponent(typeof(CombatInitiativeHandler))]
+[RequireComponent(typeof(CombatCharacterHandler))]
+[RequireComponent(typeof(CombatUIHandler))]
 public class CombatManager : MonoBehaviour
 {
     //Static reference to this combat manager
     public static CombatManager globalReference;
 
+    //References to the scripts that handle different aspects of the combat gameplay
+    public CombatTileHandler tileHandler;
+    public CombatInitiativeHandler initiativeHandler;
+    public CombatCharacterHandler characterHandler;
+    public CombatUIHandler uiHandler;
+
     //The value that attacking characters must reach after all combat modifiers to hit their opponent. Used in AttackAction and WeaponAction
     public const int baseHitDC = 20;
 
     //Enum for the state of this combat manager to decide what to do on update
-    public enum combatState {Wait, IncreaseInitiative, SelectAction, PlayerInput, EndCombat, GameOver};
-    public combatState currentState = combatState.Wait;
+    public CombatState currentState = CombatState.Wait;
 
     //The amount of time that has passed while waiting
     private float waitTime = 0;
     //The combat state to switch to after the wait time is up
-    private combatState stateAfterWait = combatState.IncreaseInitiative;
+    private CombatState stateAfterWait = CombatState.IncreaseInitiative;
 
     //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
     public List<Character> actingCharacters = null;
@@ -153,11 +162,11 @@ public class CombatManager : MonoBehaviour
         switch (this.currentState)
         {
             //Nothing, waiting for player feedback
-            case combatState.PlayerInput:
+            case CombatState.PlayerInput:
                 return;
 
             //Counting down the wait time
-            case combatState.Wait:
+            case CombatState.Wait:
                 this.waitTime -= Time.deltaTime;
                 //If the timer is up, the state changes to the one that was previously designated
                 if(this.waitTime <= 0)
@@ -177,14 +186,14 @@ public class CombatManager : MonoBehaviour
                     }
 
                     //If the current state is player input or action selecting and the state we're switching to is increasing initiative, we hide the character highlight
-                    if(this.stateAfterWait == combatState.IncreaseInitiative)
+                    if(this.stateAfterWait == CombatState.IncreaseInitiative)
                     {
                         //Making the highlight ring invisible again
                         this.highlightRing.enabled = false;
                     }
 
                     this.currentState = this.stateAfterWait;
-                    this.stateAfterWait = combatState.IncreaseInitiative;
+                    this.stateAfterWait = CombatState.IncreaseInitiative;
 
                     //Disabling the action blocker so the player can pick actions again
                     this.actionBlocker.enabled = false;
@@ -192,13 +201,13 @@ public class CombatManager : MonoBehaviour
                 break;
 
             //Adding each character's attack speed to their current initative 
-            case combatState.IncreaseInitiative:
+            case CombatState.IncreaseInitiative:
                 //Making sure the highlight ring is invisible
-                this.IncreaseInitiative();
+                this.initiativeHandler.IncreaseInitiatives();
                 break;
 
             //Hilighting the selected character whose turn it is
-            case combatState.SelectAction:
+            case CombatState.SelectAction:
                 //Triggering each combat effect on the acting character for the beginning of their turn
                 int numberOfEffects = this.actingCharacters[0].charCombatStats.combatEffects.Count;
                 Character actingChar = this.actingCharacters[0];
@@ -236,7 +245,7 @@ public class CombatManager : MonoBehaviour
                         //Default to showing the acting character's standard actions
                         CombatActionPanelUI.globalReference.DisplayActionTypes(0);
                         //Now we wait for player input
-                        this.currentState = combatState.PlayerInput;
+                        this.currentState = CombatState.PlayerInput;
                     }
                 }
                 //If the selected character is an enemy
@@ -254,7 +263,7 @@ public class CombatManager : MonoBehaviour
                     if (actingChar.charPhysState.currentHealth > 0)
                     {
                         //Now we wait for enemy input
-                        this.currentState = combatState.PlayerInput;
+                        this.currentState = CombatState.PlayerInput;
                         //Starting the acting enemy's turn so it can perform its actions
                         this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
                     }
@@ -262,7 +271,7 @@ public class CombatManager : MonoBehaviour
                 break;
 
             //Calls the unity event for when this combat encounter is over
-            case combatState.EndCombat:
+            case CombatState.EndCombat:
                 //Rolling for the encounter loot to give to the player
                 this.GetEncounterLoot();
                 //Creating the event data that we'll pass to the TransitionFade through the EventManager
@@ -272,11 +281,11 @@ public class CombatManager : MonoBehaviour
                 //Invoking the transition event through the EventManager
                 EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
                 //this.combatEndEvent.Invoke();
-                this.currentState = combatState.PlayerInput;
+                this.currentState = CombatState.PlayerInput;
                 break;
 
             //The game is over
-            case combatState.GameOver:
+            case CombatState.GameOver:
                 Debug.Log("<<<------------- GAME OVER! -------------->>>");
                 break;
         }
@@ -324,8 +333,6 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called externally from LandTile.cs to initiate combat
-    [System.Serializable]
-    public enum GroupCombatDistance { Far, Medium, Close };
     public void InitiateCombat(LandType combatLandType_, PartyGroup charactersInCombat_, EnemyEncounter encounter_)
     {
         //Creating the event data that we'll pass to the TransitionFade through the EventManager
@@ -352,59 +359,9 @@ public class CombatManager : MonoBehaviour
         
         //Creating the Combat Character Sprites
         this.CreateCharacterSprites();
-        
-        //Looping through and setting all of the player initiative bars to display the correct character
-        for (int p = 0; p < this.playerInitiativeSliders.Count; ++p)
-        {
-            //if the current index isn't outside the count of characters
-            if(p < this.playerCharactersInCombat.Count)
-            {
-                //The initiative slider is shown
-                this.playerInitiativeSliders[p].background.gameObject.SetActive(true);
-                //Makes sure the initiative is set to 0
-                this.playerInitiativeSliders[p].initiativeSlider.value = 0;
-                //Setting the character's name
-                this.playerInitiativeSliders[p].characterName.text = this.playerCharactersInCombat[p].firstName;
-                //Setting the slider's values to match the character's health
-                this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
-                this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
-                //Making the background panel set to the inactive color
-                this.playerInitiativeSliders[p].background.color = this.inactivePanelColor;
 
-            }
-            //If the index is outside the count of characters
-            else
-            {
-                //The initiative slider is hidden
-                this.playerInitiativeSliders[p].background.gameObject.SetActive(false);
-            }
-        }
-
-        //Looping through and setting all of the enemy initiative bars to display the correct enemy
-        for (int e = 0; e < this.enemyInitiativeSliders.Count; ++e)
-        {
-            //if the current index isn't outside the count of enemies
-            if (e < this.enemyCharactersInCombat.Count)
-            {
-                //The initiative slider is shown
-                this.enemyInitiativeSliders[e].background.gameObject.SetActive(true);
-                //Makes sure the initiative is set to 0
-                this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
-                //Setting the enemy's name
-                this.enemyInitiativeSliders[e].characterName.text = this.enemyCharactersInCombat[e].firstName;
-                //Setting the slider's values to match the enemy's health
-                this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
-                this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
-                //Making the background panel set to the inactive color
-                this.enemyInitiativeSliders[e].background.color = this.inactivePanelColor;
-            }
-            //If the index is outside the count of enemies
-            else
-            {
-                //The initiative slider is hidden
-                this.enemyInitiativeSliders[e].background.gameObject.SetActive(false);
-            }
-        }
+        this.initiativeHandler.ResetForCombatStart();
+        this.uiHandler.ResetForCombatStart();
 
         //Setting each character on the tile positions
         this.UpdateCombatTilePositions();
@@ -413,7 +370,7 @@ public class CombatManager : MonoBehaviour
         this.highlightRing.enabled = false;
         
         //Setting the state to start increasing initiatives after a brief wait
-        this.SetWaitTime(3, combatState.IncreaseInitiative);
+        this.SetWaitTime(3, CombatState.IncreaseInitiative);
         
         //Setting the health bars to display the correct initiatives
         this.UpdateHealthBars();
@@ -472,7 +429,7 @@ public class CombatManager : MonoBehaviour
         int enemyColShift3 = 3;
 
         //Determine if we use the default enemy position or the ambush position
-        EnemyEncounter.EnemyCombatPosition encounterPos = enemyParty_.defaultPosition;
+        EnemyCombatPosition encounterPos = enemyParty_.defaultPosition;
 
         //Rolling to see if this encounter will ambush the player
         float ambushRoll = Random.Range(0f, 1f);
@@ -487,7 +444,7 @@ public class CombatManager : MonoBehaviour
         switch(encounterPos)
         {
             //If the enemy is in melee range
-            case EnemyEncounter.EnemyCombatPosition.MeleeFront:
+            case EnemyCombatPosition.MeleeFront:
                 {
                     //Setting the player positions between col 0 - 6
                     switch(playerParty_.combatDistance)
@@ -511,7 +468,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
 
-            case EnemyEncounter.EnemyCombatPosition.MeleeFlanking:
+            case EnemyCombatPosition.MeleeFlanking:
                 {
                     //Setting the player positions between col 6-8 regardless of their preferred distance
                     playerColShift = 6;
@@ -524,7 +481,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
 
-            case EnemyEncounter.EnemyCombatPosition.MeleeBehind:
+            case EnemyCombatPosition.MeleeBehind:
                 {
                     //Setting the player positions between col 7-13
                     switch (playerParty_.combatDistance)
@@ -549,7 +506,7 @@ public class CombatManager : MonoBehaviour
                 break;
 
             //If the enemy is in middle range
-            case EnemyEncounter.EnemyCombatPosition.MiddleFront:
+            case EnemyCombatPosition.MiddleFront:
                 {
                     //Setting the player positions between col 0 - 6
                     switch (playerParty_.combatDistance)
@@ -573,7 +530,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
 
-            case EnemyEncounter.EnemyCombatPosition.MiddleFlanking:
+            case EnemyCombatPosition.MiddleFlanking:
                 {
                     //Setting the player positions between col 5-8
                     switch (playerParty_.combatDistance)
@@ -597,7 +554,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
 
-            case EnemyEncounter.EnemyCombatPosition.MiddleBehind:
+            case EnemyCombatPosition.MiddleBehind:
                 {
                     //Setting the player positions between col 7-13
                     switch (playerParty_.combatDistance)
@@ -622,7 +579,7 @@ public class CombatManager : MonoBehaviour
                 break;
             
             //If the enemy is in a far range
-            case EnemyEncounter.EnemyCombatPosition.RangedFront:
+            case EnemyCombatPosition.RangedFront:
                 {
                     //Setting the player positions between col 0 - 6
                     switch (playerParty_.combatDistance)
@@ -646,7 +603,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
 
-            case EnemyEncounter.EnemyCombatPosition.RangedFlanking:
+            case EnemyCombatPosition.RangedFlanking:
                 {
                     //Setting the player positions between col 5-8
                     switch (playerParty_.combatDistance)
@@ -670,7 +627,7 @@ public class CombatManager : MonoBehaviour
                 }
                 break;
 
-            case EnemyEncounter.EnemyCombatPosition.RangedBehind:
+            case EnemyCombatPosition.RangedBehind:
                 {
                     //Setting the player positions between col 7-11
                     switch (playerParty_.combatDistance)
@@ -850,7 +807,7 @@ public class CombatManager : MonoBehaviour
 
             //Telling the sprite base to use the given character's sprites
             newCharSpriteBase.SetSpriteImages(playerChar.charSprites.allSprites, playerChar.charInventory);
-            newCharSpriteBase.SetDirectionFacing(CharacterSpriteBase.DirectionFacing.Right);
+            newCharSpriteBase.SetDirectionFacing(DirectionFacing.Right);
 
             //Finding the combat tile that the current player character is on
             CombatTile playerTile = this.FindCharactersTile(playerChar);
@@ -884,10 +841,10 @@ public class CombatManager : MonoBehaviour
             CombatTile enemyTile = this.FindCharactersTile(enemyChar);
 
             //Getting the direction that this enemy initially faces
-            CharacterSpriteBase.DirectionFacing direction = CharacterSpriteBase.DirectionFacing.Left;
+            DirectionFacing direction = DirectionFacing.Left;
             if (enemyTile.col < (this.combatTileGrid.Count / 2))
             {
-                direction = CharacterSpriteBase.DirectionFacing.Right;
+                direction = DirectionFacing.Right;
             }
             newCharSpriteBase.SetDirectionFacing(direction);
 
@@ -950,16 +907,16 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called to set the amount of time to wait
-    private void SetWaitTime(float timeToWait_, combatState stateAfterWait_ = combatState.IncreaseInitiative)
+    public void SetWaitTime(float timeToWait_, CombatState stateAfterWait_ = CombatState.IncreaseInitiative)
     {
         //If the state after we're done waiting is GameOver or EndCombat, we don't change states
-        if(this.stateAfterWait == combatState.EndCombat || this.stateAfterWait == combatState.GameOver)
+        if(this.stateAfterWait == CombatState.EndCombat || this.stateAfterWait == CombatState.GameOver)
         {
             return;
         }
 
         this.waitTime = timeToWait_;
-        this.currentState = combatState.Wait;
+        this.currentState = CombatState.Wait;
         this.stateAfterWait = stateAfterWait_;
 
         //Turns on the action blocker so the player can't perform another action until the wait time is over
@@ -973,13 +930,13 @@ public class CombatManager : MonoBehaviour
         //Looping through and setting the character objects on each tile
         foreach(Character currentChar in this.playerCharactersInCombat)
         {
-            this.combatTileGrid[currentChar.charCombatStats.gridPositionCol][currentChar.charCombatStats.gridPositionRow].SetObjectOnTile(currentChar.gameObject, CombatTile.ObjectType.Player);
+            this.combatTileGrid[currentChar.charCombatStats.gridPositionCol][currentChar.charCombatStats.gridPositionRow].SetObjectOnTile(currentChar.gameObject, TileObjectType.Player);
         }
 
         //Looping through and setting the enemy objects on each tile
         foreach(Character currentEnemy in this.enemyCharactersInCombat)
         {
-            this.combatTileGrid[currentEnemy.charCombatStats.gridPositionCol][currentEnemy.charCombatStats.gridPositionRow].SetObjectOnTile(currentEnemy.gameObject, CombatTile.ObjectType.Enemy);
+            this.combatTileGrid[currentEnemy.charCombatStats.gridPositionCol][currentEnemy.charCombatStats.gridPositionRow].SetObjectOnTile(currentEnemy.gameObject, TileObjectType.Enemy);
         }
     }
 
@@ -1001,7 +958,6 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from AttackAction.PerformAction to show damage dealt to a character at the given tile
-    public enum DamageType { Stabbing, Slashing, Crushing, Arcane, Fire, Water, Electric, Wind, Holy, Dark, Nature, Pure, Bleed };
     public void DisplayDamageDealt(float timeDelay_, int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
     {
         //If the damage dealt was 0, nothing happens
@@ -1139,7 +1095,7 @@ public class CombatManager : MonoBehaviour
 
                     //Clearing the highlighted area showing the previously used action's range
                     this.ClearCombatTileHighlights();
-                    this.SetWaitTime(2.5f, combatState.EndCombat);
+                    this.SetWaitTime(2.5f, CombatState.EndCombat);
                 }
             }
             //If the enemy is dead but their initiative slider isn't grey, we make it grey
@@ -1151,122 +1107,7 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    //Function called from AttackAction.PerformAction to show that an attack missed
-    public void DisplayMissedAttack(float timeDelay_, CombatTile attackedCharTile_)
-    {
-        //Creating an instance of the damage text object prefab
-        GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
-        //Parenting the damage text object to this object's transform
-        newDamageDisplay.transform.SetParent(this.transform);
-        //Getting the DamageText component reference
-        DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
-        //Setting the info for the text
-        newDamageText.DisplayMiss(timeDelay_, attackedCharTile_.transform.position);
-    }
-
-
-    //Function called from Update. Loops through all characters and increases their initiative
-    private void IncreaseInitiative()
-    {
-        //Looping through each player character
-        for(int p = 0; p < this.playerCharactersInCombat.Count; ++p)
-        {
-            //Making sure the current character isn't dead first
-            if (this.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
-            {
-                //Reducing the character's action cooldown times
-                this.playerCharactersInCombat[p].charActionList.ReduceCooldowns(Time.deltaTime);
-
-                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
-                float perkBoost = 0;
-                foreach (Perk charPerk in this.playerCharactersInCombat[p].charPerks.allPerks)
-                {
-                    if (charPerk.GetType() == typeof(InitiativeBoostPerk))
-                    {
-                        perkBoost += charPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
-                    }
-                }
-
-                //Adding this character's initiative to the coorelating slider. The initiative is multiplied by the energy %
-                CombatStats combatStats = this.playerCharactersInCombat[p].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost);
-
-                //If the character's initiative is lower than 10% of their base initiative, we set it to 10%
-                if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
-                {
-                    initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
-                }
-
-                this.playerInitiativeSliders[p].initiativeSlider.value += initiativeToAdd;
-
-                //If the slider is filled, this character is added to the acting character list
-                if (this.playerInitiativeSliders[p].initiativeSlider.value >= this.playerInitiativeSliders[p].initiativeSlider.maxValue)
-                {
-                    this.actingCharacters.Add(this.playerCharactersInCombat[p]);
-                }
-            }
-            //If the character is dead but their initiative slider isn't greyed out
-            else if (this.playerInitiativeSliders[p].background.color != Color.grey)
-            {
-                this.playerInitiativeSliders[p].background.color = Color.grey;
-            }
-        }
-
-        
-        //Looping through each enemy character
-        for (int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
-        {
-            //Making sure the current enemy isn't dead first
-            if (this.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
-            {
-                //Reducing the character's action cooldown times
-                this.enemyCharactersInCombat[e].charActionList.ReduceCooldowns(Time.deltaTime);
-                
-                //Looping through the character's perk list to see if they have any InitiativeBoostPerks
-                float perkBoost = 0;
-                foreach (Perk enemyPerk in this.enemyCharactersInCombat[e].charPerks.allPerks)
-                {
-                    if (enemyPerk.GetType() == typeof(InitiativeBoostPerk))
-                    {
-                        perkBoost += enemyPerk.GetComponent<InitiativeBoostPerk>().initiativeSpeedBoost;
-                    }
-                }
-                
-                //Adding this enemy's initiative to the coorelating slider. The initiative is multiplied by the energy %
-                CombatStats combatStats = this.enemyCharactersInCombat[e].charCombatStats;
-                float initiativeToAdd = (combatStats.currentInitiativeSpeed + combatStats.initiativeMod + perkBoost);
-                
-                //If the enemy's initiative is lower than 10% of their base initiative, we set it to 10%
-                if (initiativeToAdd < combatStats.currentInitiativeSpeed * 0.1f)
-                {
-                    initiativeToAdd = combatStats.currentInitiativeSpeed * 0.1f;
-                }
-                
-                this.enemyInitiativeSliders[e].initiativeSlider.value += initiativeToAdd;
-
-                //If the slider is filled, this character is added to the acting character list
-                if (this.enemyInitiativeSliders[e].initiativeSlider.value >= this.enemyInitiativeSliders[e].initiativeSlider.maxValue)
-                {
-                    //Making sure this character isn't already in the list of acting characters
-                    if (!this.actingCharacters.Contains(this.enemyCharactersInCombat[e]))
-                    {
-                        this.actingCharacters.Add(this.enemyCharactersInCombat[e]);
-                    }
-                }
-            }
-            //If the enemy is dead but their initiative slider isn't greyed out
-            else if (this.enemyInitiativeSliders[e].background.color != Color.grey)
-            {
-                this.enemyInitiativeSliders[e].background.color = Color.grey;
-            }
-        }
-        
-        //If there are any characters in the acting Characters list, the state changes so we stop updating initiative meters
-        if (this.actingCharacters.Count != 0)
-        {
-            this.SetWaitTime(1, combatState.SelectAction);
-        }
-    }
+    
 
 
     //Function called externally to find out which combat tile the given character is on
@@ -1305,9 +1146,9 @@ public class CombatManager : MonoBehaviour
         CombatActionPanelUI.globalReference.selectedAction.PerformAction(tileClicked_);
 
         //Have this combat manager wait a bit before going back because there could be animations
-        if (this.stateAfterWait != combatState.EndCombat)
+        if (this.stateAfterWait != CombatState.EndCombat)
         {
-            this.SetWaitTime(CombatActionPanelUI.globalReference.selectedAction.timeToCompleteAction, combatState.PlayerInput);
+            this.SetWaitTime(CombatActionPanelUI.globalReference.selectedAction.timeToCompleteAction, CombatState.PlayerInput);
         }
 
         //Disables the types of actions that were used 
@@ -1342,9 +1183,9 @@ public class CombatManager : MonoBehaviour
         actionInstance.GetComponent<Action>().PerformAction(tileClicked_);
 
         //Have this combat manager wait a bit before going back because there could be animations
-        if(this.stateAfterWait != combatState.EndCombat)
+        if(this.stateAfterWait != CombatState.EndCombat)
         {
-            this.SetWaitTime(enemyAction_.timeToCompleteAction, combatState.PlayerInput);
+            this.SetWaitTime(enemyAction_.timeToCompleteAction, CombatState.PlayerInput);
         }
     }
 
@@ -1399,7 +1240,7 @@ public class CombatManager : MonoBehaviour
         this.ClearCombatTileHighlights();
 
         //Have the combat manager wait a moment before going back to increasing initiatives
-        this.SetWaitTime(1, combatState.IncreaseInitiative);
+        this.SetWaitTime(1, CombatState.IncreaseInitiative);
     }
 
 
@@ -1481,7 +1322,7 @@ public class CombatManager : MonoBehaviour
         this.deadCharacterSprites.Add(deadSprite);
         //Freeing up the tile that the dead character is on
         CombatTile deadCharTile = this.combatTileGrid[data_.characterDeath.deadCharacter.charCombatStats.gridPositionCol][data_.characterDeath.deadCharacter.charCombatStats.gridPositionRow];
-        deadCharTile.SetObjectOnTile(null, CombatTile.ObjectType.Nothing);
+        deadCharTile.SetObjectOnTile(null, TileObjectType.Nothing);
 
         //If the dead character is the acting character, we end it's turn
         if (this.actingCharacters.Count > 0 && this.actingCharacters[0] == data_.characterDeath.deadCharacter)
@@ -1532,7 +1373,7 @@ public class CombatManager : MonoBehaviour
             //If we made it through the loop without finding any living players, GAME OVER
             if(allPlayersAreDead)
             {
-                this.SetWaitTime(5f, combatState.GameOver);
+                this.SetWaitTime(5f, CombatState.GameOver);
             }
         }
         //If this character was an enemy character
@@ -1556,7 +1397,7 @@ public class CombatManager : MonoBehaviour
             //If we made it through the loop without finding any living enemies, the combat is over
             if(allEnemiesAreDead)
             {
-                this.SetWaitTime(2.5f, combatState.EndCombat);
+                this.SetWaitTime(2.5f, CombatState.EndCombat);
             }
         }
     }
@@ -1631,22 +1472,3 @@ public class CombatManager : MonoBehaviour
     }
 }
 
-[System.Serializable]
-public class BackgroundImageTypes
-{
-    //The type of land tile that combat is happening on
-    public LandType tileType = LandType.Empty;
-    //The background image associated with this tile type
-    public Sprite backgroundImage;
-}
-
-
-//Class used in CombatManager.cs that represents an individual character's name/health/initiative panel
-[System.Serializable]
-public class InitiativePanel
-{
-    public Slider initiativeSlider;
-    public Text characterName;
-    public Image background;
-    public Slider healthSlider;
-}

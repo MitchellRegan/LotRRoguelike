@@ -105,7 +105,7 @@ public class LocationOpenerUI : MonoBehaviour
             //Activating the correct vendor UI based on this vendor's type
             switch(cityVendor.type)
             {
-                case Vendor.VendorTypes.GenderalStore:
+                case VendorTypes.GenderalStore:
                     if (!this.generalStoreUI.enabled)
                     {
                         this.generalStoreUI.enabled = true;
@@ -113,7 +113,7 @@ public class LocationOpenerUI : MonoBehaviour
                     }
                     break;
 
-                case Vendor.VendorTypes.Blacksmith:
+                case VendorTypes.Blacksmith:
                     if (!this.blacksmithUI.enabled)
                     {
                         this.blacksmithUI.enabled = true;
@@ -121,7 +121,7 @@ public class LocationOpenerUI : MonoBehaviour
                     }
                     break;
 
-                case Vendor.VendorTypes.Tavern:
+                case VendorTypes.Tavern:
                     if (!this.tavernUI.enabled)
                     {
                         this.tavernUI.enabled = true;
@@ -129,7 +129,7 @@ public class LocationOpenerUI : MonoBehaviour
                     }
                     break;
 
-                case Vendor.VendorTypes.MageTower:
+                case VendorTypes.MageTower:
                     if (!this.mageTowerUI.enabled)
                     {
                         this.mageTowerUI.enabled = true;
@@ -137,7 +137,7 @@ public class LocationOpenerUI : MonoBehaviour
                     }
                     break;
 
-                case Vendor.VendorTypes.Church:
+                case VendorTypes.Church:
                     if (!this.churchUI.enabled)
                     {
                         this.churchUI.enabled = true;
@@ -145,7 +145,7 @@ public class LocationOpenerUI : MonoBehaviour
                     }
                     break;
 
-                case Vendor.VendorTypes.DarkTemple:
+                case VendorTypes.DarkTemple:
                     if (!this.darkTempleUI.enabled)
                     {
                         this.darkTempleUI.enabled = true;
@@ -153,7 +153,7 @@ public class LocationOpenerUI : MonoBehaviour
                     }
                     break;
 
-                case Vendor.VendorTypes.Castle:
+                case VendorTypes.Castle:
                     if (!this.castleUI.enabled)
                     {
                         this.castleUI.enabled = true;
@@ -185,39 +185,39 @@ public class LocationOpenerUI : MonoBehaviour
         Vendor vendorToDisplay = null;
 
         //Getting the vendor type enum from the int given (since unity can't have enums as variables in UnityEvents)
-        Vendor.VendorTypes vendorToVisit = Vendor.VendorTypes.GenderalStore;
+        VendorTypes vendorToVisit = VendorTypes.GenderalStore;
         switch (typeOfVendor_)
         {
             case 0:
-                vendorToVisit = Vendor.VendorTypes.GenderalStore;
+                vendorToVisit = VendorTypes.GenderalStore;
                 break;
 
             case 1:
-                vendorToVisit = Vendor.VendorTypes.Blacksmith;
+                vendorToVisit = VendorTypes.Blacksmith;
                 break;
 
             case 2:
-                vendorToVisit = Vendor.VendorTypes.Tavern;
+                vendorToVisit = VendorTypes.Tavern;
                 break;
 
             case 3:
-                vendorToVisit = Vendor.VendorTypes.MageTower;
+                vendorToVisit = VendorTypes.MageTower;
                 break;
 
             case 4:
-                vendorToVisit = Vendor.VendorTypes.Church;
+                vendorToVisit = VendorTypes.Church;
                 break;
 
             case 5:
-                vendorToVisit = Vendor.VendorTypes.DarkTemple;
+                vendorToVisit = VendorTypes.DarkTemple;
                 break;
 
             case 6:
-                vendorToVisit = Vendor.VendorTypes.Castle;
+                vendorToVisit = VendorTypes.Castle;
                 break;
 
             default:
-                vendorToVisit = Vendor.VendorTypes.GenderalStore;
+                vendorToVisit = VendorTypes.GenderalStore;
                 break;
         }
 

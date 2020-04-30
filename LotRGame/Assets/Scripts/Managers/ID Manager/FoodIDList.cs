@@ -71,7 +71,7 @@ public class FoodIDList : MonoBehaviour
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: FoodIDList.CheckList " + nameOfList_ + ": Empty slot in food list at index " + f1);
             }
             //If this ID has the wrong enum tag, we throw a debug
-            else if (listToCheck_[f1].objType != IDTag.ObjectType.ItemConsumable)
+            else if (listToCheck_[f1].objType != ObjectType.ItemConsumable)
             {
                 Debug.LogError(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ERROR: FoodIDList.CheckList " + nameOfList_ + ": Invalid ID type at index " + f1);
             }

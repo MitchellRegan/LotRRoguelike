@@ -9,12 +9,10 @@ public class GameData : MonoBehaviour
     public static GameData globalReference;
 
     //Public enum that lets us know what difficulty the player has set the game to
-    [System.Serializable]
-    public enum gameDifficulty { Easy, Normal, Hard };
-    public gameDifficulty currentDifficulty = gameDifficulty.Normal;
+    public GameDifficulty currentDifficulty = GameDifficulty.Normal;
 
     //Public enum that lets us know what race the player is starting as in a new game
-    public RaceTypes.Races startingRace = RaceTypes.Races.Human;
+    public Races startingRace = Races.Human;
 
     //The width and height of the game map in tiles for the different difficulty settings
     public Vector2 easyMapSize = new Vector2();
@@ -25,15 +23,19 @@ public class GameData : MonoBehaviour
     public string gameplayLevelName;
 
     //Enum that CreateTileGrid.cs uses on awake to figure out if it should be loading a map or creating a new one
-    public enum levelLoadType { LoadLevel, GenerateNewLevel };
     [HideInInspector]
-    public levelLoadType loadType = levelLoadType.GenerateNewLevel;
+    public LevelLoadType loadType = LevelLoadType.GenerateNewLevel;
 
     //Bool that determines if new unlockables can be spawned in a game based on if the player input a string
     [HideInInspector]
     public bool allowNewUnlockables = true;
 
+    //Our reference to the class that tracks what the player has unlocked
+    [HideInInspector]
+    public UnlockablesData playerUnlocks;
+
     //The name of the current game folder where our save directory is
+    // Current path: C:/Users/Me/AppData/LocalLow/DefaultCompany/LotRGame/SaveFiles
     [HideInInspector]
     public string saveFolder = "";
 
@@ -62,6 +64,16 @@ public class GameData : MonoBehaviour
     {
         //Loading in the player preferences
         SaveLoadManager.globalReference.LoadPlayerPreferences();
+        //Loading the data for which unlockables the player has unlocked
+        SaveLoadManager.globalReference.LoadUnlockProgress();
+    }
+
+
+    //Function called when this object is destroyed
+    private void OnDestroy()
+    {
+        //Saving the player unlockable progress
+        SaveLoadManager.globalReference.SaveUnlockProgress();
     }
 
 
@@ -78,43 +90,51 @@ public class GameData : MonoBehaviour
         switch(startingRace_)
         {
             case 0:
-                this.startingRace = RaceTypes.Races.Human;
+                this.startingRace = Races.Human;
                 break;
 
             case 1:
-                this.startingRace = RaceTypes.Races.Elf;
+                this.startingRace = Races.Elf;
                 break;
 
             case 2:
-                this.startingRace = RaceTypes.Races.Dwarf;
+                this.startingRace = Races.Dwarf;
                 break;
 
             case 3:
-                this.startingRace = RaceTypes.Races.HalfMan;
+                this.startingRace = Races.HalfMan;
                 break;
 
             case 4:
-                this.startingRace = RaceTypes.Races.Amazon;
+                this.startingRace = Races.Amazon;
                 break;
 
             case 5:
-                this.startingRace = RaceTypes.Races.Orc;
+                this.startingRace = Races.Orc;
                 break;
 
             case 6:
-                this.startingRace = RaceTypes.Races.GillFolk;
+                this.startingRace = Races.GillFolk;
                 break;
 
             case 7:
-                this.startingRace = RaceTypes.Races.ScaleSkin;
+                this.startingRace = Races.ScaleSkin;
                 break;
 
             case 8:
-                this.startingRace = RaceTypes.Races.Minotaur;
+                this.startingRace = Races.Minotaur;
+                break;
+
+            case 9:
+                this.startingRace = Races.Elemental;
+                break;
+
+            case 10:
+                this.startingRace = Races.Dragon;
                 break;
 
             default:
-                this.startingRace = RaceTypes.Races.Human;
+                this.startingRace = Races.Human;
                 break;
         }
     }
@@ -126,19 +146,19 @@ public class GameData : MonoBehaviour
         switch(difficulty_)
         {
             case 0:
-                this.currentDifficulty = gameDifficulty.Easy;
+                this.currentDifficulty = GameDifficulty.Easy;
                 break;
 
             case 1:
-                this.currentDifficulty = gameDifficulty.Normal;
+                this.currentDifficulty = GameDifficulty.Normal;
                 break;
 
             case 2:
-                this.currentDifficulty = gameDifficulty.Hard;
+                this.currentDifficulty = GameDifficulty.Hard;
                 break;
 
             default:
-                this.currentDifficulty = gameDifficulty.Normal;
+                this.currentDifficulty = GameDifficulty.Normal;
                 break;
         }
     }
@@ -165,16 +185,19 @@ public class GameData : MonoBehaviour
         }
 
         //Making sure our save folder name is valid
-        this.saveFolder = SaveLoadManager.globalReference.CheckFolderName(this.saveFolder);
+        this.saveFolder = SaveLoadManager.globalReference.CreateNewSaveFolder();
 
         //Telling the map generator to create a new level instead of loading one from a save
-        this.loadType = levelLoadType.GenerateNewLevel;
+        this.loadType = LevelLoadType.GenerateNewLevel;
 
         //Saving the current save folder name so we know which game was played last. Used for "Continuing"
         PlayerPrefs.SetString("MostRecentSave", GameData.globalReference.saveFolder);
 
         //Transitioning to the gameplay level
-        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        //this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        EVTData transitionEVT = new EVTData();
+        transitionEVT.sceneTransition = new SceneTransitionEVT(this.gameplayLevelName, 0.5f, 1);
+        EventManager.TriggerEvent(SceneTransitionEVT.eventNum, transitionEVT);
     }
 
 
@@ -202,10 +225,13 @@ public class GameData : MonoBehaviour
         this.saveFolder = PlayerPrefs.GetString("MostRecentSave");
 
         //Telling the map generator to load our existing level
-        this.loadType = levelLoadType.LoadLevel;
+        this.loadType = LevelLoadType.LoadLevel;
 
         //Transitioning to the gameplay level
-        this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        //this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);
+        EVTData transitionEVT = new EVTData();
+        transitionEVT.sceneTransition = new SceneTransitionEVT(this.gameplayLevelName, 0.5f, 1);
+        EventManager.TriggerEvent(SceneTransitionEVT.eventNum, transitionEVT);
     }
 
 
@@ -225,7 +251,7 @@ public class GameData : MonoBehaviour
         this.saveFolder = saveFolder_;
 
         //Telling the map generator to load our existing level
-        this.loadType = levelLoadType.LoadLevel;
+        this.loadType = LevelLoadType.LoadLevel;
 
         //Transitioning to the gameplay level
         this.GetComponent<GoToLevel>().LoadLevelByName(this.gameplayLevelName);

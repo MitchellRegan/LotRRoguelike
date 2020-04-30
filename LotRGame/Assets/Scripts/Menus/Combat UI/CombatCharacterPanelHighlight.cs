@@ -13,7 +13,6 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
     private bool currentlyHighlighted = false;
 
     //Enum for if this tile is for a player character or enemy character
-    public enum PlayerOrEnemy { Player, Enemy };
     public PlayerOrEnemy playerOrEnemy = PlayerOrEnemy.Enemy;
 
     //The index of the character that this panel shows

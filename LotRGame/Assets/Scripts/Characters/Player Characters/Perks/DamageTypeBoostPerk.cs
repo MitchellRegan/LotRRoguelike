@@ -6,7 +6,7 @@ using UnityEngine;
 public class DamageTypeBoostPerk : Perk
 {
     //The damage type that this perk boosts
-    public CombatManager.DamageType damageTypeToBoost = CombatManager.DamageType.Slashing;
+    public DamageType damageTypeToBoost = DamageType.Slashing;
 
     //Bool for if this perk only works during a crit. If not it works all the time
     public bool onlyWorksOnCrit = false;
@@ -38,7 +38,7 @@ public class DamageTypeBoostPerk : Perk
 
 
     //Function called from AttackAction.cs to get the amount of bonus damage this perk awards
-    public int GetDamageBoostAmount(Character perkOwner_, bool isCrit_, bool isDoTOrHot_, CombatManager.DamageType type_)
+    public int GetDamageBoostAmount(Character perkOwner_, bool isCrit_, bool isDoTOrHot_, DamageType type_)
     {
         //The total amount of bonus damage returned
         int totalDamage = 0;

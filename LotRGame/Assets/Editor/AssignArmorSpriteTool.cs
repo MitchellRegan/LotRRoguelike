@@ -105,7 +105,7 @@ public class AssignArmorSpriteTool : EditorWindow
     private void AssignHelmSprites(string spritePrefix_)
     {
         //If we don't have a helm armor item, nothing happens
-        if(helm == null || helm.slot != Armor.ArmorSlot.Head)
+        if(helm == null || helm.slot != ArmorSlot.Head)
         {
             return;
         }
@@ -127,7 +127,7 @@ public class AssignArmorSpriteTool : EditorWindow
     private void AssignChestpieceSprites(string spritePrefix_)
     {
         //If we don't have a chest armor item, nothing happens
-        if (chestpiece == null || chestpiece.slot != Armor.ArmorSlot.Torso)
+        if (chestpiece == null || chestpiece.slot != ArmorSlot.Torso)
         {
             return;
         }
@@ -194,7 +194,7 @@ public class AssignArmorSpriteTool : EditorWindow
     private void AssignLeggingSprites(string spritePrefix_)
     {
         //If we don't have a leg armor item, nothing happens
-        if (leggings == null || leggings.slot != Armor.ArmorSlot.Legs)
+        if (leggings == null || leggings.slot != ArmorSlot.Legs)
         {
             return;
         }
@@ -267,7 +267,7 @@ public class AssignArmorSpriteTool : EditorWindow
     private void AssignShoeSprites(string spritePrefix_)
     {
         //If we don't have a shoe armor item, nothing happens
-        if (this.shoes == null || this.shoes.slot != Armor.ArmorSlot.Feet)
+        if (this.shoes == null || this.shoes.slot != ArmorSlot.Feet)
         {
             return;
         }
@@ -340,7 +340,7 @@ public class AssignArmorSpriteTool : EditorWindow
     private void AssignGloveSprites(string spritePrefix_)
     {
         //If we don't have a glove armor item, nothing happens
-        if (this.gloves == null || this.gloves.slot != Armor.ArmorSlot.Hands)
+        if (this.gloves == null || this.gloves.slot != ArmorSlot.Hands)
         {
             return;
         }
@@ -362,7 +362,7 @@ public class AssignArmorSpriteTool : EditorWindow
     private void AssignCloakSprites(string spritePrefix_)
     {
         //If we don't have a cloak armor item, nothing happens
-        if (this.cloak == null || this.cloak.slot != Armor.ArmorSlot.Cloak)
+        if (this.cloak == null || this.cloak.slot != ArmorSlot.Cloak)
         {
             return;
         }
