@@ -14,11 +14,17 @@ public class CombatTileHandler : MonoBehaviour
     //Reference to the game object that displays the combat tiles
     public GameObject tileGridHolder;
 
+    //Reference to the object that highlights the tile for the acting character
+    public GameObject tileHighlight;
+
 
 
     // Function called when this object is created
     private void Awake()
     {
+        //Hiding our highlight
+        this.StopHighlightingTile();
+
         //Initializing our combat tile grid
         this.combatTileGrid = new List<List<CombatTile3D>>();
 
@@ -102,5 +108,22 @@ public class CombatTileHandler : MonoBehaviour
         int col = characterToFind_.charCombatStats.gridPositionCol;
 
         return this.combatTileGrid[col][row];
+    }
+
+
+    //Function called externally to highlight a specific tile
+    public void HighlightTile(int row_, int col_)
+    {
+        this.tileHighlight.gameObject.SetActive(true);
+
+        Vector3 tileLoc = this.combatTileGrid[col_][row_].transform.position;
+        this.tileHighlight.transform.position = tileLoc;
+    }
+
+
+    //Function called externally to hide the highlight object
+    public void StopHighlightingTile()
+    {
+        this.tileHighlight.gameObject.SetActive(false);
     }
 }
