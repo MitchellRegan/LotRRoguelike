@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CombatStats : MonoBehaviour
+/*public class CombatStats : MonoBehaviour
 {
     //The crit chance for this character's attacks. Default is 5%
     [Range(0, 100)]
@@ -29,3 +29,4 @@ public class CombatStats : MonoBehaviour
     //The list of active effects on this character during combat
     private List<Effect> activeEffects;
 }
+*/
