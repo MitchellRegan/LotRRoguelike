@@ -42,6 +42,20 @@ public class CombatTileHandler : MonoBehaviour
     }
 
 
+    //Called on the first frame to connect all the tiles after they've been added to the grid
+    private void Start()
+    {
+        //Looping through each row and column to connect tiles to their neighbors
+        for(int r = 0; r < this.numRows; r++)
+        {
+            for(int c = 0; c < this.numCols; c++)
+            {
+                this.ConnectTile(r, c);
+            }
+        }
+    }
+
+
     //Function called externally from CombatTile3D.cs. Adds a 3D combat tile to our combat tile grid at the row and column given
     public void AddCombatTileToGrid(CombatTile3D tileToAdd_, int row_, int col_)
     {
@@ -63,7 +77,6 @@ public class CombatTileHandler : MonoBehaviour
 
         //Setting the given tile to the correct row and column
         this.combatTileGrid[col_][row_] = tileToAdd_;
-        this.ConnectTile(row_, col_);
     }
 
 
@@ -76,23 +89,23 @@ public class CombatTileHandler : MonoBehaviour
             this.combatTileGrid[col_][row_].up = this.combatTileGrid[col_][row_ + 1];
             this.combatTileGrid[col_][row_ + 1].down = this.combatTileGrid[col_][row_];
         }
-
+        
         //Connecting down
-        if(row_ != 0)
+        if (row_ != 0)
         {
             this.combatTileGrid[col_][row_].down = this.combatTileGrid[col_][row_ - 1];
             this.combatTileGrid[col_][row_ - 1].up = this.combatTileGrid[col_][row_];
         }
-
+        
         //Connecting left
         if (col_ != 0)
         {
             this.combatTileGrid[col_][row_].left = this.combatTileGrid[col_ - 1][row_];
             this.combatTileGrid[col_ - 1][row_].right = this.combatTileGrid[col_][row_];
         }
-
+        
         //Connecting right
-        if (row_ != this.numCols - 1)
+        if (col_ != this.numCols - 1)
         {
             this.combatTileGrid[col_][row_].right = this.combatTileGrid[col_ + 1][row_];
             this.combatTileGrid[col_ + 1][row_].left = this.combatTileGrid[col_][row_];

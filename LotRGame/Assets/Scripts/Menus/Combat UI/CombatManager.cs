@@ -23,6 +23,7 @@ public class CombatManager : MonoBehaviour
     public const int baseHitDC = 20;
 
     //Enum for the state of this combat manager to decide what to do on update
+    [HideInInspector]
     public CombatState currentState = CombatState.Wait;
 
     //The amount of time that has passed while waiting
@@ -31,6 +32,7 @@ public class CombatManager : MonoBehaviour
     private CombatState stateAfterWait = CombatState.IncreaseInitiative;
 
     //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
+    [HideInInspector]
     public List<Character> actingCharacters = null;
 
     //2D List of all combat tiles in the combat screen map. Col[row}
@@ -100,7 +102,7 @@ public class CombatManager : MonoBehaviour
 	private void Awake ()
     {
         //Setting the static reference
-        if(globalReference == null)
+        if (globalReference == null)
         {
             globalReference = this;
         }
