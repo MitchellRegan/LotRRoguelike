@@ -25,6 +25,8 @@ public class CombatUIHandler : MonoBehaviour
 
     //Reference to the object spawned to display how much damage was dealt
     public DamageText damageTextPrefab;
+    //Image that blocks the player from performing actions before the current action is finished
+    public Image actionBlocker;
 
 
 

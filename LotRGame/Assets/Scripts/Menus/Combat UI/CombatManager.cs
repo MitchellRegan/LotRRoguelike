@@ -78,12 +78,6 @@ public class CombatManager : MonoBehaviour
     //The list of all CombatCharacterSprites for each character and enemy
     public List<CharacterSpriteBase> characterSpriteList;
 
-    //The object that hilights the acting character
-    public Image highlightRing;
-
-    //Image that blocks the player from performing actions before the current action is finished
-    public Image actionBlocker;
-
     //The reference to the Info Display object so we can show what actions are being used
     public InfoDisplay ourInfoDisplay;
 
@@ -157,7 +151,7 @@ public class CombatManager : MonoBehaviour
         //If the acting character list isn't empty, we highlight the acting character's position
         if (this.actingCharacters.Count > 0)
         {
-            this.highlightRing.transform.position = this.FindCharactersTile(this.actingCharacters[0]).transform.position;
+            this.tileHandler.tileHighlight.transform.position = this.FindCharactersTile(this.actingCharacters[0]).transform.position;
         }
 
         //Determine what we do based on the current state
@@ -191,14 +185,14 @@ public class CombatManager : MonoBehaviour
                     if(this.stateAfterWait == CombatState.IncreaseInitiative)
                     {
                         //Making the highlight ring invisible again
-                        this.highlightRing.enabled = false;
+                        this.tileHandler.tileHighlight.enabled = false;
                     }
 
                     this.currentState = this.stateAfterWait;
                     this.stateAfterWait = CombatState.IncreaseInitiative;
 
                     //Disabling the action blocker so the player can pick actions again
-                    this.actionBlocker.enabled = false;
+                    this.uiHandler.actionBlocker.enabled = false;
                 }
                 break;
 
@@ -236,8 +230,8 @@ public class CombatManager : MonoBehaviour
                     this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
 
                     //Setting the highlight ring's color to the player color and making it visible
-                    this.highlightRing.color = this.actingCharacterColor;
-                    this.highlightRing.enabled = true;
+                    this.tileHandler.tileHighlight.SetHighlightColor(this.actingCharacterColor);
+                    this.tileHandler.tileHighlight.enabled = true;
 
                     //If this player character isn't dead from previous effects
                     if (actingChar.charPhysState.currentHealth > 0)
@@ -258,8 +252,8 @@ public class CombatManager : MonoBehaviour
                     this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
 
                     //Setting the highlight ring's color to the enemy color and making it visible
-                    this.highlightRing.color = this.actingEnemyColor;
-                    this.highlightRing.enabled = true;
+                    this.tileHandler.tileHighlight.SetHighlightColor(this.actingEnemyColor);
+                    this.tileHandler.tileHighlight.enabled = true;
 
                     //If this enemy isn't dead from previous effects
                     if (actingChar.charPhysState.currentHealth > 0)
@@ -369,7 +363,7 @@ public class CombatManager : MonoBehaviour
         this.UpdateCombatTilePositions();
         
         //Hiding the highlight ring
-        this.highlightRing.enabled = false;
+        this.tileHandler.tileHighlight.enabled = false;
         
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, CombatState.IncreaseInitiative);
@@ -922,7 +916,7 @@ public class CombatManager : MonoBehaviour
         this.stateAfterWait = stateAfterWait_;
 
         //Turns on the action blocker so the player can't perform another action until the wait time is over
-        this.actionBlocker.enabled = true;
+        this.uiHandler.actionBlocker.enabled = true;
     }
 
 
@@ -1329,7 +1323,7 @@ public class CombatManager : MonoBehaviour
         //If the dead character is the acting character, we end it's turn
         if (this.actingCharacters.Count > 0 && this.actingCharacters[0] == data_.characterDeath.deadCharacter)
         {
-            this.highlightRing.enabled = false;
+            this.tileHandler.tileHighlight.enabled = false;
             this.EndActingCharactersTurn();
 
             //If the dead character is a player character, we set their initiative slider to grey

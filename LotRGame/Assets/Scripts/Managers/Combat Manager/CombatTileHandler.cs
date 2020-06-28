@@ -15,7 +15,7 @@ public class CombatTileHandler : MonoBehaviour
     public GameObject tileGridHolder;
 
     //Reference to the object that highlights the tile for the acting character
-    public GameObject tileHighlight;
+    public TileHighlight tileHighlight;
 
 
 

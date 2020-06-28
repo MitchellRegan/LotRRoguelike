@@ -93,7 +93,7 @@ public class WASDOverworldMovement : MonoBehaviour
     private void Update()
     {
         //If the combat canvas is open, we don't move
-        if(CombatManager.globalReference.GetComponent<Canvas>().enabled)
+        if(CombatManager.globalReference.uiHandler.combatUICanvas.enabled)
         {
             return;
         }
