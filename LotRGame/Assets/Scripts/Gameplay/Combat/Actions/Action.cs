@@ -49,7 +49,7 @@ public class Action : MonoBehaviour
             //Creating a new action cooldown class for this action
             ActionCooldown acd = new ActionCooldown(this, this.cooldownTime);
 
-            CombatManager.globalReference.actingCharacters[0].charActionList.actionCooldowns.Add(acd);
+            CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList.actionCooldowns.Add(acd);
         }
     }
 

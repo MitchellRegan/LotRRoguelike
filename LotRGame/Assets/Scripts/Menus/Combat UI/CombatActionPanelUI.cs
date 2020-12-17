@@ -75,7 +75,7 @@ public class CombatActionPanelUI : MonoBehaviour
         this.UpdateActionDetailsPanel();
 
         //Enabling all of the action buttons
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.majorActions.Count > 0)
+        if (CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList.majorActions.Count > 0)
         {
             this.standardActButton.interactable = true;
         }
@@ -83,7 +83,7 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.standardActButton.interactable = false;
         }
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.minorActions.Count > 0)
+        if (CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList.minorActions.Count > 0)
         {
             this.secondaryActButton.interactable = true;
         }
@@ -91,7 +91,7 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.secondaryActButton.interactable = false;
         }
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.fastActions.Count > 0)
+        if (CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList.fastActions.Count > 0)
         {
             this.quickActButton.interactable = true;
         }
@@ -99,7 +99,7 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             this.quickActButton.interactable = false;
         }
-        if (CombatManager.globalReference.actingCharacters[0].charActionList.massiveActions.Count > 0)
+        if (CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList.massiveActions.Count > 0)
         {
             this.fullRoundActButton.interactable = true;
         }
@@ -116,13 +116,13 @@ public class CombatActionPanelUI : MonoBehaviour
     public void DisplayActionTypes(int typeIndex_)
     {
         //Making sure there's an acting character first
-        if(CombatManager.globalReference.actingCharacters.Count <= 0)
+        if(CombatManager.globalReference.initiativeHandler.actingCharacters.Count <= 0)
         {
             return;
         }
 
         //Getting a reference to the character's action list
-        ActionList actingCharActions = CombatManager.globalReference.actingCharacters[0].charActionList;
+        ActionList actingCharActions = CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList;
 
         switch (typeIndex_)
         {
@@ -169,7 +169,7 @@ public class CombatActionPanelUI : MonoBehaviour
                 {
                     WeaponAction wpAct = actionsToShow_[b] as WeaponAction;
                     //If this weapon action can't be used, we need to reduce the current action count by 1
-                    if(!wpAct.CanCharacterUseAction(CombatManager.globalReference.actingCharacters[0]))
+                    if(!wpAct.CanCharacterUseAction(CombatManager.globalReference.initiativeHandler.actingCharacters[0]))
                     {
                         b -= 1;
                     }
@@ -200,7 +200,7 @@ public class CombatActionPanelUI : MonoBehaviour
         CombatManager.globalReference.ClearCombatTileHighlights();
 
         //Getting a reference to the character that's currently acting
-        Character actingCharacter = CombatManager.globalReference.actingCharacters[0];
+        Character actingCharacter = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
         //Finding out which tile the acting character is on
         CombatTile actingCharsTile = CombatManager.globalReference.FindCharactersTile(actingCharacter);
 
@@ -292,7 +292,7 @@ public class CombatActionPanelUI : MonoBehaviour
                     //Getting the sprite base for the character
                     CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(checkedTile.objectOnThisTile.GetComponent<Character>());
                     //If the character on the tile isn't the one that's acting
-                    if (cSprite.ourCharacter != CombatManager.globalReference.actingCharacters[0])
+                    if (cSprite.ourCharacter != CombatManager.globalReference.initiativeHandler.actingCharacters[0])
                     {
                         cSprite.MakeSpritesTransparent();
                     }

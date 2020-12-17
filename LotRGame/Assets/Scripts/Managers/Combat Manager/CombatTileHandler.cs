@@ -80,7 +80,7 @@ public class CombatTileHandler : MonoBehaviour
     }
 
 
-    //Function called from AddCombatTileToGrid to connect a tile to the surrounding tiles
+    //Function called from Start to connect a tile to the surrounding tiles
     private void ConnectTile(int row_, int col_)
     {
         //Connecting up
@@ -109,6 +109,19 @@ public class CombatTileHandler : MonoBehaviour
         {
             this.combatTileGrid[col_][row_].right = this.combatTileGrid[col_ + 1][row_];
             this.combatTileGrid[col_ + 1][row_].left = this.combatTileGrid[col_][row_];
+        }
+    }
+
+
+    //Function called from CombatManager.InitiateCombat to reset all combat tiles
+    public void ResetCombatTiles()
+    {
+        for(int r = 0; r < this.numRows; r++)
+        {
+            for(int c = 0; c < this.numCols; c++)
+            {
+                this.combatTileGrid[c][r].ResetTile();
+            }
         }
     }
 

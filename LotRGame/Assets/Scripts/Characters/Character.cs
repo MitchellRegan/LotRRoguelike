@@ -27,24 +27,35 @@ public class Character : MonoBehaviour
     [HideInInspector]
     [System.NonSerialized]
     public RaceTypes charRaceTypes;
+
     [HideInInspector]
     [System.NonSerialized]
     public Inventory charInventory;
+
     [HideInInspector]
     [System.NonSerialized]
     public Skills charSkills;
+
     [HideInInspector]
     [System.NonSerialized]
     public PhysicalState charPhysState;
+
     [HideInInspector]
     [System.NonSerialized]
     public CombatStats charCombatStats;
+
     [HideInInspector]
     [System.NonSerialized]
     public ActionList charActionList;
+
     [HideInInspector]
     [System.NonSerialized]
     public CharacterSprites charSprites;
+
+    [HideInInspector]
+    [System.NonSerialized]
+    public CharacterModelObjs charModels;
+
     [System.NonSerialized]
     public PerkList charPerks;
 
@@ -60,6 +71,7 @@ public class Character : MonoBehaviour
         this.charCombatStats = this.GetComponent<CombatStats>();
         this.charActionList = this.GetComponent<ActionList>();
         this.charSprites = this.GetComponent<CharacterSprites>();
+        this.charModels = this.GetComponent<CharacterModelObjs>();
         this.charPerks = this.GetComponent<PerkList>();
     }
 

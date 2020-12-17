@@ -44,7 +44,7 @@ public class AttackAction : Action
         this.BeginActionCooldown();
 
         //Reference to the character performing this attack
-        Character actingChar = CombatManager.globalReference.actingCharacters[0];
+        Character actingChar = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
         //Reference to the character that's being attacked
         Character defendingChar;
 
@@ -68,7 +68,7 @@ public class AttackAction : Action
         }
 
         //Looping through and creating each of the launched projectiles for this attack
-        Vector3 casterTile = CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]).transform.position;
+        Vector3 casterTile = CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.initiativeHandler.actingCharacters[0]).transform.position;
         foreach(ProjectileLauncher projectile in this.projectilesToLaunch)
         {
             GameObject newProjectile = GameObject.Instantiate(projectile.gameObject, casterTile, new Quaternion());

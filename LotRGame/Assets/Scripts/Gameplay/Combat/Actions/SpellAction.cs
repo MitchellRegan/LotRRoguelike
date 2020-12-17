@@ -19,7 +19,7 @@ public class SpellAction : AttackAction
         base.PerformAction(targetTile_);
 
         //Once the attack is performed, this spell needs to recharge
-        Character actingChar = CombatManager.globalReference.actingCharacters[0];
+        Character actingChar = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
         actingChar.charActionList.StartSpellRecharge(this);
     }
 }

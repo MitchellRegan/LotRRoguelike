@@ -33,9 +33,9 @@ public class MoveAction : Action
         //Initializes the movement path list
         this.movementPath = new List<CombatTile>();
         //adding in the selected character's tile as the starting point
-        this.movementPath.Add(CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]));
+        this.movementPath.Add(CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.initiativeHandler.actingCharacters[0]));
         //Getting the reference to the acting character from the Combat Manager
-        this.actingCharacter = CombatManager.globalReference.actingCharacters[0];
+        this.actingCharacter = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
     }
 
 

@@ -31,10 +31,6 @@ public class CombatManager : MonoBehaviour
     //The combat state to switch to after the wait time is up
     private CombatState stateAfterWait = CombatState.IncreaseInitiative;
 
-    //Reference to the characters whose turn it is to act. It's a list because multiple characters could have the same initiative
-    [HideInInspector]
-    public List<Character> actingCharacters = null;
-
     //2D List of all combat tiles in the combat screen map. Col[row}
     public List<List<CombatTile>> combatTileGrid;
 
@@ -50,18 +46,6 @@ public class CombatManager : MonoBehaviour
     public UnityEvent combatEndEvent;
     //The unity event that's invoked when a player character can perform actions
     public UnityEvent showPlayerActions;
-
-    //The color of player initiative panels when they're the acting character
-    public Color actingCharacterColor = Color.green;
-    //The color of enemy initiative panels when they're the acting character
-    public Color actingEnemyColor = Color.red;
-    //The color of initiative panels when not acting
-    public Color inactivePanelColor = Color.white;
-
-    //The list of all sliders that show each player character's initiative
-    public List<InitiativePanel> playerInitiativeSliders;
-    //The list of all sliders that show each enemy character's initiative
-    public List<InitiativePanel> enemyInitiativeSliders;
 
     //Reference to the background image that's set at the start of combat based on the type of land tile
     public Image backgroundImageObject;
@@ -120,7 +104,6 @@ public class CombatManager : MonoBehaviour
         }
 
         //Initializing the active characters list
-        this.actingCharacters = new List<Character>();
         this.deadCharacterSprites = new List<CharacterSpriteBase>();
         this.playerCharactersInCombat = new List<Character>();
         this.enemyCharactersInCombat = new List<Character>();
@@ -149,9 +132,9 @@ public class CombatManager : MonoBehaviour
     private void Update()
     {
         //If the acting character list isn't empty, we highlight the acting character's position
-        if (this.actingCharacters.Count > 0)
+        if (this.initiativeHandler.actingCharacters.Count > 0)
         {
-            this.tileHandler.tileHighlight.transform.position = this.FindCharactersTile(this.actingCharacters[0]).transform.position;
+            this.tileHandler.tileHighlight.transform.position = this.tileHandler.FindCharactersTile(this.initiativeHandler.actingCharacters[0]).transform.position;
         }
 
         //Determine what we do based on the current state
@@ -163,126 +146,135 @@ public class CombatManager : MonoBehaviour
 
             //Counting down the wait time
             case CombatState.Wait:
-                this.waitTime -= Time.deltaTime;
-                //If the timer is up, the state changes to the one that was previously designated
-                if(this.waitTime <= 0)
                 {
-                    //If we have dead character sprites to remove
-                    if (this.deadCharacterSprites.Count > 0)
+                    this.waitTime -= Time.deltaTime;
+                    //If the timer is up, the state changes to the one that was previously designated
+                    if (this.waitTime <= 0)
                     {
-                        //Looping through all of our dead character sprites to remove and destroy them
-                        foreach (CharacterSpriteBase deadCSprite in this.deadCharacterSprites)
+                        //If we have dead character sprites to remove
+                        if (this.deadCharacterSprites.Count > 0)
                         {
-                            this.characterSpriteList.Remove(deadCSprite);
-                            Destroy(deadCSprite.gameObject);
+                            //Looping through all of our dead character sprites to remove and destroy them
+                            foreach (CharacterSpriteBase deadCSprite in this.deadCharacterSprites)
+                            {
+                                this.characterSpriteList.Remove(deadCSprite);
+                                Destroy(deadCSprite.gameObject);
+                            }
+
+                            //Clearing the list of dead character sprites
+                            this.deadCharacterSprites = new List<CharacterSpriteBase>();
                         }
 
-                        //Clearing the list of dead character sprites
-                        this.deadCharacterSprites = new List<CharacterSpriteBase>();
+                        //If the current state is player input or action selecting and the state we're switching to is increasing initiative, we hide the character highlight
+                        if (this.stateAfterWait == CombatState.IncreaseInitiative)
+                        {
+                            //Making the highlight ring invisible again
+                            this.tileHandler.tileHighlight.enabled = false;
+                        }
+
+                        this.currentState = this.stateAfterWait;
+                        this.stateAfterWait = CombatState.IncreaseInitiative;
+
+                        //Disabling the action blocker so the player can pick actions again
+                        this.uiHandler.actionBlocker.enabled = false;
                     }
-
-                    //If the current state is player input or action selecting and the state we're switching to is increasing initiative, we hide the character highlight
-                    if(this.stateAfterWait == CombatState.IncreaseInitiative)
-                    {
-                        //Making the highlight ring invisible again
-                        this.tileHandler.tileHighlight.enabled = false;
-                    }
-
-                    this.currentState = this.stateAfterWait;
-                    this.stateAfterWait = CombatState.IncreaseInitiative;
-
-                    //Disabling the action blocker so the player can pick actions again
-                    this.uiHandler.actionBlocker.enabled = false;
                 }
                 break;
 
             //Adding each character's attack speed to their current initative 
             case CombatState.IncreaseInitiative:
-                //Making sure the highlight ring is invisible
-                this.initiativeHandler.IncreaseInitiatives();
+                {
+                    //Making sure the highlight ring is invisible
+                    this.initiativeHandler.IncreaseInitiatives();
+                }
                 break;
 
             //Hilighting the selected character whose turn it is
             case CombatState.SelectAction:
-                //Triggering each combat effect on the acting character for the beginning of their turn
-                int numberOfEffects = this.actingCharacters[0].charCombatStats.combatEffects.Count;
-                Character actingChar = this.actingCharacters[0];
-                for(int sotEffects = 0; sotEffects < actingChar.charCombatStats.combatEffects.Count; ++sotEffects)
                 {
-                    actingChar.charCombatStats.combatEffects[sotEffects].EffectOnStartOfTurn();
-
-                    //Checking to see if the effect has expired to set the counter back by 1
-                    if(actingChar.charCombatStats.combatEffects.Count < numberOfEffects)
+                    //Triggering each combat effect on the acting character for the beginning of their turn
+                    int numberOfEffects = this.initiativeHandler.actingCharacters[0].charCombatStats.combatEffects.Count;
+                    Character actingChar = this.initiativeHandler.actingCharacters[0];
+                    for (int sotEffects = 0; sotEffects < actingChar.charCombatStats.combatEffects.Count; ++sotEffects)
                     {
-                        numberOfEffects -= 1;
-                        sotEffects -= 1;
+                        actingChar.charCombatStats.combatEffects[sotEffects].EffectOnStartOfTurn();
+
+                        //Checking to see if the effect has expired to set the counter back by 1
+                        if (actingChar.charCombatStats.combatEffects.Count < numberOfEffects)
+                        {
+                            numberOfEffects -= 1;
+                            sotEffects -= 1;
+                        }
                     }
-                }
 
-                //Refreshing the action list for the acting character
-                actingChar.charActionList.RefreshActionLists();
+                    //Refreshing the action list for the acting character
+                    actingChar.charActionList.RefreshActionLists();
 
-                //If the selected character is a player
-                if (this.playerCharactersInCombat.Contains(actingChar))
-                {
-                    //Hilighting the slider of the player character whose turn it is
-                    int selectedCharIndex = this.playerCharactersInCombat.IndexOf(actingChar);
-                    this.playerInitiativeSliders[selectedCharIndex].background.color = this.actingCharacterColor;
-
-                    //Setting the highlight ring's color to the player color and making it visible
-                    this.tileHandler.tileHighlight.SetHighlightColor(this.actingCharacterColor);
-                    this.tileHandler.tileHighlight.enabled = true;
-
-                    //If this player character isn't dead from previous effects
-                    if (actingChar.charPhysState.currentHealth > 0)
+                    //If the selected character is a player
+                    if (this.playerCharactersInCombat.Contains(actingChar))
                     {
-                        //Displaying the action panel so players can decide what to do
-                        this.showPlayerActions.Invoke();
-                        //Default to showing the acting character's standard actions
-                        CombatActionPanelUI.globalReference.DisplayActionTypes(0);
-                        //Now we wait for player input
-                        this.currentState = CombatState.PlayerInput;
+                        //Hilighting the slider of the player character whose turn it is
+                        int selectedCharIndex = this.playerCharactersInCombat.IndexOf(actingChar);
+
+
+                        //Setting the highlight ring's color to the player color and making it visible
+                        this.tileHandler.tileHighlight.SetHighlightColor(this.uiHandler.actingPlayerColor);
+                        this.tileHandler.tileHighlight.enabled = true;
+
+                        //If this player character isn't dead from previous effects
+                        if (actingChar.charPhysState.currentHealth > 0)
+                        {
+                            //Displaying the action panel so players can decide what to do
+                            this.showPlayerActions.Invoke();
+                            //Default to showing the acting character's standard actions
+                            CombatActionPanelUI.globalReference.DisplayActionTypes(0);
+                            //Now we wait for player input
+                            this.currentState = CombatState.PlayerInput;
+                        }
                     }
-                }
-                //If the selected character is an enemy
-                else
-                {
-                    //Getting the index for the acting enemy
-                    int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(actingChar);
-                    this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.actingEnemyColor;
-
-                    //Setting the highlight ring's color to the enemy color and making it visible
-                    this.tileHandler.tileHighlight.SetHighlightColor(this.actingEnemyColor);
-                    this.tileHandler.tileHighlight.enabled = true;
-
-                    //If this enemy isn't dead from previous effects
-                    if (actingChar.charPhysState.currentHealth > 0)
+                    //If the selected character is an enemy
+                    else
                     {
-                        //Now we wait for enemy input
-                        this.currentState = CombatState.PlayerInput;
-                        //Starting the acting enemy's turn so it can perform its actions
-                        this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
+                        //Getting the index for the acting enemy
+                        int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(actingChar);
+
+                        //Setting the highlight ring's color to the enemy color and making it visible
+                        this.tileHandler.tileHighlight.SetHighlightColor(this.uiHandler.actingEnemyColor);
+                        this.tileHandler.tileHighlight.enabled = true;
+
+                        //If this enemy isn't dead from previous effects
+                        if (actingChar.charPhysState.currentHealth > 0)
+                        {
+                            //Now we wait for enemy input
+                            this.currentState = CombatState.PlayerInput;
+                            //Starting the acting enemy's turn so it can perform its actions
+                            this.enemyCharactersInCombat[selectedEnemyIndex].GetComponent<EnemyCombatAI_Basic>().StartEnemyTurn();
+                        }
                     }
                 }
                 break;
 
             //Calls the unity event for when this combat encounter is over
             case CombatState.EndCombat:
-                //Rolling for the encounter loot to give to the player
-                this.GetEncounterLoot();
-                //Creating the event data that we'll pass to the TransitionFade through the EventManager
-                EVTData transitionEvent = new EVTData();
-                //Setting the transition to end combat, take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
-                transitionEvent.combatTransition = new CombatTransitionEVT(false, 0.5f, 1, 0.5f, this.combatEndEvent);
-                //Invoking the transition event through the EventManager
-                EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
-                //this.combatEndEvent.Invoke();
-                this.currentState = CombatState.PlayerInput;
+                {
+                    //Rolling for the encounter loot to give to the player
+                    this.GetEncounterLoot();
+                    //Creating the event data that we'll pass to the TransitionFade through the EventManager
+                    EVTData transitionEvent = new EVTData();
+                    //Setting the transition to end combat, take 0.5 sec to fade out, stay on black for 1 sec, fade in for 0.5 sec, and call our initialize event to hide the combat canvas
+                    transitionEvent.combatTransition = new CombatTransitionEVT(false, 0.5f, 1, 0.5f, this.combatEndEvent);
+                    //Invoking the transition event through the EventManager
+                    EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
+                    //this.combatEndEvent.Invoke();
+                    this.currentState = CombatState.PlayerInput;
+                }
                 break;
 
             //The game is over
             case CombatState.GameOver:
-                Debug.Log("<<<------------- GAME OVER! -------------->>>");
+                {
+                    Debug.Log("<<<------------- GAME OVER! -------------->>>");
+                }
                 break;
         }
     }
@@ -337,25 +329,14 @@ public class CombatManager : MonoBehaviour
         transitionEvent.combatTransition = new CombatTransitionEVT(true, 0.5f, 1, 0.5f, this.combatInitializeEvent);
         //Invoking the transition event through the EventManager
         EventManager.TriggerEvent(CombatTransitionEVT.eventNum, transitionEvent);
-        
-        //Looping through and resetting the combat tiles
-        for (int c = 0; c < this.combatTileGrid.Count; ++c)
-        {
-            for(int r = 0; r < this.combatTileGrid[c].Count; ++r)
-            {
-                this.combatTileGrid[c][r].ResetTile();
-            }
-        }
 
-        //Setting the background image
-        this.SetBackgroundImage(combatLandType_);
+        //Resetting all of the combat tiles to their default values
+        this.tileHandler.ResetCombatTiles();
         
         //Setting the combat positions for the player characters and enemies based on their distances
-        this.SetCombatPositions(charactersInCombat_, encounter_);
-        
-        //Creating the Combat Character Sprites
-        this.CreateCharacterSprites();
+        this.characterHandler.InitializeCharactersForCombat(charactersInCombat_, encounter_);
 
+        //Resetting the combat UI
         this.initiativeHandler.ResetForCombatStart();
         this.uiHandler.ResetForCombatStart();
 
@@ -368,9 +349,6 @@ public class CombatManager : MonoBehaviour
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, CombatState.IncreaseInitiative);
         
-        //Setting the health bars to display the correct initiatives
-        this.UpdateHealthBars();
-        
         //Looping through and copying the loot table from the encounter
         this.lootTable = new List<EncounterLoot>();
         foreach(EncounterLoot drop in encounter_.lootTable)
@@ -380,34 +358,6 @@ public class CombatManager : MonoBehaviour
             loot.dropChance = drop.dropChance;
             loot.stackSizeMinMax = drop.stackSizeMinMax;
             this.lootTable.Add(loot);
-        }
-
-        //Looping through each player character to see if anyone has a Threat Boost perk or perk to start combat with an effect
-        for (int t = 0; t < this.playerCharactersInCombat.Count; ++t)
-        {
-            //Looping through all of the current character's perks
-            foreach(Perk charPerk in this.playerCharactersInCombat[t].charPerks.allPerks)
-            {
-                //If the current perk is a ThreatBoostPerk that works at the start of combat, we boost threat against this character for all enemies
-                if(charPerk.GetType() == typeof(ThreatBoostPerk) && charPerk.GetComponent<ThreatBoostPerk>().increaseThreatAtStartOfCombat)
-                {
-                    this.ApplyActionThreat(this.playerCharactersInCombat[t], null, charPerk.GetComponent<ThreatBoostPerk>().baseThreatToAdd, true);
-                }
-                //If the current perk is a StartCombatWithEffectPerk, we check to see if the effect will be actiavted
-                else if(charPerk.GetType() == typeof(StartCombatWithEffectPerk))
-                {
-                    StartCombatWithEffectPerk effectPerk = charPerk.GetComponent<StartCombatWithEffectPerk>();
-
-                    //Getting a random % roll to see if it's at the application chance
-                    float randomRoll = Random.Range(0, 1);
-                    if(randomRoll <= effectPerk.chanceToApplyEffect)
-                    {
-                        //Creating a new instance of the effect object prefab and triggering its effect
-                        GameObject effectObj = Instantiate(effectPerk.effectToStartWith.gameObject, new Vector3(), new Quaternion());
-                        effectObj.GetComponent<Effect>().TriggerEffect(this.playerCharactersInCombat[t], this.playerCharactersInCombat[t]);
-                    }
-                }
-            }
         }
     }
 
@@ -973,138 +923,9 @@ public class CombatManager : MonoBehaviour
         newDamageText.SetDamageToDisplay(timeDelay_, damage_, type_, damagedCharTile_.transform.position, isCrit_, isHeal_);
         
         //Updating the health bars so we can see how much health characters have
-        this.UpdateHealthBars();
+        this.uiHandler.UpdateHealthBars();
     }
-
-
-    //Function called from DisplayDamageDealt to update all character's health sliders
-    private void UpdateHealthBars()
-    {
-        //Looping through each player character's initiative slider
-        for (int p = 0; p < this.playerCharactersInCombat.Count; ++p)
-        {
-            //If the character isn't already dead
-            if (this.playerInitiativeSliders[p].healthSlider.value > 0)
-            {
-                //Setting the health slider to show the current health based on the max health
-                this.playerInitiativeSliders[p].healthSlider.maxValue = this.playerCharactersInCombat[p].charPhysState.maxHealth;
-                this.playerInitiativeSliders[p].healthSlider.value = this.playerCharactersInCombat[p].charPhysState.currentHealth;
-
-                //If this character is dead, their initiative slider is set to 0 so they can't act
-                if (this.playerCharactersInCombat[p].charPhysState.currentHealth == 0)
-                {
-                    this.playerInitiativeSliders[p].initiativeSlider.value = 0;
-
-                    this.playerInitiativeSliders[p].background.color = Color.grey;
-
-                    //Looping through and clearing all of the effects on the dead character
-                    for (int e = 0; e < this.playerCharactersInCombat[p].charCombatStats.combatEffects.Count; ++e)
-                    {
-                        this.playerCharactersInCombat[p].charCombatStats.combatEffects[e].RemoveEffect();
-                        e -= 1;
-                    }
-
-                    //If this character is the acting character
-                    if (this.playerCharactersInCombat[p] == this.actingCharacters[0])
-                    {
-                        //Their turn is ended
-                        this.EndActingCharactersTurn();
-                    }
-                    //Otherwise we check to see if they'll be acting soon
-                    else
-                    {
-                        //If this character is in line to act, they are removed from the list
-                        for (int a = 1; a < this.actingCharacters.Count; ++a)
-                        {
-                            if (this.actingCharacters[a] == this.playerCharactersInCombat[p])
-                            {
-                                this.actingCharacters.RemoveAt(a);
-                                a -= 1;
-                            }
-                        }
-                    }
-                }
-            }
-            //If the character is dead but their initiative slider isn't grey, we make it grey
-            else if (this.playerInitiativeSliders[p].background.color != Color.grey)
-            {
-                this.playerInitiativeSliders[p].background.color = Color.grey;
-            }
-        }
-
-        //Looping through each enemy's initiative slider
-        for (int e = 0; e < this.enemyCharactersInCombat.Count; ++e)
-        {
-            //If the enemy isn't already dead
-            if (this.enemyInitiativeSliders[e].healthSlider.value > 0)
-            {
-                //Setting the health slider to show the current health based on the max health
-                this.enemyInitiativeSliders[e].healthSlider.maxValue = this.enemyCharactersInCombat[e].charPhysState.maxHealth;
-                this.enemyInitiativeSliders[e].healthSlider.value = this.enemyCharactersInCombat[e].charPhysState.currentHealth;
-
-                //If this enemy is dead, their initiative slider is set to 0 so they can't act
-                if (this.enemyCharactersInCombat[e].charPhysState.currentHealth == 0)
-                {
-                    this.enemyInitiativeSliders[e].initiativeSlider.value = 0;
-
-                    this.enemyInitiativeSliders[e].background.color = Color.grey;
-
-                    //Looping through and clearing all of the effects on the dead character
-                    for (int ef = 0; ef < this.enemyCharactersInCombat[e].charCombatStats.combatEffects.Count; ++ef)
-                    {
-                        this.enemyCharactersInCombat[e].charCombatStats.combatEffects[ef].RemoveEffect();
-                        ef -= 1;
-                    }
-
-                    //If this character is in line to act, they are removed from the list
-                    for (int a = 1; a < this.actingCharacters.Count; ++a)
-                    {
-                        if (this.actingCharacters[a] == this.enemyCharactersInCombat[e])
-                        {
-                            this.actingCharacters.RemoveAt(a);
-                            a -= 1;
-                        }
-                    }
-
-                    //Looping through all enemy characters to check their health
-                    foreach (Character enemy in this.enemyCharactersInCombat)
-                    {
-                        //If at least 1 enemy is still alive, we break out of the loop
-                        if (enemy.charPhysState.currentHealth > 0)
-                        {
-                            return;
-                        }
-                    }
-                    //If we get through the loop, that means that all enemies are dead and combat is over
-
-                    //Perform the unity event after the action so we can hide some UI elements
-                    this.eventAfterActionPerformed.Invoke();
-
-                    //Looping through and triggering all effects on the acting character for when their turn ends
-                    if (this.actingCharacters.Count > 0)
-                    {
-                        foreach (Effect ef in this.actingCharacters[0].charCombatStats.combatEffects)
-                        {
-                            ef.EffectOnEndOfTurn();
-                        }
-                    }
-
-                    //Clearing the highlighted area showing the previously used action's range
-                    this.ClearCombatTileHighlights();
-                    this.SetWaitTime(2.5f, CombatState.EndCombat);
-                }
-            }
-            //If the enemy is dead but their initiative slider isn't grey, we make it grey
-            else if (this.enemyInitiativeSliders[e].background.color != Color.grey)
-            {
-                this.enemyInitiativeSliders[e].background.color = Color.grey;
-            }
-        }
-    }
-
-
     
-
 
     //Function called externally to find out which combat tile the given character is on
     public CombatTile FindCharactersTile(Character characterToFind_)
@@ -1205,31 +1026,31 @@ public class CombatManager : MonoBehaviour
         }
 
         //Looping through and triggering all effects on the acting character for when their turn ends
-        foreach(Effect e in this.actingCharacters[0].charCombatStats.combatEffects)
+        foreach(Effect e in this.initiativeHandler.actingCharacters[0].charCombatStats.combatEffects)
         {
             e.EffectOnEndOfTurn();
         }
 
         //Resets the acting character's initiative and removes them from the list of acting characters
-        if (this.playerCharactersInCombat.Contains(this.actingCharacters[0]))
+        if (this.characterHandler.playerCharacters.Contains(this.initiativeHandler.actingCharacters[0]))
         {
-            int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.actingCharacters[0]);
+            int selectedCharIndex = this.playerCharactersInCombat.IndexOf(this.initiativeHandler.actingCharacters[0]);
             //Resetting their initiative slider's color
-            this.playerInitiativeSliders[selectedCharIndex].background.color = this.inactivePanelColor;
+            this.uiHandler.playerPanels[selectedCharIndex].backgroundImage.color = this.uiHandler.inactiveColor;
             //Resetting their initiative slider
-            this.playerInitiativeSliders[selectedCharIndex].initiativeSlider.value = 0;
+            this.uiHandler.playerPanels[selectedCharIndex].initiativeSlider.value = 0;
             //Removing the currently acting character
-            this.actingCharacters.Remove(this.actingCharacters[0]);
+            this.initiativeHandler.actingCharacters.Remove(this.initiativeHandler.actingCharacters[0]);
         }
-        else if(this.enemyCharactersInCombat.Contains(this.actingCharacters[0]))
+        else if(this.characterHandler.enemyCharacters.Contains(this.initiativeHandler.actingCharacters[0]))
         {
-            int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.actingCharacters[0]);
+            int selectedEnemyIndex = this.enemyCharactersInCombat.IndexOf(this.initiativeHandler.actingCharacters[0]);
             //Resetting their initiative slider's color
-            this.enemyInitiativeSliders[selectedEnemyIndex].background.color = this.inactivePanelColor;
+            this.uiHandler.enemyPanels[selectedEnemyIndex].backgroundImage.color = this.uiHandler.inactiveColor;
             //Resetting their initiative slider
-            this.enemyInitiativeSliders[selectedEnemyIndex].initiativeSlider.value = 0;
+            this.uiHandler.enemyPanels[selectedEnemyIndex].initiativeSlider.value = 0;
             //Removing the currently acting character
-            this.actingCharacters.Remove(this.actingCharacters[0]);
+            this.initiativeHandler.actingCharacters.Remove(this.initiativeHandler.actingCharacters[0]);
         }
 
         //Clearing the highlighted area showing the previously used action's range
@@ -1321,32 +1142,19 @@ public class CombatManager : MonoBehaviour
         deadCharTile.SetObjectOnTile(null, TileObjectType.Nothing);
 
         //If the dead character is the acting character, we end it's turn
-        if (this.actingCharacters.Count > 0 && this.actingCharacters[0] == data_.characterDeath.deadCharacter)
+        if (this.initiativeHandler.actingCharacters.Count > 0 && this.initiativeHandler.actingCharacters[0] == data_.characterDeath.deadCharacter)
         {
             this.tileHandler.tileHighlight.enabled = false;
             this.EndActingCharactersTurn();
-
-            //If the dead character is a player character, we set their initiative slider to grey
-            if(this.playerCharactersInCombat.Contains(data_.characterDeath.deadCharacter))
-            {
-                int playerIndex = this.playerCharactersInCombat.IndexOf(data_.characterDeath.deadCharacter);
-                this.playerInitiativeSliders[playerIndex].background.color = Color.grey;
-            }
-            //If the dead character is an enemy, we set their initiative slider to grey
-            else if(this.enemyCharactersInCombat.Contains(data_.characterDeath.deadCharacter))
-            {
-                int enemyIndex = this.enemyCharactersInCombat.IndexOf(data_.characterDeath.deadCharacter);
-                this.enemyInitiativeSliders[enemyIndex].background.color = Color.grey;
-            }
         }
         //If the dead character was waiting to act, we remove it from the list of acting characters
-        else if(this.actingCharacters.Contains(data_.characterDeath.deadCharacter))
+        else if(this.initiativeHandler.actingCharacters.Contains(data_.characterDeath.deadCharacter))
         {
-            this.actingCharacters.Remove(data_.characterDeath.deadCharacter);
+            this.initiativeHandler.actingCharacters.Remove(data_.characterDeath.deadCharacter);
         }
 
         //Updating the health bars
-        this.UpdateHealthBars();
+        this.uiHandler.UpdateHealthBars();
 
         //If this character was a player character
         if(this.playerCharactersInCombat.Contains(data_.characterDeath.deadCharacter))

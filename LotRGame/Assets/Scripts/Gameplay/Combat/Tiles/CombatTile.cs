@@ -81,7 +81,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
         {
             //Making sure the character isn't the acting character
-            if (CombatManager.globalReference.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
+            if (CombatManager.globalReference.initiativeHandler.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.initiativeHandler.actingCharacters[0])
             {
                 //Getting the sprite base for the character
                 CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
@@ -106,7 +106,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 if (this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
                 {
                     //Making sure the character isn't the acting character
-                    if (CombatManager.globalReference.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
+                    if (CombatManager.globalReference.initiativeHandler.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.initiativeHandler.actingCharacters[0])
                     {
                         //Getting the sprite base for the character
                         CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
@@ -127,7 +127,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if (this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
             {
                 //Making sure the character isn't the acting character
-                if (this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
+                if (this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.initiativeHandler.actingCharacters[0])
                 {
                     //Getting the sprite base for the character
                     CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());

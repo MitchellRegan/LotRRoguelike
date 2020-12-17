@@ -30,9 +30,19 @@ public class CombatUIHandler : MonoBehaviour
 
 
 
+    private void Start()
+    {
+        //Disabling the combat canvas so we know it's always off when the CamePlay scene starts
+        this.combatUICanvas.enabled = false;
+    }
+
+
     //Function called from CombatManager.InitiateCombat to reset our initiative panels at the start of combat
     public void ResetForCombatStart()
     {
+        //Displaying the combat UI canvas
+        this.combatUICanvas.enabled = true;
+
         Character currentChar;
 
         //Resetting all of the player panels
@@ -63,6 +73,7 @@ public class CombatUIHandler : MonoBehaviour
             if (e < CombatManager.globalReference.characterHandler.enemyCharacters.Count)
             {
                 currentChar = CombatManager.globalReference.characterHandler.enemyCharacters[e];
+
                 this.playerPanels[e].gameObject.SetActive(true);
                 this.playerPanels[e].SetBackgroundColor(this.inactiveColor);
                 this.playerPanels[e].nameText.text = currentChar.firstName;
@@ -138,6 +149,135 @@ public class CombatUIHandler : MonoBehaviour
                 this.enemyPanels[charIndex_].SetBackgroundColor(this.deadColor);
             }
         }
+    }
+
+
+    //Function called from CombatManager.DisplayDamageDealt to update all character's health sliders
+    public void UpdateHealthBars()
+    {
+        //Counters for how many player characters and enemy characters are still alive
+        int playersAlive = 0;
+        int enemiesAlive = 0;
+
+        //Looping through each player character's initiative slider
+        for (int p = 0; p < CombatManager.globalReference.characterHandler.playerCharacters.Count; ++p)
+        {
+            Character pc = CombatManager.globalReference.characterHandler.playerCharacters[p];
+
+            //If the character isn't already dead
+            if (this.playerPanels[p].healthSlider.value > 0)
+            {
+                //Setting the health slider to show the current health based on the max health
+                this.playerPanels[p].healthSlider.maxValue = pc.charPhysState.maxHealth;
+                this.playerPanels[p].healthSlider.value = pc.charPhysState.currentHealth;
+
+                //If this character is dead, their initiative slider is set to 0 so they can't act
+                if (pc.charPhysState.currentHealth <= 0)
+                {
+                    this.playerPanels[p].initiativeSlider.value = 0;
+
+                    this.playerPanels[p].backgroundImage.color = Color.grey;
+
+                    //Looping through and clearing all of the effects on the dead character
+                    for (int e = 0; e < pc.charCombatStats.combatEffects.Count; ++e)
+                    {
+                        pc.charCombatStats.combatEffects[e].RemoveEffect();
+                        e -= 1;
+                    }
+
+                    //If this character is the acting character
+                    if (pc == CombatManager.globalReference.initiativeHandler.actingCharacters[0])
+                    {
+                        //Their turn is ended
+                        CombatManager.globalReference.EndActingCharactersTurn();
+                    }
+                    //Otherwise we check to see if they'll be acting soon
+                    else
+                    {
+                        //If this character is in line to act, they are removed from the list
+                        for (int a = 1; a < CombatManager.globalReference.initiativeHandler.actingCharacters.Count; ++a)
+                        {
+                            if (CombatManager.globalReference.initiativeHandler.actingCharacters[a] == pc)
+                            {
+                                CombatManager.globalReference.initiativeHandler.actingCharacters.RemoveAt(a);
+                                a -= 1;
+                            }
+                        }
+                    }
+                }
+                //If this character is alive, we add it to the counter so we know the player hasn't lost
+                else if(pc.charPhysState.currentHealth > 0)
+                {
+                    playersAlive++;
+                }
+            }
+            //If the character is dead but their initiative slider isn't grey, we make it grey
+            else if (this.playerPanels[p].backgroundImage.color != Color.grey)
+            {
+                this.playerPanels[p].backgroundImage.color = Color.grey;
+            }
+        }
+
+        //Looping through each enemy's initiative slider
+        for (int e = 0; e < CombatManager.globalReference.characterHandler.enemyCharacters.Count; ++e)
+        {
+            Character ec = CombatManager.globalReference.characterHandler.enemyCharacters[e];
+
+            //If the enemy isn't already dead
+            if (this.enemyPanels[e].healthSlider.value > 0)
+            {
+                //Setting the health slider to show the current health based on the max health
+                this.enemyPanels[e].healthSlider.maxValue = ec.charPhysState.maxHealth;
+                this.enemyPanels[e].healthSlider.value = ec.charPhysState.currentHealth;
+
+                //If this enemy is dead, their initiative slider is set to 0 so they can't act
+                if (ec.charPhysState.currentHealth <= 0)
+                {
+                    this.enemyPanels[e].initiativeSlider.value = 0;
+
+                    this.enemyPanels[e].backgroundImage.color = Color.grey;
+
+                    //Looping through and clearing all of the effects on the dead character
+                    for (int ef = 0; ef < ec.charCombatStats.combatEffects.Count; ++ef)
+                    {
+                        ec.charCombatStats.combatEffects[ef].RemoveEffect();
+                        ef -= 1;
+                    }
+
+                    //If this character is in line to act, they are removed from the list
+                    for (int a = 1; a < CombatManager.globalReference.initiativeHandler.actingCharacters.Count; ++a)
+                    {
+                        if (CombatManager.globalReference.initiativeHandler.actingCharacters[a] == CombatManager.globalReference.enemyCharactersInCombat[e])
+                        {
+                            CombatManager.globalReference.initiativeHandler.actingCharacters.RemoveAt(a);
+                            a -= 1;
+                        }
+                    }
+                }
+                //If the enemy is still alive we add it to the counter to make sure combat doesn't end yet
+                else if(ec.charPhysState.currentHealth > 0)
+                {
+                    enemiesAlive++;
+                }
+            }
+            //If the enemy is dead but their initiative slider isn't grey, we make it grey
+            else if (this.enemyPanels[e].backgroundImage.color != Color.grey)
+            {
+                this.enemyPanels[e].backgroundImage.color = Color.grey;
+            }
+        }
+
+        //If player characters are alive but enemies aren't, the player wins the battle
+        if(playersAlive > 0 && enemiesAlive == 0)
+        {
+            CombatManager.globalReference.SetWaitTime(2, CombatState.EndCombat);
+        }
+        //If all player characters are dead, they lose the game no matter how many enemies remain
+        else if(playersAlive == 0)
+        {
+            CombatManager.globalReference.SetWaitTime(3, CombatState.GameOver);
+        }
+        //Otherwise combat keeps going
     }
 
 
