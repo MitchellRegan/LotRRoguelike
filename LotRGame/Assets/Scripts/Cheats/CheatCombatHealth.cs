@@ -71,15 +71,15 @@ public class CheatCombatHealth : MonoBehaviour
         }
 
         //Looping through all enemies until we find a live one
-        for(int e = 0; e < CombatManager.globalReference.enemyCharactersInCombat.Count; ++e)
+        for(int e = 0; e < CombatManager.globalReference.characterHandler.enemyCharacters.Count; ++e)
         {
             //Making sure the current enemy isn't null or dead
-            if(CombatManager.globalReference.enemyCharactersInCombat[e] != null &&
-                CombatManager.globalReference.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
+            if(CombatManager.globalReference.characterHandler.enemyCharacters[e] != null &&
+                CombatManager.globalReference.characterHandler.enemyCharacters[e].charPhysState.currentHealth > 0)
             {
-                Debug.Log("CHEAT: Combat Health, Kill Next Enemy: Killing " + CombatManager.globalReference.enemyCharactersInCombat[e].firstName);
+                Debug.Log("CHEAT: Combat Health, Kill Next Enemy: Killing " + CombatManager.globalReference.characterHandler.enemyCharacters[e].firstName);
                 //Dealing a ton of damage to kill this enemy
-                CombatManager.globalReference.enemyCharactersInCombat[e].charPhysState.DamageCharacter(999999);
+                CombatManager.globalReference.characterHandler.enemyCharacters[e].charPhysState.DamageCharacter(999999);
                 break;
             }
         }
@@ -104,14 +104,14 @@ public class CheatCombatHealth : MonoBehaviour
         }
 
         //Looping through all enemies until we find a live one
-        for (int e = 0; e < CombatManager.globalReference.enemyCharactersInCombat.Count; ++e)
+        for (int e = 0; e < CombatManager.globalReference.characterHandler.enemyCharacters.Count; ++e)
         {
             //Making sure the current enemy isn't null or dead
-            if (CombatManager.globalReference.enemyCharactersInCombat[e] != null &&
-                CombatManager.globalReference.enemyCharactersInCombat[e].charPhysState.currentHealth > 0)
+            if (CombatManager.globalReference.characterHandler.enemyCharacters[e] != null &&
+                CombatManager.globalReference.characterHandler.enemyCharacters[e].charPhysState.currentHealth > 0)
             {
                 //Healing all damage to this enemy
-                CombatManager.globalReference.enemyCharactersInCombat[e].charPhysState.HealCharacter(999999);
+                CombatManager.globalReference.characterHandler.enemyCharacters[e].charPhysState.HealCharacter(999999);
             }
         }
         Debug.Log("CHEAT: Combat Health, Heal All Enemies: Healing All Enemies");
@@ -136,15 +136,15 @@ public class CheatCombatHealth : MonoBehaviour
         }
 
         //Looping through all player characters until we find a live one
-        for (int p = 0; p < CombatManager.globalReference.playerCharactersInCombat.Count; ++p)
+        for (int p = 0; p < CombatManager.globalReference.characterHandler.playerCharacters.Count; ++p)
         {
             //Making sure the current character isn't null or dead
-            if (CombatManager.globalReference.playerCharactersInCombat[p] != null &&
-                CombatManager.globalReference.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
+            if (CombatManager.globalReference.characterHandler.playerCharacters[p] != null &&
+                CombatManager.globalReference.characterHandler.playerCharacters[p].charPhysState.currentHealth > 0)
             {
-                Debug.Log("CHEAT: Combat Health, Kill Next Player Character: Killing " + CombatManager.globalReference.playerCharactersInCombat[p].firstName);
+                Debug.Log("CHEAT: Combat Health, Kill Next Player Character: Killing " + CombatManager.globalReference.characterHandler.playerCharacters[p].firstName);
                 //Dealing a ton of damage to kill this character
-                CombatManager.globalReference.playerCharactersInCombat[p].charPhysState.DamageCharacter(999999);
+                CombatManager.globalReference.characterHandler.playerCharacters[p].charPhysState.DamageCharacter(999999);
                 break;
             }
         }
@@ -169,14 +169,14 @@ public class CheatCombatHealth : MonoBehaviour
         }
 
         //Looping through all player characters until we find a live one
-        for (int p = 0; p < CombatManager.globalReference.playerCharactersInCombat.Count; ++p)
+        for (int p = 0; p < CombatManager.globalReference.characterHandler.playerCharacters.Count; ++p)
         {
             //Making sure the current character isn't null or dead
-            if (CombatManager.globalReference.playerCharactersInCombat[p] != null &&
-                CombatManager.globalReference.playerCharactersInCombat[p].charPhysState.currentHealth > 0)
+            if (CombatManager.globalReference.characterHandler.playerCharacters[p] != null &&
+                CombatManager.globalReference.characterHandler.playerCharacters[p].charPhysState.currentHealth > 0)
             {
                 //Healing all damage to this character
-                CombatManager.globalReference.playerCharactersInCombat[p].charPhysState.HealCharacter(999999);
+                CombatManager.globalReference.characterHandler.playerCharacters[p].charPhysState.HealCharacter(999999);
             }
         }
         Debug.Log("CHEAT: Combat Health, Heal All Player Characters: Healing All Player Characters");

@@ -55,7 +55,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         this.threatList = new List<PlayerThreatMeter>();
 
         //Looping through all characters in the current combat encounter and adding them to the threat list
-        foreach(Character enemyChar in CombatManager.globalReference.playerCharactersInCombat)
+        foreach(Character enemyChar in CombatManager.globalReference.characterHandler.playerCharacters)
         {
             this.threatList.Add(new PlayerThreatMeter(enemyChar, 0));
         }
@@ -307,7 +307,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If any of this enemy's ally's health are between a specific range
                 case ConditionalType.OneAllyHPRange:
                     //Looping through all of the enemies in this combat
-                    foreach(Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach(Character combatEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If the current enemy isn't this enemy and not null
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
@@ -329,7 +329,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Making an int to track the number of allies whose health is within the range
                     int numAlliesInRange = 0;
                     //Looping through all of the enemies in this combat
-                    foreach (Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach (Character combatEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If the current enemy isn't this enemy and not null
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
@@ -342,7 +342,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 numAlliesInRange += 1;
 
                                 //If the number of allies in range is at least half of the number of enemies in combat, we meet the condition
-                                if (numAlliesInRange >= (CombatManager.globalReference.enemyCharactersInCombat.Count / 2))
+                                if (numAlliesInRange >= (CombatManager.globalReference.characterHandler.enemyCharacters.Count / 2))
                                 {
                                     conditionMet = true;
                                     break;
@@ -357,7 +357,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
                     //Looping through all of the enemies in this combat
-                    foreach (Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach (Character combatEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If the current enemy isn't this enemy and not null
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
@@ -418,7 +418,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If any of this enemy's allies have a debuff:
                 case ConditionalType.AllyDebuffed:
                     //Looping through all of the enemies in combat to check their effects
-                    foreach(Character allyEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach(Character allyEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If we've already found an ally that meets our requirements, we break this loop
                         if(conditionMet)
@@ -473,7 +473,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If at least one player character's health is between a specific range
                 case ConditionalType.OnePlayerHPRange:
                     //Looping through all of the player characters in this combat
-                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    foreach (Character playerCharacter in CombatManager.globalReference.characterHandler.playerCharacters)
                     {
                         //If the current player isn't null
                         if (playerCharacter != null)
@@ -495,7 +495,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Making an int to track the number of player characters whose health is within the range
                     int numPlayersInRange = 0;
                     //Looping through all of the player characters in this combat
-                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    foreach (Character playerCharacter in CombatManager.globalReference.characterHandler.playerCharacters)
                     {
                         //If the current player isn't null
                         if (playerCharacter != null)
@@ -508,7 +508,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 numPlayersInRange += 1;
 
                                 //If the number of player characters that are within the health range is at least half, we meet the condition
-                                if (numPlayersInRange >= CombatManager.globalReference.playerCharactersInCombat.Count)
+                                if (numPlayersInRange >= CombatManager.globalReference.characterHandler.playerCharacters.Count)
                                 {
                                     conditionMet = true;
                                     break;
@@ -523,7 +523,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
                     //Looping through all of the player characters in this combat
-                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    foreach (Character playerCharacter in CombatManager.globalReference.characterHandler.playerCharacters)
                     {
                         //If the current player isn't null
                         if (playerCharacter != null)

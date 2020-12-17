@@ -247,7 +247,7 @@ public class CombatUIHandler : MonoBehaviour
                     //If this character is in line to act, they are removed from the list
                     for (int a = 1; a < CombatManager.globalReference.initiativeHandler.actingCharacters.Count; ++a)
                     {
-                        if (CombatManager.globalReference.initiativeHandler.actingCharacters[a] == CombatManager.globalReference.enemyCharactersInCombat[e])
+                        if (CombatManager.globalReference.initiativeHandler.actingCharacters[a] == CombatManager.globalReference.characterHandler.enemyCharacters[e])
                         {
                             CombatManager.globalReference.initiativeHandler.actingCharacters.RemoveAt(a);
                             a -= 1;

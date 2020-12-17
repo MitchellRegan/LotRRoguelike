@@ -157,10 +157,10 @@ public class WeaponAction : AttackAction
 
         //Getting the tile that the acting character is on
         CombatTile actingCharTile = CombatManager.globalReference.FindCharactersTile(actingChar);
-        CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(actingChar);
+        GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(actingChar);
 
         //Setting the direction the acting character faces
-        this.SetDirectionFacing(targetTile_, actingCharTile, cSprite);
+        this.SetDirectionFacing(targetTile_, actingCharTile, charModel);
 
         //Looping through and triggering all combat effects on the acting character that happen on attack
         foreach (Effect e in actingChar.charCombatStats.combatEffects)

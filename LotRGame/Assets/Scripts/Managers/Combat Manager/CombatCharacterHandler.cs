@@ -433,7 +433,23 @@ public class CombatCharacterHandler : MonoBehaviour
             {
                 charModel.transform.position = tile.gameObject.transform.position;
             }
-            Debug.Log("Need to set model pos here and do it for enemies too");
+        }
+
+        //Creating each enemy character model at their tile position
+        for(int e = 0; e < this.enemyCharacters.Count; e++)
+        {
+            GameObject charModel = GameObject.Instantiate(this.enemyCharacters[e].charModels.charModel);
+
+            CombatTile3D tile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.enemyCharacters[e]);
+
+            if (tile == null)
+            {
+                Debug.Log("Tile null");
+            }
+            else
+            {
+                charModel.transform.position = tile.gameObject.transform.position;
+            }
         }
     }
 
@@ -490,6 +506,29 @@ public class CombatCharacterHandler : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+
+    //Function called externally to get the reference to a character's model object
+    public GameObject GetCharacterModel(Character charToGet_)
+    {
+        //If the character is a player character
+        if (this.playerCharacters.Contains(charToGet_))
+        {
+            int index = this.playerCharacters.IndexOf(charToGet_);
+            return this.playerModels[index];
+        }
+        //If the character is an enemy character
+        else if (this.enemyCharacters.Contains(charToGet_))
+        {
+            int index = this.enemyCharacters.IndexOf(charToGet_);
+            return this.enemyModels[index];
+        }
+        //Otherwise ....??
+        else
+        {
+            return null;
         }
     }
 }

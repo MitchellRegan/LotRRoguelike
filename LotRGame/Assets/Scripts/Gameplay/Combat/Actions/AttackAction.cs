@@ -50,10 +50,10 @@ public class AttackAction : Action
 
         //Getting the tile that the acting character is on
         CombatTile actingCharTile = CombatManager.globalReference.FindCharactersTile(actingChar);
-        CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(actingChar);
+        GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(actingChar);
 
         //Setting the direction the acting character faces
-        this.SetDirectionFacing(targetTile_, actingCharTile, cSprite);
+        this.SetDirectionFacing(targetTile_, actingCharTile, charModel);
 
         //Looping through and triggering all combat effects on the acting character that happen on attack
         foreach(Effect e in actingChar.charCombatStats.combatEffects)
@@ -347,7 +347,7 @@ public class AttackAction : Action
 
 
     //Function called from PerformAction to set the direction this character faces when acting
-    public virtual void SetDirectionFacing(CombatTile targetTile_, CombatTile actingCharTile_, CharacterSpriteBase cSprite_)
+    public virtual void SetDirectionFacing(CombatTile targetTile_, CombatTile actingCharTile_, GameObject charModel_)
     {
         //If the difference in vertical space between the character tile and the target tile is greater than the difference in horizontal space
         if (Mathf.Abs(targetTile_.transform.position.y - actingCharTile_.transform.position.y) > Mathf.Abs(targetTile_.transform.position.x - actingCharTile_.transform.position.x))
@@ -356,13 +356,13 @@ public class AttackAction : Action
             if (targetTile_.transform.position.y > actingCharTile_.transform.position.y)
             {
                 //We make the character look up
-                cSprite_.SetDirectionFacing(DirectionFacing.Up);
+                charModel_.transform.eulerAngles = new Vector3(0, 90, 0);
             }
             //If the target tile is below the acting character's tile
             else
             {
                 //We make the character look down
-                cSprite_.SetDirectionFacing(DirectionFacing.Down);
+                charModel_.transform.eulerAngles = new Vector3(0, 270, 0);
             }
         }
         //If the difference in horizontal space between the tiles is greater
@@ -372,13 +372,13 @@ public class AttackAction : Action
             if (targetTile_.transform.position.x > actingCharTile_.transform.position.x)
             {
                 //We make the character look right
-                cSprite_.SetDirectionFacing(DirectionFacing.Right);
+                charModel_.transform.eulerAngles = new Vector3(0, 180, 0);
             }
             //If the target tile is left of the acting character's tile
             else
             {
                 //We make the character look left
-                cSprite_.SetDirectionFacing(DirectionFacing.Left);
+                charModel_.transform.eulerAngles = new Vector3(0, 0, 0);
             }
         }
     }
@@ -520,7 +520,7 @@ public class AttackAction : Action
 
         //Bool to check if the acting character is a player character or an enemy
         bool isActingCharPlayer = true;
-        if(CombatManager.globalReference.enemyCharactersInCombat.Contains(actingChar_))
+        if(CombatManager.globalReference.characterHandler.enemyCharacters.Contains(actingChar_))
         {
             isActingCharPlayer = false;
         }
@@ -531,7 +531,7 @@ public class AttackAction : Action
             for(int e = 0; e < targets.Count; ++e)
             {
                 //If the current target is an enemy character
-                if(CombatManager.globalReference.enemyCharactersInCombat.Contains(targets[e]))
+                if(CombatManager.globalReference.characterHandler.enemyCharacters.Contains(targets[e]))
                 {
                     switch(effectToTrigger_.effectedTargets)
                     {
@@ -623,7 +623,7 @@ public class AttackAction : Action
                     }
                 }
                 //If the current target is a player character
-                else if(CombatManager.globalReference.playerCharactersInCombat.Contains(targets[e]))
+                else if(CombatManager.globalReference.characterHandler.playerCharacters.Contains(targets[e]))
                 {
                     switch (effectToTrigger_.effectedTargets)
                     {

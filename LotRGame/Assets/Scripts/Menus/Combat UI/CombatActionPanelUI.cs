@@ -197,7 +197,7 @@ public class CombatActionPanelUI : MonoBehaviour
     public void SelectActionAtIndex(int actionIndex_)
     {
         //Clearing all tile highlights before we highlight different ones
-        CombatManager.globalReference.ClearCombatTileHighlights();
+        CombatManager.globalReference.tileHandler.ClearTileHilights();
 
         //Getting a reference to the character that's currently acting
         Character actingCharacter = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
@@ -279,25 +279,6 @@ public class CombatActionPanelUI : MonoBehaviour
         {
             tile.inActionRange = true;
             tile.HighlightTile(false);
-        }
-
-        //Looping through all of the tiles around the action highlights to check for characters
-        foreach(CombatTile checkedTile in tilesToCheckForCharacters)
-        {
-            //If there's a character sprite on this tile, we hide it a bit
-            if (checkedTile.objectOnThisTile != null)
-            {
-                if (checkedTile.objectOnThisTile.GetComponent<Character>())
-                {
-                    //Getting the sprite base for the character
-                    CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(checkedTile.objectOnThisTile.GetComponent<Character>());
-                    //If the character on the tile isn't the one that's acting
-                    if (cSprite.ourCharacter != CombatManager.globalReference.initiativeHandler.actingCharacters[0])
-                    {
-                        cSprite.MakeSpritesTransparent();
-                    }
-                }
-            }
         }
 
         //Displays the action's details

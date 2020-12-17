@@ -58,7 +58,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                 if(this.playerOrEnemy == PlayerOrEnemy.Player)
                 {
                     //If the player isn't the one we track, we're no longer highlighted
-                    if (CombatTile.mouseOverTile.objectOnThisTile != CombatManager.globalReference.playerCharactersInCombat[this.characterIndex].gameObject)
+                    if (CombatTile.mouseOverTile.objectOnThisTile != CombatManager.globalReference.characterHandler.playerCharacters[this.characterIndex].gameObject)
                     {
                         this.currentlyHighlighted = false;
                         this.ourImage.color = this.placeholderColor;
@@ -68,7 +68,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                 else
                 {
                     //If the enemy isn't the one we track, we're no longer highlighted
-                    if(CombatTile.mouseOverTile.objectOnThisTile != CombatManager.globalReference.enemyCharactersInCombat[this.characterIndex].gameObject)
+                    if(CombatTile.mouseOverTile.objectOnThisTile != CombatManager.globalReference.characterHandler.enemyCharacters[this.characterIndex].gameObject)
                     {
                         this.currentlyHighlighted = false;
                         this.ourImage.color = this.placeholderColor;
@@ -89,7 +89,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                     if (this.playerOrEnemy == PlayerOrEnemy.Player)
                     {
                         //If the player is the one we track, we're highlighted
-                        if (CombatTile.mouseOverTile.objectOnThisTile == CombatManager.globalReference.playerCharactersInCombat[this.characterIndex].gameObject)
+                        if (CombatTile.mouseOverTile.objectOnThisTile == CombatManager.globalReference.characterHandler.playerCharacters[this.characterIndex].gameObject)
                         {
                             //If this panel's color isn't our default color, we store it as the placeholder
                             if(this.ourImage.color != this.defaultColor)
@@ -110,7 +110,7 @@ public class CombatCharacterPanelHighlight : MonoBehaviour
                     else
                     {
                         //If the enemy is the one we track, we're highlighted
-                        if (CombatTile.mouseOverTile.objectOnThisTile == CombatManager.globalReference.enemyCharactersInCombat[this.characterIndex].gameObject)
+                        if (CombatTile.mouseOverTile.objectOnThisTile == CombatManager.globalReference.characterHandler.enemyCharacters[this.characterIndex].gameObject)
                         {
                             //If this panel's color isn't our default color, we store it as the placeholder
                             if (this.ourImage.color != this.defaultColor)

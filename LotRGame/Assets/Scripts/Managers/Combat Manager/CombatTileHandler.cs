@@ -152,4 +152,11 @@ public class CombatTileHandler : MonoBehaviour
     {
         this.tileHighlight.gameObject.SetActive(false);
     }
+
+
+    //Function called from CombatManager to clear all tile highlights
+    public void ClearTileHilights()
+    {
+
+    }
 }

@@ -46,7 +46,7 @@ public class MoveAction : Action
         base.PerformAction(targetTile_);
 
         //If the acting character is an enemy, we need to set the movement path since we're not mousing over tiles
-        if (CombatManager.globalReference.enemyCharactersInCombat.Contains(this.actingCharacter))
+        if (CombatManager.globalReference.characterHandler.enemyCharacters.Contains(this.actingCharacter))
         {
             this.movementPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], targetTile_, true, true);
         }
@@ -76,31 +76,28 @@ public class MoveAction : Action
                 this.currentTimePassed = 0;
 
                 //Moving the character sprite to the new tile position
-                CharacterSpriteBase charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
-                charSprite.transform.position = this.movementPath[this.currentNumTilesMoved].transform.position;
-
-                //Making sure the sprites are positioned in front of each other correctly
-                CombatManager.globalReference.UpdateCharacterSpriteOrder();
+                GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.actingCharacter);
+                charModel.transform.position = this.movementPath[this.currentNumTilesMoved].transform.position;
 
                 //If the new tile is to the left of the old tile, we face the character left
                 if(this.movementPath[this.currentNumTilesMoved].transform.position.x < this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Left);
+                    charModel.transform.eulerAngles = new Vector3(0, 0, 0);
                 }
                 //If the new tile is to the right of the old tile, we face the character right
                 else if(this.movementPath[this.currentNumTilesMoved].transform.position.x > this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Right);
+                    charModel.transform.eulerAngles = new Vector3(0, 180, 0);
                 }
                 //If the new tile is above the old tile, we face the character up
                 else if(this.movementPath[this.currentNumTilesMoved].transform.position.y > this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Up);
+                    charModel.transform.eulerAngles = new Vector3(0, 90, 0);
                 }
                 //If the new tile is below the old tile, we face the character down
                 else if (this.movementPath[this.currentNumTilesMoved].transform.position.y < this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Down);
+                    charModel.transform.eulerAngles = new Vector3(0, 270, 0);
                 }
 
                 //Removing the acting character from the tile they're on
@@ -134,7 +131,7 @@ public class MoveAction : Action
                 if (this.currentNumTilesMoved + 1 == this.movementPath.Count)
                 {
                     //Setting the character's combat sprite to a stationary position directly on the last tile in our movement path
-                    CombatManager.globalReference.GetCharacterSprite(this.actingCharacter).transform.position = this.movementPath[this.movementPath.Count - 1].transform.position;
+                    CombatManager.globalReference.characterHandler.GetCharacterModel(this.actingCharacter).transform.position = this.movementPath[this.movementPath.Count - 1].transform.position;
 
                     Destroy(this.gameObject);
                 }

@@ -538,8 +538,8 @@ public class ModifyStatsEffect : Effect
         if(addingChanges_)
         {
             //Creating the visual effect for this effect
-            CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
-            this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+            GameObject targetCharModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.characterToEffect);
+            this.SpawnVisualAtLocation(targetCharModel.transform.localPosition, targetCharModel.transform);
         }
     }
 

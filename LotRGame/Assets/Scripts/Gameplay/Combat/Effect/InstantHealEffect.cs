@@ -227,8 +227,8 @@ public class InstantHealEffect : Effect
         }
 
         //Creating the visual effect for this effect
-        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
-        this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+        GameObject targetCharModel = CombatManager.globalReference.characterHandler.GetCharacterModel(targetCharacter_);
+        this.SpawnVisualAtLocation(targetCharModel.transform.localPosition, targetCharModel.transform);
 
         //Destroying this effect once everything is finished up
         Destroy(this.gameObject);
