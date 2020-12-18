@@ -220,7 +220,7 @@ public class HealOverTimeEffect : Effect
         if(magicResistType == SpellResistTypes.Negate)
         {
             //Telling the combat manager to display that no damage was healed
-            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D healedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, 0, this.healType, healedCharTile, didThisCrit, true);
         }
         //Otherwise, the heal happens normally
@@ -230,7 +230,7 @@ public class HealOverTimeEffect : Effect
             this.characterToEffect.charPhysState.HealCharacter(damagehealed);
 
             //Telling the combat manager to display the damage healed
-            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D healedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, damagehealed, this.healType, healedCharTile, didThisCrit, true);
 
             //If the target character and the character who cast this effect are player characters, we need to increase threat
@@ -242,8 +242,8 @@ public class HealOverTimeEffect : Effect
         }
         
         //Creating the visual effect for this effect
-        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
-        this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+        GameObject targetCharModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.characterToEffect);
+        this.SpawnVisualAtLocation(targetCharModel.transform.localPosition, targetCharModel.transform);
 
         //If this effect isn't unlimited, we need to reduce the ticks remaining
         if (!this.unlimitedTicks)

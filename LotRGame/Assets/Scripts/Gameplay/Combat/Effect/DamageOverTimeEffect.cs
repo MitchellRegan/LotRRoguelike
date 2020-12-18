@@ -233,7 +233,7 @@ public class DamageOverTimeEffect : Effect
             this.characterToEffect.charPhysState.DamageCharacter(damageDealt);
 
             //Telling the combat manager to display the damage dealt
-            CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D damagedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
 
             CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit);
             
@@ -267,7 +267,7 @@ public class DamageOverTimeEffect : Effect
         else if(magicResistType == SpellResistTypes.Negate)
         {
             //Telling the combat manager to display no damage dealt
-            CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D damagedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, 0, this.damageType, damagedCharTile, didThisCrit);
         }
         //If the damage was absorbed and healed the character
@@ -277,7 +277,7 @@ public class DamageOverTimeEffect : Effect
             this.characterToEffect.charPhysState.HealCharacter(damageDealt);
 
             //Telling the combat manager to display the damage healed
-            CombatTile damagedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D damagedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, damageDealt, this.damageType, damagedCharTile, didThisCrit, true);
 
             //If the caster of this effect and the target are player characters, we increase the threat for the character who put this effect on them
@@ -289,8 +289,8 @@ public class DamageOverTimeEffect : Effect
         }
 
         //Creating the visual effect for this effect
-        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(this.characterToEffect);
-        this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+        GameObject targetCharModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.characterToEffect);
+        this.SpawnVisualAtLocation(targetCharModel.transform.localPosition, targetCharModel.transform);
 
         //If this effect isn't unlimited, we need to reduce the ticks remaining
         if(!this.unlimitedTicks)

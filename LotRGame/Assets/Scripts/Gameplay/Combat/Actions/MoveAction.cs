@@ -13,7 +13,7 @@ public class MoveAction : Action
     public bool ignoreEnemies = false;
 
     //The list of all combat tiles that show the travel path of the selected movement action
-    private List<CombatTile> movementPath;
+    private List<CombatTile3D> movementPath;
     //The current count of tiles this character has moved
     private int currentNumTilesMoved = 0;
 
@@ -31,22 +31,22 @@ public class MoveAction : Action
     private void Awake()
     {
         //Initializes the movement path list
-        this.movementPath = new List<CombatTile>();
+        this.movementPath = new List<CombatTile3D>();
         //adding in the selected character's tile as the starting point
-        this.movementPath.Add(CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]));
+        this.movementPath.Add(CombatManager.globalReference.tileHandler.FindCharactersTile(CombatManager.globalReference.initiativeHandler.actingCharacters[0]));
         //Getting the reference to the acting character from the Combat Manager
-        this.actingCharacter = CombatManager.globalReference.actingCharacters[0];
+        this.actingCharacter = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
     }
 
 
     //Function inherited from Action.cs
-    public override void PerformAction(CombatTile targetTile_)
+    public override void PerformAction(CombatTile3D targetTile_)
     {
         //Calling the base function to start the cooldown time
         base.PerformAction(targetTile_);
 
         //If the acting character is an enemy, we need to set the movement path since we're not mousing over tiles
-        if (CombatManager.globalReference.enemyCharactersInCombat.Contains(this.actingCharacter))
+        if (CombatManager.globalReference.characterHandler.enemyCharacters.Contains(this.actingCharacter))
         {
             this.movementPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], targetTile_, true, true);
         }
@@ -76,40 +76,37 @@ public class MoveAction : Action
                 this.currentTimePassed = 0;
 
                 //Moving the character sprite to the new tile position
-                CharacterSpriteBase charSprite = CombatManager.globalReference.GetCharacterSprite(this.actingCharacter);
-                charSprite.transform.position = this.movementPath[this.currentNumTilesMoved].transform.position;
-
-                //Making sure the sprites are positioned in front of each other correctly
-                CombatManager.globalReference.UpdateCharacterSpriteOrder();
+                GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.actingCharacter);
+                charModel.transform.position = this.movementPath[this.currentNumTilesMoved].transform.position;
 
                 //If the new tile is to the left of the old tile, we face the character left
                 if(this.movementPath[this.currentNumTilesMoved].transform.position.x < this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Left);
+                    charModel.transform.eulerAngles = new Vector3(0, 0, 0);
                 }
                 //If the new tile is to the right of the old tile, we face the character right
                 else if(this.movementPath[this.currentNumTilesMoved].transform.position.x > this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Right);
+                    charModel.transform.eulerAngles = new Vector3(0, 180, 0);
                 }
                 //If the new tile is above the old tile, we face the character up
                 else if(this.movementPath[this.currentNumTilesMoved].transform.position.y > this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Up);
+                    charModel.transform.eulerAngles = new Vector3(0, 90, 0);
                 }
                 //If the new tile is below the old tile, we face the character down
                 else if (this.movementPath[this.currentNumTilesMoved].transform.position.y < this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
                 {
-                    charSprite.SetDirectionFacing(DirectionFacing.Down);
+                    charModel.transform.eulerAngles = new Vector3(0, 270, 0);
                 }
 
                 //Removing the acting character from the tile they're on
-                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, TileObjectType.Nothing);
+                CombatManager.globalReference.tileHandler.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, TileObjectType.Nothing);
                 
                 //Once the time has passed for this tile, the selected character's position is updated
                 this.actingCharacter.charCombatStats.gridPositionCol = this.movementPath[this.currentNumTilesMoved].col;
                 this.actingCharacter.charCombatStats.gridPositionRow = this.movementPath[this.currentNumTilesMoved].row;
-                CombatManager.globalReference.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, TileObjectType.Player);
+                CombatManager.globalReference.tileHandler.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(this.actingCharacter.gameObject, TileObjectType.Player);
 
                 //Looping through and triggering all effects on the moving character that happen during movement
                 foreach(Effect e in this.actingCharacter.charCombatStats.combatEffects)
@@ -134,7 +131,7 @@ public class MoveAction : Action
                 if (this.currentNumTilesMoved + 1 == this.movementPath.Count)
                 {
                     //Setting the character's combat sprite to a stationary position directly on the last tile in our movement path
-                    CombatManager.globalReference.GetCharacterSprite(this.actingCharacter).transform.position = this.movementPath[this.movementPath.Count - 1].transform.position;
+                    CombatManager.globalReference.characterHandler.GetCharacterModel(this.actingCharacter).transform.position = this.movementPath[this.movementPath.Count - 1].transform.position;
 
                     Destroy(this.gameObject);
                 }
@@ -143,18 +140,21 @@ public class MoveAction : Action
         //If there are tiles in the movement path and the mouse is hovering over a combat tile
         else if (this.movementPath.Count > 0 && CombatTile.mouseOverTile != null)
         {
+            CombatTile3D lastPathTile = this.movementPath[this.movementPath.Count - 1];
+            List<CombatTile3D> connectedTiles = new List<CombatTile3D>() { lastPathTile.left, lastPathTile.right, lastPathTile.up, lastPathTile.down };
+
             //If the tile that the mouse is over is connected to the last tile in the current movement path
-            if (this.movementPath[this.movementPath.Count - 1].ourPathPoint.connectedPoints.Contains(CombatTile.mouseOverTile.ourPathPoint) && this.movementPath.Count <= this.range)
+            if (connectedTiles.Contains(CombatTile3D.mouseOverTile) && this.movementPath.Count <= this.range)
             {
                 //If the tile that the mouse is over isn't already in the movement path and this type of movement allows the user to ignore obstacles
-                if (!this.movementPath.Contains(CombatTile.mouseOverTile))
+                if (!this.movementPath.Contains(CombatTile3D.mouseOverTile))
                 {
                     //If the tile has no object on it OR if there is an object and the movement action ignores objects
                     if (CombatTile.mouseOverTile.typeOnTile == TileObjectType.Nothing || 
                             (CombatTile.mouseOverTile.typeOnTile == TileObjectType.Object && this.ignoreObstacles) ||
                             ((CombatTile.mouseOverTile.typeOnTile == TileObjectType.Enemy || CombatTile.mouseOverTile.typeOnTile == TileObjectType.Player) && this.ignoreEnemies))
                     {
-                        this.movementPath.Add(CombatTile.mouseOverTile);
+                        this.movementPath.Add(CombatTile3D.mouseOverTile);
                         CombatTile.mouseOverTile.HighlightTile(true);
                         CombatTile.mouseOverTile.SetTileColor(Color.blue);
                     }
@@ -163,7 +163,7 @@ public class MoveAction : Action
                 else
                 {
                     //Removing all tiles in the movement path that come after this one
-                    int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
+                    int indexOfPrevTile = this.movementPath.IndexOf(CombatTile3D.mouseOverTile) + 1;
                     for (int t = indexOfPrevTile; t < this.movementPath.Count;)
                     {
                         this.movementPath[t].HighlightTile(false);
@@ -174,10 +174,10 @@ public class MoveAction : Action
                 }
             }
             //If the tile that the mouse is over is NOT connected to the last tile in the current movement path but is still in the path
-            else if (this.movementPath.Contains(CombatTile.mouseOverTile))
+            else if (this.movementPath.Contains(CombatTile3D.mouseOverTile))
             {
                 //Removing all tiles in the movement path that come after this one
-                int indexOfPrevTile = this.movementPath.IndexOf(CombatTile.mouseOverTile) + 1;
+                int indexOfPrevTile = this.movementPath.IndexOf(CombatTile3D.mouseOverTile) + 1;
                 for (int t = indexOfPrevTile; t < this.movementPath.Count;)
                 {
                     this.movementPath[t].HighlightTile(false);
@@ -200,7 +200,7 @@ public class MoveAction : Action
                     }
 
                     //Use the breadth first search algorithm to find the path to this tile from the player
-                    List<CombatTile> newPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], CombatTile.mouseOverTile, this.ignoreObstacles, this.ignoreEnemies);
+                    List<CombatTile3D> newPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], CombatTile3D.mouseOverTile, this.ignoreObstacles, this.ignoreEnemies);
                     if (newPath.Count > 0)
                     {
                         this.movementPath = newPath;
@@ -219,10 +219,10 @@ public class MoveAction : Action
 
 
     //Function called from CombatTile.cs to see if a specific tile is in the current movement path
-    public bool IsTileInMovementPath(CombatTile tileToCheck_)
+    public bool IsTileInMovementPath(CombatTile3D tileToCheck_)
     {
         //Looping through each tile in the current movement path
-        foreach(CombatTile ct in this.movementPath)
+        foreach(CombatTile3D ct in this.movementPath)
         {
             //Returns true if the current tile is the one we're looking for
             if(ct == tileToCheck_)
@@ -239,7 +239,7 @@ public class MoveAction : Action
     //Function called from CombatManager.EndActingCharactersTurn so we can clear tile highlights if no move action is selected
     public void ClearMovePathHighlights()
     {
-        foreach(CombatTile tile in this.movementPath)
+        foreach(CombatTile3D tile in this.movementPath)
         {
             tile.HighlightTile(false);
             tile.SetTileColor(Color.white);

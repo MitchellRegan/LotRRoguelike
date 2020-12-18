@@ -38,22 +38,22 @@ public class AttackAction : Action
 
 
     //Function inherited from Action.cs and called from CombatManager.cs so we can attack a target
-    public override void PerformAction(CombatTile targetTile_)
+    public override void PerformAction(CombatTile3D targetTile_)
     {
         //Calling the base function to start the cooldown time
         this.BeginActionCooldown();
 
         //Reference to the character performing this attack
-        Character actingChar = CombatManager.globalReference.actingCharacters[0];
+        Character actingChar = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
         //Reference to the character that's being attacked
         Character defendingChar;
 
         //Getting the tile that the acting character is on
-        CombatTile actingCharTile = CombatManager.globalReference.FindCharactersTile(actingChar);
-        CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(actingChar);
+        CombatTile3D actingCharTile = CombatManager.globalReference.tileHandler.FindCharactersTile(actingChar);
+        GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(actingChar);
 
         //Setting the direction the acting character faces
-        this.SetDirectionFacing(targetTile_, actingCharTile, cSprite);
+        this.SetDirectionFacing(targetTile_, actingCharTile, charModel);
 
         //Looping through and triggering all combat effects on the acting character that happen on attack
         foreach(Effect e in actingChar.charCombatStats.combatEffects)
@@ -68,7 +68,7 @@ public class AttackAction : Action
         }
 
         //Looping through and creating each of the launched projectiles for this attack
-        Vector3 casterTile = CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.actingCharacters[0]).transform.position;
+        Vector3 casterTile = CombatManager.globalReference.tileHandler.FindCharactersTile(CombatManager.globalReference.initiativeHandler.actingCharacters[0]).transform.position;
         foreach(ProjectileLauncher projectile in this.projectilesToLaunch)
         {
             GameObject newProjectile = GameObject.Instantiate(projectile.gameObject, casterTile, new Quaternion());
@@ -313,7 +313,7 @@ public class AttackAction : Action
 
 
     //Function called from TriggerEffect to find all targets within an effect's radius
-    private List<Character> FindCharactersInAttackRange(CombatTile targetTile_, int attackRadius_)
+    private List<Character> FindCharactersInAttackRange(CombatTile3D targetTile_, int attackRadius_)
     {
         //The list of characters that are returned
         List<Character> targets = new List<Character>();
@@ -330,10 +330,10 @@ public class AttackAction : Action
         }
 
         //If the radius is larger than 0, we have to find all tiles within range of the target
-        List<CombatTile> tilesInRange = PathfindingAlgorithms.FindTilesInActionRange(targetTile_, attackRadius_);
+        List<CombatTile3D> tilesInRange = PathfindingAlgorithms.FindTilesInActionRange(targetTile_, attackRadius_);
 
         //Looping through each tile in range to find out if they have character objects on them
-        foreach(CombatTile currentTile in tilesInRange)
+        foreach(CombatTile3D currentTile in tilesInRange)
         {
             if(currentTile.objectOnThisTile != null && currentTile.objectOnThisTile.GetComponent<Character>())
             {
@@ -347,7 +347,7 @@ public class AttackAction : Action
 
 
     //Function called from PerformAction to set the direction this character faces when acting
-    public virtual void SetDirectionFacing(CombatTile targetTile_, CombatTile actingCharTile_, CharacterSpriteBase cSprite_)
+    public virtual void SetDirectionFacing(CombatTile3D targetTile_, CombatTile3D actingCharTile_, GameObject charModel_)
     {
         //If the difference in vertical space between the character tile and the target tile is greater than the difference in horizontal space
         if (Mathf.Abs(targetTile_.transform.position.y - actingCharTile_.transform.position.y) > Mathf.Abs(targetTile_.transform.position.x - actingCharTile_.transform.position.x))
@@ -356,13 +356,13 @@ public class AttackAction : Action
             if (targetTile_.transform.position.y > actingCharTile_.transform.position.y)
             {
                 //We make the character look up
-                cSprite_.SetDirectionFacing(DirectionFacing.Up);
+                charModel_.transform.eulerAngles = new Vector3(0, 90, 0);
             }
             //If the target tile is below the acting character's tile
             else
             {
                 //We make the character look down
-                cSprite_.SetDirectionFacing(DirectionFacing.Down);
+                charModel_.transform.eulerAngles = new Vector3(0, 270, 0);
             }
         }
         //If the difference in horizontal space between the tiles is greater
@@ -372,13 +372,13 @@ public class AttackAction : Action
             if (targetTile_.transform.position.x > actingCharTile_.transform.position.x)
             {
                 //We make the character look right
-                cSprite_.SetDirectionFacing(DirectionFacing.Right);
+                charModel_.transform.eulerAngles = new Vector3(0, 180, 0);
             }
             //If the target tile is left of the acting character's tile
             else
             {
                 //We make the character look left
-                cSprite_.SetDirectionFacing(DirectionFacing.Left);
+                charModel_.transform.eulerAngles = new Vector3(0, 0, 0);
             }
         }
     }
@@ -469,7 +469,7 @@ public class AttackAction : Action
 
 
     //Function called when an effect is triggered
-    public virtual void TriggerEffect(AttackEffect effectToTrigger_, CombatTile targetTile_, Character actingChar_)
+    public virtual void TriggerEffect(AttackEffect effectToTrigger_, CombatTile3D targetTile_, Character actingChar_)
     {
         //Finding all targets within this effect's radius
         List<Character> targets = this.FindCharactersInAttackRange(targetTile_, effectToTrigger_.effectRadius);
@@ -520,7 +520,7 @@ public class AttackAction : Action
 
         //Bool to check if the acting character is a player character or an enemy
         bool isActingCharPlayer = true;
-        if(CombatManager.globalReference.enemyCharactersInCombat.Contains(actingChar_))
+        if(CombatManager.globalReference.characterHandler.enemyCharacters.Contains(actingChar_))
         {
             isActingCharPlayer = false;
         }
@@ -531,7 +531,7 @@ public class AttackAction : Action
             for(int e = 0; e < targets.Count; ++e)
             {
                 //If the current target is an enemy character
-                if(CombatManager.globalReference.enemyCharactersInCombat.Contains(targets[e]))
+                if(CombatManager.globalReference.characterHandler.enemyCharacters.Contains(targets[e]))
                 {
                     switch(effectToTrigger_.effectedTargets)
                     {
@@ -623,7 +623,7 @@ public class AttackAction : Action
                     }
                 }
                 //If the current target is a player character
-                else if(CombatManager.globalReference.playerCharactersInCombat.Contains(targets[e]))
+                else if(CombatManager.globalReference.characterHandler.playerCharacters.Contains(targets[e]))
                 {
                     switch (effectToTrigger_.effectedTargets)
                     {
@@ -840,7 +840,7 @@ public class AttackAction : Action
 
 
     //Function called from PerformAction to deal damage to this action's target
-    public virtual void DealDamage(Dictionary<DamageType, int> damageTypeTotalDamage_, Dictionary<DamageType, SpellResistTypes> spellResistDictionary_, Character defendingChar_, CombatTile targetTile_, bool isCrit_)
+    public virtual void DealDamage(Dictionary<DamageType, int> damageTypeTotalDamage_, Dictionary<DamageType, SpellResistTypes> spellResistDictionary_, Character defendingChar_, CombatTile3D targetTile_, bool isCrit_)
     {
         //Dealing damage to the defending character and telling the combat manager to display how much was dealt
         defendingChar_.charPhysState.DamageCharacter(damageTypeTotalDamage_[DamageType.Slashing]);

@@ -55,7 +55,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         this.threatList = new List<PlayerThreatMeter>();
 
         //Looping through all characters in the current combat encounter and adding them to the threat list
-        foreach(Character enemyChar in CombatManager.globalReference.playerCharactersInCombat)
+        foreach(Character enemyChar in CombatManager.globalReference.characterHandler.playerCharacters)
         {
             this.threatList.Add(new PlayerThreatMeter(enemyChar, 0));
         }
@@ -307,7 +307,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If any of this enemy's ally's health are between a specific range
                 case ConditionalType.OneAllyHPRange:
                     //Looping through all of the enemies in this combat
-                    foreach(Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach(Character combatEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If the current enemy isn't this enemy and not null
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
@@ -329,7 +329,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Making an int to track the number of allies whose health is within the range
                     int numAlliesInRange = 0;
                     //Looping through all of the enemies in this combat
-                    foreach (Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach (Character combatEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If the current enemy isn't this enemy and not null
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
@@ -342,7 +342,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 numAlliesInRange += 1;
 
                                 //If the number of allies in range is at least half of the number of enemies in combat, we meet the condition
-                                if (numAlliesInRange >= (CombatManager.globalReference.enemyCharactersInCombat.Count / 2))
+                                if (numAlliesInRange >= (CombatManager.globalReference.characterHandler.enemyCharacters.Count / 2))
                                 {
                                     conditionMet = true;
                                     break;
@@ -357,7 +357,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
                     //Looping through all of the enemies in this combat
-                    foreach (Character combatEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach (Character combatEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If the current enemy isn't this enemy and not null
                         if (combatEnemy != null && combatEnemy != this.ourCharacter)
@@ -418,7 +418,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If any of this enemy's allies have a debuff:
                 case ConditionalType.AllyDebuffed:
                     //Looping through all of the enemies in combat to check their effects
-                    foreach(Character allyEnemy in CombatManager.globalReference.enemyCharactersInCombat)
+                    foreach(Character allyEnemy in CombatManager.globalReference.characterHandler.enemyCharacters)
                     {
                         //If we've already found an ally that meets our requirements, we break this loop
                         if(conditionMet)
@@ -473,7 +473,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //If at least one player character's health is between a specific range
                 case ConditionalType.OnePlayerHPRange:
                     //Looping through all of the player characters in this combat
-                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    foreach (Character playerCharacter in CombatManager.globalReference.characterHandler.playerCharacters)
                     {
                         //If the current player isn't null
                         if (playerCharacter != null)
@@ -495,7 +495,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Making an int to track the number of player characters whose health is within the range
                     int numPlayersInRange = 0;
                     //Looping through all of the player characters in this combat
-                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    foreach (Character playerCharacter in CombatManager.globalReference.characterHandler.playerCharacters)
                     {
                         //If the current player isn't null
                         if (playerCharacter != null)
@@ -508,7 +508,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                                 numPlayersInRange += 1;
 
                                 //If the number of player characters that are within the health range is at least half, we meet the condition
-                                if (numPlayersInRange >= CombatManager.globalReference.playerCharactersInCombat.Count)
+                                if (numPlayersInRange >= CombatManager.globalReference.characterHandler.playerCharacters.Count)
                                 {
                                     conditionMet = true;
                                     break;
@@ -523,7 +523,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     //Setting the condition to being true by default, and if it's not true, we change it in the loop
                     conditionMet = true;
                     //Looping through all of the player characters in this combat
-                    foreach (Character playerCharacter in CombatManager.globalReference.playerCharactersInCombat)
+                    foreach (Character playerCharacter in CombatManager.globalReference.characterHandler.playerCharacters)
                     {
                         //If the current player isn't null
                         if (playerCharacter != null)
@@ -592,9 +592,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         
 
         //Finding the distance this enemy is from the target
-        CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
-        CombatTile targetPlayerTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
-        List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
+        CombatTile3D ourEnemyTile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.ourCharacter);
+        CombatTile3D targetPlayerTile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.playerCharToAttack);
+        List<CombatTile3D> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
         int currentDist = pathToTarget.Count;
 
         //If this enemy is already in the preferred distance
@@ -1092,7 +1092,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //The distance that's currently the closest
                 float closestDist = 100000000000;
                 //Finding this enemy character's position on the combat tile grid
-                CombatTile thisEnemyTile = CombatManager.globalReference.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
+                CombatTile3D thisEnemyTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
 
                 //Looping through the threat list to find the character that's closest to this enemy
                 for (int t = 0; t < this.threatList.Count; ++t)
@@ -1104,7 +1104,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
 
                     //Finding the current character's position on the combat tile grid
-                    CombatTile currentCharTile = CombatManager.globalReference.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
+                    CombatTile3D currentCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
 
                     //Finding the distance between the current character's tile and this enemy's tile
                     float distToCheck = Vector3.Distance(thisEnemyTile.gameObject.transform.position, currentCharTile.gameObject.transform.position);
@@ -1127,7 +1127,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //The distance that's currently the furthest
                 float furthestDist = 0;
                 //Finding this enemy character's position on the combat tile grid
-                CombatTile ourEnemyTile = CombatManager.globalReference.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
+                CombatTile3D ourEnemyTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
 
                 //Looping through the threat list to find the character that's furthest from this enemy
                 for (int t = 0; t < this.threatList.Count; ++t)
@@ -1139,7 +1139,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
 
                     //Finding the current character's position on the combat tile grid
-                    CombatTile currentCharTile = CombatManager.globalReference.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
+                    CombatTile3D currentCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
 
                     //Finding the distance between the current character's tile and this enemy's tile
                     float distToCheck = Vector3.Distance(ourEnemyTile.gameObject.transform.position, currentCharTile.gameObject.transform.position);
@@ -1912,8 +1912,8 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             if(this.actionsToPerformOnTiles[0].enemyActionToUse.GetType() == typeof(MoveAction))
             {
                 //Finding the distance this enemy is from the target
-                CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
-                List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, this.actionsToPerformOnTiles[0].targetTile, true, true);
+                CombatTile3D ourEnemyTile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.ourCharacter);
+                List<CombatTile3D> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, this.actionsToPerformOnTiles[0].targetTile, true, true);
 
                 //Multiplying the number of tiles by the action time for our cooldown
                 this.actionCooldown *= pathToTarget.Count;

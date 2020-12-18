@@ -62,7 +62,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private void Start()
     {
         //Adding this combat tile to the grid in the combat manager
-        CombatManager.globalReference.AddCombatTileToGrid(this, this.row, this.col);
+        //CombatManager.globalReference.AddCombatTileToGrid(this, this.row, this.col);
     }
 
 
@@ -76,18 +76,6 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         //Highlighting any effect radius if there's a selected attack ability
         this.HighlightEffectRadius(true);
-
-        //If we have a character on this tile, we make sure they're visible
-        if(this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
-        {
-            //Making sure the character isn't the acting character
-            if (CombatManager.globalReference.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
-            {
-                //Getting the sprite base for the character
-                CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
-                cSprite.MakeSpritesVisible();
-            }
-        }
     }
 
 
@@ -98,22 +86,10 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
         {
             //If this tile isn't in the movement path, this tile isn't highlighted
-            if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
+            /*if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
             {
                 this.HighlightTile(false);
-
-                //If we have a character on this tile, we make sure they're hidden again
-                if (this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
-                {
-                    //Making sure the character isn't the acting character
-                    if (CombatManager.globalReference.actingCharacters.Count > 0 && this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
-                    {
-                        //Getting the sprite base for the character
-                        CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
-                        cSprite.MakeSpritesTransparent();
-                    }
-                }
-            }
+            }*/
         }
         else
         {
@@ -122,18 +98,6 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             //Stops highlighting any effect radius if there's a selected attack ability
             this.HighlightEffectRadius(false);
-
-            //If we have a character on this tile, we make sure they're hidden again
-            if (this.inActionRange && this.objectOnThisTile != null && this.objectOnThisTile.GetComponent<Character>())
-            {
-                //Making sure the character isn't the acting character
-                if (this.objectOnThisTile.GetComponent<Character>() != CombatManager.globalReference.actingCharacters[0])
-                {
-                    //Getting the sprite base for the character
-                    CharacterSpriteBase cSprite = CombatManager.globalReference.GetCharacterSprite(this.objectOnThisTile.GetComponent<Character>());
-                    cSprite.MakeSpritesTransparent();
-                }
-            }
         }
 
         mouseOverTile = null;
@@ -147,7 +111,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(this.inActionRange)
         {
             //Telling the combat manager that the selected action is going to happen on this tile
-            CombatManager.globalReference.PerformActionAtClickedTile(this);
+            //CombatManager.globalReference.PerformActionAtClickedTile(this);
         }
     }
 
@@ -256,7 +220,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             //If the radius is greater than 0, we need to highlight all tiles in the effect zone
             if (highestRadius > 0)
             {
-                List<CombatTile> tilesInEffect = PathfindingAlgorithms.FindTilesInActionRange(this, highestRadius);
+                /*List<CombatTile> tilesInEffect = PathfindingAlgorithms.FindTilesInActionRange(this, highestRadius);
                 foreach (CombatTile tile in tilesInEffect)
                 {
                     //If we turn on the highlight
@@ -269,7 +233,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     {
                         tile.HighlightTile(false);
                     }
-                }
+                }*/
             }
         }
     }

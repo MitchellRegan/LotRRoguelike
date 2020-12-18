@@ -8,10 +8,10 @@ public class EnemyActionAndTile
     //The action that the enemy will use
     public Action enemyActionToUse;
     //The tile that the action will be used on
-    public CombatTile targetTile;
+    public CombatTile3D targetTile;
 
     //Constructor function for this class
-    public EnemyActionAndTile(Action enemyAct_, CombatTile targetTile_)
+    public EnemyActionAndTile(Action enemyAct_, CombatTile3D targetTile_)
     {
         this.enemyActionToUse = enemyAct_;
         this.targetTile = targetTile_;

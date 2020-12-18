@@ -93,7 +93,7 @@ public class WASDOverworldMovement : MonoBehaviour
     private void Update()
     {
         //If the combat canvas is open, we don't move
-        if(CombatManager.globalReference.GetComponent<Canvas>().enabled)
+        if (CombatManager.globalReference.uiHandler.combatUICanvas.enabled)
         {
             return;
         }
@@ -102,9 +102,9 @@ public class WASDOverworldMovement : MonoBehaviour
         {
             return;
         }
-
+        
         //If this party is currently traveling
-        if(isTraveling)
+        if (isTraveling)
         {
             //Finds the difference between the the current tile and the tile to travel to
             Vector3 distDiff = new Vector3(this.tileToTravelTo.tilePosition.x - this.currentTile.tilePosition.x,

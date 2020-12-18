@@ -206,7 +206,7 @@ public class InstantDamageEffect : Effect
         }
 
         //Finding the combat tile that the target character is on
-        CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
+        CombatTile3D targetCharTile = CombatManager.globalReference.tileHandler.FindCharactersTile(targetCharacter_);
 
         //If the damage was dealt normally
         if (magicResistType == SpellResistTypes.Normal)
@@ -263,8 +263,8 @@ public class InstantDamageEffect : Effect
         }
 
         //Creating the visual effect for this effect
-        CharacterSpriteBase targetCharSprite = CombatManager.globalReference.GetCharacterSprite(targetCharacter_);
-        this.SpawnVisualAtLocation(targetCharSprite.transform.localPosition, targetCharSprite.transform);
+        GameObject targetCharModel = CombatManager.globalReference.characterHandler.GetCharacterModel(targetCharacter_);
+        this.SpawnVisualAtLocation(targetCharModel.transform.localPosition, targetCharModel.transform);
 
 
         //Increasing the threat to the target based on damage dealt

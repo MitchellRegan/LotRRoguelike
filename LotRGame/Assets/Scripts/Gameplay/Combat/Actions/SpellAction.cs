@@ -14,12 +14,12 @@ public class SpellAction : AttackAction
 
 
     //Function inherited from AttackAction.cs and called from CombatManager.cs so we can attack a target
-    public override void PerformAction(CombatTile targetTile_)
+    public override void PerformAction(CombatTile3D targetTile_)
     {
         base.PerformAction(targetTile_);
 
         //Once the attack is performed, this spell needs to recharge
-        Character actingChar = CombatManager.globalReference.actingCharacters[0];
+        Character actingChar = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
         actingChar.charActionList.StartSpellRecharge(this);
     }
 }

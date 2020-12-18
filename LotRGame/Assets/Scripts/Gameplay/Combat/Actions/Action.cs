@@ -34,7 +34,7 @@ public class Action : MonoBehaviour
 
     
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
-    public virtual void PerformAction(CombatTile targetTile_)
+    public virtual void PerformAction(CombatTile3D targetTile_)
     {
         //Nothing here because the inheriting classes act differently
     }
@@ -49,7 +49,7 @@ public class Action : MonoBehaviour
             //Creating a new action cooldown class for this action
             ActionCooldown acd = new ActionCooldown(this, this.cooldownTime);
 
-            CombatManager.globalReference.actingCharacters[0].charActionList.actionCooldowns.Add(acd);
+            CombatManager.globalReference.initiativeHandler.actingCharacters[0].charActionList.actionCooldowns.Add(acd);
         }
     }
 
