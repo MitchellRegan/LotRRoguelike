@@ -31,6 +31,8 @@ public class TimePanelUI : MonoBehaviour
     //The text field that displays the time of day
     public Text timeOfDayText;
 
+    //Bool for if the game timer is paused due to things like combat
+    private bool isTimePaused = false;
     //Bool that determines if we're currently transitioning time
     private bool isTimePassing = false;
     //The time that it will be when we're done transitioning time and the time when the transition started
@@ -101,6 +103,11 @@ public class TimePanelUI : MonoBehaviour
 	// Update is called once per frame
 	private void Update ()
     {
+        //If the game is paused then nothing happens
+        if (this.isTimePaused)
+        {
+            return;
+        }
         //If the game time isn't currently passing
         if (!this.isTimePassing)
         {
@@ -227,5 +234,12 @@ public class TimePanelUI : MonoBehaviour
 
         //Setting the lights to be at the same location as the player party
         this.globalLightObject.position = PartyGroup.group1.transform.position;
+    }
+
+
+    //Function called externally by HUDCombatToggle.cs to pause/restart the passage of time for combat
+    public void SetTimePaused(bool isPaused_)
+    {
+        this.isTimePaused = isPaused_;
     }
 }

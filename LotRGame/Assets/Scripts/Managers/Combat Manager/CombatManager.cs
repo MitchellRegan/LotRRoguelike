@@ -274,7 +274,7 @@ public class CombatManager : MonoBehaviour
 
         //Resetting the combat UI
         this.initiativeHandler.ResetForCombatStart();
-        this.uiHandler.ResetForCombatStart();
+        //this.uiHandler.ResetForCombatStart();
         
         //Hiding the highlight ring
         this.tileHandler.tileHighlight.enabled = false;
@@ -405,9 +405,9 @@ public class CombatManager : MonoBehaviour
     {
         //Perform the unity event after the action so we can hide some UI elements
         this.eventAfterActionPerformed.Invoke();
-
+        
         //If there's a selected action in the CombatActionPanelUI, we need to destroy it
-        if(CombatActionPanelUI.globalReference.selectedAction != null)
+        if (CombatActionPanelUI.globalReference.selectedAction != null)
         {
             //If the selected action is a move action, we need to clear all highlighted tiles in the movement path first
             if(CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())

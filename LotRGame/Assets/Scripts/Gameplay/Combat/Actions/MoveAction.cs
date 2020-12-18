@@ -219,7 +219,7 @@ public class MoveAction : Action
 
 
     //Function called from CombatTile.cs to see if a specific tile is in the current movement path
-    public bool IsTileInMovementPath(CombatTile tileToCheck_)
+    public bool IsTileInMovementPath(CombatTile3D tileToCheck_)
     {
         //Looping through each tile in the current movement path
         foreach(CombatTile3D ct in this.movementPath)

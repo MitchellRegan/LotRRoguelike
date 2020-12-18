@@ -86,10 +86,10 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
         {
             //If this tile isn't in the movement path, this tile isn't highlighted
-            if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
+            /*if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
             {
                 this.HighlightTile(false);
-            }
+            }*/
         }
         else
         {

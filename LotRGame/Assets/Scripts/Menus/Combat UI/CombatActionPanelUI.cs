@@ -25,7 +25,7 @@ public class CombatActionPanelUI : MonoBehaviour
 
     //The action that's currently selected
     [HideInInspector]
-    public Action selectedAction;
+    public Action selectedAction = null;
     //The panel that displays the selected action's details
     public SelectedActionPanel selectedPanelDetails;
 

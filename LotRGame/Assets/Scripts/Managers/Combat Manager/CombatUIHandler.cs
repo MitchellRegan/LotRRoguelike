@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class CombatUIHandler : MonoBehaviour
 {
-    //Reference to the combat UI canvas
+    //Reference to the combat UI canvas and camera
     public Canvas combatUICanvas;
+    public GameObject combatCamera;
 
     //List of all initiative panels for player characters and enemies
     public List<CombatInitiativePanel> playerPanels;
@@ -34,6 +35,7 @@ public class CombatUIHandler : MonoBehaviour
     {
         //Disabling the combat canvas so we know it's always off when the CamePlay scene starts
         this.combatUICanvas.enabled = false;
+        this.combatCamera.SetActive(false);
     }
 
 
@@ -42,6 +44,7 @@ public class CombatUIHandler : MonoBehaviour
     {
         //Displaying the combat UI canvas
         this.combatUICanvas.enabled = true;
+        this.combatCamera.SetActive(true);
 
         Character currentChar;
 
@@ -87,6 +90,14 @@ public class CombatUIHandler : MonoBehaviour
                 this.enemyPanels[e].gameObject.SetActive(false);
             }
         }
+    }
+
+
+    //Function called from CombatManager.InitiateCombat to turn off the UI for the end of combat
+    public void TurnOfForCombatEnd()
+    {
+        this.combatUICanvas.enabled = false;
+        this.combatCamera.SetActive(false);
     }
 
 
