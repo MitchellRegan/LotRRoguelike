@@ -128,7 +128,14 @@ public class CombatTile3D : MonoBehaviour
     //Determines if this tile should be hilighed or not
     public void HighlightTile(bool highlightOn_)
     {
-        Color tileColor = this.GetComponent<Material>().color;
+        MeshRenderer mesh = this.GetComponent<MeshRenderer>();
+
+        if (mesh.materials.Length == 0)
+        {
+            return;
+        }
+
+        Color tileColor = mesh.materials[0].color;
         float r = tileColor.r;
         float g = tileColor.g;
         float b = tileColor.b;
@@ -156,7 +163,12 @@ public class CombatTile3D : MonoBehaviour
     //Function called externally to set our tile's color
     public void SetTileColor(Color newColor_)
     {
-        this.GetComponent<Material>().color = newColor_; 
+        MeshRenderer mesh = this.GetComponent<MeshRenderer>();
+
+        if (mesh.materials.Length > 0)
+        {
+            mesh.materials[0].color = newColor_;
+        }
     }
 
 

@@ -60,6 +60,8 @@ public class CombatActionPanelUI : MonoBehaviour
 
         //Disables this game object
         this.gameObject.SetActive(false);
+
+        this.selectedAction = null;
     }
 
 

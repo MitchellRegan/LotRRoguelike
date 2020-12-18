@@ -415,8 +415,8 @@ public class CombatCharacterHandler : MonoBehaviour
         {
             Destroy(em);
         }
-        this.playerModels = new List<GameObject>(this.playerCharacters.Count);
-        this.enemyModels = new List<GameObject>(this.enemyCharacters.Count);
+        this.playerModels = new List<GameObject>();
+        this.enemyModels = new List<GameObject>();
 
         //Creating each player character model at their tile position
         for(int p = 0; p < this.playerCharacters.Count; p++)
@@ -432,6 +432,7 @@ public class CombatCharacterHandler : MonoBehaviour
             else
             {
                 charModel.transform.position = tile.gameObject.transform.position;
+                this.playerModels.Add(charModel);
             }
         }
 
@@ -449,6 +450,7 @@ public class CombatCharacterHandler : MonoBehaviour
             else
             {
                 charModel.transform.position = tile.gameObject.transform.position;
+                this.enemyModels.Add(charModel);
             }
         }
     }
