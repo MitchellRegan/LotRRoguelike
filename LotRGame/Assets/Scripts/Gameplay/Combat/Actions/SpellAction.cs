@@ -14,7 +14,7 @@ public class SpellAction : AttackAction
 
 
     //Function inherited from AttackAction.cs and called from CombatManager.cs so we can attack a target
-    public override void PerformAction(CombatTile targetTile_)
+    public override void PerformAction(CombatTile3D targetTile_)
     {
         base.PerformAction(targetTile_);
 

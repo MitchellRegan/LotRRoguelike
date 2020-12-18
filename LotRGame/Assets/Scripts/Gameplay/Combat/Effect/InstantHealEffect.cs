@@ -195,13 +195,13 @@ public class InstantHealEffect : Effect
         }
 
         //Finding the combat tile that the target character is on
-        CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
+        CombatTile3D targetCharTile = CombatManager.globalReference.tileHandler.FindCharactersTile(targetCharacter_);
 
         //If the heal was negated completely
         if (magicResistType == SpellResistTypes.Negate)
         {
             //Telling the combat manager to display that no damage was healed
-            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D healedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, 0, this.type, healedCharTile, isCrit, true);
         }
         //Otherwise, the heal happens normally
@@ -211,7 +211,7 @@ public class InstantHealEffect : Effect
             this.characterToEffect.charPhysState.HealCharacter(totalHeal);
 
             //Telling the combat manager to display the damage healed
-            CombatTile healedCharTile = CombatManager.globalReference.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
+            CombatTile3D healedCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.characterToEffect.charCombatStats.gridPositionCol][this.characterToEffect.charCombatStats.gridPositionRow];
             CombatManager.globalReference.DisplayDamageDealt(0, totalHeal, this.type, healedCharTile, isCrit, true);
 
             //If the acting character is a player character, we need to increase the threat against them

@@ -202,7 +202,7 @@ public class CombatActionPanelUI : MonoBehaviour
         //Getting a reference to the character that's currently acting
         Character actingCharacter = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
         //Finding out which tile the acting character is on
-        CombatTile actingCharsTile = CombatManager.globalReference.FindCharactersTile(actingCharacter);
+        CombatTile3D actingCharsTile = CombatManager.globalReference.tileHandler.FindCharactersTile(actingCharacter);
 
         //If the currently selected action is a move action, we need to clear tile highlights along its movement path
         if(this.selectedAction != null && this.selectedAction.GetComponent<MoveAction>())
@@ -246,8 +246,8 @@ public class CombatActionPanelUI : MonoBehaviour
         this.selectedAction = actionObj.GetComponent<Action>();
 
         //Finding out which tiles need to be hilighted if this action isn't a move action
-        List<CombatTile> tilesToHighlight;
-        List<CombatTile> tilesToCheckForCharacters = new List<CombatTile>();
+        List<CombatTile3D> tilesToHighlight;
+        List<CombatTile3D> tilesToCheckForCharacters = new List<CombatTile3D>();
         if (!this.selectedAction.GetComponent<MoveAction>())
         {
             tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
@@ -275,7 +275,7 @@ public class CombatActionPanelUI : MonoBehaviour
         }
 
         //Looping through all tiles in range and hilighting them
-        foreach(CombatTile tile in tilesToHighlight)
+        foreach(CombatTile3D tile in tilesToHighlight)
         {
             tile.inActionRange = true;
             tile.HighlightTile(false);

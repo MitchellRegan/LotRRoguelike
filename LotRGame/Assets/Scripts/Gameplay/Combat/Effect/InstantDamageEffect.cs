@@ -206,7 +206,7 @@ public class InstantDamageEffect : Effect
         }
 
         //Finding the combat tile that the target character is on
-        CombatTile targetCharTile = CombatManager.globalReference.FindCharactersTile(targetCharacter_);
+        CombatTile3D targetCharTile = CombatManager.globalReference.tileHandler.FindCharactersTile(targetCharacter_);
 
         //If the damage was dealt normally
         if (magicResistType == SpellResistTypes.Normal)

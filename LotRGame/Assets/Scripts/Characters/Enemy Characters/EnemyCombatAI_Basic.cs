@@ -592,9 +592,9 @@ public class EnemyCombatAI_Basic : MonoBehaviour
         
 
         //Finding the distance this enemy is from the target
-        CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
-        CombatTile targetPlayerTile = CombatManager.globalReference.FindCharactersTile(this.playerCharToAttack);
-        List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
+        CombatTile3D ourEnemyTile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.ourCharacter);
+        CombatTile3D targetPlayerTile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.playerCharToAttack);
+        List<CombatTile3D> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, targetPlayerTile, true, true);
         int currentDist = pathToTarget.Count;
 
         //If this enemy is already in the preferred distance
@@ -1092,7 +1092,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //The distance that's currently the closest
                 float closestDist = 100000000000;
                 //Finding this enemy character's position on the combat tile grid
-                CombatTile thisEnemyTile = CombatManager.globalReference.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
+                CombatTile3D thisEnemyTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
 
                 //Looping through the threat list to find the character that's closest to this enemy
                 for (int t = 0; t < this.threatList.Count; ++t)
@@ -1104,7 +1104,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
 
                     //Finding the current character's position on the combat tile grid
-                    CombatTile currentCharTile = CombatManager.globalReference.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
+                    CombatTile3D currentCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
 
                     //Finding the distance between the current character's tile and this enemy's tile
                     float distToCheck = Vector3.Distance(thisEnemyTile.gameObject.transform.position, currentCharTile.gameObject.transform.position);
@@ -1127,7 +1127,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                 //The distance that's currently the furthest
                 float furthestDist = 0;
                 //Finding this enemy character's position on the combat tile grid
-                CombatTile ourEnemyTile = CombatManager.globalReference.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
+                CombatTile3D ourEnemyTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.ourCharacter.charCombatStats.gridPositionCol][this.ourCharacter.charCombatStats.gridPositionRow];
 
                 //Looping through the threat list to find the character that's furthest from this enemy
                 for (int t = 0; t < this.threatList.Count; ++t)
@@ -1139,7 +1139,7 @@ public class EnemyCombatAI_Basic : MonoBehaviour
                     }
 
                     //Finding the current character's position on the combat tile grid
-                    CombatTile currentCharTile = CombatManager.globalReference.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
+                    CombatTile3D currentCharTile = CombatManager.globalReference.tileHandler.combatTileGrid[this.threatList[t].characterRef.charCombatStats.gridPositionCol][this.threatList[t].characterRef.charCombatStats.gridPositionRow];
 
                     //Finding the distance between the current character's tile and this enemy's tile
                     float distToCheck = Vector3.Distance(ourEnemyTile.gameObject.transform.position, currentCharTile.gameObject.transform.position);
@@ -1912,8 +1912,8 @@ public class EnemyCombatAI_Basic : MonoBehaviour
             if(this.actionsToPerformOnTiles[0].enemyActionToUse.GetType() == typeof(MoveAction))
             {
                 //Finding the distance this enemy is from the target
-                CombatTile ourEnemyTile = CombatManager.globalReference.FindCharactersTile(this.ourCharacter);
-                List<CombatTile> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, this.actionsToPerformOnTiles[0].targetTile, true, true);
+                CombatTile3D ourEnemyTile = CombatManager.globalReference.tileHandler.FindCharactersTile(this.ourCharacter);
+                List<CombatTile3D> pathToTarget = PathfindingAlgorithms.BreadthFirstSearchCombat(ourEnemyTile, this.actionsToPerformOnTiles[0].targetTile, true, true);
 
                 //Multiplying the number of tiles by the action time for our cooldown
                 this.actionCooldown *= pathToTarget.Count;

@@ -31,9 +31,6 @@ public class CombatManager : MonoBehaviour
     //The combat state to switch to after the wait time is up
     private CombatState stateAfterWait = CombatState.IncreaseInitiative;
 
-    //2D List of all combat tiles in the combat screen map. Col[row}
-    public List<List<CombatTile>> combatTileGrid;
-
     //The event that is activated at the start of combat
     public UnityEvent combatInitializeEvent;
     //The event that is activated at the end of combat
@@ -82,19 +79,6 @@ public class CombatManager : MonoBehaviour
         else
         {
             Destroy(this);
-        }
-
-        //Initializing our combat tile grid
-        this.combatTileGrid = new List<List<CombatTile>>();
-        //Setting up each column of rows
-        for (int col = 0; col < 14; ++col)
-        {
-            this.combatTileGrid.Add(new List<CombatTile>());
-            //Setting up each row inside the current column
-            for(int row = 0; row < 8; ++row)
-            {
-                this.combatTileGrid[col].Add(null);
-            }
         }
 
         //Initializing the active characters list
@@ -270,19 +254,6 @@ public class CombatManager : MonoBehaviour
                 break;
         }
     }
-
-
-    //Function called externally from CombatTile.cs on Start. Adds a combat tile to our combat tile grid at the row and column given
-    public void AddCombatTileToGrid(CombatTile tileToAdd_, int row_, int col_)
-    {
-        if(this.combatTileGrid[col_][row_] != null)
-        {
-            Debug.LogError(col_ + ", " + row_);
-        }
-
-        //Setting the given tile to the correct row and column
-        this.combatTileGrid[col_][row_] = tileToAdd_;
-    }
     
     
     //Function called externally from LandTile.cs to initiate combat
@@ -343,7 +314,7 @@ public class CombatManager : MonoBehaviour
     
 
     //Function called from AttackAction.PerformAction to show damage dealt to a character at the given tile
-    public void DisplayDamageDealt(float timeDelay_, int damage_, DamageType type_, CombatTile damagedCharTile_, bool isCrit_, bool isHeal_ = false)
+    public void DisplayDamageDealt(float timeDelay_, int damage_, DamageType type_, CombatTile3D damagedCharTile_, bool isCrit_, bool isHeal_ = false)
     {
         //If the damage dealt was 0, nothing happens
         if(damage_ <= 0)
@@ -364,30 +335,13 @@ public class CombatManager : MonoBehaviour
         //Updating the health bars so we can see how much health characters have
         this.uiHandler.UpdateHealthBars();
     }
-    
-
-    //Function called externally to find out which combat tile the given character is on
-    public CombatTile FindCharactersTile(Character characterToFind_)
-    {
-        //Making sure the given character is in the current combat encounter
-        if(!this.characterHandler.playerCharacters.Contains(characterToFind_) && !this.characterHandler.enemyCharacters.Contains(characterToFind_))
-        {
-            return null;
-        }
-
-        //Getting less confusing references to the character's row/column position
-        int row = characterToFind_.charCombatStats.gridPositionRow;
-        int col = characterToFind_.charCombatStats.gridPositionCol;
-
-        return this.combatTileGrid[col][row];
-    }
 
 
     //Function called from CombatTile.cs to perform the selected action in the CombatActionPanelUI
-    public void PerformActionAtClickedTile(CombatTile tileClicked_)
+    public void PerformActionAtClickedTile(CombatTile3D tileClicked_)
     {
         //If the action being performed is a movement action and the tile clicked isn't empty, nothing happens
-        if (CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && tileClicked_.objectOnThisTile != null)
+        if (CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>() && tileClicked_.typeOnTile != TileObjectType.Nothing)
         {
             return;
         }
@@ -416,12 +370,12 @@ public class CombatManager : MonoBehaviour
 
 
     //Function called from EnemyCombatAI_Basic.cs to perform an enemy's action at the given tile
-    public void PerformEnemyActionOnTile(CombatTile tileClicked_, Action enemyAction_)
+    public void PerformEnemyActionOnTile(CombatTile3D tileClicked_, Action enemyAction_)
     {
         //If the action being performed is a movement action and the tile chosen isn't empty, nothing happens
         if(enemyAction_.GetType() == typeof(MoveAction))
         {
-            if (tileClicked_.objectOnThisTile != null)
+            if (tileClicked_.typeOnTile != TileObjectType.Nothing)
             {
                 return;
             }
@@ -571,10 +525,6 @@ public class CombatManager : MonoBehaviour
         {
             return;
         }
-        
-        //Freeing up the tile that the dead character is on
-        CombatTile deadCharTile = this.combatTileGrid[data_.characterDeath.deadCharacter.charCombatStats.gridPositionCol][data_.characterDeath.deadCharacter.charCombatStats.gridPositionRow];
-        deadCharTile.SetObjectOnTile(null, TileObjectType.Nothing);
 
         //If the dead character is the acting character, we end it's turn
         if (this.initiativeHandler.actingCharacters.Count > 0 && this.initiativeHandler.actingCharacters[0] == data_.characterDeath.deadCharacter)

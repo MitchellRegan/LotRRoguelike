@@ -282,7 +282,7 @@ public class CombatUIHandler : MonoBehaviour
 
 
     //Function called from AttackAction.PerformAction to show that an attack missed
-    public void DisplayMissedAttack(float timeDelay_, CombatTile attackedCharTile_)
+    public void DisplayMissedAttack(float timeDelay_, CombatTile3D attackedCharTile_)
     {
         //Creating an instance of the damage text object prefab
         GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);

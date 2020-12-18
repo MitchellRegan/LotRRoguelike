@@ -145,7 +145,7 @@ public class WeaponAction : AttackAction
 
 
     //Function inherited from AttackAction.cs and called from CombatManager.cs so we can attack a target
-    public override void PerformAction(CombatTile targetTile_)
+    public override void PerformAction(CombatTile3D targetTile_)
     {
         //Calling the base function to start the cooldown time
         this.BeginActionCooldown();
@@ -156,7 +156,7 @@ public class WeaponAction : AttackAction
         Character defendingChar;
 
         //Getting the tile that the acting character is on
-        CombatTile actingCharTile = CombatManager.globalReference.FindCharactersTile(actingChar);
+        CombatTile3D actingCharTile = CombatManager.globalReference.tileHandler.FindCharactersTile(actingChar);
         GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(actingChar);
 
         //Setting the direction the acting character faces
@@ -175,7 +175,7 @@ public class WeaponAction : AttackAction
         }
 
         //Looping through and creating each of the launched projectiles for this attack
-        Vector3 casterTile = CombatManager.globalReference.FindCharactersTile(CombatManager.globalReference.initiativeHandler.actingCharacters[0]).transform.position;
+        Vector3 casterTile = CombatManager.globalReference.tileHandler.FindCharactersTile(CombatManager.globalReference.initiativeHandler.actingCharacters[0]).transform.position;
         foreach (ProjectileLauncher projectile in this.projectilesToLaunch)
         {
             GameObject newProjectile = GameObject.Instantiate(projectile.gameObject, casterTile, new Quaternion());

@@ -932,37 +932,39 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Function called from CombatActionPanelUI.cs. Returns all combat tiles within the given range of the starting tile
-    public static List<CombatTile> FindTilesInActionRange(CombatTile startingTile_, int actionRange_, bool ignoreObstacles_ = true)
+    public static List<CombatTile3D> FindTilesInActionRange(CombatTile3D startingTile_, int actionRange_, bool ignoreObstacles_ = true)
     {
         //The list of combat tiles that are returned
-        List<CombatTile> allTilesInRange = new List<CombatTile>();
+        List<CombatTile3D> allTilesInRange = new List<CombatTile3D>();
 
         //The list of each group of tiles in every range incriment. The index is the range
-        List<List<CombatTile>> tilesInEachIncriment = new List<List<CombatTile>>();
+        List<List<CombatTile3D>> tilesInEachIncriment = new List<List<CombatTile3D>>();
         //Creating the first range incriment which always includes the starting tile
-        List<CombatTile> range0 = new List<CombatTile>() { startingTile_ };
-        range0[0].ourPathPoint.hasBeenChecked = true;
+        List<CombatTile3D> range0 = new List<CombatTile3D>() { startingTile_ };
+        range0[0].hasBeenChecked = true;
         tilesInEachIncriment.Add(range0);
 
         for(int r = 1; r <= actionRange_; ++r)
         {
             //Creating a new list of tiles for this range incriment
-            List<CombatTile> newRange = new List<CombatTile>();
+            List<CombatTile3D> newRange = new List<CombatTile3D>();
 
             //Looping through each tile in the previous range
-            foreach(CombatTile tile in tilesInEachIncriment[r-1])
+            foreach(CombatTile3D tile in tilesInEachIncriment[r-1])
             {
+                List<CombatTile3D> connectedTiles = new List<CombatTile3D>() { tile.left, tile.right, tile.up, tile.down };
+
                 //Looping through each tile connected to the one we're checking
-                foreach(PathPoint connection in tile.ourPathPoint.connectedPoints)
+                foreach(CombatTile3D connection in connectedTiles)
                 {
                     //If the connected tile hasn't already been checked
                     if(!connection.hasBeenChecked)
                     {
                         //If we ignore obstacles OR if the the tile doesn't have obstacles on it
-                        if (ignoreObstacles_ || connection.GetComponent<CombatTile>().objectOnThisTile == null)
+                        if (ignoreObstacles_ || connection.typeOnTile == TileObjectType.Nothing)
                         {
                             //Adding the connected tile to this new range and marking it as checked
-                            newRange.Add(connection.GetComponent<CombatTile>());
+                            newRange.Add(connection.GetComponent<CombatTile3D>());
                             connection.hasBeenChecked = true;
                         }
                     }
@@ -974,13 +976,13 @@ public class PathfindingAlgorithms : MonoBehaviour
         }
 
         //Grouping all of the tiles into the list that is returned
-        foreach(List<CombatTile> rangeList in tilesInEachIncriment)
+        foreach(List<CombatTile3D> rangeList in tilesInEachIncriment)
         {
-            foreach(CombatTile tile in rangeList)
+            foreach(CombatTile3D tile in rangeList)
             {
                 allTilesInRange.Add(tile);
                 //Resetting the tile to say it hasn't been checked
-                tile.ourPathPoint.hasBeenChecked = false;
+                tile.hasBeenChecked = false;
             }
         }
 
@@ -989,28 +991,28 @@ public class PathfindingAlgorithms : MonoBehaviour
 
 
     //Pathfinding algorithm that uses Breadth First Search to check all directions equally. Returns the tile path taken to get to the target tile.
-    public static List<CombatTile> BreadthFirstSearchCombat(CombatTile startingPoint_, CombatTile targetPoint_, bool avoidObjects_ = true, bool avoidCharacters_ = true)
+    public static List<CombatTile3D> BreadthFirstSearchCombat(CombatTile3D startingPoint_, CombatTile3D targetPoint_, bool avoidObjects_ = true, bool avoidCharacters_ = true)
     {
         //Creating the 2D list of tiles that will be returned
-        List<CombatTile> tilePath = new List<CombatTile>();
+        List<CombatTile3D> tilePath = new List<CombatTile3D>();
 
         //The list of path points that make up the frontier
-        List<CombatTile> frontier = new List<CombatTile>();
+        List<CombatTile3D> frontier = new List<CombatTile3D>();
         //Adding the starting tile to the fronteir and making sure its previous point is cleared
         frontier.Add(startingPoint_);
 
         //The list of path points that have already been visited
-        List<CombatTile> visitedPoints = new List<CombatTile>();
+        List<CombatTile3D> visitedPoints = new List<CombatTile3D>();
         visitedPoints.Add(startingPoint_);
 
-        startingPoint_.ourPathPoint.previousPoint = null;
-        startingPoint_.ourPathPoint.hasBeenChecked = true;
+        startingPoint_.prevTile = null;
+        startingPoint_.hasBeenChecked = true;
 
         //Loop through each path point until the frontier is empty
         while (frontier.Count != 0)
         {
             //Getting the reference to the next path point to check
-            CombatTile currentPoint = frontier[0];
+            CombatTile3D currentPoint = frontier[0];
 
             //If the current point is the path point we're looking for
             if (currentPoint == targetPoint_)
@@ -1023,7 +1025,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 }
 
                 //Creating a variable to hold the reference to the previous point
-                CombatTile prev = currentPoint.ourPathPoint.previousPoint.GetComponent<CombatTile>();
+                CombatTile3D prev = currentPoint.prevTile;
 
                 //Looping through the trail of points back to the starting point
                 while (true)
@@ -1035,7 +1037,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                     if (prev != startingPoint_)
                     {
                         //Setting the previous point to the next point in the path
-                        prev = prev.ourPathPoint.previousPoint.GetComponent<CombatTile>();
+                        prev = prev.prevTile;
                     }
                     //If the point is the starting point
                     else
@@ -1054,8 +1056,9 @@ public class PathfindingAlgorithms : MonoBehaviour
             //If the current point isn't the point we're looking for
             else
             {
+                List<CombatTile3D> connectedTiles = new List<CombatTile3D>(4) { currentPoint.left, currentPoint.right, currentPoint.up, currentPoint.down };
                 //Looping through each path point that's connected to the current point
-                foreach (PathPoint connection in currentPoint.ourPathPoint.connectedPoints)
+                foreach (CombatTile3D connection in connectedTiles)
                 {
                     if (connection != null)
                     {
@@ -1063,9 +1066,9 @@ public class PathfindingAlgorithms : MonoBehaviour
                         if (!connection.hasBeenChecked)
                         {
                             //Telling the connected point came from the current point we're checking
-                            connection.previousPoint = currentPoint.ourPathPoint;
+                            connection.prevTile = currentPoint;
 
-                            CombatTile connectedCombatTile = connection.GetComponent<CombatTile>();
+                            CombatTile3D connectedCombatTile = connection.GetComponent<CombatTile3D>();
                             //If the connected tile isn't empty, we have to check it first
                             if (connectedCombatTile.typeOnTile != TileObjectType.Nothing)
                             {
@@ -1097,9 +1100,9 @@ public class PathfindingAlgorithms : MonoBehaviour
         }
 
         //Looping through all path points in the list of visited points to clear their data
-        foreach (CombatTile point in visitedPoints)
+        foreach (CombatTile3D point in visitedPoints)
         {
-            point.ourPathPoint.ClearPathfinding();
+            point.ClearPathfinding();
         }
 
         //Returning the completed list of tiles

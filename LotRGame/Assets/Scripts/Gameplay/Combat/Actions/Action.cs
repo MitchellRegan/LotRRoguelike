@@ -34,7 +34,7 @@ public class Action : MonoBehaviour
 
     
     //Function that is overrided by inheriting classes and called from the CombatManager to use this ability
-    public virtual void PerformAction(CombatTile targetTile_)
+    public virtual void PerformAction(CombatTile3D targetTile_)
     {
         //Nothing here because the inheriting classes act differently
     }

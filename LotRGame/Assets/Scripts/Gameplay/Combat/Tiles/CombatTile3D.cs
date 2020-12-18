@@ -21,6 +21,9 @@ public class CombatTile3D : MonoBehaviour
     //The movement cost of this tile (can be changed by obstacles)
     private int movementCost = 1;
 
+    //The game object that occupies this tile
+    [HideInInspector]
+    public GameObject objectOnThisTile = null;
     //Enum for what kind of object is on this tile
     [HideInInspector]
     public TileObjectType typeOnTile = TileObjectType.Nothing;
@@ -33,6 +36,23 @@ public class CombatTile3D : MonoBehaviour
     public Color playerOccupiedColor = Color.green;
     //Color picker for when an enemy occupies this space
     public Color enemyOccupiedColor = Color.red;
+
+    //Variables used in PathfindingAlgorithms.cs for different algorithms
+    public CombatTile3D prevTile = null;
+    public bool hasBeenChecked = false;
+
+    //Static reference to the Combat tile that the mouse is currently over
+    public static CombatTile3D mouseOverTile;
+    //If this combat tile is semi-highlighted to show an attack's radius
+    [HideInInspector]
+    public bool inActionRange = false;
+
+    //The transparency of this tile when not hilighted
+    [Range(0, 1f)]
+    public float inactiveTransparency = 0.3f;
+    //The transparency of this tile when not highlighted, but still in attack radius
+    [Range(0, 1f)]
+    public float atkRadiusTransparency = 0.7f;
 
 
 
@@ -68,14 +88,82 @@ public class CombatTile3D : MonoBehaviour
     //Function called from CombatTileHandler to reset this tile so there's nothing on it and it's set to the inactive color
     public void ResetTile()
     {
-        /*this.objectOnThisTile = null;
+        this.typeOnTile = TileObjectType.Nothing;
+        this.objectOnThisTile = null;
         this.SetTileColor(this.inactiveColor);
-        this.HighlightTile(false);*/
+        this.HighlightTile(false);
     }
 
 
+    //Function called from CombatManager.cs to set what object is on this tile
+    public void SetObjectOnTile(GameObject objOnTile_, TileObjectType type_)
+    {
+        this.typeOnTile = type_;
+
+        //If no object is added
+        if (objOnTile_ == null || type_ == TileObjectType.Nothing)
+        {
+            this.ResetTile();
+        }
+        else if (type_ == TileObjectType.Player)
+        {
+            this.objectOnThisTile = objOnTile_;
+            this.SetTileColor(this.playerOccupiedColor);
+        }
+        else if (type_ == TileObjectType.Enemy)
+        {
+            this.objectOnThisTile = objOnTile_;
+            this.SetTileColor(this.enemyOccupiedColor);
+        }
+        else if (type_ == TileObjectType.Object)
+        {
+            this.objectOnThisTile = objOnTile_;
+            this.SetTileColor(this.inactiveColor);
+        }
+
+        this.HighlightTile(false);
+    }
+
+
+    //Determines if this tile should be hilighed or not
+    public void HighlightTile(bool highlightOn_)
+    {
+        Color tileColor = this.GetComponent<Material>().color;
+        float r = tileColor.r;
+        float g = tileColor.g;
+        float b = tileColor.b;
+
+        //Setting the image color so that there's no alpha
+        if (highlightOn_)
+        {
+            this.SetTileColor(new Color(r, g, b, 1));
+        }
+        //Setting the image color so that it's transparent
+        else
+        {
+            if (this.inActionRange)
+            {
+                this.SetTileColor(new Color(r, g, b, this.atkRadiusTransparency));
+            }
+            else
+            {
+                this.SetTileColor(new Color(r, g, b, this.inactiveTransparency));
+            }
+        }
+    }
+
+
+    //Function called externally to set our tile's color
     public void SetTileColor(Color newColor_)
     {
         this.GetComponent<Material>().color = newColor_; 
+    }
+
+
+    //Function called from PathfindingAlgorithms to clear the variables used in this class
+    public void ClearPathfinding()
+    {
+        this.prevTile = null;
+        this.hasBeenChecked = false;
     }
 }

@@ -62,7 +62,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private void Start()
     {
         //Adding this combat tile to the grid in the combat manager
-        CombatManager.globalReference.AddCombatTileToGrid(this, this.row, this.col);
+        //CombatManager.globalReference.AddCombatTileToGrid(this, this.row, this.col);
     }
 
 
@@ -111,7 +111,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(this.inActionRange)
         {
             //Telling the combat manager that the selected action is going to happen on this tile
-            CombatManager.globalReference.PerformActionAtClickedTile(this);
+            //CombatManager.globalReference.PerformActionAtClickedTile(this);
         }
     }
 
@@ -220,7 +220,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             //If the radius is greater than 0, we need to highlight all tiles in the effect zone
             if (highestRadius > 0)
             {
-                List<CombatTile> tilesInEffect = PathfindingAlgorithms.FindTilesInActionRange(this, highestRadius);
+                /*List<CombatTile> tilesInEffect = PathfindingAlgorithms.FindTilesInActionRange(this, highestRadius);
                 foreach (CombatTile tile in tilesInEffect)
                 {
                     //If we turn on the highlight
@@ -233,7 +233,7 @@ public class CombatTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     {
                         tile.HighlightTile(false);
                     }
-                }
+                }*/
             }
         }
     }
