@@ -58,7 +58,7 @@ public class CombatActionPanelUI : MonoBehaviour
         //Clears the action detail panel
         this.UpdateActionDetailsPanel();
 
-        //Disables this game object
+        //Disables this game object so it doesn't cover the other UI elements
         this.gameObject.SetActive(false);
 
         this.selectedAction = null;
@@ -117,6 +117,8 @@ public class CombatActionPanelUI : MonoBehaviour
     //Function called externally to display all of a certain type of action
     public void DisplayActionTypes(int typeIndex_)
     {
+        this.gameObject.SetActive(true);
+
         //Making sure there's an acting character first
         if(CombatManager.globalReference.initiativeHandler.actingCharacters.Count <= 0)
         {

@@ -103,6 +103,7 @@ public class CombatInitiativeHandler : MonoBehaviour
         if (this.actingCharacters.Count != 0)
         {
             CombatManager.globalReference.SetWaitTime(1, CombatState.SelectAction);
+            CombatManager.globalReference.uiHandler.HilightActingCharacter();
         }
     }
 }

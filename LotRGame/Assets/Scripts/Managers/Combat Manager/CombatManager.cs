@@ -191,7 +191,7 @@ public class CombatManager : MonoBehaviour
                     {
                         //Hilighting the slider of the player character whose turn it is
                         int selectedCharIndex = this.characterHandler.playerCharacters.IndexOf(actingChar);
-
+                        this.uiHandler.playerPanels[selectedCharIndex].SetBackgroundColor(this.uiHandler.actingPlayerColor);
 
                         //Setting the highlight ring's color to the player color and making it visible
                         this.tileHandler.tileHighlight.SetHighlightColor(this.uiHandler.actingPlayerColor);
@@ -213,6 +213,7 @@ public class CombatManager : MonoBehaviour
                     {
                         //Getting the index for the acting enemy
                         int selectedEnemyIndex = this.characterHandler.enemyCharacters.IndexOf(actingChar);
+                        this.uiHandler.enemyPanels[selectedEnemyIndex].SetBackgroundColor(this.uiHandler.actingEnemyColor);
 
                         //Setting the highlight ring's color to the enemy color and making it visible
                         this.tileHandler.tileHighlight.SetHighlightColor(this.uiHandler.actingEnemyColor);
@@ -449,8 +450,17 @@ public class CombatManager : MonoBehaviour
         //Clearing the highlighted area showing the previously used action's range
         this.tileHandler.ClearTileHilights();
 
-        //Have the combat manager wait a moment before going back to increasing initiatives
-        this.SetWaitTime(1, CombatState.IncreaseInitiative);
+        //If there are still acting characters we transition to their turn
+        if (this.initiativeHandler.actingCharacters.Count > 0)
+        {
+            this.uiHandler.HilightActingCharacter();
+            this.SetWaitTime(1, CombatState.SelectAction);
+        }
+        //Otherwise we have the combat manager wait a moment before going back to increasing initiatives
+        else
+        {
+            this.SetWaitTime(1, CombatState.IncreaseInitiative);
+        }
     }
 
 

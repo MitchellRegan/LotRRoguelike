@@ -75,6 +75,7 @@ public class CombatTile3D : MonoBehaviour
     //Function called when the player's mouse starts hovering over this tile
     public void OnPointerEnter(PointerEventData eventData_)
     {
+        Debug.Log("Mouse over tile");
         //Hilighting this tile's image
         this.HighlightTile(true);
 
@@ -88,6 +89,7 @@ public class CombatTile3D : MonoBehaviour
     //Function called when the player's mouse is no longer over this tile
     public void OnPointerExit(PointerEventData eventData_)
     {
+        Debug.Log("Mouse off tile");
         //If a character is moving right now and this tile is in the movement path, we don't stop highlighting
         if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
         {

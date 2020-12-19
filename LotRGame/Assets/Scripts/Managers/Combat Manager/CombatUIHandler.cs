@@ -61,6 +61,8 @@ public class CombatUIHandler : MonoBehaviour
                 this.playerPanels[p].initiativeSlider.value = 0;
                 this.playerPanels[p].healthSlider.maxValue = currentChar.charPhysState.maxHealth;
                 this.playerPanels[p].healthSlider.value = currentChar.charPhysState.currentHealth;
+
+
             }
             //Hiding the current panel
             else
@@ -77,12 +79,12 @@ public class CombatUIHandler : MonoBehaviour
             {
                 currentChar = CombatManager.globalReference.characterHandler.enemyCharacters[e];
 
-                this.playerPanels[e].gameObject.SetActive(true);
-                this.playerPanels[e].SetBackgroundColor(this.inactiveColor);
-                this.playerPanels[e].nameText.text = currentChar.firstName;
-                this.playerPanels[e].initiativeSlider.value = 0;
-                this.playerPanels[e].healthSlider.maxValue = currentChar.charPhysState.maxHealth;
-                this.playerPanels[e].healthSlider.value = currentChar.charPhysState.currentHealth;
+                this.enemyPanels[e].gameObject.SetActive(true);
+                this.enemyPanels[e].SetBackgroundColor(this.inactiveColor);
+                this.enemyPanels[e].nameText.text = currentChar.firstName;
+                this.enemyPanels[e].initiativeSlider.value = 0;
+                this.enemyPanels[e].healthSlider.maxValue = currentChar.charPhysState.maxHealth;
+                this.enemyPanels[e].healthSlider.value = currentChar.charPhysState.currentHealth;
             }
             //Hiding the current panel
             else
@@ -117,7 +119,7 @@ public class CombatUIHandler : MonoBehaviour
             {
                 isInitFull = true;
 
-                this.playerPanels[charIndex_].SetBackgroundColor(this.actingPlayerColor);
+                //this.playerPanels[charIndex_].SetBackgroundColor(this.actingPlayerColor);
             }
         }
         //Updating an enemy slider
@@ -129,7 +131,7 @@ public class CombatUIHandler : MonoBehaviour
             {
                 isInitFull = true;
 
-                this.enemyPanels[charIndex_].SetBackgroundColor(this.actingEnemyColor);
+                //this.enemyPanels[charIndex_].SetBackgroundColor(this.actingEnemyColor);
             }
         }
 
@@ -303,5 +305,30 @@ public class CombatUIHandler : MonoBehaviour
         DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
         //Setting the info for the text
         newDamageText.DisplayMiss(timeDelay_, attackedCharTile_.transform.position);
+    }
+
+
+    //Function called from CombatManager.EndActingCharactersTurn and CombatInitiativeHandler.IncreaseInitiatives to highlight the acting character
+    public void HilightActingCharacter()
+    {
+        if(CombatManager.globalReference.initiativeHandler.actingCharacters.Count > 0)
+        {
+            Character charRef = CombatManager.globalReference.initiativeHandler.actingCharacters[0];
+
+            //If it's a player, we highlight their panel
+            if (CombatManager.globalReference.characterHandler.playerCharacters.Contains(charRef))
+            {
+                int charIndex = CombatManager.globalReference.characterHandler.playerCharacters.IndexOf(charRef);
+
+                this.playerPanels[charIndex].SetBackgroundColor(this.actingPlayerColor);
+            }
+            //If it's an enemy, we highlight their panel instead
+            else if (CombatManager.globalReference.characterHandler.enemyCharacters.Contains(charRef))
+            {
+                int charIndex = CombatManager.globalReference.characterHandler.enemyCharacters.IndexOf(charRef);
+
+                this.enemyPanels[charIndex].SetBackgroundColor(this.actingEnemyColor);
+            }
+        }
     }
 }
