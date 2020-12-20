@@ -958,7 +958,7 @@ public class PathfindingAlgorithms : MonoBehaviour
                 foreach(CombatTile3D connection in connectedTiles)
                 {
                     //If the connected tile hasn't already been checked
-                    if(!connection.hasBeenChecked)
+                    if(connection != null && !connection.hasBeenChecked)
                     {
                         //If we ignore obstacles OR if the the tile doesn't have obstacles on it
                         if (ignoreObstacles_ || connection.typeOnTile == TileObjectType.Nothing)
