@@ -73,7 +73,7 @@ public class CombatTile3D : MonoBehaviour
 
 
     //Function called when the player's mouse starts hovering over this tile
-    public void OnPointerEnter(PointerEventData eventData_)
+    private void OnMouseEnter()
     {
         Debug.Log("Mouse over tile");
         //Hilighting this tile's image
@@ -87,7 +87,7 @@ public class CombatTile3D : MonoBehaviour
 
 
     //Function called when the player's mouse is no longer over this tile
-    public void OnPointerExit(PointerEventData eventData_)
+    private void OnMouseExit()
     {
         Debug.Log("Mouse off tile");
         //If a character is moving right now and this tile is in the movement path, we don't stop highlighting
@@ -113,7 +113,7 @@ public class CombatTile3D : MonoBehaviour
 
 
     //Function called when the player's mouse clicks over this tile
-    public void OnPointerClick(PointerEventData eventData_)
+    private void OnMouseDown()
     {
         //If this button isn't in range of an action, nothing happens
         if (this.inActionRange)
@@ -203,11 +203,17 @@ public class CombatTile3D : MonoBehaviour
         {
             if (this.inActionRange)
             {
-                this.SetTileColor(new Color(r, g, b, this.atkRadiusTransparency));
+                Color c = new Color(r, g, b);
+                c.a = this.atkRadiusTransparency;
+                this.SetTileColor(c);
+                //this.SetTileColor(new Color(r, g, b, this.atkRadiusTransparency));
             }
             else
             {
-                this.SetTileColor(new Color(r, g, b, this.inactiveTransparency));
+                Color c = new Color(r, g, b);
+                c.a = this.inactiveTransparency;
+                this.SetTileColor(c);
+                //this.SetTileColor(new Color(r, g, b, this.inactiveTransparency));
             }
         }
     }
@@ -263,6 +269,7 @@ public class CombatTile3D : MonoBehaviour
     //Function called externally to set our tile's color
     public void SetTileColor(Color newColor_)
     {
+        Debug.Log("Setting color " + newColor_);
         MeshRenderer mesh = this.GetComponent<MeshRenderer>();
 
         if (mesh.materials.Length > 0)

@@ -145,7 +145,7 @@ public class CombatManager : MonoBehaviour
                         if (this.stateAfterWait == CombatState.IncreaseInitiative)
                         {
                             //Making the highlight ring invisible again
-                            this.tileHandler.tileHighlight.enabled = false;
+                            this.tileHandler.tileHighlight.gameObject.SetActive(false);
                         }
 
                         this.currentState = this.stateAfterWait;
@@ -195,7 +195,7 @@ public class CombatManager : MonoBehaviour
 
                         //Setting the highlight ring's color to the player color and making it visible
                         this.tileHandler.tileHighlight.SetHighlightColor(this.uiHandler.actingPlayerColor);
-                        this.tileHandler.tileHighlight.enabled = true;
+                        this.tileHandler.tileHighlight.gameObject.SetActive(true);
 
                         //If this player character isn't dead from previous effects
                         if (actingChar.charPhysState.currentHealth > 0)
@@ -217,7 +217,7 @@ public class CombatManager : MonoBehaviour
 
                         //Setting the highlight ring's color to the enemy color and making it visible
                         this.tileHandler.tileHighlight.SetHighlightColor(this.uiHandler.actingEnemyColor);
-                        this.tileHandler.tileHighlight.enabled = true;
+                        this.tileHandler.tileHighlight.gameObject.SetActive(true);
 
                         //If this enemy isn't dead from previous effects
                         if (actingChar.charPhysState.currentHealth > 0)
@@ -276,9 +276,6 @@ public class CombatManager : MonoBehaviour
         //Resetting the combat UI
         this.initiativeHandler.ResetForCombatStart();
         //this.uiHandler.ResetForCombatStart();
-        
-        //Hiding the highlight ring
-        this.tileHandler.tileHighlight.enabled = false;
         
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, CombatState.IncreaseInitiative);
@@ -539,7 +536,7 @@ public class CombatManager : MonoBehaviour
         //If the dead character is the acting character, we end it's turn
         if (this.initiativeHandler.actingCharacters.Count > 0 && this.initiativeHandler.actingCharacters[0] == data_.characterDeath.deadCharacter)
         {
-            this.tileHandler.tileHighlight.enabled = false;
+            this.tileHandler.tileHighlight.gameObject.SetActive(false);
             this.EndActingCharactersTurn();
         }
         //If the dead character was waiting to act, we remove it from the list of acting characters

@@ -116,6 +116,8 @@ public class CombatTileHandler : MonoBehaviour
     //Function called from CombatManager.InitiateCombat to reset all combat tiles
     public void ResetCombatTiles()
     {
+        this.tileHighlight.gameObject.SetActive(false);
+
         for(int r = 0; r < this.numRows; r++)
         {
             for(int c = 0; c < this.numCols; c++)
