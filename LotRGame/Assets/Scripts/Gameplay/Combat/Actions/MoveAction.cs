@@ -67,6 +67,8 @@ public class MoveAction : Action
             //Increasing the total time that's passed
             this.currentTimePassed += Time.deltaTime;
 
+            GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.actingCharacter);
+
             //If enough time has passed that we've moved one more tile further. We progress the acting character one more tile along the movement path
             if (this.currentTimePassed >= this.timeToCompleteAction)
             {
@@ -77,29 +79,7 @@ public class MoveAction : Action
                 this.currentTimePassed = 0;
 
                 //Moving the character sprite to the new tile position
-                GameObject charModel = CombatManager.globalReference.characterHandler.GetCharacterModel(this.actingCharacter);
                 charModel.transform.position = this.movementPath[this.currentNumTilesMoved].transform.position;
-
-                //If the new tile is to the left of the old tile, we face the character left
-                if(this.movementPath[this.currentNumTilesMoved].transform.position.x < this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
-                {
-                    charModel.transform.eulerAngles = new Vector3(0, 0, 0);
-                }
-                //If the new tile is to the right of the old tile, we face the character right
-                else if(this.movementPath[this.currentNumTilesMoved].transform.position.x > this.movementPath[this.currentNumTilesMoved - 1].transform.position.x)
-                {
-                    charModel.transform.eulerAngles = new Vector3(0, 180, 0);
-                }
-                //If the new tile is above the old tile, we face the character up
-                else if(this.movementPath[this.currentNumTilesMoved].transform.position.y > this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
-                {
-                    charModel.transform.eulerAngles = new Vector3(0, 90, 0);
-                }
-                //If the new tile is below the old tile, we face the character down
-                else if (this.movementPath[this.currentNumTilesMoved].transform.position.y < this.movementPath[this.currentNumTilesMoved - 1].transform.position.y)
-                {
-                    charModel.transform.eulerAngles = new Vector3(0, 270, 0);
-                }
 
                 //Removing the acting character from the tile they're on
                 CombatManager.globalReference.tileHandler.combatTileGrid[this.actingCharacter.charCombatStats.gridPositionCol][this.actingCharacter.charCombatStats.gridPositionRow].SetObjectOnTile(null, TileObjectType.Nothing);
@@ -136,6 +116,24 @@ public class MoveAction : Action
 
                     Destroy(this.gameObject);
                 }
+            }
+            //Otherwise we interpolate the character's model to move between tiles
+            else
+            {
+                //Interpolating this character model between the tiles they're moving from and moving to
+                Vector3 startPos = this.movementPath[this.currentNumTilesMoved].transform.position;
+                Vector3 endPos = this.movementPath[this.currentNumTilesMoved + 1].transform.position;
+
+                float interpPercent = this.currentTimePassed / this.timeToCompleteAction;
+                Vector3 interpPos = (endPos - startPos) * interpPercent;
+                interpPos += startPos;
+
+                charModel.transform.position = interpPos;
+
+                //Rotating the model to face the tile they're moving to
+                Vector3 targetPos = this.movementPath[this.currentNumTilesMoved + 1].transform.position;
+                targetPos.y = charModel.transform.position.y;
+                charModel.transform.LookAt(targetPos);
             }
         }
         //If there are tiles in the movement path and the mouse is hovering over a combat tile
