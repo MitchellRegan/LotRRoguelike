@@ -29,14 +29,27 @@ public class CombatTile3D : MonoBehaviour
     [HideInInspector]
     public TileObjectType typeOnTile = TileObjectType.Nothing;
 
-    //Color picker for when this tile is not in use
-    public Color inactiveColor = Color.white;
-    //Color picker for when this tile is hilighted
-    public Color hilightColor = Color.blue;
+    //Color picker for when this tile is in range of a character's ability
+    [HideInInspector]
+    public Color activeColor = new Color(1, 1, 1);
+    //Color picker for when this tile is not being used or in range of anything
+    [HideInInspector]
+    public Color unusedColor = new Color(0.75f, 0.75f, 0.75f);
+    //Color picker for when this tile is highlighted by the player's mouse
+    [HideInInspector]
+    public Color highlightColor = Color.yellow;
+    //Color picker for when this tile is highlighted by the player's mouse to designate a movement path
+    [HideInInspector]
+    public Color movePathColor = Color.blue;
     //Color picker for when a player character occupies this space
+    [HideInInspector]
     public Color playerOccupiedColor = Color.green;
     //Color picker for when an enemy occupies this space
+    [HideInInspector]
     public Color enemyOccupiedColor = Color.red;
+    //Color for when a tile is blocked (can't be moved over)
+    [HideInInspector]
+    public Color blockedColor = Color.black;
 
     //Variables used in PathfindingAlgorithms.cs for different algorithms
     public CombatTile3D prevTile = null;
@@ -47,13 +60,6 @@ public class CombatTile3D : MonoBehaviour
     //If this combat tile is semi-highlighted to show an attack's radius
     [HideInInspector]
     public bool inActionRange = false;
-
-    //The transparency of this tile when not hilighted
-    [Range(0, 1f)]
-    public float inactiveTransparency = 0.3f;
-    //The transparency of this tile when not highlighted, but still in attack radius
-    [Range(0, 1f)]
-    public float atkRadiusTransparency = 0.7f;
 
 
 
@@ -75,51 +81,61 @@ public class CombatTile3D : MonoBehaviour
     //Function called when the player's mouse starts hovering over this tile
     private void OnMouseEnter()
     {
-        Debug.Log("Mouse over tile");
-        //Hilighting this tile's image
-        this.HighlightTile(true);
+        //Making sure the pointer isn't over a UI object
+        if (!EventSystem.current.IsPointerOverGameObject())
+        {
+            //Hilighting this tile's image
+            this.HighlightTile(true);
 
-        mouseOverTile = this;
+            mouseOverTile = this;
 
-        //Highlighting any effect radius if there's a selected attack ability
-        this.HighlightEffectRadius(true);
+            //Highlighting any effect radius if there's a selected attack ability
+            this.HighlightEffectRadius(true);
+        }
     }
 
 
     //Function called when the player's mouse is no longer over this tile
     private void OnMouseExit()
     {
-        Debug.Log("Mouse off tile");
-        //If a character is moving right now and this tile is in the movement path, we don't stop highlighting
-        if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
+        //Making sure the pointer isn't over a UI object
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            //If this tile isn't in the movement path, this tile isn't highlighted
-            if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
+            //If a character is moving right now and this tile is in the movement path, we don't stop highlighting
+            if (CombatActionPanelUI.globalReference.selectedAction != null && CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>())
             {
-                this.HighlightTile(false);
+                //If this tile isn't in the movement path, this tile isn't highlighted
+                if (!CombatActionPanelUI.globalReference.selectedAction.GetComponent<MoveAction>().IsTileInMovementPath(this))
+                {
+                    this.HighlightTile(false);
+                }
             }
-        }
-        else
-        {
-            //Stops hilighting this tile's image
-            this.HighlightTile(false);
+            else
+            {
+                //Stops hilighting this tile's image
+                this.HighlightTile(false);
 
-            //Stops highlighting any effect radius if there's a selected attack ability
-            this.HighlightEffectRadius(false);
-        }
+                //Stops highlighting any effect radius if there's a selected attack ability
+                this.HighlightEffectRadius(false);
+            }
 
-        mouseOverTile = null;
+            mouseOverTile = null;
+        }
     }
 
 
     //Function called when the player's mouse clicks over this tile
     private void OnMouseDown()
     {
-        //If this button isn't in range of an action, nothing happens
-        if (this.inActionRange)
+        //Making sure the pointer isn't over a UI object
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            //Telling the combat manager that the selected action is going to happen on this tile
-            CombatManager.globalReference.PerformActionAtClickedTile(this);
+            //If this button isn't in range of an action, nothing happens
+            if (this.inActionRange)
+            {
+                //Telling the combat manager that the selected action is going to happen on this tile
+                CombatManager.globalReference.PerformActionAtClickedTile(this);
+            }
         }
     }
 
@@ -143,7 +159,7 @@ public class CombatTile3D : MonoBehaviour
     {
         this.typeOnTile = TileObjectType.Nothing;
         this.objectOnThisTile = null;
-        this.SetTileColor(this.inactiveColor);
+        this.inActionRange = false;
         this.HighlightTile(false);
     }
 
@@ -171,7 +187,7 @@ public class CombatTile3D : MonoBehaviour
         else if (type_ == TileObjectType.Object)
         {
             this.objectOnThisTile = objOnTile_;
-            this.SetTileColor(this.inactiveColor);
+            this.SetTileColor(this.blockedColor);
         }
 
         this.HighlightTile(false);
@@ -179,41 +195,45 @@ public class CombatTile3D : MonoBehaviour
 
 
     //Determines if this tile should be hilighed or not
-    public void HighlightTile(bool highlightOn_)
+    public void HighlightTile(bool highlightOn_, bool inMovePath_ = false)
     {
-        MeshRenderer mesh = this.GetComponent<MeshRenderer>();
-
-        if (mesh.materials.Length == 0)
-        {
-            return;
-        }
-
-        Color tileColor = mesh.materials[0].color;
-        float r = tileColor.r;
-        float g = tileColor.g;
-        float b = tileColor.b;
-
-        //Setting the image color so that there's no alpha
+        //Setting the image color based on what's being highlighted
         if (highlightOn_)
         {
-            this.SetTileColor(new Color(r, g, b, 1));
+            if (inMovePath_)
+            {
+                this.SetTileColor(this.movePathColor);
+            }
+            else
+            {
+                if (this.typeOnTile == TileObjectType.Enemy)
+                {
+                    this.SetTileColor(this.enemyOccupiedColor);
+                }
+                else if (this.typeOnTile == TileObjectType.Player)
+                {
+                    this.SetTileColor(this.playerOccupiedColor);
+                }
+                else if (this.typeOnTile == TileObjectType.Object)
+                {
+                    this.SetTileColor(this.blockedColor);
+                }
+                else
+                {
+                    this.SetTileColor(this.highlightColor);
+                }
+            }
         }
-        //Setting the image color so that it's transparent
+        //Setting the image color so that it's inactive
         else
         {
             if (this.inActionRange)
             {
-                Color c = new Color(r, g, b);
-                c.a = this.atkRadiusTransparency;
-                this.SetTileColor(c);
-                //this.SetTileColor(new Color(r, g, b, this.atkRadiusTransparency));
+                this.SetTileColor(this.activeColor);
             }
             else
             {
-                Color c = new Color(r, g, b);
-                c.a = this.inactiveTransparency;
-                this.SetTileColor(c);
-                //this.SetTileColor(new Color(r, g, b, this.inactiveTransparency));
+                this.SetTileColor(this.unusedColor);
             }
         }
     }
@@ -225,6 +245,7 @@ public class CombatTile3D : MonoBehaviour
         //Only works if this tile is in the action range
         if (!this.inActionRange)
         {
+            //this.SetTileColor(this.inactiveColor);
             return;
         }
 
@@ -269,7 +290,6 @@ public class CombatTile3D : MonoBehaviour
     //Function called externally to set our tile's color
     public void SetTileColor(Color newColor_)
     {
-        Debug.Log("Setting color " + newColor_);
         MeshRenderer mesh = this.GetComponent<MeshRenderer>();
 
         if (mesh.materials.Length > 0)

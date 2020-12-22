@@ -44,12 +44,13 @@ public class MoveAction : Action
     {
         //Calling the base function to start the cooldown time
         base.PerformAction(targetTile_);
-
+        
         //If the acting character is an enemy, we need to set the movement path since we're not mousing over tiles
         if (CombatManager.globalReference.characterHandler.enemyCharacters.Contains(this.actingCharacter))
         {
             this.movementPath = PathfindingAlgorithms.BreadthFirstSearchCombat(this.movementPath[0], targetTile_, true, true);
         }
+        //Otherwise the movement path has already been set by our Update function ("else if" when this.moveCharacter is false)
 
         //Makes it so that the Update function will now move the character through the movement path
         this.moveCharacter = true;
@@ -119,7 +120,7 @@ public class MoveAction : Action
                         //Clearing the movement path tiles
                         for(int t = this.currentNumTilesMoved; t < this.movementPath.Count; ++t)
                         {
-                            this.movementPath[t].GetComponent<Image>().color = new Color(1,1,1, this.movementPath[t].inactiveTransparency);
+                            this.movementPath[t].SetTileColor(this.movementPath[t].unusedColor);
                         }
                         //This game object is destroyed
                         Destroy(this.gameObject);
@@ -138,7 +139,7 @@ public class MoveAction : Action
             }
         }
         //If there are tiles in the movement path and the mouse is hovering over a combat tile
-        else if (this.movementPath.Count > 0 && CombatTile.mouseOverTile != null)
+        else if (this.movementPath.Count > 0 && CombatTile3D.mouseOverTile != null)
         {
             CombatTile3D lastPathTile = this.movementPath[this.movementPath.Count - 1];
             List<CombatTile3D> connectedTiles = new List<CombatTile3D>() { lastPathTile.left, lastPathTile.right, lastPathTile.up, lastPathTile.down };
@@ -150,13 +151,12 @@ public class MoveAction : Action
                 if (!this.movementPath.Contains(CombatTile3D.mouseOverTile))
                 {
                     //If the tile has no object on it OR if there is an object and the movement action ignores objects
-                    if (CombatTile.mouseOverTile.typeOnTile == TileObjectType.Nothing || 
-                            (CombatTile.mouseOverTile.typeOnTile == TileObjectType.Object && this.ignoreObstacles) ||
-                            ((CombatTile.mouseOverTile.typeOnTile == TileObjectType.Enemy || CombatTile.mouseOverTile.typeOnTile == TileObjectType.Player) && this.ignoreEnemies))
+                    if (CombatTile3D.mouseOverTile.typeOnTile == TileObjectType.Nothing || 
+                            (CombatTile3D.mouseOverTile.typeOnTile == TileObjectType.Object && this.ignoreObstacles) ||
+                            ((CombatTile3D.mouseOverTile.typeOnTile == TileObjectType.Enemy || CombatTile3D.mouseOverTile.typeOnTile == TileObjectType.Player) && this.ignoreEnemies))
                     {
                         this.movementPath.Add(CombatTile3D.mouseOverTile);
-                        CombatTile.mouseOverTile.HighlightTile(true);
-                        CombatTile.mouseOverTile.SetTileColor(Color.blue);
+                        CombatTile3D.mouseOverTile.HighlightTile(true, true);
                     }
                 }
                 //If the tile that the mouse is over IS already in the movement path and isn't the most recent tile
@@ -190,7 +190,7 @@ public class MoveAction : Action
             else
             {
                 //Making sure the tile that the mouse is over is within this action's range
-                if (CombatTile.mouseOverTile.inActionRange)
+                if (CombatTile3D.mouseOverTile.inActionRange)
                 {
                     //Looping through all of the tiles currently in the movement path and clearing them
                     for (int p = 1; p < this.movementPath.Count; ++p)
@@ -209,8 +209,7 @@ public class MoveAction : Action
                     //Looping through each tile that's now in the movement path and coloring it in
                     for(int t = 1; t < this.movementPath.Count; ++t)
                     {
-                        this.movementPath[t].HighlightTile(true);
-                        this.movementPath[t].GetComponent<Image>().color = Color.blue;
+                        this.movementPath[t].HighlightTile(true, true);
                     }
                 }
             }
@@ -218,7 +217,7 @@ public class MoveAction : Action
     }
 
 
-    //Function called from CombatTile.cs to see if a specific tile is in the current movement path
+    //Function called from CombatTile3D.cs to see if a specific tile is in the current movement path
     public bool IsTileInMovementPath(CombatTile3D tileToCheck_)
     {
         //Looping through each tile in the current movement path

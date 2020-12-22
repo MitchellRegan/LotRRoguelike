@@ -159,6 +159,16 @@ public class CombatTileHandler : MonoBehaviour
     //Function called from CombatManager to clear all tile highlights
     public void ClearTileHilights()
     {
-
+        for(int r = 0; r < this.combatTileGrid.Count; r++)
+        {
+            for(int c = 0; c < this.combatTileGrid[r].Count; c++)
+            {
+                if (this.combatTileGrid[r][c].inActionRange)
+                {
+                    this.combatTileGrid[r][c].inActionRange = false;
+                    this.combatTileGrid[r][c].HighlightTile(false);
+                }
+            }
+        }
     }
 }

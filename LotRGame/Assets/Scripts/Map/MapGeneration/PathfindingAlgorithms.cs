@@ -1081,6 +1081,11 @@ public class PathfindingAlgorithms : MonoBehaviour
                                     //Adding the connected point to the frontier and list of visited tiles
                                     frontier.Add(connectedCombatTile);
                                 }
+                                else
+                                {
+                                    connectedCombatTile.prevTile = null;
+                                    connectedCombatTile.hasBeenChecked = true;
+                                }
                             }
                             else
                             {

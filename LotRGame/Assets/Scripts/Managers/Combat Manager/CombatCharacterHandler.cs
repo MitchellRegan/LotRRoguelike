@@ -433,6 +433,7 @@ public class CombatCharacterHandler : MonoBehaviour
             {
                 charModel.transform.position = tile.gameObject.transform.position;
                 this.playerModels.Add(charModel);
+                CombatManager.globalReference.tileHandler.FindCharactersTile(this.playerCharacters[p]).SetObjectOnTile(charModel, TileObjectType.Player);
             }
         }
 
@@ -451,6 +452,7 @@ public class CombatCharacterHandler : MonoBehaviour
             {
                 charModel.transform.position = tile.gameObject.transform.position;
                 this.enemyModels.Add(charModel);
+                CombatManager.globalReference.tileHandler.FindCharactersTile(this.enemyCharacters[e]).SetObjectOnTile(charModel, TileObjectType.Enemy);
             }
         }
     }
