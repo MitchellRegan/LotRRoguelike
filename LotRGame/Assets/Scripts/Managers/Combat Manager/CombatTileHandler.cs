@@ -163,11 +163,9 @@ public class CombatTileHandler : MonoBehaviour
         {
             for(int c = 0; c < this.combatTileGrid[r].Count; c++)
             {
-                if (this.combatTileGrid[r][c].inActionRange)
-                {
-                    this.combatTileGrid[r][c].inActionRange = false;
-                    this.combatTileGrid[r][c].HighlightTile(false);
-                }
+                this.combatTileGrid[r][c].inActionRange = false;
+                this.combatTileGrid[r][c].HighlightTile(false);
+                this.combatTileGrid[r][c].hasBeenChecked = false;
             }
         }
     }

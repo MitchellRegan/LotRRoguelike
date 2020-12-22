@@ -161,6 +161,7 @@ public class CombatTile3D : MonoBehaviour
         this.objectOnThisTile = null;
         this.inActionRange = false;
         this.HighlightTile(false);
+        this.hasBeenChecked = false;
     }
 
 

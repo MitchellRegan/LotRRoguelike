@@ -251,11 +251,11 @@ public class CombatActionPanelUI : MonoBehaviour
 
         //Finding out which tiles need to be hilighted if this action isn't a move action
         List<CombatTile3D> tilesToHighlight;
-        List<CombatTile3D> tilesToCheckForCharacters = new List<CombatTile3D>();
+        //List<CombatTile3D> tilesToCheckForCharacters = new List<CombatTile3D>();
         if (!this.selectedAction.GetComponent<MoveAction>())
         {
-            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange);
-            tilesToCheckForCharacters = tilesToHighlight;
+            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange, false, true);
+            //tilesToCheckForCharacters = tilesToHighlight;
         }
         //If this action is a move action, we have to find the selected tiles based on environment obstacles
         else
@@ -274,8 +274,9 @@ public class CombatActionPanelUI : MonoBehaviour
             }
 
             //Highlighting all tiles in range
-            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + rangeModifier, ourMoveAct.ignoreObstacles);
-            tilesToCheckForCharacters = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + rangeModifier + 1);
+            tilesToHighlight = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + rangeModifier, ourMoveAct.ignoreObstacles, false);
+            //Debug.Log("Getting tiles to check for characters");
+            //tilesToCheckForCharacters = PathfindingAlgorithms.FindTilesInActionRange(actingCharsTile, actionRange + rangeModifier + 1);
         }
 
         //Looping through all tiles in range and hilighting them
