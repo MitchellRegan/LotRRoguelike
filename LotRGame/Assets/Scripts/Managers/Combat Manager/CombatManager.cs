@@ -48,7 +48,7 @@ public class CombatManager : MonoBehaviour
     public UnityEvent eventAfterActionPerformed;
 
     //Object that's created to display damage on an attacked character's tile
-    public DamageText damageTextPrefab;
+    public DamageDisplay damageTextPrefab;
     
     //The list of all CombatCharacterSprites for each character and enemy
     public List<CharacterSpriteBase> characterSpriteList;
@@ -322,10 +322,9 @@ public class CombatManager : MonoBehaviour
 
         //Creating an instance of the damage text object prefab
         GameObject newDamageDisplay = GameObject.Instantiate(this.damageTextPrefab.gameObject);
-        //Parenting the damage text object to this object's transform
-        newDamageDisplay.transform.SetParent(this.transform);
+
         //Getting the DamageText component reference
-        DamageText newDamageText = newDamageDisplay.GetComponent<DamageText>();
+        DamageDisplay newDamageText = newDamageDisplay.GetComponent<DamageDisplay>();
 
         //Setting the info for the text
         newDamageText.SetDamageToDisplay(timeDelay_, damage_, type_, damagedCharTile_.transform.position, isCrit_, isHeal_);
