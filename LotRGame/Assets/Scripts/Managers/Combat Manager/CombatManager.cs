@@ -8,6 +8,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(CombatInitiativeHandler))]
 [RequireComponent(typeof(CombatCharacterHandler))]
 [RequireComponent(typeof(CombatUIHandler))]
+[RequireComponent(typeof(CombatCameraManager))]
 public class CombatManager : MonoBehaviour
 {
     //Static reference to this combat manager
@@ -18,6 +19,7 @@ public class CombatManager : MonoBehaviour
     public CombatInitiativeHandler initiativeHandler;
     public CombatCharacterHandler characterHandler;
     public CombatUIHandler uiHandler;
+    public CombatCameraManager cameraHandler;
 
     //The value that attacking characters must reach after all combat modifiers to hit their opponent. Used in AttackAction and WeaponAction
     public const int baseHitDC = 20;
@@ -37,12 +39,6 @@ public class CombatManager : MonoBehaviour
     public UnityEvent combatEndEvent;
     //The unity event that's invoked when a player character can perform actions
     public UnityEvent showPlayerActions;
-
-    //Reference to the background image that's set at the start of combat based on the type of land tile
-    public Image backgroundImageObject;
-
-    //Dictionary that determines which background sprite to set based on the land tile type
-    public List<BackgroundImageTypes> tileTypeBackgrounds;
 
     //Unity Event called right after a player performs an action
     public UnityEvent eventAfterActionPerformed;
@@ -273,9 +269,10 @@ public class CombatManager : MonoBehaviour
         //Setting the combat positions for the player characters and enemies based on their distances
         this.characterHandler.InitializeCharactersForCombat(charactersInCombat_, encounter_);
 
-        //Resetting the combat UI
+        //Resetting the combat UI and cameras
         this.initiativeHandler.ResetForCombatStart();
-        //this.uiHandler.ResetForCombatStart();
+        this.uiHandler.ResetForCombatStart();
+        this.cameraHandler.ResetForCombatStart();
         
         //Setting the state to start increasing initiatives after a brief wait
         this.SetWaitTime(3, CombatState.IncreaseInitiative);
@@ -301,6 +298,12 @@ public class CombatManager : MonoBehaviour
         {
             return;
         }
+        //If a character's turn is starting, we have the camera focus on their model
+        else if(stateAfterWait_ == CombatState.SelectAction)
+        {
+            this.cameraHandler.FocusCamOnActingChar();
+        }
+        
 
         this.waitTime = timeToWait_;
         this.currentState = CombatState.Wait;
